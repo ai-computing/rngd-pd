@@ -77,6 +77,57 @@ def fire(model, prompt, max_new, batch, rec, i, t_zero):
         rec[i] = {"i": i, "error": repr(e)[:120]}
 
 
+def closed_loop(a, prompts, lens):
+    """Hold N requests in flight and see what the system settles at.
+
+    Poisson arrivals answer "can it keep up with this rate"; they cannot say
+    what a configuration is worth, because the offered concurrency is an
+    outcome rather than a setting. A batched decoder only earns its width when
+    that many requests genuinely overlap, so the number that matters is
+    throughput as a function of how many are in flight.
+    """
+    done, lock = [], threading.Lock()
+    stop = threading.Event()
+    t_zero = time.perf_counter()
+
+    def client(cid):
+        i = cid
+        while not stop.is_set():
+            rec = [None]
+            fire(a.model, prompts[i % len(prompts)], int(lens[i % len(lens)]),
+                 a.batch, rec, 0, t_zero)
+            if rec[0] and "error" not in rec[0]:
+                with lock:
+                    done.append(rec[0])
+            elif rec[0]:
+                with lock:
+                    done.append(rec[0])
+            i += a.concurrency
+
+    ts = [threading.Thread(target=client, args=(k,), daemon=True)
+          for k in range(a.concurrency)]
+    for t in ts:
+        t.start()
+    time.sleep(a.seconds)
+    stop.set()
+    for t in ts:
+        t.join(timeout=1800)
+    wall = time.perf_counter() - t_zero
+
+    ok = [r for r in done if "error" not in r]
+    errs = len(done) - len(ok)
+    if not ok:
+        print(f"  concurrency {a.concurrency}: 전부 실패 ({errs})")
+        return
+    lat = np.array([r["latency_ms"] for r in ok])
+    toks = sum(r["out_tokens"] for r in ok)
+    occ = [r["occupancy"] for r in ok if r.get("occupancy")]
+    print(f"  N={a.concurrency:<3d} {toks/wall:7.1f} tok/s  {len(ok)/wall:5.2f} req/s  "
+          f"p50 {np.percentile(lat,50):7.0f}  p95 {np.percentile(lat,95):7.0f}  "
+          f"{len(ok):3d} ok / {errs} fail"
+          + (f"  occ {occ[-1]:.2f}" if occ else ""))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="llama8b-rngd-alone")
@@ -87,6 +138,11 @@ def main():
     ap.add_argument("--rate", type=float, default=6.0, help="arrivals per second")
     ap.add_argument("--n", type=int, default=48)
     ap.add_argument("--warm", type=int, default=4)
+    ap.add_argument("--concurrency", type=int, default=0,
+                    help="closed loop: hold this many requests in flight and "
+                         "measure saturation instead of firing at --rate")
+    ap.add_argument("--seconds", type=float, default=25.0,
+                    help="closed-loop measurement window")
     ap.add_argument("--out", default="")
     a = ap.parse_args()
     rng = np.random.default_rng(0)
@@ -105,6 +161,9 @@ def main():
     for t in ts:
         t.join()
     print(f"[load] warmed with {a.warm} requests", flush=True)
+
+    if a.concurrency:
+        return closed_loop(a, prompts, lens)
 
     rec = [None] * a.n
     threads = []
