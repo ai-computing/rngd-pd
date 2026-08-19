@@ -161,6 +161,33 @@ class BatchDecodeEngine:
         Vd = [self._d(V[g * self.NG:(g + 1) * self.NG]) for g in range(self.ngroups)]
         return Kd, Vd
 
+    def download_kv(self, Kd, Vd):
+        """Resident cache back to the host as [nl,B,NKV,HD,S] / [nl,B,NKV,S,HD].
+
+        Only needed when the batch composition changes: a slot cannot be
+        replaced in place, so the whole tensor is rebuilt around the new one.
+        In steady state the cache never leaves the card.
+        """
+        # Cast on the host, not the card: bf16 -> f32 is unsupported on RNGD, so
+        # .float() before .cpu() routes the whole tensor through a CPU-bridged
+        # copy. Coming back as bf16 first makes it a plain transfer.
+        K = np.concatenate([k.detach().cpu().float().numpy() for k in Kd], 0)
+        V = np.concatenate([v.detach().cpu().float().numpy() for v in Vd], 0)
+        return K, V
+
+    def upload_kv(self, K, V):
+        """The inverse: [nl,B,...] host arrays back onto the card, per group."""
+        NG = self.NG
+        Kd = [self._d(K[g * NG:(g + 1) * NG]) for g in range(self.ngroups)]
+        Vd = [self._d(V[g * NG:(g + 1) * NG]) for g in range(self.ngroups)]
+        return Kd, Vd
+
+    def blank_kv(self):
+        """An empty resident cache — every slot free."""
+        K = np.zeros((self.nl, self.B, NKV, HD, self.S), np.float32)
+        V = np.zeros((self.nl, self.B, NKV, self.S, HD), np.float32)
+        return self.upload_kv(K, V)
+
     def step(self, toks, positions, Kd, Vd):
         """One token for each of B streams. Returns next tokens and the cache."""
         B, S = self.B, self.S

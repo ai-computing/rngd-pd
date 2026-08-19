@@ -21,6 +21,7 @@ pair from the request's model name and the decode width from a `batch` field.
   python3 gen_sweep.py > sweep-matrix.yaml && kubectl apply -f sweep-matrix.yaml
 """
 import json
+import os
 
 NS = "llm-serving"
 NODE = "etri-001"
@@ -56,6 +57,11 @@ BASE_ENV = [
     ("PD_SHM_ROOT", "/dev/shm/rngd_kv_cluster"),
 ]
 
+# Which decode scheduler the batched Furiosa worker runs. "static" holds a
+# batch start to finish; "continuous" re-forms it every step.
+RNGD_SCHED = os.environ.get("RNGD_SCHED", "static")
+RNGD_ADMIT_MIN = os.environ.get("RNGD_ADMIT_MIN", "2")
+
 # name, vendor, args, extra env, memory
 WORKERS = [
     ("sw-rngd-prefill", "rngd",
@@ -67,7 +73,7 @@ WORKERS = [
     # which is what makes the reuse worth its dispatch cost.
     ("sw-rngd-decode-b4", "rngd",
      "--role decode --backend rngd --B 4 --group 2 --batch-wait 8000 "
-     "--chip 2 --S 256", [], "64Gi"),
+     f"--sched {RNGD_SCHED} --admit-min {RNGD_ADMIT_MIN} --chip 2 --S 256", [], "64Gi"),
     ("sw-atom-prefill", "atom",
      "--role prefill --backend atom --C 16 --S 256",
      [("RBLN_PREFILL_ARTIFACT", f"{ART}/prefill_S256_C16.rbln"),

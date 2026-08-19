@@ -24,6 +24,7 @@ from the prefill side's KV, and that is the whole point.
       --prefill http://127.0.0.1:8101 --decode http://127.0.0.1:8102
 """
 import argparse
+import collections
 import json
 import os
 import sys
@@ -476,6 +477,148 @@ class _Batcher:
                 slot["ev"].set()
 
 
+class _ContinuousScheduler:
+    """Iteration-level scheduling: the batch is re-formed before every step.
+
+    The static batcher holds requests until B of them can start together and
+    then runs them in lockstep, so a request that arrives one step late waits
+    for the whole generation, and a lane whose stream finished keeps being
+    computed to the end. Here each step admits whatever is waiting into free
+    slots and releases whatever finished, which is what lets a batch mix a
+    request on its third token with one on its hundredth.
+
+    The graph already allowed that — every stream carries its own position,
+    mask and rotation. What it does not allow is replacing one slot's cache in
+    place: the resident tensor is [NG, B, NKV, HD, S], one object. So a change
+    of composition costs a round trip, taken once per step no matter how many
+    slots change, and nothing at all while the batch is stable.
+    """
+
+    def __init__(self, B, engine, load_kv, nl, NKV, HD, S, admit_min=1):
+        self.B, self.eng, self.load_kv = B, engine, load_kv
+        # A composition change costs a full round trip of the resident cache,
+        # roughly ten steps' worth. Admitting one stream at a time therefore
+        # spends more than it gains; waiting until this many slots are free
+        # amortises the trip. Ignored when the batch is idle, where there is
+        # nothing to preserve and the trip is cheap.
+        self.admit_min = admit_min
+        self.nl, self.NKV, self.HD, self.S = nl, NKV, HD, S
+        self.slots = [None] * B
+        self.pending = collections.deque()
+        self.cv = threading.Condition()
+        self.admit_ms, self.admits = 0.0, 0
+        # Occupancy is the number that decides whether iteration-level
+        # scheduling is worth anything here: the step costs the same whether
+        # it carries one stream or B, so a step run half empty is half wasted.
+        self.lane_steps, self.steps = 0, 0
+        threading.Thread(target=self._loop, daemon=True).start()
+
+    def submit(self, item):
+        item["ev"] = threading.Event()
+        item["out"] = item["err"] = None
+        with self.cv:
+            self.pending.append(item)
+            self.cv.notify()
+        item["ev"].wait()
+        if item["err"]:
+            raise item["err"]
+        return item["out"]
+
+    def _active(self):
+        return [s for s in self.slots if s]
+
+    def _admit(self, taking, Kd, Vd):
+        """Place new streams' caches into the resident tensor, once."""
+        loaded = []
+        for idx, item in taking:
+            K, V, load_ms = self.load_kv(item["req_id"])
+            loaded.append((idx, item, K, V, load_ms))
+        t0 = time.perf_counter()          # the trip only, not the shm read
+        if self._active():
+            hK, hV = self.eng.download_kv(Kd, Vd)
+        else:                                  # nothing to preserve
+            hK = np.zeros((self.nl, self.B, self.NKV, self.HD, self.S), np.float32)
+            hV = np.zeros((self.nl, self.B, self.NKV, self.S, self.HD), np.float32)
+        for idx, _item, K, V, _ in loaded:
+            hK[:, idx] = K
+            hV[:, idx] = V
+        Kd, Vd = self.eng.upload_kv(hK, hV)
+        ms = (time.perf_counter() - t0) * 1e3
+        self.admit_ms += ms
+        self.admits += 1
+        for idx, item, _K, _V, load_ms in loaded:
+            self.slots[idx] = {"item": item, "cur": item["first"], "pos": item["pos"],
+                               "outs": [item["first"]], "load_ms": load_ms,
+                               "steps": [], "t0": time.perf_counter()}
+        return Kd, Vd
+
+    def _finish(self, s):
+        st = sorted(s["steps"])
+        s["item"]["out"] = {
+            "tokens": s["outs"], "load_ms": round(s["load_ms"], 1),
+            "tpot_ms": round(st[len(st) // 2], 1) if st else 0.0,
+            "decode_ms": round((time.perf_counter() - s["t0"]) * 1e3, 1),
+            "batch": len(self._active()), "batch_width": self.B,
+            "sched": "continuous",
+            "admit_ms": round(self.admit_ms / max(self.admits, 1), 1),
+            "occupancy": round(self.lane_steps / max(self.steps, 1), 2)}
+        s["item"]["ev"].set()
+
+    def _loop(self):
+        Kd, Vd = None, None
+        while True:
+            with self.cv:
+                while not self.pending and not self._active():
+                    self.cv.wait()
+                free = [i for i, s in enumerate(self.slots) if s is None]
+                n = min(len(free), len(self.pending))
+                if n and not self._active():
+                    pass                       # idle: admit whatever is there
+                elif n < min(self.admit_min, len(free)):
+                    n = 0                      # not worth a round trip yet
+                taking = [(free[k], self.pending.popleft()) for k in range(n)]
+            try:
+                if Kd is None:
+                    Kd, Vd = self.eng.blank_kv()
+                with DEVICE:
+                    if taking:
+                        Kd, Vd = self._admit(taking, Kd, Vd)
+                    live = [i for i, s in enumerate(self.slots) if s]
+                    if not live:
+                        continue
+                    pos = [self.slots[i]["pos"] if self.slots[i] else 0
+                           for i in range(self.B)]
+                    cur = [self.slots[i]["cur"] if self.slots[i] else 0
+                           for i in range(self.B)]
+                    t1 = time.perf_counter()
+                    nxt, Kd, Vd = self.eng.step(cur, pos, Kd, Vd)
+                    dt = (time.perf_counter() - t1) * 1e3
+                done = []
+                for i in live:
+                    s = self.slots[i]
+                    s["steps"].append(dt)
+                    s["outs"].append(nxt[i])
+                    s["cur"] = nxt[i]
+                    s["pos"] += 1
+                    if len(s["outs"]) >= s["item"]["max_new"]:
+                        done.append(i)
+                self.lane_steps += len(live)
+                self.steps += 1
+                with LOCK:
+                    METRICS["decode_ms"] += dt
+                    METRICS["tokens"] += len(live)
+                for i in done:
+                    s, self.slots[i] = self.slots[i], None
+                    self._finish(s)
+            except Exception as e:                 # a bad step fails its batch
+                for i, s in enumerate(self.slots):
+                    if s:
+                        s["item"]["err"] = e
+                        s["item"]["ev"].set()
+                        self.slots[i] = None
+                Kd = Vd = None
+
+
 class DecodeATOMBatch(DecodeWorkerBase):
     """B independent streams per graph pass, from the pre-compiled B artifact.
 
@@ -571,7 +714,8 @@ class DecodeRNGDBatch(DecodeWorkerBase):
     token with one on its hundredth.
     """
 
-    def __init__(self, chip, S, B, group=2, wait_ms=8000):
+    def __init__(self, chip, S, B, group=2, wait_ms=8000, sched="static",
+                 admit_min=1):
         chip = resolve_chip(chip)
         import torch
         torch.set_grad_enabled(False)
@@ -589,9 +733,15 @@ class DecodeRNGDBatch(DecodeWorkerBase):
         del sd
         self.S, self.B, self.nl = S, B, cfg.n_layers
         self.NKV, self.HD = cfg.n_kv, cfg.head_dim
-        self.batcher = _Batcher(B, wait_ms, self._run_batch)
+        self.sched = sched
+        if sched == "continuous":
+            self.batcher = _ContinuousScheduler(B, self.eng, self._load_kv,
+                                                self.nl, self.NKV, self.HD, S,
+                                                admit_min)
+        else:
+            self.batcher = _Batcher(B, wait_ms, self._run_batch)
         STATE.update(ready=True,
-                     detail=f"decode rngd:{chip} B={B} {self.nl}L S={S} "
+                     detail=f"decode rngd:{chip} B={B} {sched} {self.nl}L S={S} "
                             f"ready in {time.time()-t0:.0f}s")
         print(f"[decode] {STATE['detail']}", flush=True)
 
@@ -752,6 +902,9 @@ class Gateway:
                        "decode_ms": dc.get("decode_ms", 0.0),
                        "batch": dc.get("batch", 1),
                        "batch_width": dc.get("batch_width", 1),
+                       "sched": dc.get("sched", "static"),
+                       "admit_ms": dc.get("admit_ms"),
+                       "occupancy": dc.get("occupancy"),
                        "wall_ms": round(wall_ms, 1)}}
 
 
@@ -832,6 +985,11 @@ def main():
     ap.add_argument("--B", type=int, default=1, help="decode batch width")
     ap.add_argument("--batch-wait", type=float, default=60.0,
                     help="ms to hold a partial batch before running it")
+    ap.add_argument("--admit-min", type=int, default=1,
+                    help="continuous: free slots required before a round trip")
+    ap.add_argument("--sched", default="static", choices=["static", "continuous"],
+                    help="static: one batch start to finish; continuous: the "
+                         "batch is re-formed every step")
     ap.add_argument("--C", type=int, default=16, help="chunked prefill chunk size")
     ap.add_argument("--group", type=int, default=2, help="layers per compiled call")
     ap.add_argument("--chip", type=int, default=-1,  # -1 = whichever card k8s gave us
@@ -868,7 +1026,8 @@ def main():
             w = (DecodeATOMBatch(a.S, a.B, a.batch_wait)
                  if os.environ.get("RBLN_BATCH_ARTIFACT") else DecodeATOM(a.S))
         elif a.B > 1:
-            w = DecodeRNGDBatch(a.chip, a.S, a.B, a.group, a.batch_wait)
+            w = DecodeRNGDBatch(a.chip, a.S, a.B, a.group, a.batch_wait,
+                                a.sched, a.admit_min)
         else:
             w = DecodeRNGD(a.chip, a.S)
         routes["/decode"] = lambda b: w.run(b["req_id"], b["first"], b["pos"],

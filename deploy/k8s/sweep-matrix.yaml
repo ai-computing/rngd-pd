@@ -181,7 +181,7 @@ spec:
         command: [bash, -c]
         args:
         - |
-          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python -m rngd_pd.serving.cluster --role decode --backend rngd --B 4 --group 2 --batch-wait 8000 --chip 2 --S 256 --port 8000
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python -m rngd_pd.serving.cluster --role decode --backend rngd --B 4 --group 2 --batch-wait 8000 --sched static --admit-min 2 --chip 2 --S 256 --port 8000
         env:
         - {name: PYTHONPATH, value: "/app/src:/home/gspark/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
