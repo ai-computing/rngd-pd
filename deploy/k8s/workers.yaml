@@ -1,0 +1,63 @@
+# RNGD worker Deployments (Phase 5): a prefill pool and a decode pool (xPyD).
+# Each pod claims one RNGD chip via the Furiosa device plugin (furiosa.ai/npu). PD KV moves over the
+# connector: same-node → shared /dev/shm; cross-node → TCP (or NIXL when available).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rngd-worker-prefill
+  labels: { app: rngd-worker, role: prefill }
+spec:
+  replicas: 1                                  # scale prefill pool independently (the P in xPyD)
+  selector: { matchLabels: { app: rngd-worker, role: prefill } }
+  template:
+    metadata: { labels: { app: rngd-worker, role: prefill } }
+    spec:
+      containers:
+        - name: worker
+          image: rngd/worker:poc
+          args: ["--role", "worker", "--role-kind", "prefill", "--gateway", "http://rngd-gateway:8080"]
+          env:
+            - { name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct" }
+            - { name: RNGD_ARTIFACT_CACHE, value: "/artifacts" }
+          resources:
+            limits: { furiosa.ai/npu: 1, memory: "64Gi" }   # one RNGD chip via device plugin
+          volumeMounts:
+            - { name: dshm, mountPath: /dev/shm }
+            - { name: artifacts, mountPath: /artifacts }
+      volumes:
+        - { name: dshm, emptyDir: { medium: Memory } }        # KV transport (same-node PD)
+        - { name: artifacts, persistentVolumeClaim: { claimName: rngd-artifacts } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rngd-worker-decode
+  labels: { app: rngd-worker, role: decode }
+spec:
+  replicas: 1                                  # scale decode pool independently (the D in xPyD)
+  selector: { matchLabels: { app: rngd-worker, role: decode } }
+  template:
+    metadata: { labels: { app: rngd-worker, role: decode } }
+    spec:
+      containers:
+        - name: worker
+          image: rngd/worker:poc
+          args: ["--role", "worker", "--role-kind", "decode", "--gateway", "http://rngd-gateway:8080"]
+          env:
+            - { name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct" }
+            - { name: RNGD_ARTIFACT_CACHE, value: "/artifacts" }
+          resources:
+            limits: { furiosa.ai/npu: 1, memory: "64Gi" }
+          volumeMounts:
+            - { name: dshm, mountPath: /dev/shm }
+            - { name: artifacts, mountPath: /artifacts }
+      volumes:
+        - { name: dshm, emptyDir: { medium: Memory } }
+        - { name: artifacts, persistentVolumeClaim: { claimName: rngd-artifacts } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: rngd-artifacts }
+spec:
+  accessModes: [ReadWriteMany]                 # shared EDF artifact cache → cold-start avoidance
+  resources: { requests: { storage: 50Gi } }

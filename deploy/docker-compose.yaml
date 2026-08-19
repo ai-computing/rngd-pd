@@ -1,0 +1,31 @@
+# Local RNGD serving stack (Phase 5) — gateway + 2 workers (prefill@chip0, decode@chip1).
+# Single-host bring-up; workers share KV via /dev/shm (ShmTransport). For cross-node use TCP/NIXL.
+#
+#   FURIOSA_INDEX_URL=<wheel index> docker compose -f deploy/docker-compose.yaml up
+#
+# Requires the RNGD driver on the host; device nodes are mounted into the worker containers.
+services:
+  gateway:
+    build: { context: .., dockerfile: deploy/Dockerfile.gateway }
+    command: ["--role", "gateway", "--mode", "pd", "--port", "8080"]
+    ports: ["8080:8080"]
+
+  worker-prefill:
+    build: { context: .., dockerfile: deploy/Dockerfile.worker, args: { FURIOSA_INDEX_URL: "${FURIOSA_INDEX_URL}" } }
+    command: ["--role", "worker", "--chip", "0", "--role-kind", "prefill", "--gateway", "http://gateway:8080"]
+    environment: { MODEL: "meta-llama/Llama-3.1-8B-Instruct", RNGD_ARTIFACT_CACHE: "/artifacts" }
+    devices: ["/dev/rngd:/dev/rngd"]          # host RNGD driver nodes (adjust to actual node paths)
+    volumes: ["shm:/dev/shm", "artifacts:/artifacts"]
+    depends_on: [gateway]
+
+  worker-decode:
+    build: { context: .., dockerfile: deploy/Dockerfile.worker, args: { FURIOSA_INDEX_URL: "${FURIOSA_INDEX_URL}" } }
+    command: ["--role", "worker", "--chip", "1", "--role-kind", "decode", "--gateway", "http://gateway:8080"]
+    environment: { MODEL: "meta-llama/Llama-3.1-8B-Instruct", RNGD_ARTIFACT_CACHE: "/artifacts" }
+    devices: ["/dev/rngd:/dev/rngd"]
+    volumes: ["shm:/dev/shm", "artifacts:/artifacts"]
+    depends_on: [gateway]
+
+volumes:
+  shm: { driver: local, driver_opts: { type: tmpfs, device: tmpfs } }   # shared KV transport
+  artifacts: {}                                                         # EDF artifact cache (cold-start)

@@ -1,0 +1,240 @@
+# Heterogeneous PD disaggregation, fully under Kubernetes.
+#
+#   prefill pod  Furiosa RNGD, loads the cached 32L EDF and pushes KV out
+#                through the vLLM KVConnector interface
+#   decode pod   Rebellions ATOM, pulls that KV in and continues generation
+#   gateway pod  OpenAI-compatible front; carries the InferencePool's label so
+#                the llm-d gateway → InferencePool → EPP path lands here
+#
+# The workers mount the node's Python trees and vendor libraries rather than
+# baking them into an image — the same arrangement the cluster's existing RBLN
+# deployments use, and what the vendor SDKs expect (they probe the machine and
+# talk to a host daemon, neither of which survives a plain container image).
+# Device access comes from the device plugins via the resource requests.
+#
+# /dev/shm is a hostPath, not an emptyDir: it is the KV transport, so both
+# worker pods must see the same one.
+apiVersion: v1
+kind: Service
+metadata: {name: hetero-pd-prefill, namespace: llm-serving}
+spec:
+  selector: {app: hetero-pd-prefill}
+  ports: [{port: 8000, targetPort: 8000}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: hetero-pd-decode, namespace: llm-serving}
+spec:
+  selector: {app: hetero-pd-decode}
+  ports: [{port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hetero-pd-prefill
+  namespace: llm-serving
+  labels: {app: hetero-pd-prefill, llm-d.ai/role: prefill, llm-d.ai/accelerator: npu-furiosa}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}      # the card cannot be shared during a rollout
+  selector: {matchLabels: {app: hetero-pd-prefill}}
+  template:
+    metadata:
+      labels: {app: hetero-pd-prefill, llm-d.ai/role: prefill}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: etri-001}
+      containers:
+      - name: worker
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python /app/serving/pd_cluster.py \
+            --role prefill --backend rngd-full --C 256 --group 2 --chip 0 --S 256 --port 8000
+        env:
+        - {name: PYTHONPATH, value: "/home/gspark/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: VLLM_PLUGINS, value: ""}
+        - {name: HF_HOME, value: /hf}
+        - {name: MODEL, value: meta-llama/Llama-3.1-8B-Instruct}
+        - {name: PD_SHM_ROOT, value: /dev/shm/rngd_kv_cluster}
+        ports: [{containerPort: 8000}]
+        resources:
+          limits: {furiosa.ai/rngd: "1"}
+          requests: {cpu: "8", memory: 64Gi, furiosa.ai/rngd: "1"}
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 90          # cold start: weights + EDF load
+        securityContext:                 # vendor docs: NPU device access needs
+          seccompProfile: {type: Unconfined}   # an unconfined seccomp profile.
+          # capabilities are NOT dropped: these containers apt-get at startup,
+          # and apt drops privileges via seteuid/setgroups to do it.
+          # privileged is what gets us past the device cgroup: the kubelet
+          # allowlists only the devices the plugin handed over, and npuNp2pmem
+          # is not among them even though 8-PE mesh fusion needs it.
+          privileged: true
+        volumeMounts:
+        - {name: venv, mountPath: /venv, readOnly: true}
+        - {name: local-pkgs, mountPath: /home/gspark/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
+        - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: rbln-lib, mountPath: /host-rbln-lib, readOnly: true}
+        - {name: rbln-bin, mountPath: /host-rbln-bin, readOnly: true}
+        - {name: app, mountPath: /app}
+        - {name: hf, mountPath: /hf}
+        - {name: dshm, mountPath: /dev/shm}
+        # The device plugin injects every RNGD node except npuNp2pmem, and an
+        # 8-PE Mesh(2) device cannot be opened without it. Until the plugin
+        # carries it, the card comes in through this mount; the resource
+        # request above still does the scheduling.
+        - {name: devrngd, mountPath: /dev/rngd}
+      volumes:
+      - {name: devrngd, hostPath: {path: /dev/rngd, type: Directory}}
+      - {name: venv, hostPath: {path: /home/gspark/venvs/furiosa, type: Directory}}
+      - {name: local-pkgs, hostPath: {path: /home/gspark/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
+      - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: app, hostPath: {path: /home/gspark/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: /home/gspark/.cache/huggingface, type: Directory}}
+      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hetero-pd-decode
+  namespace: llm-serving
+  labels: {app: hetero-pd-decode, llm-d.ai/role: decode, llm-d.ai/accelerator: npu-rebellions}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}      # same for the ATOM card
+  selector: {matchLabels: {app: hetero-pd-decode}}
+  template:
+    metadata:
+      labels: {app: hetero-pd-decode, llm-d.ai/role: decode}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: etri-001}
+      containers:
+      - name: worker
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py \
+            --role decode --backend atom --S 256 --port 8000
+        env:
+        - {name: PYTHONPATH, value: "/home/gspark/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: VLLM_PLUGINS, value: ""}
+        - {name: HF_HOME, value: /hf}
+        - {name: MODEL, value: meta-llama/Llama-3.1-8B-Instruct}
+        - {name: PD_SHM_ROOT, value: /dev/shm/rngd_kv_cluster}
+        - {name: RBLN_ARTIFACT, value: /artifacts/llama8b_S256_fp16.rbln}
+        - {name: RBLN_TABLES, value: /artifacts/tables.npz}
+        ports: [{containerPort: 8000}]
+        resources:
+          limits: {rebellions.ai/ATOM: "1"}
+          requests: {cpu: "8", memory: 96Gi, rebellions.ai/ATOM: "1"}
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 90          # cold start: weights + 32L fp16 compile
+        securityContext:                 # vendor docs: NPU device access needs
+          seccompProfile: {type: Unconfined}   # an unconfined seccomp profile.
+          # capabilities are NOT dropped: these containers apt-get at startup,
+          # and apt drops privileges via seteuid/setgroups to do it.
+        volumeMounts:
+        - {name: local-pkgs, mountPath: /home/gspark/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
+        - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: rbln-lib, mountPath: /host-rbln-lib, readOnly: true}
+        - {name: rbln-bin, mountPath: /host-rbln-bin, readOnly: true}
+        - {name: app, mountPath: /app}
+        - {name: hf, mountPath: /hf}
+        - {name: dshm, mountPath: /dev/shm}
+        - {name: artifacts, mountPath: /artifacts, readOnly: true}
+      volumes:
+      - {name: local-pkgs, hostPath: {path: /home/gspark/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
+      - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: app, hostPath: {path: /home/gspark/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: /home/gspark/.cache/huggingface, type: Directory}}
+      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
+      - {name: artifacts, hostPath: {path: /home/gspark/rbln-llama8b-pd, type: Directory}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hetero-pd-gateway
+  namespace: llm-serving
+  labels: {app: llama8b-pd, llm-d.ai/role: pd-gateway}      # app label = InferencePool selector
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: llama8b-pd}}
+  template:
+    metadata:
+      labels: {app: llama8b-pd, llm-d.ai/role: pd-gateway}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: etri-001}
+      containers:
+      - name: gateway
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py \
+            --role gateway --S 256 --port 8000 \
+            --prefill http://hetero-pd-prefill.llm-serving.svc.cluster.local:8000 \
+            --decode http://hetero-pd-decode.llm-serving.svc.cluster.local:8000
+        env:
+        - {name: PYTHONPATH, value: "/home/gspark/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: HF_HOME, value: /hf}
+        - {name: MODEL, value: meta-llama/Llama-3.1-8B-Instruct}
+        ports: [{containerPort: 8000}]
+        resources: {requests: {cpu: "2", memory: 4Gi}}
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 30
+        securityContext:                 # vendor docs: NPU device access needs
+          seccompProfile: {type: Unconfined}   # an unconfined seccomp profile.
+          # capabilities are NOT dropped: these containers apt-get at startup,
+          # and apt drops privileges via seteuid/setgroups to do it.
+        volumeMounts:
+        - {name: local-pkgs, mountPath: /home/gspark/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
+        - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: rbln-lib, mountPath: /host-rbln-lib, readOnly: true}
+        - {name: rbln-bin, mountPath: /host-rbln-bin, readOnly: true}
+        - {name: app, mountPath: /app}
+        - {name: hf, mountPath: /hf}
+      volumes:
+      - {name: local-pkgs, hostPath: {path: /home/gspark/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
+      - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: app, hostPath: {path: /home/gspark/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: /home/gspark/.cache/huggingface, type: Directory}}
