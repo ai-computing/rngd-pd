@@ -31,6 +31,7 @@ import sys
 import threading
 import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
@@ -177,26 +178,41 @@ class FullPrefillWorker:
         print(f"[prefill] {STATE['detail']}", flush=True)
 
     def run(self, req_id, tokens):
+        """Prefill, sending each layer group out while the next one computes."""
         RngdKVConnector, KVConnectorRole, ShmTransport = _conn(self.nl)
-        with DEVICE:
-            t0 = time.perf_counter()
-            Kh, Vh, nxt = self.eng.prefill(tokens)
-            prefill_ms = (time.perf_counter() - t0) * 1e3
-        t1 = time.perf_counter()
         conn = RngdKVConnector(KVConnectorRole.WORKER, req_id=req_id,
                                transport=ShmTransport(SHM_ROOT), n_layers=self.nl)
-        for i in range(self.nl):
-            conn.save_kv_layer(f"layer.{i}", (Kh[i], Vh[i]))
+        NG = self.eng.NG
+        pending, kv_bytes = [], [0]
+        pool = ThreadPoolExecutor(max_workers=1)      # one writer, ordered
+
+        def sink(g, kh, vh):
+            kv_bytes[0] += kh.nbytes + vh.nbytes
+            pending.append(pool.submit(self._save_group, conn, g, NG, kh, vh))
+
+        t0 = time.perf_counter()
+        with DEVICE:
+            nxt = self.eng.prefill_stream(tokens, sink)
+            prefill_ms = (time.perf_counter() - t0) * 1e3
+        for f in pending:                             # whatever is left over
+            f.result()
         conn.wait_for_save()
-        save_ms = (time.perf_counter() - t1) * 1e3
+        pool.shutdown(wait=True)
+        save_ms = (time.perf_counter() - t0) * 1e3 - prefill_ms
         with LOCK:
             METRICS["prefill_ms"] += prefill_ms
-            METRICS["save_ms"] += save_ms
-            METRICS["kv_bytes"] += Kh.nbytes + Vh.nbytes
+            METRICS["save_ms"] += max(save_ms, 0.0)
+            METRICS["kv_bytes"] += kv_bytes[0]
         return {"next": nxt, "pos": len(tokens), "layers": self.nl,
-                "kv_mb": round((Kh.nbytes + Vh.nbytes) / 2 / 1e6, 1),
-                "prefill_ms": round(prefill_ms, 1), "save_ms": round(save_ms, 1),
+                "kv_mb": round(kv_bytes[0] / 2 / 1e6, 1),
+                "prefill_ms": round(prefill_ms, 1),
+                "save_ms": round(max(save_ms, 0.0), 1),
                 "ms_per_token": round(prefill_ms / max(len(tokens), 1), 3)}
+
+    @staticmethod
+    def _save_group(conn, g, NG, kh, vh):
+        for j in range(NG):
+            conn.save_kv_layer(f"layer.{g * NG + j}", (kh[j], vh[j]))
 
 
 class PrefillATOM:
@@ -832,11 +848,11 @@ class DecodeATOMBatch(DecodeWorkerBase):
                                   self._sin[pa], self._mask[pa], self._eye[pa])
                 ts.append((time.perf_counter() - t1) * 1e3)
                 k, v = np.asarray(out[1]), np.asarray(out[2])   # [nl,B,NKV,HD]
-                h = np.asarray(out[0])                          # [B,H]
+                lg = np.asarray(out[0])                         # [B,V] on-card
                 for b in range(B):
                     Kb[:, b, :, :, pos[b]] = k[:, b]      # [nl,B,NKV,HD,S]
                     Vb[:, b, :, pos[b], :] = v[:, b]      # [nl,B,NKV,S,HD]
-                    cur[b] = int(np.argmax(self.lm @ h[b]))
+                    cur[b] = int(np.argmax(lg[b]))
                     outs[b].append(cur[b])
                     pos[b] += 1
         wall = time.perf_counter() - t0
