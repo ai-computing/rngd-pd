@@ -61,15 +61,16 @@ BASE_ENV = [
 # batch start to finish; "continuous" re-forms it every step.
 RNGD_SCHED = os.environ.get("RNGD_SCHED", "static")
 RNGD_ADMIT_MIN = os.environ.get("RNGD_ADMIT_MIN", "2")
-ATOM_C = os.environ.get("ATOM_C", "256")      # ATOM prefill chunk width
+ATOM_C = os.environ.get("ATOM_C", "")         # ATOM prefill width; "" = S
 # Context width every graph is compiled for. Raising it means rebuilding every
 # artifact and doubling the KV that crosses per request, so it is one knob.
 S = os.environ.get("PD_S", "256")
+ATOM_C = ATOM_C or S               # one pass means width == context
 
 # name, vendor, args, extra env, memory
 WORKERS = [
     ("sw-rngd-prefill", "rngd",
-     f"--role prefill --backend rngd-full --C 256 --group 2 --chip 0 --S {S}", [], "64Gi"),
+     f"--role prefill --backend rngd-full --C {S} --group 2 --chip 0 --S {S}", [], "64Gi"),
     ("sw-rngd-decode", "rngd",
      f"--role decode --backend rngd --chip 1 --S {S}", [], "64Gi"),
     # Batched Furiosa decode. The 32-layer batched graph does not compile, so
@@ -82,14 +83,14 @@ WORKERS = [
     # the weights are re-read P/16 times. C=128 cuts that eightfold.
     ("sw-atom-prefill", "atom",
      f"--role prefill --backend atom --C {ATOM_C} --S {S}",
-     [("RBLN_PREFILL_ARTIFACT", f"{ART}/prefill_S256_C{ATOM_C}.rbln"),
+     [("RBLN_PREFILL_ARTIFACT", f"{ART}/prefill_S{S}_C{ATOM_C}.rbln"),
       ("RBLN_TABLES", f"{ART}/tables.npz")], "48Gi"),
 ]
 for b in (1, 2, 4):
     WORKERS.append((
         f"sw-atom-decode-b{b}", "atom",
         f"--role decode --backend atom --B {b} --batch-wait 8000 --S {S}",
-        [("RBLN_BATCH_ARTIFACT", f"{ART}/decode_S256_B{b}.rbln"),
+        [("RBLN_BATCH_ARTIFACT", f"{ART}/decode_S{S}_B{b}.rbln"),
          ("RBLN_TABLES", f"{ART}/tables.npz")], "48Gi"))
 
 
