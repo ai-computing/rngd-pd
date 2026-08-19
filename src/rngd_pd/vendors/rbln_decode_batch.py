@@ -20,6 +20,8 @@ import os
 import time
 
 import numpy as np
+
+RBLN_PART = os.environ.get("RBLN_PART", "RBLN-CA22")
 import torch
 
 from rngd_pd.vendors.rbln_decode import MODEL, load_hf
@@ -116,7 +118,10 @@ def build_runtime(mod, cfg, S, nl, B, tag, artifact=None, device=0):
         print(f"[rbln] loaded {tag} in {time.time()-t0:.0f}s", flush=True)
         return rt
     t0 = time.time()
-    compiled = rebel.compile_from_torch(mod, example_inputs=example_inputs(cfg, S, nl, B))
+    # The compiler probes the machine for a card to target and gives up
+    # when every one is claimed by a pod. Naming the part lets a build run
+    # while the fleet is busy, which is the normal case here.
+    compiled = rebel.compile_from_torch(mod, example_inputs=example_inputs(cfg, S, nl, B), npu=RBLN_PART)
     print(f"[rbln] compiled {tag} in {time.time()-t0:.0f}s", flush=True)
     if artifact:
         os.makedirs(os.path.dirname(artifact) or ".", exist_ok=True)
