@@ -55,6 +55,12 @@ class LlamaDecodeBatchRBLN(torch.nn.Module):
                                  .reshape(self.NKV, self.G * self.HD, self.H)
                                  .contiguous().to(wdt))
         self.register_buffer("normw", g("model.norm.weight"))
+        # lm_head on the card. It was left on the host because the artifact is
+        # 14.2 GB, but the card is 16.88 GB, not the 15.7 assumed — 1.05 GB of
+        # fp16 weights fit in the 2.5 GB that were free. Off-card it cost a
+        # 2.1 GB host read per step, ~14 ms of an 88 ms TPOT, and unlike the
+        # transformer step that cost scales with B.
+        self.register_buffer("lmw", g("lm_head.weight").to(wdt))
 
     def _mm(self, a, w):
         return (a.to(self.wdt) @ w.t()).float()
@@ -99,7 +105,8 @@ class LlamaDecodeBatchRBLN(torch.nn.Module):
                          getattr(self, f"wd_{i}")) + x2
             ks.append(k)
             vs.append(v)
-        return self._rms(x, self.normw), torch.stack(ks), torch.stack(vs)
+        return (self._mm(self._rms(x, self.normw), self.lmw),   # [B,V] logits
+                torch.stack(ks), torch.stack(vs))
 
 
 def example_inputs(cfg, S, nl, B):
@@ -169,7 +176,7 @@ def build(a):
     tk, cfg, sd = load_hf()
     nl = cfg.n_layers
     for B in [int(b) for b in a.batches.split(",")]:
-        art = f"{a.artifact_dir}/decode_S{a.S}_B{B}.rbln"
+        art = f"{a.artifact_dir}/decode_S{a.S}_B{B}{a.suffix}.rbln"
         if os.path.exists(art):
             print(f"[skip] {art} exists", flush=True)
             continue
@@ -194,6 +201,7 @@ def main():
     ap.add_argument("--batches", default="1,2,4")
     ap.add_argument("--device", type=int, default=0)
     ap.add_argument("--artifact-dir", default="/home/gspark/rbln-llama8b-pd")
+    ap.add_argument("--suffix", default="", help="artifact name suffix")
     ap.add_argument("--smoke", action="store_true")
     a = ap.parse_args()
     return smoke(a) if a.smoke else build(a)

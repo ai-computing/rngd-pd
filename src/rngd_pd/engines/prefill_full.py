@@ -105,6 +105,7 @@ class FullPrefillEngine:
         self.mask = d(np.tile(causal, (G, 1)).reshape(1, G * C, C))
         self.compile_s = time.time() - t0
         self._zeroK = self._zeroV = None      # solo path, built on demand
+        self._zeroKg = self._zeroVg = None    # per-group, streaming path
         self._build_lmhead(cache_dir)
 
     def _build_lmhead(self, cache_dir):
@@ -209,6 +210,37 @@ class FullPrefillEngine:
         Kp = torch.cat([kc, self._zeroK[:, :, :, P:]], -1)
         Vp = torch.cat([vc, self._zeroV[:, :, P:, :]], -2)
         return Kp, Vp, nxt
+
+    def prefill_stream(self, tokens, sink):
+        """Hand each layer group's cache over the moment it exists.
+
+        Prefill runs sixteen graph calls and only then exports 33.6 MB, so the
+        connector's encode-and-write sits idle for the whole pass and then
+        costs ~20 ms with nothing else happening. Group g's cache is finished
+        long before group g+1 is, so it can be on its way out while the rest
+        computes.
+
+        Only the host half overlaps. The download stays on this thread inside
+        the caller's device lock, because the runtime is not reentrant — what
+        moves off is the bf16 encoding and the shm write, which is the larger
+        part anyway.
+        """
+        C, P = self.C, len(tokens)
+        if P > C:
+            raise ValueError(f"prompt {P} exceeds the compiled prefill width C={C}")
+        toks = list(tokens) + [tokens[-1]] * (C - P)
+        x = self._d(self.embed[toks].astype(np.float32))
+        if self._zeroKg is None:
+            self._zeroKg = self._d(np.zeros((self.NG, NKV, HD, C), np.float32))
+            self._zeroVg = self._d(np.zeros((self.NG, NKV, C, HD), np.float32))
+        for g in range(self.ngroups):
+            x, k, v = self.m(x, self.eps_d, self.nh_d, *self.groups[g],
+                             self.rot, self.mask)
+            kf = torch.cat([k[:, :, :, :P], self._zeroKg[:, :, :, P:]], -1)
+            vf = torch.cat([v[:, :, :P, :], self._zeroVg[:, :, P:, :]], -2)
+            sink(g, kf.detach().cpu().float().numpy(),
+                 vf.detach().cpu().float().numpy())
+        return self._next_token(x, P)
 
     def prefill(self, tokens):
         """Same pass, but handed back as host arrays for the connector.
