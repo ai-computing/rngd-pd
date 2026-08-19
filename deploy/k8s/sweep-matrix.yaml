@@ -194,7 +194,7 @@ spec:
         ports: [{containerPort: 8000}]
         resources:
           limits: {furiosa.ai/rngd: "1"}
-          requests: {cpu: "8", memory: 64Gi, furiosa.ai/rngd: "1"}
+          requests: {cpu: "8", memory: 96Gi, furiosa.ai/rngd: "1"}
         readinessProbe:
           httpGet: {path: /health, port: 8000}
           initialDelaySeconds: 20

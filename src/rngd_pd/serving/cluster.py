@@ -154,7 +154,7 @@ class FullPrefillWorker:
     that closed the gap with the vendor engine (0.14 ms/token against 0.10).
     KV comes out in the connector's layout, so the decode side is untouched."""
 
-    def __init__(self, chip, S, C=256, group=2):
+    def __init__(self, chip, S, C=256, group=2, B=1, wait_ms=8000):
         chip = resolve_chip(chip)
         import torch
         torch.set_grad_enabled(False)
@@ -477,7 +477,48 @@ class _Batcher:
                 slot["ev"].set()
 
 
-class SoloWorker:
+class _SoloBatchMixin:
+    """The batched half of SoloWorker, kept apart for readability."""
+
+    def _run_batch(self, items):
+        B, n = self.B, len(items)
+        Ks, Vs, firsts = [], [], []
+        t0 = time.perf_counter()
+        with DEVICE:
+            for it in items:                       # prefills serialise on the card
+                Kp, Vp, nxt = self.pre.prefill_device(it["tokens"])
+                Ks.append(Kp); Vs.append(Vp); firsts.append(nxt)
+            prefill_ms = (time.perf_counter() - t0) * 1e3
+            pos = [len(it["tokens"]) for it in items]
+            cur = list(firsts)
+            pos += [pos[-1]] * (B - n)
+            cur += [cur[-1]] * (B - n)
+            Kd, Vd = self.dec.adopt_kv_device(list(Ks), list(Vs))
+            outs = [[c] for c in cur]
+            ts = []
+            t1 = time.perf_counter()
+            for _ in range(max(it["max_new"] for it in items) - 1):
+                t2 = time.perf_counter()
+                cur, Kd, Vd = self.dec.step(cur, pos, Kd, Vd)
+                ts.append((time.perf_counter() - t2) * 1e3)
+                for b in range(B):
+                    outs[b].append(cur[b])
+                    pos[b] += 1
+            decode_ms = (time.perf_counter() - t1) * 1e3
+        ts.sort()
+        step = ts[len(ts) // 2] if ts else 0.0
+        with LOCK:
+            METRICS["prefill_ms"] += prefill_ms
+            METRICS["decode_ms"] += decode_ms
+            METRICS["tokens"] += sum(len(o) for o in outs[:n])
+        return [{"tokens": outs[i][:items[i]["max_new"]], "pos": len(items[i]["tokens"]),
+                 "layers": self.nl, "prefill_ms": round(prefill_ms / n, 1),
+                 "decode_ms": round(decode_ms, 1), "tpot_ms": round(step, 1),
+                 "kv_mb": 0.0, "save_ms": 0.0, "load_ms": 0.0,
+                 "batch": n, "batch_width": B} for i in range(n)]
+
+
+class SoloWorker(_SoloBatchMixin):
     """Prefill and decode on one card, with the cache never leaving it.
 
     Everything else here is disaggregated, including the pairings named
@@ -491,7 +532,7 @@ class SoloWorker:
     hands the decode session its device tensors directly.
     """
 
-    def __init__(self, chip, S, C=256, group=2):
+    def __init__(self, chip, S, C=256, group=2, B=1, wait_ms=8000):
         chip = resolve_chip(chip)
         import torch
         torch.set_grad_enabled(False)
@@ -513,16 +554,33 @@ class SoloWorker:
         # ~16 GB of prefill weights and ~16 GB of decode weights on one 48 GB
         # card; the two layouts differ enough that sharing them is not worth
         # the coupling.
-        self.cfg, self.rt = build_engine(MODEL, S, 32, chip=chip)
-        self.sess = EngineSession(self.rt, LER,
-                                  lmhead=build_lmhead(self.rt, LER, chip))
+        self.B = B
+        if B > 1:
+            # Batched decode needs the same weights again in the batched
+            # layout, so this is a third resident copy — still inside 48 GB.
+            from rngd_pd.engines.decode_batch import BatchDecodeEngine
+            hf2 = AutoModelForCausalLM.from_pretrained(MODEL, dtype=torch.float32).eval()
+            sd2 = {k: v.detach().numpy() for k, v in hf2.state_dict().items()}
+            del hf2
+            self.dec = BatchDecodeEngine(cfg, sd2, B=B, S=S, group=group,
+                                         chip=chip, cache_dir=cache)
+            del sd2
+            self.sess = None
+            self.batcher = _Batcher(B, wait_ms, self._run_batch)
+        else:
+            self.cfg, self.rt = build_engine(MODEL, S, 32, chip=chip)
+            self.sess = EngineSession(self.rt, LER,
+                                      lmhead=build_lmhead(self.rt, LER, chip))
+            self.batcher = None
         self.S, self.C, self.nl = S, C, cfg.n_layers
         STATE.update(ready=True,
-                     detail=f"solo rngd:{chip} prefill C={C} + decode {self.nl}L "
-                            f"S={S} ready in {time.time()-t0:.0f}s")
+                     detail=f"solo rngd:{chip} prefill C={C} + decode B={B} "
+                            f"{self.nl}L S={S} ready in {time.time()-t0:.0f}s")
         print(f"[solo] {STATE['detail']}", flush=True)
 
     def run(self, tokens, max_new):
+        if self.batcher:
+            return self.batcher.submit({"tokens": tokens, "max_new": max_new})
         with DEVICE:
             t0 = time.perf_counter()
             Kp, Vp, nxt = self.pre.prefill_device(tokens)
@@ -1137,7 +1195,7 @@ def main():
         routes["/decode"] = lambda b: w.run(b["req_id"], b["first"], b["pos"],
                                             b.get("max_new", 8))
     elif a.role == "solo":
-        w = SoloWorker(a.chip, a.S, a.C, a.group)
+        w = SoloWorker(a.chip, a.S, a.C, a.group, a.B, a.batch_wait)
         routes["/solo"] = lambda b: w.run(b["tokens"], b.get("max_new", 8))
     else:
         targets = None

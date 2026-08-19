@@ -182,6 +182,23 @@ class BatchDecodeEngine:
         Vd = [self._d(V[g * NG:(g + 1) * NG]) for g in range(self.ngroups)]
         return Kd, Vd
 
+    def adopt_kv_device(self, Ks, Vs):
+        """Per-request caches that are already on the card, batched in place.
+
+        The disaggregated path has to come through host arrays because the two
+        stages are different processes. When prefill ran on this same card its
+        output is already a device tensor in the right layout, so batching B of
+        them is a stack and a split — no transfer at all.
+        """
+        while len(Ks) < self.B:                       # pad the unused lanes
+            Ks.append(Ks[-1]); Vs.append(Vs[-1])
+        K = torch.stack(Ks, 1)                        # [nl,B,NKV,HD,S]
+        V = torch.stack(Vs, 1)                        # [nl,B,NKV,S,HD]
+        NG = self.NG
+        Kd = [K[g * NG:(g + 1) * NG] for g in range(self.ngroups)]
+        Vd = [V[g * NG:(g + 1) * NG] for g in range(self.ngroups)]
+        return Kd, Vd
+
     def blank_kv(self):
         """An empty resident cache — every slot free."""
         K = np.zeros((self.nl, self.B, NKV, HD, self.S), np.float32)

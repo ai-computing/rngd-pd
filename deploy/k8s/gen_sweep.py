@@ -70,6 +70,7 @@ S = os.environ.get("PD_S", "256")
 # EDF loader fault), so it takes the batched decoder's card rather than adding
 # to the fleet — the two are mutually exclusive.
 SOLO = os.environ.get("PD_SOLO", "")
+SOLO_B = os.environ.get("PD_SOLO_B", "4")
 ATOM_C = ATOM_C or S               # one pass means width == context
 
 # name, vendor, args, extra env, memory
@@ -82,7 +83,7 @@ WORKERS = [
     # this reuses a two-layer module sixteen times — the step is B-invariant,
     # which is what makes the reuse worth its dispatch cost.
     ("sw-rngd-solo" if SOLO else "sw-rngd-decode-b4", "rngd",
-     (f"--role solo --C {S} --group 2 --chip 2 --S {S}" if SOLO else
+     (f"--role solo --C {S} --group 2 --B {SOLO_B} --batch-wait 8000 --chip 2 --S {S}" if SOLO else
       "--role decode --backend rngd --B 4 --group 2 --batch-wait 8000 "
       f"--sched {RNGD_SCHED} --admit-min {RNGD_ADMIT_MIN} --chip 2 --S {S}"),
      [], "96Gi"),
