@@ -22,16 +22,17 @@ fp16 rmsnorm accumulation); only matmul operands are cast to fp16.
     ~/venvs/furiosa/bin/python bench/pd_hetero_llama.py --P 32 --D 8
 """
 import argparse
+import os
 import math
 import time
 
 import numpy as np
 import torch
 
-
 torch.set_grad_enabled(False)
 
 MODEL = "meta-llama/Llama-3.1-8B-Instruct"
+RBLN_PART = os.environ.get("RBLN_PART", "RBLN-CA22")
 
 
 class LlamaDecodeRBLN(torch.nn.Module):
@@ -140,7 +141,10 @@ def rbln_compile(mod, cfg, S, nl, tag, artifact=None):
     ex = [torch.zeros(1, H), torch.zeros(nl, NKV, HD, S), torch.zeros(nl, NKV, S, HD),
           torch.zeros(half), torch.zeros(half), torch.zeros(S), torch.zeros(S)]
     t0 = time.time()
-    compiled = rebel.compile_from_torch(mod, example_inputs=ex)
+    # The compiler probes the machine for a card to target and gives up
+    # when every one is claimed by a pod. Naming the part lets a build run
+    # while the fleet is busy, which is the normal case here.
+    compiled = rebel.compile_from_torch(mod, example_inputs=ex, npu=RBLN_PART)
     print(f"[rbln] compiled {tag} in {time.time()-t0:.0f}s", flush=True)
     if artifact:
         os.makedirs(os.path.dirname(artifact) or ".", exist_ok=True)

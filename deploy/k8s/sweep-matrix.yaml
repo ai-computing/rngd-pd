@@ -257,7 +257,7 @@ spec:
         command: [bash, -c]
         args:
         - |
-          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 -m rngd_pd.serving.cluster --role prefill --backend atom --C 16 --S 256 --port 8000
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 -m rngd_pd.serving.cluster --role prefill --backend atom --C 256 --S 256 --port 8000
         env:
         - {name: PYTHONPATH, value: "/app/src:/home/gspark/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
@@ -267,7 +267,7 @@ spec:
         - {name: HF_HOME, value: "/hf"}
         - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
         - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
-        - {name: RBLN_PREFILL_ARTIFACT, value: "/artifacts/prefill_S256_C16.rbln"}
+        - {name: RBLN_PREFILL_ARTIFACT, value: "/artifacts/prefill_S256_C256.rbln"}
         - {name: RBLN_TABLES, value: "/artifacts/tables.npz"}
         ports: [{containerPort: 8000}]
         resources:
