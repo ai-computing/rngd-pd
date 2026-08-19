@@ -1,0 +1,39 @@
+# RNGD gateway Deployment + Service (Phase 5). Stateless, no NPU → scales freely.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rngd-gateway
+  labels: { app: rngd-gateway }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: rngd-gateway } }
+  template:
+    metadata:
+      labels: { app: rngd-gateway }
+    spec:
+      containers:
+        - name: gateway
+          image: rngd/gateway:poc
+          args: ["--role", "gateway", "--mode", "pd", "--port", "8080"]
+          ports: [{ containerPort: 8080 }]
+          readinessProbe: { httpGet: { path: /healthz, port: 8080 }, initialDelaySeconds: 2 }
+          livenessProbe:  { httpGet: { path: /healthz, port: 8080 }, periodSeconds: 10 }
+          resources: { requests: { cpu: "500m", memory: "256Mi" }, limits: { cpu: "1", memory: "512Mi" } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rngd-gateway
+  labels: { app: rngd-gateway }
+spec:
+  selector: { app: rngd-gateway }
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+---
+# /metrics scrape (Prometheus). Gateway exposes rngd_kv_hit_rate, rngd_throughput_tokens_per_s, etc.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: rngd-gateway
+spec:
+  selector: { matchLabels: { app: rngd-gateway } }
+  endpoints: [{ port: http, path: /metrics, interval: 15s }]

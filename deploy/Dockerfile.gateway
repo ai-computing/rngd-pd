@@ -1,0 +1,11 @@
+# RNGD gateway image (Phase 5) — the llm-d-style Inference Gateway (minimized).
+# Pure stdlib (http.server + our EPP); no NPU, no heavy deps → tiny image.
+
+FROM python:3.10-slim
+RUN pip install --no-cache-dir numpy
+WORKDIR /app
+COPY . /app/rngd_llmd/
+ENV PYTHONUNBUFFERED=1
+EXPOSE 8080
+# Serves /v1/completions; workers register to it. Mode (replica|pd) via env.
+ENTRYPOINT ["python3", "/app/rngd_llmd/serving/serving_app.py", "--role", "gateway"]

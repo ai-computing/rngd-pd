@@ -1,0 +1,33 @@
+# RNGD serving worker image (Phase 5).
+# Holds compiled wired-EDF runtimes (multi-bucket), does prefill/decode + continuous batching,
+# registers with the gateway, and moves KV via the KVConnectorBase_V1 connector (shm/TCP).
+#
+# NOTE: the Furiosa RNGD kernel driver + device nodes (/dev/rngd*, /dev/npu*) live on the HOST and
+# must be mounted into the container (see k8s/worker-deployment.yaml resources+volumes). This image
+# only carries user-space: the furiosa python stack + our scripts.
+
+FROM python:3.10-slim
+
+# --- Furiosa user-space stack (pin to the versions this PoC verified) ---
+# In a real build these come from the Furiosa apt repo / wheel index; recorded here for reproducibility.
+#   furiosa-llm==2026.3.0  furiosa-native-runtime==2026.2.0  furiosa-native-compiler==2026.1.0
+#   furiosa-torch (rngd backend)  furiosa-smi-py==2026.1.2
+# COPY/pip lines are intentionally explicit so the image is auditable.
+ARG FURIOSA_INDEX_URL
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir torch==2.* numpy transformers \
+ && if [ -n "$FURIOSA_INDEX_URL" ]; then \
+      pip install --no-cache-dir --extra-index-url "$FURIOSA_INDEX_URL" \
+        furiosa-llm furiosa-torch furiosa-native-runtime furiosa-native-compiler furiosa-smi-py ; \
+    else echo "WARN: FURIOSA_INDEX_URL not set — furiosa stack must be provided at runtime"; fi
+
+WORKDIR /app
+COPY . /app/rngd_llmd/
+ENV PYTHONUNBUFFERED=1 \
+    RNGD_ARTIFACT_CACHE=/artifacts \
+    TORCH_DEVICE_BACKEND_AUTOLOAD=1
+VOLUME ["/artifacts"]
+
+# Worker entrypoint: serve one physical chip in a given role.
+#   CHIP=0 ROLE=prefill GATEWAY=http://gateway:8080 MODEL=meta-llama/Llama-3.1-8B-Instruct
+ENTRYPOINT ["python3", "/app/rngd_llmd/serving/serving_app.py", "--role", "worker"]

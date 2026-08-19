@@ -1,0 +1,630 @@
+# Emit the sweep deployment: six workers, one router, four configurations.
+---
+apiVersion: v1
+kind: Service
+metadata: {name: sw-rngd-prefill, namespace: llm-serving}
+spec:
+  selector: {app: sw-rngd-prefill}
+  ports: [{port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sw-rngd-prefill
+  namespace: llm-serving
+  labels: {app: sw-rngd-prefill, llm-d.ai/sweep: "true"}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}      # one card per pod: no two may overlap
+  selector: {matchLabels: {app: sw-rngd-prefill}}
+  template:
+    metadata:
+      labels: {app: sw-rngd-prefill, llm-d.ai/sweep: "true"}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: npu-node-1}
+      containers:
+      - name: worker
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python /app/serving/pd_cluster.py --role prefill --backend rngd-full --C 256 --group 2 --chip 0 --S 256 --port 8000
+        env:
+        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: VLLM_PLUGINS, value: ""}
+        - {name: HF_HOME, value: "/hf"}
+        - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
+        - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        ports: [{containerPort: 8000}]
+        resources:
+          limits: {furiosa.ai/rngd: "1"}
+          requests: {cpu: "8", memory: 64Gi, furiosa.ai/rngd: "1"}
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 120         # cold start: weights, then artifact load
+        securityContext:
+          seccompProfile: {type: Unconfined}
+          privileged: true
+        volumeMounts:
+        - {name: local-pkgs, mountPath: /home/user/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
+        - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: rbln-lib, mountPath: /host-rbln-lib, readOnly: true}
+        - {name: rbln-bin, mountPath: /host-rbln-bin, readOnly: true}
+        - {name: app, mountPath: /app}
+        - {name: hf, mountPath: /hf}
+        - {name: dshm, mountPath: /dev/shm}
+        - {name: venv, mountPath: /venv, readOnly: true}
+        - {name: devrngd, mountPath: /dev/rngd}
+      volumes:
+      - {name: local-pkgs, hostPath: {path: /home/user/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
+      - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: app, hostPath: {path: /home/user/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}
+      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
+      - {name: venv, hostPath: {path: /home/user/venvs/furiosa, type: Directory}}
+      - {name: devrngd, hostPath: {path: /dev/rngd, type: Directory}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: sw-rngd-decode, namespace: llm-serving}
+spec:
+  selector: {app: sw-rngd-decode}
+  ports: [{port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sw-rngd-decode
+  namespace: llm-serving
+  labels: {app: sw-rngd-decode, llm-d.ai/sweep: "true"}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}      # one card per pod: no two may overlap
+  selector: {matchLabels: {app: sw-rngd-decode}}
+  template:
+    metadata:
+      labels: {app: sw-rngd-decode, llm-d.ai/sweep: "true"}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: npu-node-1}
+      containers:
+      - name: worker
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python /app/serving/pd_cluster.py --role decode --backend rngd --chip 1 --S 256 --port 8000
+        env:
+        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: VLLM_PLUGINS, value: ""}
+        - {name: HF_HOME, value: "/hf"}
+        - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
+        - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        ports: [{containerPort: 8000}]
+        resources:
+          limits: {furiosa.ai/rngd: "1"}
+          requests: {cpu: "8", memory: 64Gi, furiosa.ai/rngd: "1"}
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 120         # cold start: weights, then artifact load
+        securityContext:
+          seccompProfile: {type: Unconfined}
+          privileged: true
+        volumeMounts:
+        - {name: local-pkgs, mountPath: /home/user/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
+        - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: rbln-lib, mountPath: /host-rbln-lib, readOnly: true}
+        - {name: rbln-bin, mountPath: /host-rbln-bin, readOnly: true}
+        - {name: app, mountPath: /app}
+        - {name: hf, mountPath: /hf}
+        - {name: dshm, mountPath: /dev/shm}
+        - {name: venv, mountPath: /venv, readOnly: true}
+        - {name: devrngd, mountPath: /dev/rngd}
+      volumes:
+      - {name: local-pkgs, hostPath: {path: /home/user/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
+      - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: app, hostPath: {path: /home/user/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}
+      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
+      - {name: venv, hostPath: {path: /home/user/venvs/furiosa, type: Directory}}
+      - {name: devrngd, hostPath: {path: /dev/rngd, type: Directory}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: sw-rngd-decode-b4, namespace: llm-serving}
+spec:
+  selector: {app: sw-rngd-decode-b4}
+  ports: [{port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sw-rngd-decode-b4
+  namespace: llm-serving
+  labels: {app: sw-rngd-decode-b4, llm-d.ai/sweep: "true"}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}      # one card per pod: no two may overlap
+  selector: {matchLabels: {app: sw-rngd-decode-b4}}
+  template:
+    metadata:
+      labels: {app: sw-rngd-decode-b4, llm-d.ai/sweep: "true"}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: npu-node-1}
+      containers:
+      - name: worker
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python /app/serving/pd_cluster.py --role decode --backend rngd --B 4 --group 2 --batch-wait 8000 --chip 2 --S 256 --port 8000
+        env:
+        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: VLLM_PLUGINS, value: ""}
+        - {name: HF_HOME, value: "/hf"}
+        - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
+        - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        ports: [{containerPort: 8000}]
+        resources:
+          limits: {furiosa.ai/rngd: "1"}
+          requests: {cpu: "8", memory: 64Gi, furiosa.ai/rngd: "1"}
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 120         # cold start: weights, then artifact load
+        securityContext:
+          seccompProfile: {type: Unconfined}
+          privileged: true
+        volumeMounts:
+        - {name: local-pkgs, mountPath: /home/user/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
+        - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: rbln-lib, mountPath: /host-rbln-lib, readOnly: true}
+        - {name: rbln-bin, mountPath: /host-rbln-bin, readOnly: true}
+        - {name: app, mountPath: /app}
+        - {name: hf, mountPath: /hf}
+        - {name: dshm, mountPath: /dev/shm}
+        - {name: venv, mountPath: /venv, readOnly: true}
+        - {name: devrngd, mountPath: /dev/rngd}
+      volumes:
+      - {name: local-pkgs, hostPath: {path: /home/user/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
+      - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: app, hostPath: {path: /home/user/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}
+      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
+      - {name: venv, hostPath: {path: /home/user/venvs/furiosa, type: Directory}}
+      - {name: devrngd, hostPath: {path: /dev/rngd, type: Directory}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: sw-atom-prefill, namespace: llm-serving}
+spec:
+  selector: {app: sw-atom-prefill}
+  ports: [{port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sw-atom-prefill
+  namespace: llm-serving
+  labels: {app: sw-atom-prefill, llm-d.ai/sweep: "true"}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}      # one card per pod: no two may overlap
+  selector: {matchLabels: {app: sw-atom-prefill}}
+  template:
+    metadata:
+      labels: {app: sw-atom-prefill, llm-d.ai/sweep: "true"}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: npu-node-1}
+      containers:
+      - name: worker
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py --role prefill --backend atom --C 16 --S 256 --port 8000
+        env:
+        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: VLLM_PLUGINS, value: ""}
+        - {name: HF_HOME, value: "/hf"}
+        - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
+        - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        - {name: RBLN_PREFILL_ARTIFACT, value: "/artifacts/prefill_S256_C16.rbln"}
+        - {name: RBLN_TABLES, value: "/artifacts/tables.npz"}
+        ports: [{containerPort: 8000}]
+        resources:
+          limits: {rebellions.ai/ATOM: "1"}
+          requests: {cpu: "8", memory: 48Gi, rebellions.ai/ATOM: "1"}
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 120         # cold start: weights, then artifact load
+        securityContext:
+          seccompProfile: {type: Unconfined}
+        volumeMounts:
+        - {name: local-pkgs, mountPath: /home/user/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
+        - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: rbln-lib, mountPath: /host-rbln-lib, readOnly: true}
+        - {name: rbln-bin, mountPath: /host-rbln-bin, readOnly: true}
+        - {name: app, mountPath: /app}
+        - {name: hf, mountPath: /hf}
+        - {name: dshm, mountPath: /dev/shm}
+        - {name: artifacts, mountPath: /artifacts, readOnly: true}
+      volumes:
+      - {name: local-pkgs, hostPath: {path: /home/user/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
+      - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: app, hostPath: {path: /home/user/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}
+      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
+      - {name: artifacts, hostPath: {path: /home/user/rbln-llama8b-pd, type: Directory}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: sw-atom-decode-b1, namespace: llm-serving}
+spec:
+  selector: {app: sw-atom-decode-b1}
+  ports: [{port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sw-atom-decode-b1
+  namespace: llm-serving
+  labels: {app: sw-atom-decode-b1, llm-d.ai/sweep: "true"}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}      # one card per pod: no two may overlap
+  selector: {matchLabels: {app: sw-atom-decode-b1}}
+  template:
+    metadata:
+      labels: {app: sw-atom-decode-b1, llm-d.ai/sweep: "true"}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: npu-node-1}
+      containers:
+      - name: worker
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py --role decode --backend atom --B 1 --batch-wait 8000 --S 256 --port 8000
+        env:
+        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: VLLM_PLUGINS, value: ""}
+        - {name: HF_HOME, value: "/hf"}
+        - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
+        - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        - {name: RBLN_BATCH_ARTIFACT, value: "/artifacts/decode_S256_B1.rbln"}
+        - {name: RBLN_TABLES, value: "/artifacts/tables.npz"}
+        ports: [{containerPort: 8000}]
+        resources:
+          limits: {rebellions.ai/ATOM: "1"}
+          requests: {cpu: "8", memory: 48Gi, rebellions.ai/ATOM: "1"}
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 120         # cold start: weights, then artifact load
+        securityContext:
+          seccompProfile: {type: Unconfined}
+        volumeMounts:
+        - {name: local-pkgs, mountPath: /home/user/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
+        - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: rbln-lib, mountPath: /host-rbln-lib, readOnly: true}
+        - {name: rbln-bin, mountPath: /host-rbln-bin, readOnly: true}
+        - {name: app, mountPath: /app}
+        - {name: hf, mountPath: /hf}
+        - {name: dshm, mountPath: /dev/shm}
+        - {name: artifacts, mountPath: /artifacts, readOnly: true}
+      volumes:
+      - {name: local-pkgs, hostPath: {path: /home/user/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
+      - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: app, hostPath: {path: /home/user/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}
+      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
+      - {name: artifacts, hostPath: {path: /home/user/rbln-llama8b-pd, type: Directory}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: sw-atom-decode-b2, namespace: llm-serving}
+spec:
+  selector: {app: sw-atom-decode-b2}
+  ports: [{port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sw-atom-decode-b2
+  namespace: llm-serving
+  labels: {app: sw-atom-decode-b2, llm-d.ai/sweep: "true"}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}      # one card per pod: no two may overlap
+  selector: {matchLabels: {app: sw-atom-decode-b2}}
+  template:
+    metadata:
+      labels: {app: sw-atom-decode-b2, llm-d.ai/sweep: "true"}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: npu-node-1}
+      containers:
+      - name: worker
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py --role decode --backend atom --B 2 --batch-wait 8000 --S 256 --port 8000
+        env:
+        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: VLLM_PLUGINS, value: ""}
+        - {name: HF_HOME, value: "/hf"}
+        - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
+        - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        - {name: RBLN_BATCH_ARTIFACT, value: "/artifacts/decode_S256_B2.rbln"}
+        - {name: RBLN_TABLES, value: "/artifacts/tables.npz"}
+        ports: [{containerPort: 8000}]
+        resources:
+          limits: {rebellions.ai/ATOM: "1"}
+          requests: {cpu: "8", memory: 48Gi, rebellions.ai/ATOM: "1"}
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 120         # cold start: weights, then artifact load
+        securityContext:
+          seccompProfile: {type: Unconfined}
+        volumeMounts:
+        - {name: local-pkgs, mountPath: /home/user/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
+        - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: rbln-lib, mountPath: /host-rbln-lib, readOnly: true}
+        - {name: rbln-bin, mountPath: /host-rbln-bin, readOnly: true}
+        - {name: app, mountPath: /app}
+        - {name: hf, mountPath: /hf}
+        - {name: dshm, mountPath: /dev/shm}
+        - {name: artifacts, mountPath: /artifacts, readOnly: true}
+      volumes:
+      - {name: local-pkgs, hostPath: {path: /home/user/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
+      - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: app, hostPath: {path: /home/user/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}
+      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
+      - {name: artifacts, hostPath: {path: /home/user/rbln-llama8b-pd, type: Directory}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: sw-atom-decode-b4, namespace: llm-serving}
+spec:
+  selector: {app: sw-atom-decode-b4}
+  ports: [{port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sw-atom-decode-b4
+  namespace: llm-serving
+  labels: {app: sw-atom-decode-b4, llm-d.ai/sweep: "true"}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}      # one card per pod: no two may overlap
+  selector: {matchLabels: {app: sw-atom-decode-b4}}
+  template:
+    metadata:
+      labels: {app: sw-atom-decode-b4, llm-d.ai/sweep: "true"}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: npu-node-1}
+      containers:
+      - name: worker
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py --role decode --backend atom --B 4 --batch-wait 8000 --S 256 --port 8000
+        env:
+        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: VLLM_PLUGINS, value: ""}
+        - {name: HF_HOME, value: "/hf"}
+        - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
+        - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        - {name: RBLN_BATCH_ARTIFACT, value: "/artifacts/decode_S256_B4.rbln"}
+        - {name: RBLN_TABLES, value: "/artifacts/tables.npz"}
+        ports: [{containerPort: 8000}]
+        resources:
+          limits: {rebellions.ai/ATOM: "1"}
+          requests: {cpu: "8", memory: 48Gi, rebellions.ai/ATOM: "1"}
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 120         # cold start: weights, then artifact load
+        securityContext:
+          seccompProfile: {type: Unconfined}
+        volumeMounts:
+        - {name: local-pkgs, mountPath: /home/user/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
+        - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: rbln-lib, mountPath: /host-rbln-lib, readOnly: true}
+        - {name: rbln-bin, mountPath: /host-rbln-bin, readOnly: true}
+        - {name: app, mountPath: /app}
+        - {name: hf, mountPath: /hf}
+        - {name: dshm, mountPath: /dev/shm}
+        - {name: artifacts, mountPath: /artifacts, readOnly: true}
+      volumes:
+      - {name: local-pkgs, hostPath: {path: /home/user/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
+      - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: app, hostPath: {path: /home/user/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}
+      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
+      - {name: artifacts, hostPath: {path: /home/user/rbln-llama8b-pd, type: Directory}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: pd-sweep-targets, namespace: llm-serving}
+data:
+  targets.json: |
+    {
+      "llama8b-rngd-alone": {
+        "prefill": "http://sw-rngd-prefill.llm-serving.svc.cluster.local:8000",
+        "decode": {
+          "1": "http://sw-rngd-decode.llm-serving.svc.cluster.local:8000",
+          "4": "http://sw-rngd-decode-b4.llm-serving.svc.cluster.local:8000"
+        }
+      },
+      "llama8b-pd-forward": {
+        "prefill": "http://sw-rngd-prefill.llm-serving.svc.cluster.local:8000",
+        "decode": {
+          "1": "http://sw-atom-decode-b1.llm-serving.svc.cluster.local:8000",
+          "2": "http://sw-atom-decode-b2.llm-serving.svc.cluster.local:8000",
+          "4": "http://sw-atom-decode-b4.llm-serving.svc.cluster.local:8000"
+        }
+      },
+      "llama8b-pd-reverse": {
+        "prefill": "http://sw-atom-prefill.llm-serving.svc.cluster.local:8000",
+        "decode": {
+          "1": "http://sw-rngd-decode.llm-serving.svc.cluster.local:8000",
+          "4": "http://sw-rngd-decode-b4.llm-serving.svc.cluster.local:8000"
+        }
+      },
+      "llama8b-atom-alone": {
+        "prefill": "http://sw-atom-prefill.llm-serving.svc.cluster.local:8000",
+        "decode": {
+          "1": "http://sw-atom-decode-b1.llm-serving.svc.cluster.local:8000",
+          "2": "http://sw-atom-decode-b2.llm-serving.svc.cluster.local:8000",
+          "4": "http://sw-atom-decode-b4.llm-serving.svc.cluster.local:8000"
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hetero-pd-gateway
+  namespace: llm-serving
+  labels: {app: llama8b-pd, llm-d.ai/role: pd-gateway}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: llama8b-pd}}
+  template:
+    metadata:
+      labels: {app: llama8b-pd, llm-d.ai/role: pd-gateway}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: npu-node-1}
+      containers:
+      - name: gateway
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py \
+            --role gateway --S 256 --port 8000 --targets-file /cfg/targets.json
+        env:
+        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: HF_HOME, value: "/hf"}
+        - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
+        - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        ports: [{containerPort: 8000}]
+        resources: {requests: {cpu: "4", memory: 8Gi}}
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 60
+        securityContext:
+          seccompProfile: {type: Unconfined}
+        volumeMounts:
+        - {name: local-pkgs, mountPath: /home/user/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
+        - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: rbln-lib, mountPath: /host-rbln-lib, readOnly: true}
+        - {name: rbln-bin, mountPath: /host-rbln-bin, readOnly: true}
+        - {name: app, mountPath: /app}
+        - {name: hf, mountPath: /hf}
+        - {name: dshm, mountPath: /dev/shm}
+        - {name: cfg, mountPath: /cfg, readOnly: true}
+      volumes:
+      - {name: local-pkgs, hostPath: {path: /home/user/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
+      - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: app, hostPath: {path: /home/user/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}
+      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
+      - {name: cfg, configMap: {name: pd-sweep-targets}}
