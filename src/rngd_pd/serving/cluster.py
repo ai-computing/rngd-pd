@@ -146,7 +146,7 @@ class PrefillWorker:
         hid, Kp, Vp = rt.m(x, rt.eps_d, rt.nh_d, an1, aq, ak, av, ao, an2, awgu,
                            awd, Kp, Vp, L._d(np.cos(ang)), L._d(np.sin(ang)),
                            L._d(mask), L._d(oh))
-        return hid.detach().float().cpu().numpy(), Kp, Vp
+        return hid.detach().cpu().float().numpy(), Kp, Vp
 
 
 class FullPrefillWorker:
@@ -394,6 +394,18 @@ class DecodeATOM(DecodeWorkerBase):
         self.cfg, self.S, self.nl = cfg, S, cfg.n_layers
         self.NKV, self.HD = cfg.n_kv, cfg.head_dim
         self.inv = cfg.inv_freq()
+        # Position-only inputs, tabulated once. The loop was rebuilding each of
+        # them per token, including a full [S,S] identity allocated to read one
+        # row out of it.
+        # float32 throughout: the loop computed `p * inv` in float32, and
+        # arange's int64 would promote the table to float64 and round
+        # differently — six of 512 rows land on the other side of a bf16
+        # boundary. A speedup should not change what the card sees.
+        ang = np.arange(S, dtype=np.float32)[:, None] * self.inv[None, :]
+        self._cos = np.cos(ang).astype(np.float32)
+        self._sin = np.sin(ang).astype(np.float32)
+        self._mask = np.triu(np.full((S, S), -1e4, np.float32), 1)
+        self._eye = np.eye(S, dtype=np.float32)
         STATE.update(ready=True,
                      detail=f"decode atom {self.nl}L S={S} fp16 ready in "
                             f"{time.time()-t0:.0f}s")
@@ -406,14 +418,10 @@ class DecodeATOM(DecodeWorkerBase):
         t0 = time.perf_counter()
         with DEVICE:                    # one generation owns the card end to end
             for _ in range(max_new - 1):
-                ang = p * self.inv
-                mask = np.concatenate([np.zeros(p + 1, np.float32),
-                                       np.full(self.S - p - 1, -1e4, np.float32)])
                 t1 = time.perf_counter()
-                out = self.rt.run(self.embed[cur].astype(np.float32).reshape(1, -1),
-                                  K, V, np.cos(ang).astype(np.float32),
-                                  np.sin(ang).astype(np.float32), mask,
-                                  np.eye(self.S, dtype=np.float32)[p])
+                out = self.rt.run(self.embed[cur].reshape(1, -1), K, V,
+                                  self._cos[p], self._sin[p], self._mask[p],
+                                  self._eye[p])
                 ts.append((time.perf_counter() - t1) * 1e3)
                 K[:, :, :, p] = np.asarray(out[1])      # host-side KV scatter
                 V[:, :, p, :] = np.asarray(out[2])
@@ -773,6 +781,15 @@ class DecodeATOMBatch(DecodeWorkerBase):
         self.S, self.B, self.nl = S, B, self.cfg.n_layers
         self.NKV, self.HD = self.cfg.n_kv, self.cfg.head_dim
         self.inv = self.cfg.inv_freq()
+        # float32 throughout: the loop computed `p * inv` in float32, and
+        # arange's int64 would promote the table to float64 and round
+        # differently — six of 512 rows land on the other side of a bf16
+        # boundary. A speedup should not change what the card sees.
+        ang = np.arange(S, dtype=np.float32)[:, None] * self.inv[None, :]
+        self._cos = np.cos(ang).astype(np.float32)
+        self._sin = np.sin(ang).astype(np.float32)
+        self._mask = np.triu(np.full((S, S), -1e4, np.float32), 1)
+        self._eye = np.eye(S, dtype=np.float32)
         self.batcher = _Batcher(B, wait_ms, self._run_batch)
         STATE.update(ready=True,
                      detail=f"decode atom B={B} {self.nl}L S={S} ready in "
@@ -803,15 +820,10 @@ class DecodeATOMBatch(DecodeWorkerBase):
         t0 = time.perf_counter()
         with DEVICE:
             for _ in range(max_new - 1):
-                ang = np.stack([p * self.inv for p in pos]).astype(np.float32)
-                mask = np.stack([np.concatenate(
-                    [np.zeros(p + 1, np.float32),
-                     np.full(S - p - 1, -1e4, np.float32)]) for p in pos])
-                oh = np.stack([np.eye(S, dtype=np.float32)[p] for p in pos])
-                x = np.stack([self.embed[c].astype(np.float32) for c in cur])
+                pa = np.asarray(pos)
                 t1 = time.perf_counter()
-                out = self.rt.run(x, Kb, Vb, np.cos(ang).astype(np.float32),
-                                  np.sin(ang).astype(np.float32), mask, oh)
+                out = self.rt.run(self.embed[cur], Kb, Vb, self._cos[pa],
+                                  self._sin[pa], self._mask[pa], self._eye[pa])
                 ts.append((time.perf_counter() - t1) * 1e3)
                 k, v = np.asarray(out[1]), np.asarray(out[2])   # [nl,B,NKV,HD]
                 h = np.asarray(out[0])                          # [B,H]

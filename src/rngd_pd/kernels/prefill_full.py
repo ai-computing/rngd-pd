@@ -208,7 +208,7 @@ def main():
     print(f"[full] weight bandwidth: {per_layer_bytes*nl/(step/1000)/1e9:.0f} GB/s")
 
     if a.validate:
-        hid = out[0].detach().float().cpu().numpy()
+        hid = out[0].detach().cpu().float().numpy()
         x = x0.copy()
         for i in range(nl):
             x, _k, _v = cpu_layer_p(x, ws[i], inv, C, eps)

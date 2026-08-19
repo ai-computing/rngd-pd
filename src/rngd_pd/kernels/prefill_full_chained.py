@@ -129,7 +129,7 @@ def main():
 
     if a.validate:
         x, Ks, Vs = run(collect=True)
-        got = x.detach().float().cpu().numpy()
+        got = x.detach().cpu().float().numpy()
         ref = x0.copy()
         for i in range(nl):
             ref, _k, _v = cpu_layer_p(ref, ws[i], inv, C, eps)

@@ -112,7 +112,7 @@ class ResidentRuntime:
             hid, Kp_dev, Vp_dev = self.m(x, self.eps_d, self.nh_d, an1, aq, ak, av, ao, an2, awgu, awd,
                                          Kp_dev, Vp_dev, cos, sin, _d(mask), _d(oh))  # feed back, no _d(Kp)
             if timeit: tt += time.time()-t0
-            out.append(int(np.argmax(self.lm @ rmsnorm(hid.detach().float().cpu().numpy(), self.norm, self.c.eps))))
+            out.append(int(np.argmax(self.lm @ rmsnorm(hid.detach().cpu().float().numpy(), self.norm, self.c.eps))))
         self.step_ms = tt/len(ids)*1000 if timeit else 0
         return out
 

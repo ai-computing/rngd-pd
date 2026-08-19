@@ -106,10 +106,10 @@ class WiredRuntime:
                                    _dev(ck[i]), _dev(cv[i]), cos, sin, mask_d, oh_d)
                 x = hid
                 # append current k/v to host cache at slot pos
-                kn = k.detach().float().cpu().numpy().reshape(self.NKV, hd)
-                vn = v.detach().float().cpu().numpy().reshape(self.NKV, hd)
+                kn = k.detach().cpu().float().numpy().reshape(self.NKV, hd)
+                vn = v.detach().cpu().float().numpy().reshape(self.NKV, hd)
                 if pos < S: ck[i][:, pos, :] = kn; cv[i][:, pos, :] = vn
-            out.append(int(np.argmax(self.lm @ rmsnorm(x.detach().float().cpu().numpy(), self.norm, c.eps))))
+            out.append(int(np.argmax(self.lm @ rmsnorm(x.detach().cpu().float().numpy(), self.norm, c.eps))))
         return out
 
 
