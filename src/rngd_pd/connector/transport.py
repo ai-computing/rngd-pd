@@ -24,7 +24,10 @@ WIRE = "fp16"
 def ser(arr):
     a = np.ascontiguousarray(arr)
     if WIRE == "bf16":
-        u = (a.astype(np.float32).view(np.uint32) >> 16).astype(np.uint16)
+        # astype always copies, and the caller already hands us float32 — that
+        # was a full extra pass over every layer's cache, 67 MB per request.
+        f = a if a.dtype == np.float32 else a.astype(np.float32)
+        u = (f.view(np.uint32) >> 16).astype(np.uint16)
         return pickle.dumps({"bf16": u, "shape": a.shape}, protocol=4)
     return pickle.dumps(a.astype(np.float16), protocol=4)
 

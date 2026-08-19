@@ -331,8 +331,14 @@ class ChunkPrefillWorker:
 class DecodeWorkerBase:
     def _load_kv(self, req_id):
         RngdKVConnector, KVConnectorRole, ShmTransport = _conn(self.nl)
-        dk = [np.zeros((self.NKV, self.HD, self.S), np.float32) for _ in range(self.nl)]
-        dv = [np.zeros((self.NKV, self.S, self.HD), np.float32) for _ in range(self.nl)]
+        # One contiguous buffer per side, handed to the connector as per-layer
+        # views. Allocating 64 separate zeroed arrays meant a memset the loader
+        # immediately overwrote, and stacking them afterwards copied the whole
+        # cache a second time — 134 MB of pointless traffic per request.
+        K = np.empty((self.nl, self.NKV, self.HD, self.S), np.float32)
+        V = np.empty((self.nl, self.NKV, self.S, self.HD), np.float32)
+        dk = [K[i] for i in range(self.nl)]
+        dv = [V[i] for i in range(self.nl)]
         conn = RngdKVConnector(KVConnectorRole.WORKER, req_id=req_id,
                                transport=ShmTransport(SHM_ROOT), n_layers=self.nl)
         conn.register_kv_caches((dk, dv))
@@ -348,7 +354,7 @@ class DecodeWorkerBase:
                     os.unlink(os.path.join(SHM_ROOT, f))
                 except OSError:
                     pass
-        return np.stack(dk), np.stack(dv), load_ms
+        return K, V, load_ms
 
 
 class DecodeATOM(DecodeWorkerBase):
