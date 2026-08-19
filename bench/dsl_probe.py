@@ -17,7 +17,7 @@ import time
 
 import torch
 
-import _paths  # noqa: F401
+import _bootstrap  # noqa: F401
 import furiosa.torch  # noqa: F401
 from furiosa.torch import native_device as nd
 

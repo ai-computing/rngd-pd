@@ -9,7 +9,7 @@ run on different nodes. No NPU needed (numpy KV); this isolates the connector+tr
 import sys, os, time, multiprocessing as mp
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import _paths  # noqa: E402  (portable path bootstrap — resolves connector/ etc.)
+import _bootstrap  # noqa: E402  (portable path bootstrap — resolves connector/ etc.)
 
 NL, NKV, S, HD, PORT = 6, 8, 16, 128, 5577
 SEED = 1234
@@ -23,8 +23,8 @@ def _ref():
 
 
 def prefill_proc(ready):
-    from rngd_kv_connector import RngdKVConnector, KVConnectorRole
-    from kv_transport import TcpTransport
+    from rngd_pd.connector.rngd_kv import RngdKVConnector, KVConnectorRole
+    from rngd_pd.connector.transport import TcpTransport
     ready.wait()                                            # wait until server is up
     tr = TcpTransport(remote=("127.0.0.1", PORT))
     conn = RngdKVConnector(KVConnectorRole.WORKER, req_id="reqT", transport=tr, n_layers=NL)
@@ -36,8 +36,8 @@ def prefill_proc(ready):
 
 
 def decode_proc(ready, out_path):
-    from rngd_kv_connector import RngdKVConnector, KVConnectorRole
-    from kv_transport import TcpTransport
+    from rngd_pd.connector.rngd_kv import RngdKVConnector, KVConnectorRole
+    from rngd_pd.connector.transport import TcpTransport
     ready.wait()
     tr = TcpTransport(remote=("127.0.0.1", PORT))
     dk = [np.zeros((NKV, S, HD), np.float32) for _ in range(NL)]
@@ -53,7 +53,7 @@ def decode_proc(ready, out_path):
 
 
 def main():
-    from kv_connector import TcpKVServer
+    from rngd_pd.connector.base import TcpKVServer
     server = TcpKVServer(PORT); server.start()             # decode-node KV server
     time.sleep(0.2)
     ctx = mp.get_context("spawn")

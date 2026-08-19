@@ -44,7 +44,8 @@ APT = ("set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; "
        "python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; ")
 
 BASE_ENV = [
-    ("PYTHONPATH", "/home/user/.local/lib/python3.10/site-packages:"
+    # /app/src first: the package is imported, not path-hacked into place.
+    ("PYTHONPATH", "/app/src:/home/user/.local/lib/python3.10/site-packages:"
                    "/host-sys-local-pkgs:/host-sys-pkgs"),
     ("LD_LIBRARY_PATH", "/host-rbln-lib:/host-libs"),
     ("PATH", "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"),
@@ -168,7 +169,7 @@ spec:
         command: [bash, -c]
         args:
         - |
-          {APT}exec {py} /app/serving/pd_cluster.py {args} --port 8000
+          {APT}exec {py} -m rngd_pd.serving.cluster {args} --port 8000
         env:
 {env_block(BASE_ENV + extra_env)}
         ports: [{{containerPort: 8000}}]
@@ -224,7 +225,7 @@ spec:
         command: [bash, -c]
         args:
         - |
-          {APT}exec python3.10 /app/serving/pd_cluster.py \\
+          {APT}exec python3.10 -m rngd_pd.serving.cluster \\
             --role gateway --S 256 --port 8000 --targets-file /cfg/targets.json
         env:
 {env_block([e for e in BASE_ENV if e[0] != "VLLM_PLUGINS"])}

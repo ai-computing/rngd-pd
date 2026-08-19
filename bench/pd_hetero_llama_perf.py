@@ -16,8 +16,8 @@ import time
 import numpy as np
 import torch
 
-import _paths  # noqa: F401
-from pd_hetero_llama import MODEL, LlamaDecodeRBLN, load_hf
+import _bootstrap  # noqa: F401
+from rngd_pd.vendors.rbln_decode import MODEL, LlamaDecodeRBLN, load_hf
 
 torch.set_grad_enabled(False)
 

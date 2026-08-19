@@ -1,76 +1,93 @@
-# rngd_llmd — RNGD × llm-d 서빙 스택 (포터블 패키지)
+# rngd_pd — PD-disaggregated serving across two NPU vendors
 
-Furiosa RNGD NPU에서 **PD disaggregation + KV 관리를 vLLM/llm-d 규격으로** 구현하고, 그 앞에
-**KV-aware 게이트웨이**를 둔 자립형 패키지. 어디에 복사해도 실행되도록 절대경로 없이 구성됨.
+Llama-3.1-8B prefilled on a Furiosa RNGD card and decoded on a Rebellions ATOM
+card, with the KV cache crossing between them through the vLLM `KVConnector`
+interface over `/dev/shm`. The whole path runs as llm-d pods on `npu-node-1`:
+Envoy → InferencePool → EPP → router → two NPU pods.
 
-- **개요·사용법·호환성**: [`docs/llmd-usage-and-compat.md`](docs/llmd-usage-and-compat.md)
-- **완료된 5-Phase 계획**: [`docs/llmd-integration-plan.md`](docs/llmd-integration-plan.md)
-- **남은 작업**: [`ROADMAP.md`](ROADMAP.md)
+Nothing here re-prefills on the decode side. That is the point.
 
-## 구조 (계층)
+## Layout
 
 ```
-rngd_llmd/
-├── runtime/     엔진 — 통짜 wired EDF + config 구동
-│   ├── engine_wired_generic.py   config→DSL, resident-KV (Llama/Qwen 단일 코드)
-│   ├── llama_engine_resident.py  resident-KV whole-model (Llama, 16.3 ms/tok)
-│   ├── dsl_gen.py                dim→L1 DSL 생성
-│   ├── llama_engine.py / _batch.py / llama_pd_2chip.py  (엔진/배치/2칩)
-│   ├── generic_runtime*.py       config 구동 오라클/런타임
-│   └── _tv_patch.py
-├── connector/   KV 커넥터 + 전송
-│   ├── rngd_kv_connector.py      진짜 vLLM KVConnectorBase_V1 서브클래스
-│   ├── kv_transport.py           Transport ABC + InProc/Shm/Tcp/Nixl(스텁)
-│   ├── kv_connector.py           TCP KV 서버 헬퍼
-│   └── llama_pd_llmd.py          2칩 PD (커넥터 경유) 데모
-├── gateway/     EPP KV-aware 라우팅 + HTTP
-│   ├── registry.py kv_events.py epp.py server.py
-│   └── demo_e2e.py               실 2칩 PD/replica e2e
-├── serving/     서빙 하드닝
-│   ├── bucket.py batching.py serving_app.py artifact_cache.py
-├── bench/        벤치마크 (+ plots/)
-│   ├── serving_bench.py  pd_crossover.py  pd_vs_dup.py  pd_crossover_plot.py
-├── tests/        NPU-free 회귀 + NPU 프로브
-│   ├── run_selftests.sh  test_connector_tcp.py  probe_*.py
-├── deploy/       컨테이너 / K8s
-├── docs/         문서
-└── _paths.py     포터블 경로 부트스트랩 (각 subdir에도 복제)
+src/rngd_pd/          the package — imported, never sys.path-injected
+  kernels/            compiled graphs: furiosa DSL + the torch modules on top
+    dsl_b1.py           DSL for single-token decode
+    dsl_batch.py        DSL parameterised by batch width
+    prefill_full.py     kv-free whole-prompt prefill   (the fast one)
+    prefill_chunk.py    chunked prefill against a live cache
+    decode_batch.py     batched decode, B streams per step
+    decode_resident.py  single-stream decode, weights resident
+  engines/            those graphs with real weights and an artifact cache
+    prefill_full.py  decode_batch.py  decode_resident.py  prefill_chunk.py
+    model.py            checkpoint loading, config, rmsnorm
+    artifact_cache.py   compile once, keyed by graph hash
+  vendors/            the same two jobs on Rebellions hardware
+    rbln_prefill.py  rbln_decode.py  rbln_decode_batch.py
+  connector/          KV handoff
+    rngd_kv.py          KVConnectorBase_V1 implementation
+    transport.py        /dev/shm segments, bf16 wire
+  serving/
+    cluster.py          prefill / decode / router HTTP workers
+    proxy.py
+  paths.py            repo root, artifact cache, shm root — worked out once
+
+bench/                measurement entry points (run directly)
+deploy/k8s/           gen_sweep.py emits the deployment; apply the output
+docs/                 findings and vendor correspondence
+attic/                superseded variants, kept for reference only
+tests/
 ```
 
-## 포터블 동작 원리
-각 스크립트는 하드코딩 절대경로 대신 **`import _paths`** 로 시작한다. `_paths.py`는 `__file__`에서
-패키지 루트를 찾아 모든 하위 폴더(runtime/connector/gateway/serving/bench/tests)를 `sys.path`에
-추가 → `from generic_runtime import …`, `from rngd_kv_connector import …` 같은 평면 import가
-**패키지를 어디로 옮겨도** 해석된다. 실행은 항상 패키지 루트 기준:
+The rule: `kernels/` knows about graphs, `engines/` knows about weights and
+caching, `serving/` knows about HTTP and llm-d. Dependencies point downward.
+
+## Running
+
+Everything imports `rngd_pd`, so `src/` has to be on the path:
 
 ```bash
-cd rngd_llmd
+export PYTHONPATH=$PWD/src:$HOME/.local/lib/python3.10/site-packages
+export VLLM_PLUGINS=
+PY=~/venvs/furiosa/bin/python
+
+# a kernel on its own, checked against CPU fp32
+$PY -m rngd_pd.kernels.decode_batch --B 4 --nl 32 --group 2 --chip 2 --validate
+
+# an engine with real weights
+$PY -m rngd_pd.engines.prefill_full --chip 2 --C 256
+
+# a serving worker (this is what the pods run)
+$PY -m rngd_pd.serving.cluster --role prefill --backend rngd-full --chip 0
 ```
 
-## 빠른 시작
+Bench scripts add `src/` themselves, so they run without the export:
 
 ```bash
-# 1) NPU 없이 전체 로직 회귀 (12/12 GREEN)
-bash tests/run_selftests.sh
-
-# 2) 통합 서버 스모크 (NPU 없이, mock 런타임) — 라우팅·KV-hit·PD·/metrics
-python3 serving/serving_app.py --role all --mock
-
-# 3) 실 NPU — 통짜 런타임 (정확도 + 성능)
-python3 runtime/engine_wired_generic.py --model Qwen/Qwen2.5-0.5B-Instruct   # 9/9 · 6.4 ms/tok
-python3 runtime/llama_engine_resident.py --model meta-llama/Llama-3.1-8B-Instruct  # 9/9 · 16.3 ms/tok
-
-# 4) 실 NPU — 2칩 PD disaggregation (커넥터 경유)
-python3 connector/llama_pd_llmd.py --split 3 --transport shm     # 출력 == monolithic
-
-# 5) 벤치 (그래프 → bench/plots/)
-python3 bench/serving_bench.py     # throughput/TTFT/TPOT/roofline
-python3 bench/pd_vs_dup.py         # 2칩 duplication vs PD 처리량
+python3 bench/sweep_llmd.py --out bench/sweep_llmd.jsonl
+python3 bench/sweep_report.py bench/sweep_llmd.jsonl
 ```
 
-## 이식 (다른 머신/경로)
+## Deploying
+
 ```bash
-cp -r rngd_llmd /any/where/ && cd /any/where/rngd_llmd && bash tests/run_selftests.sh
+python3 deploy/k8s/gen_sweep.py > deploy/k8s/sweep-matrix.yaml
+kubectl apply -f deploy/k8s/sweep-matrix.yaml
 ```
-필요 런타임: `torch` + furiosa 스택(`furiosa-torch`/`furiosa-llm`/rngd 드라이버) + `transformers`,
-`numpy`, `matplotlib`. 엔진 deps는 패키지에 포함(자립). NPU-free 테스트는 furiosa 없이도 통과.
+
+Pods mount this directory at `/app` and run `python -m rngd_pd.serving.cluster`.
+One card per pod, so deployments use `strategy: Recreate` — a rolling update
+puts two pods on one card and the new one dies with `allocator != nullptr`.
+
+Graphs must be compiled **on the host**, not in the pod: the container's C
+compiler stage dies with a broken pipe. Warm the cache first, then start the
+pod, which will load in seconds:
+
+```bash
+$PY -m rngd_pd.engines.decode_batch --B 4 --group 2 --chip 2
+```
+
+## Where the numbers are
+
+`docs/` holds the write-ups; `bench/*.jsonl` holds the runs behind them, so any
+figure can be traced to the sweep that produced it.

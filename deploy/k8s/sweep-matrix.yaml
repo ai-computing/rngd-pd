@@ -29,9 +29,9 @@ spec:
         command: [bash, -c]
         args:
         - |
-          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python /app/serving/pd_cluster.py --role prefill --backend rngd-full --C 256 --group 2 --chip 0 --S 256 --port 8000
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python -m rngd_pd.serving.cluster --role prefill --backend rngd-full --C 256 --group 2 --chip 0 --S 256 --port 8000
         env:
-        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: PYTHONPATH, value: "/app/src:/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
         - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
         - {name: PYTHONUNBUFFERED, value: "1"}
@@ -105,9 +105,9 @@ spec:
         command: [bash, -c]
         args:
         - |
-          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python /app/serving/pd_cluster.py --role decode --backend rngd --chip 1 --S 256 --port 8000
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python -m rngd_pd.serving.cluster --role decode --backend rngd --chip 1 --S 256 --port 8000
         env:
-        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: PYTHONPATH, value: "/app/src:/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
         - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
         - {name: PYTHONUNBUFFERED, value: "1"}
@@ -181,9 +181,9 @@ spec:
         command: [bash, -c]
         args:
         - |
-          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python /app/serving/pd_cluster.py --role decode --backend rngd --B 4 --group 2 --batch-wait 8000 --chip 2 --S 256 --port 8000
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python -m rngd_pd.serving.cluster --role decode --backend rngd --B 4 --group 2 --batch-wait 8000 --chip 2 --S 256 --port 8000
         env:
-        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: PYTHONPATH, value: "/app/src:/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
         - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
         - {name: PYTHONUNBUFFERED, value: "1"}
@@ -257,9 +257,9 @@ spec:
         command: [bash, -c]
         args:
         - |
-          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py --role prefill --backend atom --C 16 --S 256 --port 8000
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 -m rngd_pd.serving.cluster --role prefill --backend atom --C 16 --S 256 --port 8000
         env:
-        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: PYTHONPATH, value: "/app/src:/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
         - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
         - {name: PYTHONUNBUFFERED, value: "1"}
@@ -332,9 +332,9 @@ spec:
         command: [bash, -c]
         args:
         - |
-          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py --role decode --backend atom --B 1 --batch-wait 8000 --S 256 --port 8000
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 -m rngd_pd.serving.cluster --role decode --backend atom --B 1 --batch-wait 8000 --S 256 --port 8000
         env:
-        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: PYTHONPATH, value: "/app/src:/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
         - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
         - {name: PYTHONUNBUFFERED, value: "1"}
@@ -407,9 +407,9 @@ spec:
         command: [bash, -c]
         args:
         - |
-          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py --role decode --backend atom --B 2 --batch-wait 8000 --S 256 --port 8000
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 -m rngd_pd.serving.cluster --role decode --backend atom --B 2 --batch-wait 8000 --S 256 --port 8000
         env:
-        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: PYTHONPATH, value: "/app/src:/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
         - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
         - {name: PYTHONUNBUFFERED, value: "1"}
@@ -482,9 +482,9 @@ spec:
         command: [bash, -c]
         args:
         - |
-          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py --role decode --backend atom --B 4 --batch-wait 8000 --S 256 --port 8000
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 -m rngd_pd.serving.cluster --role decode --backend atom --B 4 --batch-wait 8000 --S 256 --port 8000
         env:
-        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: PYTHONPATH, value: "/app/src:/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
         - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
         - {name: PYTHONUNBUFFERED, value: "1"}
@@ -587,10 +587,10 @@ spec:
         command: [bash, -c]
         args:
         - |
-          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py \
+          set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 -m rngd_pd.serving.cluster \
             --role gateway --S 256 --port 8000 --targets-file /cfg/targets.json
         env:
-        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: PYTHONPATH, value: "/app/src:/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
         - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
         - {name: PYTHONUNBUFFERED, value: "1"}

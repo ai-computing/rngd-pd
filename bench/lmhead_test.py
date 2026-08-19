@@ -2,8 +2,8 @@
 """Device lm_head A/B: step latency and argmax agreement vs the host path."""
 import time
 
-import _paths  # noqa: F401
-from pd_engine import EngineSession, build_engine, build_lmhead
+import _bootstrap  # noqa: F401
+from rngd_pd.engines.decode_resident import EngineSession, build_engine, build_lmhead
 
 
 def run(session, n=24, seed_tok=791):
@@ -19,7 +19,7 @@ def run(session, n=24, seed_tok=791):
 
 
 def main():
-    import llama_engine_resident as LER
+    from rngd_pd.kernels import decode_resident as LER
     cfg, rt = build_engine("meta-llama/Llama-3.1-8B-Instruct", 256, 8, chip=0)
     host = EngineSession(rt, LER)
     out_h, t_h = run(host)

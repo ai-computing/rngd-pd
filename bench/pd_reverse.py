@@ -22,7 +22,7 @@ import time
 import numpy as np
 import torch
 
-import _paths  # noqa: F401
+import _bootstrap  # noqa: F401
 
 torch.set_grad_enabled(False)
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -32,10 +32,10 @@ sys.path.insert(0, os.path.abspath(os.path.join(HERE, "..", "connector")))
 def handoff(Kh, Vh, nl, root="/dev/shm/rngd_kv_reverse"):
     """Push KV through the vLLM connector contract and read it back."""
     import shutil
-    import kv_transport
+    from rngd_pd.connector import transport as kv_transport
     kv_transport.WIRE = "bf16"
-    from kv_transport import ShmTransport
-    from rngd_kv_connector import RngdKVConnector
+    from rngd_pd.connector.transport import ShmTransport
+    from rngd_pd.connector.rngd_kv import RngdKVConnector
     from vllm.distributed.kv_transfer.kv_connector.v1.base import KVConnectorRole
     shutil.rmtree(root, ignore_errors=True)
     os.makedirs(root, exist_ok=True)
@@ -76,11 +76,11 @@ def main():
     a = ap.parse_args()
 
     import rebel  # noqa: F401 — fail fast
-    from pd_hetero_llama import MODEL, load_hf
-    from pd_prefill_atom import LlamaPrefillRBLN, build_runtime, chunk_inputs
-    import llama_engine_resident as LER
-    from pd_engine import build_engine, EngineSession
-    from generic_runtime import rmsnorm
+    from rngd_pd.vendors.rbln_decode import MODEL, load_hf
+    from rngd_pd.vendors.rbln_prefill import LlamaPrefillRBLN, build_runtime, chunk_inputs
+    from rngd_pd.kernels import decode_resident as LER
+    from rngd_pd.engines.decode_resident import build_engine, EngineSession
+    from rngd_pd.engines.model import rmsnorm
     from transformers import AutoTokenizer
 
     tk = AutoTokenizer.from_pretrained(MODEL)
