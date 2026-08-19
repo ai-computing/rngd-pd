@@ -4,8 +4,8 @@ sanity-run a few steps and report the e2e step time."""
 import argparse
 import time
 
-import _paths  # noqa: F401
-from pd_engine import EngineSession, build_engine
+import _bootstrap  # noqa: F401
+from rngd_pd.engines.decode_resident import EngineSession, build_engine
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
     t0 = time.time()
     cfg, rt = build_engine("meta-llama/Llama-3.1-8B-Instruct", a.S, a.nl, chip=a.chip)
     print(f"PRECOMPILE DONE in {time.time()-t0:.0f}s total", flush=True)
-    import llama_engine_resident as LER
+    from rngd_pd.kernels import decode_resident as LER
     s = EngineSession(rt, LER)
     Kp, Vp = s.fresh_kv()
     ts = []

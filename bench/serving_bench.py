@@ -55,7 +55,9 @@ def main():
 
     # ---- plots ----
     import os
-import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
     import numpy as np
     BLU, ORG, AQ, GREY, RED = "#2a78d6", "#eb6834", "#1baf7a", "#8a97a8", "#d1495b"
     fig, ax = plt.subplots(2, 2, figsize=(12.6, 9.2), dpi=125)

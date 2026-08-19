@@ -18,8 +18,8 @@ import argparse
 import numpy as np
 import torch
 
-import _paths  # noqa: F401
-from pd_hetero_llama import MODEL, LlamaDecodeRBLN, rbln_compile, load_hf
+import _bootstrap  # noqa: F401
+from rngd_pd.vendors.rbln_decode import MODEL, LlamaDecodeRBLN, rbln_compile, load_hf
 from pd_hetero_llama_diag import rngd_step
 
 torch.set_grad_enabled(False)
@@ -39,9 +39,9 @@ def main():
                     "blue and yellow. The capital of France is")
     a = ap.parse_args()
 
-    import llama_engine_resident as LER
-    from pd_engine import build_engine, EngineSession
-    from generic_runtime import rmsnorm
+    from rngd_pd.kernels import decode_resident as LER
+    from rngd_pd.engines.decode_resident import build_engine, EngineSession
+    from rngd_pd.engines.model import rmsnorm
     from transformers import AutoTokenizer
 
     tk = AutoTokenizer.from_pretrained(MODEL)

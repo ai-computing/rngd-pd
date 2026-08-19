@@ -39,7 +39,7 @@ def phase_compile():
     import torch, furiosa.torch  # noqa
     from furiosa.torch.custom_ops import CompileModule
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "serving"))
-    import artifact_cache as AC
+    from rngd_pd.engines import artifact_cache as AC
     Inject, sample, inp = _build_and_inputs()
     def compile_fn():
         m = CompileModule.from_module(Inject(), sample); m.to("rngd:0"); return m
@@ -53,7 +53,7 @@ def phase_compile():
 def phase_load():
     import torch, furiosa.torch  # noqa
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "serving"))
-    import artifact_cache as AC
+    from rngd_pd.engines import artifact_cache as AC
     _, _, inp = _build_and_inputs()
     m, mode, secs = AC.get_or_compile(CACHE, KEY, lambda: (_ for _ in ()).throw(RuntimeError("should not compile!")), device="rngd:0")
     out = m(*inp)
