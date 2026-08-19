@@ -276,7 +276,7 @@ def main():
     if a.validate:
         Kd, Vd = dev_kv(0)
         out, Kd, Vd = step(d(x0), Kd, Vd, pos)
-        got = out.detach().float().cpu().numpy()
+        got = out.detach().cpu().float().numpy()
         x, K, V = x0.copy(), K0.copy(), V0.copy()
         for i in range(nl):
             x, K[i], V[i] = cpu_layer(x, ws[i], K[i], V[i], inv, pos, S, eps)

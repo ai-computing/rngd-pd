@@ -331,12 +331,12 @@ def main():
               flush=True)
 
     if a.validate:
-        hid = out[0].detach().float().cpu().numpy()
+        hid = out[0].detach().cpu().float().numpy()
         x, Kp, Vp = x0.copy(), Kp0.copy(), Vp0.copy()
         for i in range(nl):
             x, Kp[i], Vp[i] = cpu_layer(x, ws[i], Kp[i], Vp[i], inv, a.base, C, S, eps)
         rel = np.linalg.norm(hid - x) / np.linalg.norm(x)
-        Kd = out[1].detach().float().cpu().numpy()
+        Kd = out[1].detach().cpu().float().numpy()
         kr = np.linalg.norm(Kd - Kp) / (np.linalg.norm(Kp) + 1e-9)
         print(f"[chunk] hidden rel {rel:.5f} · K rel {kr:.5f} "
               f"{'PASS ✅' if rel < 0.05 and kr < 0.05 else 'FAIL ❌'}")

@@ -134,11 +134,11 @@ class ChunkPrefillEngine:
                                    Kd[g], Vd[g], rot, ohKd, ohVd, maskd)
                 Kd[g], Vd[g] = Kf, Vf
             hid = x
-        h = hid.detach().float().cpu().numpy()[(P - 1) % C]
+        h = hid.detach().cpu().float().numpy()[(P - 1) % C]
         from rngd_pd.engines.model import rmsnorm
         nxt = int(np.argmax(self.lm @ rmsnorm(h, self.norm, self.eps)))
-        K = np.concatenate([k.detach().float().cpu().numpy() for k in Kd], 0)
-        V = np.concatenate([v.detach().float().cpu().numpy() for v in Vd], 0)
+        K = np.concatenate([k.detach().cpu().float().numpy() for k in Kd], 0)
+        V = np.concatenate([v.detach().cpu().float().numpy() for v in Vd], 0)
         return K, V, nxt
 
 

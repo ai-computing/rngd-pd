@@ -89,7 +89,35 @@ class BatchDecodeEngine:
         self.m.to(self.dev)
         self.eps_d = self._df(np.full((B, H), self.eps * H, np.float32))
         self.nh_d = self._df(np.full((B, H), -0.5, np.float32))
+        self._build_tables()
         self._build_lmhead(cache_dir)
+
+    def _build_tables(self):
+        """Everything a step needs that depends only on position, built once.
+
+        A step was rebuilding all of it per token: a [HD,HD] rotation per
+        stream from scratch, a mask assembled with concatenate, and — worst —
+        a full [S,S] identity allocated to take one row out of it, per stream
+        per step. None of it varies with anything but the position, so it is a
+        table lookup.
+        """
+        S = self.S
+        self._eye = np.eye(S, dtype=np.float32)                  # one-hot rows
+        self._mask = np.triu(np.full((S, S), -1e4, np.float32), 1)
+        # float32 throughout: the loop computed `p * inv` in float32, and
+        # arange's int64 would promote the table to float64 and round
+        # differently — six of 512 rows land on the other side of a bf16
+        # boundary. A speedup should not change what the card sees.
+        ang = np.arange(S, dtype=np.float32)[:, None] * self.inv[None, :]
+        cs, sn = np.cos(ang).astype(np.float32), np.sin(ang).astype(np.float32)
+        half = HD // 2
+        rot = np.zeros((S, HD, HD), np.float32)
+        i = np.arange(half)
+        rot[:, i, i] = cs
+        rot[:, i + half, i + half] = cs
+        rot[:, i, i + half] = sn
+        rot[:, i + half, i] = -sn
+        self._rot = rot
 
     def _build_lmhead(self, cache_dir):
         """lm_head on the card, batched.
@@ -208,20 +236,18 @@ class BatchDecodeEngine:
     def step(self, toks, positions, Kd, Vd):
         """One token for each of B streams. Returns next tokens and the cache."""
         B, S = self.B, self.S
-        x = self._d(np.stack([self.embed[t].astype(np.float32) for t in toks]))
-        rot = self._d(rot_batch(self.inv, positions))
-        mk = np.stack([np.concatenate([np.zeros(p + 1, np.float32),
-                                       np.full(S - p - 1, -1e4, np.float32)])
-                       for p in positions])
-        oh = np.stack([np.eye(S, dtype=np.float32)[p] for p in positions])
-        maskd, ohd = self._d(mk), self._d(oh)
+        pos = np.asarray(positions)
+        x = self._d(self.embed[list(toks)])          # [B,H], one gather
+        rot = self._d(self._rot[pos])                # [B,HD,HD]
+        maskd = self._d(self._mask[pos])             # [B,S], causal at p
+        ohd = self._d(self._eye[pos])                # [B,S]
         for g in range(self.ngroups):
             x, Kf, Vf = self.m(x, self.eps_d, self.nh_d, *self.groups[g],
                                Kd[g], Vd[g], rot, maskd, ohd)
             Kd[g], Vd[g] = Kf, Vf
         out = self.lmh(x, self.norm_d, self.eps_d, self.nh_d, self.wlm_d)
         logits = out[0] if isinstance(out, (tuple, list)) else out
-        lg = logits.detach().float().cpu().numpy().reshape(self.Vp, B)[:self.V]
+        lg = logits.detach().cpu().float().numpy().reshape(self.Vp, B)[:self.V]
         return [int(np.argmax(lg[:, b])) for b in range(B)], Kd, Vd
 
 

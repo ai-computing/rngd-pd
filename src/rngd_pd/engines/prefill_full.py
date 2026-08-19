@@ -105,6 +105,64 @@ class FullPrefillEngine:
         self.mask = d(np.tile(causal, (G, 1)).reshape(1, G * C, C))
         self.compile_s = time.time() - t0
         self._zeroK = self._zeroV = None      # solo path, built on demand
+        self._build_lmhead(cache_dir)
+
+    def _build_lmhead(self, cache_dir):
+        """Pick the next token on the card, not in numpy.
+
+        Prefill ends by choosing one token, and it was doing that with
+        `lm @ rmsnorm(hidden)` on the host — a 2.1 GB read for a single
+        argmax. The decode side already had this compiled (chunking V into 32
+        groups reaches ~565 GB/s against 23 for the monolithic matvec), and its
+        module takes a 1-D hidden state, which is exactly what the last prompt
+        position is. Same cache key, so nothing recompiles.
+        """
+        import math
+        from rngd_pd.kernels import dsl_b1 as LE
+        from furiosa.torch.custom_ops import CompileModule, TacticKernelModule
+        from rngd_pd.engines.artifact_cache import get_or_compile, cache_key
+        V = self.lm.shape[0]
+        NG = 32
+        Vp = (V + NG - 1) // NG * NG
+        self.V, self.Vp = V, Vp
+
+        class LmHead(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.rms = TacticKernelModule(LE.RMS_NORM)
+
+            def forward(self, x, nw, eps, nh, wlm):
+                h = self.rms(x, nw, eps, nh)[0]
+                return torch.matmul(wlm, h)          # [NG, Vp/NG]
+
+        sample = (torch.zeros(H, dtype=BF), torch.zeros(H, dtype=BF),
+                  torch.zeros(H, dtype=torch.float32),
+                  torch.zeros(H, dtype=torch.float32),
+                  torch.zeros(NG, Vp // NG, H, dtype=BF))
+        ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
+                        tactic_hint=TacticHintConfig.ForLlmModelDecode)
+        key = cache_key(kind="lmhead", V=V, H=H, tactic="decode-chunked", G=NG)
+        build = lambda: CompileModule.from_module(LmHead(), sample,
+                                                  compiler_config=ccfg)
+        if cache_dir:
+            self.lmh, mode, secs = get_or_compile(cache_dir, key, build, device=None)
+            print(f"[prefill-lmhead] {mode} in {secs:.0f}s", flush=True)
+        else:
+            self.lmh = build()
+        self.lmh.to(self.dev)
+        wpad = np.zeros((Vp, H), np.float32)
+        wpad[:V] = self.lm
+        self.wlm_d = self._d(wpad.reshape(NG, Vp // NG, H))
+        self.lm_norm_d = self._d(self.norm * math.sqrt(H))
+        self.lm_eps_d = self._df(np.full(H, self.eps * H, np.float32))
+        self.lm_nh_d = self._df(np.full(H, -0.5, np.float32))
+
+    def _next_token(self, x, P):
+        """Last prompt position -> next token, with the matmul on the card."""
+        out = self.lmh(x[P - 1], self.lm_norm_d, self.lm_eps_d, self.lm_nh_d,
+                       self.wlm_d)
+        lg = (out[0] if isinstance(out, (tuple, list)) else out)
+        return int(np.argmax(lg.detach().cpu().float().numpy().reshape(-1)[:self.V]))
 
     def _d(self, v):
         return torch.from_numpy(np.ascontiguousarray(v)).to(BF).to(self.dev)
@@ -142,9 +200,7 @@ class FullPrefillEngine:
                              self.rot, self.mask)
             Ks.append(k)
             Vs.append(v)
-        hid = x.detach().float().cpu().numpy()[P - 1]
-        from rngd_pd.engines.model import rmsnorm
-        nxt = int(np.argmax(self.lm @ rmsnorm(hid, self.norm, self.eps)))
+        nxt = self._next_token(x, P)
         if self._zeroK is None:                       # allocated once, reused
             self._zeroK = self._d(np.zeros((self.nl, NKV, HD, C), np.float32))
             self._zeroV = self._d(np.zeros((self.nl, NKV, C, HD), np.float32))
@@ -155,34 +211,16 @@ class FullPrefillEngine:
         return Kp, Vp, nxt
 
     def prefill(self, tokens):
-        """Whole prompt in one pass per layer group. Returns (K, V, next_token)."""
-        C = self.C
-        P = len(tokens)
-        if P > C:
-            raise ValueError(f"prompt {P} exceeds the compiled prefill width C={C}")
-        toks = list(tokens) + [tokens[-1]] * (C - P)   # padding is masked out anyway
-        x = self._d(self.embed[toks].astype(np.float32))
-        Ks, Vs = [], []
-        for g in range(self.ngroups):
-            x, k, v = self.m(x, self.eps_d, self.nh_d, *self.groups[g],
-                             self.rot, self.mask)
-            Ks.append(k)
-            Vs.append(v)
-        hid = x.detach().float().cpu().numpy()[P - 1]
-        from rngd_pd.engines.model import rmsnorm
-        nxt = int(np.argmax(self.lm @ rmsnorm(hid, self.norm, self.eps)))
-        # Only the prompt's own columns are worth moving: a 16-token prompt in
-        # a 256-wide graph would otherwise ship 16x the bytes it needs. Stack on
-        # the card first so this is two transfers, not sixty-four.
-        kdev = torch.cat([k[:, :, :, :P] for k in Ks], 0)      # [nl,NKV,HD,P]
-        vdev = torch.cat([v[:, :, :P, :] for v in Vs], 0)      # [nl,NKV,P,HD]
-        kh = kdev.detach().float().cpu().numpy()
-        vh = vdev.detach().float().cpu().numpy()
-        K = np.zeros((self.nl, NKV, HD, C), np.float32)
-        V = np.zeros((self.nl, NKV, C, HD), np.float32)
-        K[:, :, :, :P] = kh
-        V[:, :, :P, :] = vh
-        return K, V, nxt
+        """Same pass, but handed back as host arrays for the connector.
+
+        The cache is assembled at full width on the card and downloaded once.
+        Building it host-side instead meant allocating and clearing 67 MB of
+        zeros per request and then copying the prompt's columns in on top —
+        work the card does for free while emitting the tensor anyway.
+        """
+        Kp, Vp, nxt = self.prefill_device(tokens)
+        return (Kp.detach().cpu().float().numpy(),
+                Vp.detach().cpu().float().numpy(), nxt)
 
 
 def main():

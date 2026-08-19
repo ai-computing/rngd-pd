@@ -212,16 +212,16 @@ class EngineSession:
             m, norm_d, wlm_d, V = self.lmh
             logits = m(hid, norm_d, r.eps_d, r.nh_d, wlm_d)
             nxt = int(np.argmax(
-                logits.detach().float().cpu().numpy().reshape(-1)[:V]))
+                logits.detach().cpu().float().numpy().reshape(-1)[:V]))
         else:
             from rngd_pd.engines.model import rmsnorm
-            nxt = int(np.argmax(r.lm @ rmsnorm(hid.detach().float().cpu().numpy(),
+            nxt = int(np.argmax(r.lm @ rmsnorm(hid.detach().cpu().float().numpy(),
                                                r.norm, r.c.eps)))
         return nxt, Kp, Vp
 
     def export_kv(self, Kp, Vp):
         """ONE device->host download of the full stacked KV."""
-        return (Kp.detach().float().cpu().numpy(), Vp.detach().float().cpu().numpy())
+        return (Kp.detach().cpu().float().numpy(), Vp.detach().cpu().float().numpy())
 
     def import_kv(self, Kh, Vh):
         """ONE host->device upload."""
