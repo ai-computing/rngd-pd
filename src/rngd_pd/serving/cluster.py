@@ -477,6 +477,78 @@ class _Batcher:
                 slot["ev"].set()
 
 
+class SoloWorker:
+    """Prefill and decode on one card, with the cache never leaving it.
+
+    Everything else here is disaggregated, including the pairings named
+    "alone": those still run two pods and hand KV across /dev/shm, so their
+    numbers carry a save, a wire encoding and a load. That cost is 40-70 ms,
+    which is 44% of TTFT once RNGD prefill is down to 139 ms — large enough
+    that comparing disaggregated against disaggregated cannot say what
+    disaggregation itself costs.
+
+    This is the missing control. Same graphs, same card, no connector: prefill
+    hands the decode session its device tensors directly.
+    """
+
+    def __init__(self, chip, S, C=256, group=2):
+        chip = resolve_chip(chip)
+        import torch
+        torch.set_grad_enabled(False)
+        from transformers import AutoModelForCausalLM
+        from rngd_pd.engines.model import ModelConfig
+        from rngd_pd.engines.prefill_full import FullPrefillEngine
+        from rngd_pd.kernels import decode_resident as LER
+        from rngd_pd.engines.decode_resident import (build_engine, build_lmhead,
+                                                     EngineSession)
+        t0 = time.time()
+        hf = AutoModelForCausalLM.from_pretrained(MODEL, dtype=torch.float32).eval()
+        cfg = ModelConfig(hf.config)
+        sd = {k: v.detach().numpy() for k, v in hf.state_dict().items()}
+        del hf
+        cache = str(ARTIFACT_CACHE)
+        self.pre = FullPrefillEngine(cfg, sd, C=C, group=group, chip=chip,
+                                     cache_dir=cache)
+        del sd
+        # ~16 GB of prefill weights and ~16 GB of decode weights on one 48 GB
+        # card; the two layouts differ enough that sharing them is not worth
+        # the coupling.
+        self.cfg, self.rt = build_engine(MODEL, S, 32, chip=chip)
+        self.sess = EngineSession(self.rt, LER,
+                                  lmhead=build_lmhead(self.rt, LER, chip))
+        self.S, self.C, self.nl = S, C, cfg.n_layers
+        STATE.update(ready=True,
+                     detail=f"solo rngd:{chip} prefill C={C} + decode {self.nl}L "
+                            f"S={S} ready in {time.time()-t0:.0f}s")
+        print(f"[solo] {STATE['detail']}", flush=True)
+
+    def run(self, tokens, max_new):
+        with DEVICE:
+            t0 = time.perf_counter()
+            Kp, Vp, nxt = self.pre.prefill_device(tokens)
+            prefill_ms = (time.perf_counter() - t0) * 1e3
+            outs, ts = [nxt], []
+            cur, p = nxt, len(tokens)
+            t1 = time.perf_counter()
+            for _ in range(max_new - 1):
+                t2 = time.perf_counter()
+                cur, Kp, Vp = self.sess.step(cur, p, Kp, Vp)
+                ts.append((time.perf_counter() - t2) * 1e3)
+                outs.append(cur)
+                p += 1
+            decode_ms = (time.perf_counter() - t1) * 1e3
+        ts.sort()
+        with LOCK:
+            METRICS["prefill_ms"] += prefill_ms
+            METRICS["decode_ms"] += decode_ms
+            METRICS["tokens"] += len(outs)
+        return {"tokens": outs, "pos": len(tokens), "layers": self.nl,
+                "prefill_ms": round(prefill_ms, 1),
+                "decode_ms": round(decode_ms, 1),
+                "tpot_ms": round(ts[len(ts) // 2], 1) if ts else 0.0,
+                "kv_mb": 0.0, "save_ms": 0.0, "load_ms": 0.0}
+
+
 class _ContinuousScheduler:
     """Iteration-level scheduling: the batch is re-formed before every step.
 
@@ -859,6 +931,8 @@ class Gateway:
                 raise ValueError(f"unknown model {name!r}; "
                                  f"have {sorted(self.targets)}")
             return self.prefill, self.decode, "default"
+        if "solo" in tgt:            # prefill and decode are the same worker
+            return None, tgt["solo"], name
         dec = tgt["decode"]
         if isinstance(dec, dict):                        # one pod per batch width
             B = str(int(body.get("batch", 1)))
@@ -882,6 +956,26 @@ class Gateway:
             seq = self.seq
         req_id = f"pd-{int(time.time()*1000)}-{seq}"
         t0 = time.perf_counter()
+        if prefill is None:                              # one card, one call
+            sl = _post(f"{decode}/solo", {"tokens": toks, "max_new": max_new})
+            wall_ms = (time.perf_counter() - t0) * 1e3
+            with LOCK:
+                METRICS["requests"] += 1
+            return {"id": req_id, "object": "text_completion", "model": MODEL,
+                    "choices": [{"index": 0,
+                                 "text": self.tk.decode(sl["tokens"]),
+                                 "finish_reason": "length"}],
+                    "usage": {"prompt_tokens": len(toks),
+                              "completion_tokens": len(sl["tokens"]),
+                              "total_tokens": len(toks) + len(sl["tokens"])},
+                    "pd": {"mode": "single-card", "config": cfg_name,
+                           "prefill_ms": sl["prefill_ms"],
+                           "ttft_ms": round(sl["prefill_ms"], 1),
+                           "kv_mb": 0.0, "kv_save_ms": 0.0, "kv_load_ms": 0.0,
+                           "tpot_ms": sl["tpot_ms"],
+                           "decode_ms": sl["decode_ms"],
+                           "batch": 1, "batch_width": 1, "sched": "solo",
+                           "wall_ms": round(wall_ms, 1)}}
         pf = _post(f"{prefill}/prefill", {"req_id": req_id, "tokens": toks})
         ttft_ms = (time.perf_counter() - t0) * 1e3
         dc = _post(f"{decode}/decode", {"req_id": req_id, "first": pf["next"],
@@ -979,7 +1073,8 @@ def make_handler(routes):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--role", required=True, choices=["prefill", "decode", "gateway"])
+    ap.add_argument("--role", required=True,
+                    choices=["prefill", "decode", "gateway", "solo"])
     ap.add_argument("--backend", default="atom",
                     choices=["atom", "rngd", "rngd-chunk", "rngd-full"])
     ap.add_argument("--B", type=int, default=1, help="decode batch width")
@@ -1004,7 +1099,16 @@ def main():
     a = ap.parse_args()
 
     routes = {}
-    srv = ThreadingHTTPServer((a.host, a.port), make_handler(routes))
+    # A worker holds the card for a whole generation, so callers queue. The
+    # default listen backlog is 5, and past that the kernel refuses the
+    # connection rather than making the client wait — under load that shows up
+    # as requests failing, not as latency. Seen at ~6 in flight against a B=1
+    # decoder.
+    class _Server(ThreadingHTTPServer):
+        request_queue_size = 256
+        daemon_threads = True
+
+    srv = _Server((a.host, a.port), make_handler(routes))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     print(f"[{a.role}] listening on {a.host}:{a.port}", flush=True)
 
@@ -1032,6 +1136,9 @@ def main():
             w = DecodeRNGD(a.chip, a.S)
         routes["/decode"] = lambda b: w.run(b["req_id"], b["first"], b["pos"],
                                             b.get("max_new", 8))
+    elif a.role == "solo":
+        w = SoloWorker(a.chip, a.S, a.C, a.group)
+        routes["/solo"] = lambda b: w.run(b["tokens"], b.get("max_new", 8))
     else:
         targets = None
         if a.targets_file:

@@ -104,12 +104,55 @@ class FullPrefillEngine:
         causal = np.triu(np.full((C, C), -1e4, np.float32), 1)
         self.mask = d(np.tile(causal, (G, 1)).reshape(1, G * C, C))
         self.compile_s = time.time() - t0
+        self._zeroK = self._zeroV = None      # solo path, built on demand
 
     def _d(self, v):
         return torch.from_numpy(np.ascontiguousarray(v)).to(BF).to(self.dev)
 
     def _df(self, v):
         return torch.from_numpy(np.ascontiguousarray(v)).to(torch.float32).to(self.dev)
+
+    def prefill_device(self, tokens):
+        """Prefill and leave the cache on the card, in the decode graph's layout.
+
+        The disaggregated path has to move KV to another card, so it pays a
+        download, a wire encoding and an upload. When prefill and decode share
+        a card none of that is necessary: the graph already emits
+        [nl, NKV, HD, S] and [nl, NKV, S, HD], which is exactly what the
+        resident decode session steps on.
+
+        The columns past the prompt still have to be cleared. Prefill pads with
+        the last token, and a decode step injects its own k/v by adding at a
+        one-hot slot — only equal to a write if that slot starts at zero.
+
+        Clearing them by multiplying with a [1,1,1,S] mask cost 1497 ms against
+        131 ms for the whole rest of the pass: an eager elementwise op on this
+        runtime is not a compiled kernel and goes through the host. Slicing and
+        concatenating a pre-allocated zero block does the same job with the two
+        operations that are known to stay on the card.
+        """
+        C, P = self.C, len(tokens)
+        if P > C:
+            raise ValueError(f"prompt {P} exceeds the compiled prefill width C={C}")
+        toks = list(tokens) + [tokens[-1]] * (C - P)
+        x = self._d(self.embed[toks].astype(np.float32))
+        Ks, Vs = [], []
+        for g in range(self.ngroups):
+            x, k, v = self.m(x, self.eps_d, self.nh_d, *self.groups[g],
+                             self.rot, self.mask)
+            Ks.append(k)
+            Vs.append(v)
+        hid = x.detach().float().cpu().numpy()[P - 1]
+        from rngd_pd.engines.model import rmsnorm
+        nxt = int(np.argmax(self.lm @ rmsnorm(hid, self.norm, self.eps)))
+        if self._zeroK is None:                       # allocated once, reused
+            self._zeroK = self._d(np.zeros((self.nl, NKV, HD, C), np.float32))
+            self._zeroV = self._d(np.zeros((self.nl, NKV, C, HD), np.float32))
+        kc = torch.cat([k[:, :, :, :P] for k in Ks], 0)
+        vc = torch.cat([v[:, :, :P, :] for v in Vs], 0)
+        Kp = torch.cat([kc, self._zeroK[:, :, :, P:]], -1)
+        Vp = torch.cat([vc, self._zeroV[:, :, P:, :]], -2)
+        return Kp, Vp, nxt
 
     def prefill(self, tokens):
         """Whole prompt in one pass per layer group. Returns (K, V, next_token)."""

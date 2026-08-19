@@ -65,6 +65,11 @@ ATOM_C = os.environ.get("ATOM_C", "")         # ATOM prefill width; "" = S
 # Context width every graph is compiled for. Raising it means rebuilding every
 # artifact and doubling the KV that crosses per request, so it is one knob.
 S = os.environ.get("PD_S", "256")
+# The control for the whole study: one card doing prefill and decode with the
+# cache never leaving it. Only three RNGD cards are usable here (npu3 has an
+# EDF loader fault), so it takes the batched decoder's card rather than adding
+# to the fleet — the two are mutually exclusive.
+SOLO = os.environ.get("PD_SOLO", "")
 ATOM_C = ATOM_C or S               # one pass means width == context
 
 # name, vendor, args, extra env, memory
@@ -76,9 +81,11 @@ WORKERS = [
     # Batched Furiosa decode. The 32-layer batched graph does not compile, so
     # this reuses a two-layer module sixteen times — the step is B-invariant,
     # which is what makes the reuse worth its dispatch cost.
-    ("sw-rngd-decode-b4", "rngd",
-     "--role decode --backend rngd --B 4 --group 2 --batch-wait 8000 "
-     f"--sched {RNGD_SCHED} --admit-min {RNGD_ADMIT_MIN} --chip 2 --S {S}", [], "64Gi"),
+    ("sw-rngd-solo" if SOLO else "sw-rngd-decode-b4", "rngd",
+     (f"--role solo --C {S} --group 2 --chip 2 --S {S}" if SOLO else
+      "--role decode --backend rngd --B 4 --group 2 --batch-wait 8000 "
+      f"--sched {RNGD_SCHED} --admit-min {RNGD_ADMIT_MIN} --chip 2 --S {S}"),
+     [], "96Gi"),
     # Chunk width is what makes ATOM prefill linear in prompt length: at C=16
     # the weights are re-read P/16 times. C=128 cuts that eightfold.
     ("sw-atom-prefill", "atom",
@@ -98,7 +105,8 @@ def url(name):
     return f"http://{name}.{NS}.{SVC}"
 
 
-RNGD_DEC = {"1": url("sw-rngd-decode"), "4": url("sw-rngd-decode-b4")}
+RNGD_DEC = ({"1": url("sw-rngd-decode")} if SOLO else
+            {"1": url("sw-rngd-decode"), "4": url("sw-rngd-decode-b4")})
 
 TARGETS = {
     "llama8b-rngd-alone": {"prefill": url("sw-rngd-prefill"),
@@ -112,6 +120,8 @@ TARGETS = {
                            "decode": {str(b): url(f"sw-atom-decode-b{b}")
                                       for b in (1, 2, 4)}},
 }
+if SOLO:
+    TARGETS["llama8b-solo"] = {"solo": url("sw-rngd-solo")}
 
 
 def env_block(pairs, indent="        "):
