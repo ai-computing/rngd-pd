@@ -641,17 +641,22 @@ class DecodeRNGD(DecodeWorkerBase):
         import torch
         torch.set_grad_enabled(False)
         from rngd_pd.kernels import decode_resident as LER
-        from rngd_pd.engines.decode_resident import build_engine, EngineSession
+        from rngd_pd.engines.decode_resident import (build_engine, build_lmhead,
+                                                     EngineSession)
         from rngd_pd.engines.model import rmsnorm
         self.LER, self.rmsnorm = LER, rmsnorm
         t0 = time.time()
         self.cfg, self.rt = build_engine(MODEL, S, 32, chip=chip)
-        self.sess = EngineSession(self.rt, LER)
+        # lm_head on the card, not in numpy: a 2.1 GB host read per token is
+        # a third of this step, and the batched worker pays it per stream.
+        # Keeping both workers on the same placement is also what makes the
+        # B=1 and B=4 rows of the sweep comparable.
+        self.sess = EngineSession(self.rt, LER, lmhead=build_lmhead(self.rt, LER, chip))
         self.S, self.nl = S, self.rt.nl
         self.NKV, self.HD = LER.NKV, LER.HD
         STATE.update(ready=True,
-                     detail=f"decode rngd:{chip} {self.nl}L S={S} loaded in "
-                            f"{time.time()-t0:.0f}s")
+                     detail=f"decode rngd:{chip} {self.nl}L S={S} device-lmhead "
+                            f"loaded in {time.time()-t0:.0f}s")
         print(f"[decode] {STATE['detail']}", flush=True)
 
     def run(self, req_id, first, pos, max_new):
