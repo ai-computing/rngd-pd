@@ -41,6 +41,9 @@ from rngd_pd.paths import ARTIFACT_CACHE
 
 MODEL = os.environ.get("MODEL", "meta-llama/Llama-3.1-8B-Instruct")
 SHM_ROOT = os.environ.get("PD_SHM_ROOT", "/dev/shm/rngd_kv_cluster")
+# Off makes the gateway wait for prefill before the decode side starts pulling,
+# which is what it did before — kept so the two can be compared in one build.
+PREFETCH = os.environ.get("PD_PREFETCH", "1") not in ("0", "false", "")
 
 DEVICE = threading.Lock()      # NPU runtimes are not reentrant
 STATE = {"ready": False, "detail": "starting"}
@@ -345,7 +348,86 @@ class ChunkPrefillWorker:
 # decode workers
 # --------------------------------------------------------------------------
 class DecodeWorkerBase:
+    """Shared KV intake for every decode worker.
+
+    The gateway used to call prefill, wait for it to return, and only then call
+    decode — so the load started after the last layer was written, and its
+    ~18 ms sat on the critical path end to end. Prefill emits layer groups as
+    it goes and the connector blocks per layer, so the decode side can start
+    pulling the moment the first group lands and be done by the time prefill
+    returns. prefetch() begins that; _load_kv() joins it if one is running.
+
+    Reaching host memory early is not enough on its own: measured against this
+    same build, hiding the 17.6 ms load bought nothing because the host->card
+    upload that follows it went 8.3 -> 20.4 ms, the buffers now being cold to
+    the thread that uploads them. So the prefetch carries the cache all the way
+    onto the card. The decode card is idle for the whole prefill — it lives in
+    a different pod from the prefill card — which is exactly the window the
+    upload needs. Workers that can stage override _stage_kv.
+    """
+
+    _prefetch = None
+    _prefetch_lock = threading.Lock()
+    # A prefetch holds two S-wide float32 buffers (~134 MB at S=256), so an
+    # entry nobody ever collects is not a small leak. Requests that die between
+    # prefetch and decode leave exactly that, so keep the map bounded and drop
+    # the oldest — the dropped request just loads for itself, as it did before.
+    _prefetch_cap = 8
+
+    def prefetch(self, req_id):
+        with self._prefetch_lock:
+            if self._prefetch is None:
+                self._prefetch = {}
+            if req_id in self._prefetch:
+                return {"prefetch": "already running"}
+            while len(self._prefetch) >= self._prefetch_cap:
+                oldest = next(iter(self._prefetch))          # insertion order
+                pool, _fut, _t0 = self._prefetch.pop(oldest)
+                pool.shutdown(wait=False)
+            pool = ThreadPoolExecutor(max_workers=1)
+            t0 = time.perf_counter()
+            self._prefetch[req_id] = (pool,
+                                      pool.submit(self._prefetch_job, req_id), t0)
+        return {"prefetch": "started", "req_id": req_id}
+
+    def _stage_kv(self, K, V):
+        """Put the cache where the worker actually consumes it, if it can.
+
+        Default is nowhere: the host arrays are the destination. Returning None
+        leaves the consumer to do whatever it did before.
+        """
+        return None
+
+    def _prefetch_job(self, req_id):
+        K, V, ms = self._load_kv_now(req_id)
+        try:
+            staged = self._stage_kv(K, V)
+        except Exception as e:                 # never let this kill the request
+            print(f"[decode] stage failed, falling back: {e!r}", flush=True)
+            staged = None
+        return K, V, ms, staged
+
     def _load_kv(self, req_id):
+        """Whatever prefetch started, or a fresh load if nothing did.
+
+        Returns (K, V, load_ms, lead_ms, staged). lead_ms is -1 when no
+        prefetch ran; staged is None unless the worker staged onto the card.
+        """
+        with self._prefetch_lock:
+            entry = (self._prefetch or {}).pop(req_id, None)
+        if entry is None:
+            K, V, ms = self._load_kv_now(req_id)
+            return K, V, ms, -1.0, None    # no prefetch was running
+        pool, fut, t0 = entry
+        try:
+            K, V, ms, staged = fut.result()
+            # How much of the load happened before decode even asked. If this
+            # is near zero the prefetch arrived too late to overlap anything.
+            return K, V, ms, (time.perf_counter() - t0) * 1e3, staged
+        finally:
+            pool.shutdown(wait=False)
+
+    def _load_kv_now(self, req_id):
         RngdKVConnector, KVConnectorRole, ShmTransport = _conn(self.nl)
         # One contiguous buffer per side, handed to the connector as per-layer
         # views. Allocating 64 separate zeroed arrays meant a memset the loader
@@ -434,7 +516,7 @@ class DecodeATOM(DecodeWorkerBase):
         print(f"[decode] {STATE['detail']}", flush=True)
 
     def run(self, req_id, first, pos, max_new):
-        K, V, load_ms = self._load_kv(req_id)
+        K, V, load_ms, lead_ms, _staged = self._load_kv(req_id)
         outs, ts = [first], []
         cur, p = first, pos
         t0 = time.perf_counter()
@@ -450,15 +532,16 @@ class DecodeATOM(DecodeWorkerBase):
                 cur = int(np.argmax(self.lm @ np.asarray(out[0]).reshape(-1)))
                 outs.append(cur)
                 p += 1
-        return self._done(outs, ts, load_ms, time.perf_counter() - t0)
+        return self._done(outs, ts, load_ms, time.perf_counter() - t0, lead_ms)
 
-    def _done(self, outs, ts, load_ms, wall):
+    def _done(self, outs, ts, load_ms, wall, lead_ms=None):
         with LOCK:
             METRICS["decode_ms"] += wall * 1e3
             METRICS["load_ms"] += load_ms
             METRICS["tokens"] += len(outs)
         ts.sort()
         return {"tokens": outs, "load_ms": round(load_ms, 1),
+                "lead_ms": round(lead_ms, 1) if lead_ms is not None else None,
                 "tpot_ms": round(ts[len(ts) // 2], 1) if ts else 0.0,
                 "decode_ms": round(wall * 1e3, 1)}
 
@@ -691,7 +774,7 @@ class _ContinuousScheduler:
         """Place new streams' caches into the resident tensor, once."""
         loaded = []
         for idx, item in taking:
-            K, V, load_ms = self.load_kv(item["req_id"])
+            K, V, load_ms, _lead, _staged = self.load_kv(item["req_id"])
             loaded.append((idx, item, K, V, load_ms))
         t0 = time.perf_counter()          # the trip only, not the shm read
         if self._active():
@@ -826,7 +909,7 @@ class DecodeATOMBatch(DecodeWorkerBase):
         B, S, n = self.B, self.S, len(items)
         Ks, Vs, loads = [], [], []
         for it in items:
-            K, V, load_ms = self._load_kv(it["req_id"])
+            K, V, load_ms, _lead, _staged = self._load_kv(it["req_id"])
             Ks.append(K); Vs.append(V); loads.append(load_ms)
         while len(Ks) < B:                              # pad the unused lanes
             Ks.append(Ks[-1]); Vs.append(Vs[-1])
@@ -917,7 +1000,7 @@ class DecodeRNGDBatch(DecodeWorkerBase):
         B, n = self.B, len(items)
         Ks, Vs, loads = [], [], []
         for it in items:
-            K, V, load_ms = self._load_kv(it["req_id"])
+            K, V, load_ms, _lead, _staged = self._load_kv(it["req_id"])
             Ks.append(K); Vs.append(V); loads.append(load_ms)
         pos = [it["pos"] for it in items]
         cur = [it["first"] for it in items]
@@ -973,9 +1056,20 @@ class DecodeRNGD(DecodeWorkerBase):
                             f"loaded in {time.time()-t0:.0f}s")
         print(f"[decode] {STATE['detail']}", flush=True)
 
+    def _stage_kv(self, K, V):
+        """Upload inside the prefetch, while prefill still has the other card."""
+        with DEVICE:
+            return self.sess.import_kv(K, V)
+
     def run(self, req_id, first, pos, max_new):
-        K, V, load_ms = self._load_kv(req_id)
-        Kp, Vp = self.sess.import_kv(K, V)
+        K, V, load_ms, lead_ms, staged = self._load_kv(req_id)
+        # The upload was never counted anywhere: not in load_ms, which stops
+        # when the host arrays are ready, and invisible inside decode_ms. It is
+        # 8.3 ms cold and the half of the handoff a host-only prefetch misses,
+        # so a staged request should report ~0 here and pay it off the clock.
+        t_up = time.perf_counter()
+        Kp, Vp = staged if staged is not None else self.sess.import_kv(K, V)
+        import_ms = (time.perf_counter() - t_up) * 1e3
         outs, ts = [first], []
         cur, p = first, pos
         t0 = time.perf_counter()
@@ -986,7 +1080,11 @@ class DecodeRNGD(DecodeWorkerBase):
             ts.append((time.perf_counter() - t1) * 1e3)
             outs.append(cur)
             p += 1
-        return DecodeATOM._done(self, outs, ts, load_ms, time.perf_counter() - t0)
+        d = DecodeATOM._done(self, outs, ts, load_ms,
+                             time.perf_counter() - t0, lead_ms)
+        d["import_ms"] = round(import_ms, 1)
+        d["staged"] = staged is not None
+        return d
 
 
 # --------------------------------------------------------------------------
@@ -1068,6 +1166,16 @@ class Gateway:
                            "decode_ms": sl["decode_ms"],
                            "batch": 1, "batch_width": 1, "sched": "solo",
                            "wall_ms": round(wall_ms, 1)}}
+        # Layer groups land in shm one every ~3.3 ms across the pass, so the
+        # decode side can drain them as they arrive rather than after. Wait for
+        # the acknowledgement rather than firing and forgetting: the handler
+        # returns as soon as the puller is running, and a thread started here
+        # loses the race against the prefill POST on the very next line.
+        if PREFETCH:
+            try:
+                _post(f"{decode}/prefetch", {"req_id": req_id}, timeout=30)
+            except Exception:
+                pass                  # decode falls back to loading it itself
         pf = _post(f"{prefill}/prefill", {"req_id": req_id, "tokens": toks})
         ttft_ms = (time.perf_counter() - t0) * 1e3
         dc = _post(f"{decode}/decode", {"req_id": req_id, "first": pf["next"],
@@ -1084,7 +1192,11 @@ class Gateway:
                 "pd": {"mode": "disaggregated-kv-transfer", "config": cfg_name,
                        "prefill_ms": pf["prefill_ms"], "ttft_ms": round(ttft_ms, 1),
                        "kv_mb": pf["kv_mb"], "kv_save_ms": pf["save_ms"],
-                       "kv_load_ms": dc["load_ms"], "tpot_ms": dc["tpot_ms"],
+                       "kv_load_ms": dc["load_ms"],
+                       "prefetch_lead_ms": dc.get("lead_ms"),
+                       "kv_import_ms": dc.get("import_ms"),
+                       "kv_staged": dc.get("staged"),
+                       "tpot_ms": dc["tpot_ms"],
                        "decode_ms": dc.get("decode_ms", 0.0),
                        "batch": dc.get("batch", 1),
                        "batch_width": dc.get("batch_width", 1),
@@ -1228,6 +1340,7 @@ def main():
             w = DecodeRNGD(a.chip, a.S)
         routes["/decode"] = lambda b: w.run(b["req_id"], b["first"], b["pos"],
                                             b.get("max_new", 8))
+        routes["/prefetch"] = lambda b: w.prefetch(b["req_id"])
     elif a.role == "solo":
         w = SoloWorker(a.chip, a.S, a.C, a.group, a.B, a.batch_wait)
         routes["/solo"] = lambda b: w.run(b["tokens"], b.get("max_new", 8))
