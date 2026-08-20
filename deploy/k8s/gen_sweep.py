@@ -55,6 +55,7 @@ BASE_ENV = [
     ("HF_HOME", "/hf"),
     ("MODEL", "meta-llama/Llama-3.1-8B-Instruct"),
     ("PD_SHM_ROOT", "/dev/shm/rngd_kv_cluster"),
+    ("PD_PREFETCH", os.environ.get("PD_PREFETCH", "1")),
 ]
 
 # Which decode scheduler the batched Furiosa worker runs. "static" holds a
@@ -72,6 +73,10 @@ S = os.environ.get("PD_S", "256")
 SOLO = os.environ.get("PD_SOLO", "")
 SOLO_B = os.environ.get("PD_SOLO_B", "4")
 ATOM_C = ATOM_C or S               # one pass means width == context
+# "_lm" artifacts carry lm_head on the card. The card is 16.88 GB and the
+# artifact grows 14.2 -> 15.2 GB, which fits; off-card it cost a 2.1 GB host
+# read per step and that cost scaled with batch width.
+ATOM_LM = os.environ.get("ATOM_LM", "_lm")
 
 # name, vendor, args, extra env, memory
 WORKERS = [
@@ -98,7 +103,7 @@ for b in (1, 2, 4):
     WORKERS.append((
         f"sw-atom-decode-b{b}", "atom",
         f"--role decode --backend atom --B {b} --batch-wait 8000 --S {S}",
-        [("RBLN_BATCH_ARTIFACT", f"{ART}/decode_S{S}_B{b}.rbln"),
+        [("RBLN_BATCH_ARTIFACT", f"{ART}/decode_S{S}_B{b}{ATOM_LM}.rbln"),
          ("RBLN_TABLES", f"{ART}/tables.npz")], "48Gi"))
 
 

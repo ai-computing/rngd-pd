@@ -39,6 +39,7 @@ spec:
         - {name: HF_HOME, value: "/hf"}
         - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
         - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        - {name: PD_PREFETCH, value: "1"}
         ports: [{containerPort: 8000}]
         resources:
           limits: {furiosa.ai/rngd: "1"}
@@ -115,6 +116,7 @@ spec:
         - {name: HF_HOME, value: "/hf"}
         - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
         - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        - {name: PD_PREFETCH, value: "1"}
         ports: [{containerPort: 8000}]
         resources:
           limits: {furiosa.ai/rngd: "1"}
@@ -191,6 +193,7 @@ spec:
         - {name: HF_HOME, value: "/hf"}
         - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
         - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        - {name: PD_PREFETCH, value: "1"}
         ports: [{containerPort: 8000}]
         resources:
           limits: {furiosa.ai/rngd: "1"}
@@ -267,6 +270,7 @@ spec:
         - {name: HF_HOME, value: "/hf"}
         - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
         - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        - {name: PD_PREFETCH, value: "1"}
         - {name: RBLN_PREFILL_ARTIFACT, value: "/artifacts/prefill_S256_C256.rbln"}
         - {name: RBLN_TABLES, value: "/artifacts/tables.npz"}
         ports: [{containerPort: 8000}]
@@ -342,7 +346,8 @@ spec:
         - {name: HF_HOME, value: "/hf"}
         - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
         - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
-        - {name: RBLN_BATCH_ARTIFACT, value: "/artifacts/decode_S256_B1.rbln"}
+        - {name: PD_PREFETCH, value: "1"}
+        - {name: RBLN_BATCH_ARTIFACT, value: "/artifacts/decode_S256_B1_lm.rbln"}
         - {name: RBLN_TABLES, value: "/artifacts/tables.npz"}
         ports: [{containerPort: 8000}]
         resources:
@@ -417,7 +422,8 @@ spec:
         - {name: HF_HOME, value: "/hf"}
         - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
         - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
-        - {name: RBLN_BATCH_ARTIFACT, value: "/artifacts/decode_S256_B2.rbln"}
+        - {name: PD_PREFETCH, value: "1"}
+        - {name: RBLN_BATCH_ARTIFACT, value: "/artifacts/decode_S256_B2_lm.rbln"}
         - {name: RBLN_TABLES, value: "/artifacts/tables.npz"}
         ports: [{containerPort: 8000}]
         resources:
@@ -492,7 +498,8 @@ spec:
         - {name: HF_HOME, value: "/hf"}
         - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
         - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
-        - {name: RBLN_BATCH_ARTIFACT, value: "/artifacts/decode_S256_B4.rbln"}
+        - {name: PD_PREFETCH, value: "1"}
+        - {name: RBLN_BATCH_ARTIFACT, value: "/artifacts/decode_S256_B4_lm.rbln"}
         - {name: RBLN_TABLES, value: "/artifacts/tables.npz"}
         ports: [{containerPort: 8000}]
         resources:
@@ -597,6 +604,7 @@ spec:
         - {name: HF_HOME, value: "/hf"}
         - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
         - {name: PD_SHM_ROOT, value: "/dev/shm/rngd_kv_cluster"}
+        - {name: PD_PREFETCH, value: "1"}
         ports: [{containerPort: 8000}]
         resources: {requests: {cpu: "4", memory: 8Gi}}
         readinessProbe:
