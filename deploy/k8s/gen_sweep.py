@@ -56,12 +56,24 @@ BASE_ENV = [
     ("MODEL", "meta-llama/Llama-3.1-8B-Instruct"),
     ("PD_SHM_ROOT", "/dev/shm/rngd_kv_cluster"),
     ("PD_PREFETCH", os.environ.get("PD_PREFETCH", "1")),
+    # FCConfig leaves max_num_unique_shapes unbounded and this repo never set
+    # it, which is what actually capped the decode graph at two layers. Capping
+    # it at 8 lifts the group to 8 and makes the kernel better as well:
+    # 27.00 -> 20.10 ms TPOT through the gateway, 532 -> 792 GB/s in the kernel,
+    # CPU fp32 reference PASS. 1 is far too tight (60.19 ms/step).
+    # The graph has to be baked on the host first -- see bench/prebake.py. A pod
+    # cannot compile it, and the worker drops back to group=2 if the artifact
+    # is missing rather than crash-looping.
+    ("RNGD_MAX_SHAPES", os.environ.get("RNGD_MAX_SHAPES", "8")),
 ]
 
 # Which decode scheduler the batched Furiosa worker runs. "static" holds a
 # batch start to finish; "continuous" re-forms it every step.
 RNGD_SCHED = os.environ.get("RNGD_SCHED", "static")
 RNGD_ADMIT_MIN = os.environ.get("RNGD_ADMIT_MIN", "2")
+# Layers per compiled decode module. Anything above 2 needs RNGD_MAX_SHAPES and
+# a host-side bake; the worker falls back to 2 when the artifact is not there.
+RNGD_GROUP = os.environ.get("RNGD_GROUP", "8")
 ATOM_C = os.environ.get("ATOM_C", "")         # ATOM prefill width; "" = S
 # Context width every graph is compiled for. Raising it means rebuilding every
 # artifact and doubling the KV that crosses per request, so it is one knob.
@@ -84,12 +96,15 @@ WORKERS = [
      f"--role prefill --backend rngd-full --C {S} --group 2 --chip 0 --S {S}", [], "64Gi"),
     ("sw-rngd-decode", "rngd",
      f"--role decode --backend rngd --chip 1 --S {S}", [], "64Gi"),
-    # Batched Furiosa decode. The 32-layer batched graph does not compile, so
-    # this reuses a two-layer module sixteen times — the step is B-invariant,
-    # which is what makes the reuse worth its dispatch cost.
+    # Batched Furiosa decode: an eight-layer module reused four times. Two was
+    # not a choice, it was the largest that compiled — see RNGD_MAX_SHAPES
+    # above for what was actually binding. Chaining is close to free, so the
+    # win here is kernel quality, not the smaller dispatch count: at shapes=1
+    # the whole 32 layers compile into one call and run 60.19 ms/step, worse
+    # than the sixteen-call graph they replace.
     ("sw-rngd-solo" if SOLO else "sw-rngd-decode-b4", "rngd",
      (f"--role solo --C {S} --group 2 --B {SOLO_B} --batch-wait 8000 --chip 2 --S {S}" if SOLO else
-      "--role decode --backend rngd --B 4 --group 2 --batch-wait 8000 "
+      f"--role decode --backend rngd --B 4 --group {RNGD_GROUP} --batch-wait 8000 "
       f"--sched {RNGD_SCHED} --admit-min {RNGD_ADMIT_MIN} --chip 2 --S {S}"),
      [], "96Gi"),
     # Chunk width is what makes ATOM prefill linear in prompt length: at C=16
