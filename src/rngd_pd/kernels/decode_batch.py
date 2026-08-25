@@ -45,6 +45,13 @@ H, M, NH, NKV, HD = 4096, 14336, 32, 8, 128
 G = NH // NKV
 HINT = os.environ.get("DECODE_TACTIC_HINT", "ForLlmModelDecode")
 
+# The layer boundary was never the tactic search policy — ByEstimation failed at
+# group=4 exactly as Random did, both after ~11 minutes. It was
+# max_num_unique_shapes, which FCConfig leaves unbounded and this repo never
+# set. Capping it compiles group=4 in 121s where unbounded fails outright.
+_MS = os.environ.get("RNGD_MAX_SHAPES", "")
+MAX_SHAPES = {"max_num_unique_shapes": int(_MS)} if _MS else {}
+
 
 class DecodeLayer(torch.nn.Module):
     """One layer, one step, B streams — each with its own position."""
@@ -218,8 +225,10 @@ def main():
               torch.zeros(B, S, dtype=BF), torch.zeros(B, S, dtype=BF))
 
     cfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
-                   tactic_hint=getattr(TacticHintConfig, HINT))
+                   tactic_hint=getattr(TacticHintConfig, HINT),
+                   **MAX_SHAPES)
     print(f"[dbatch] compiling B={B} NG={NG} S={S} hint={HINT} "
+          f"shapes={MAX_SHAPES.get('max_num_unique_shapes', 'unbounded')} "
           f"(reused {ngroups}x for {nl} layers)...", flush=True)
     t0 = time.time()
     m = CompileModule.from_module(DecodeModel(B, S, NG), sample, compiler_config=cfg)

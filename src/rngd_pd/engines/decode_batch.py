@@ -21,7 +21,7 @@ import numpy as np
 import torch
 
 from rngd_pd.kernels.decode_batch import (BF, H, M, NH, NKV, HD, G, DecodeModel,
-                                rot_batch, HINT)
+                                rot_batch, HINT, MAX_SHAPES)
 from furiosa.torch.custom_ops import CompileModule
 from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig
 from rngd_pd.paths import ARTIFACT_CACHE
@@ -29,8 +29,70 @@ from rngd_pd.paths import ARTIFACT_CACHE
 MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
 
+def decode_graph_spec(B, S, group):
+    """The cache key and the build for one decode graph, in one place.
+
+    The pod does not have to be the thing that compiles. Its 96Gi cap with the
+    whole state dict already resident is where RNGD_MAX_SHAPES falls over,
+    while the same config compiles fine on the bare host. artifacts_cache is a
+    hostPath both share, so the host can bake the graph and the pod can just
+    load it — but only if both sides derive the key identically, which is why
+    this is a function and not two copies.
+
+    The shape cap belongs in the key. Without it a capped build silently loads
+    the old uncapped artifact and the change does nothing at all.
+    """
+    from rngd_pd.engines.artifact_cache import cache_key
+    key = cache_key(kind="batch-decode", model=MODEL, B=B, S=S, nl=group,
+                    hint=HINT, **MAX_SHAPES)
+    sample = (torch.zeros(B, H, dtype=BF),
+              torch.zeros(B, H, dtype=torch.float32), torch.zeros(B, H, dtype=torch.float32),
+              torch.zeros(group, B, H, dtype=BF),
+              torch.zeros(group, H, NH * HD, dtype=BF), torch.zeros(group, H, NKV * HD, dtype=BF),
+              torch.zeros(group, H, NKV * HD, dtype=BF), torch.zeros(group, NH * HD, H, dtype=BF),
+              torch.zeros(group, B, H, dtype=BF),
+              torch.zeros(group, H, M, dtype=BF), torch.zeros(group, H, M, dtype=BF),
+              torch.zeros(group, M, H, dtype=BF),
+              torch.zeros(group, B, NKV, HD, S, dtype=BF),
+              torch.zeros(group, B, NKV, S, HD, dtype=BF),
+              torch.zeros(B, HD, HD, dtype=BF),
+              torch.zeros(B, S, dtype=BF), torch.zeros(B, S, dtype=BF))
+    ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
+                    tactic_hint=getattr(TacticHintConfig, HINT),
+                    **MAX_SHAPES)
+    build = lambda: CompileModule.from_module(DecodeModel(B, S, group), sample,
+                                              compiler_config=ccfg)
+    return key, build
+
+
+def resolve_group(B, S, group, cache_dir, fallback=2):
+    """Only ask for a group the pod can actually get.
+
+    Groups above 2 need RNGD_MAX_SHAPES, and compiling one inside the pod
+    fails: it holds the whole state dict before it starts and lives under a
+    96Gi cap, so the same graph that builds on the host raises
+    UnsupportedOpError there. bench/prebake.py exists to bake it on the host
+    into the shared artifacts_cache instead.
+
+    If that bake has not happened, attempting it here costs eight minutes and
+    then crash-loops the worker. Serving at the smaller group is strictly
+    better than not serving, so drop to it and say so.
+    """
+    if not cache_dir or group == fallback:
+        return group
+    from rngd_pd.engines.artifact_cache import exists, path_for
+    key, _ = decode_graph_spec(B, S, group)
+    if exists(path_for(cache_dir, key)):
+        return group
+    print(f"[batch-decode] group={group} 아티팩트가 캐시에 없다 (키 {key}). "
+          f"파드 안에서 굽는 것은 실패하므로 group={fallback}로 내린다. "
+          f"되살리려면 호스트에서 bench/prebake.py --group {group}", flush=True)
+    return fallback
+
+
 class BatchDecodeEngine:
     def __init__(self, cfg, sd, B=2, S=256, group=2, chip=2, cache_dir=None):
+        group = resolve_group(B, S, group, cache_dir)
         self.B, self.S, self.NG = B, S, group
         self.nl = cfg.n_layers
         self.ngroups = self.nl // group
@@ -60,27 +122,10 @@ class BatchDecodeEngine:
                 torch.stack([d(p(i, "mlp.down_proj.weight").T.copy()) for i in idx]),
             ))
 
-        sample = (torch.zeros(B, H, dtype=BF),
-                  torch.zeros(B, H, dtype=torch.float32), torch.zeros(B, H, dtype=torch.float32),
-                  torch.zeros(group, B, H, dtype=BF),
-                  torch.zeros(group, H, NH * HD, dtype=BF), torch.zeros(group, H, NKV * HD, dtype=BF),
-                  torch.zeros(group, H, NKV * HD, dtype=BF), torch.zeros(group, NH * HD, H, dtype=BF),
-                  torch.zeros(group, B, H, dtype=BF),
-                  torch.zeros(group, H, M, dtype=BF), torch.zeros(group, H, M, dtype=BF),
-                  torch.zeros(group, M, H, dtype=BF),
-                  torch.zeros(group, B, NKV, HD, S, dtype=BF),
-                  torch.zeros(group, B, NKV, S, HD, dtype=BF),
-                  torch.zeros(B, HD, HD, dtype=BF),
-                  torch.zeros(B, S, dtype=BF), torch.zeros(B, S, dtype=BF))
-        ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
-                        tactic_hint=getattr(TacticHintConfig, HINT))
-        build = lambda: CompileModule.from_module(DecodeModel(B, S, group), sample,
-                                                  compiler_config=ccfg)
+        key, build = decode_graph_spec(B, S, group)
         t0 = time.time()
         if cache_dir:
-            from rngd_pd.engines.artifact_cache import get_or_compile, cache_key
-            key = cache_key(kind="batch-decode", model=MODEL, B=B, S=S, nl=group,
-                            hint=HINT)
+            from rngd_pd.engines.artifact_cache import get_or_compile
             self.m, mode, secs = get_or_compile(cache_dir, key, build, device=None)
             print(f"[batch-decode] {mode} in {secs:.0f}s", flush=True)
         else:
