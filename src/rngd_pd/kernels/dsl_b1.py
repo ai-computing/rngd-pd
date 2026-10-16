@@ -11,15 +11,15 @@ RoPE on q is applied in-graph; K-cache is assumed pre-roped by the caller (like 
   python3 llama_engine.py --bucket 128
 """
 import torch, furiosa.torch
-from furiosa.torch import native_device as nd
-nd.set_fusion(8); nd.set_mesh_kind(nd.MeshKind.Mesh(2))
+from rngd_pd.engines.fsdk import open_device as _open_device
+_open_device(8, 2)
 import sys, math, time, yaml, argparse
 try:
     from rngd_pd import _tv_patch as _tv_patch  # noqa
 except Exception:
     pass
-from furiosa.torch.custom_ops import TacticKernelModule, CompileModule
-from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig
+from rngd_pd.engines.fsdk import TacticKernelModule, CompileModule
+from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
 import furiosa.native_llm_common as nlc
 
 H = 4096; M = 14336; NUM_HEADS = 32; NUM_KV = 8; HEAD_DIM = 128

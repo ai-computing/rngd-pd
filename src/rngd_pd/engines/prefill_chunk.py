@@ -26,8 +26,8 @@ import torch
 
 from rngd_pd.kernels.prefill_chunk import (BF, H, M, NH, NKV, HD, G, ChunkModel,
                                  rot_matrices)
-from furiosa.torch.custom_ops import CompileModule
-from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig
+from rngd_pd.engines.fsdk import CompileModule
+from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
 from rngd_pd.paths import ARTIFACT_CACHE
 
 MODEL = "meta-llama/Llama-3.1-8B-Instruct"

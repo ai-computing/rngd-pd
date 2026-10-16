@@ -13,9 +13,9 @@ gate/up→SwiGLU→down+res. Weights+KV as inputs → compile ONCE, reuse all la
 import argparse, math, time, numpy as np, torch, sys
 torch.set_grad_enabled(False)
 import furiosa.torch
-from furiosa.torch import native_device as nd
-nd.set_fusion(8); nd.set_mesh_kind(nd.MeshKind.Mesh(2))
-from furiosa.torch.custom_ops import CompileModule
+from rngd_pd.engines.fsdk import open_device as _open_device
+_open_device(8, 2)
+from rngd_pd.engines.fsdk import CompileModule
 from rngd_pd.engines.model import ModelConfig, rmsnorm, GenericRuntime
 
 DEV = "rngd:0"; BF = torch.bfloat16

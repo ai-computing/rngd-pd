@@ -31,12 +31,12 @@ import numpy as np
 import torch
 
 import furiosa.torch  # noqa: F401
-from furiosa.torch import native_device as nd
+from rngd_pd.engines.fsdk import open_device as _open_device
 
-nd.set_fusion(8)
-nd.set_mesh_kind(nd.MeshKind.Mesh(2))
-from furiosa.torch.custom_ops import TacticKernelModule, CompileModule  # noqa: E402
-from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig  # noqa: E402
+_open_device(8)
+from rngd_pd.engines.fsdk import TacticKernelModule, CompileModule  # noqa: E402
+from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
+from rngd_pd.engines.fsdk import hint as _hint  # noqa: E402
 from rngd_pd.kernels.dsl_batch import (rms_dsl, zipadd_dsl, swiglu_dsl,
                                 softmax_dsl)  # noqa: E402
 
@@ -225,7 +225,7 @@ def main():
               torch.zeros(B, S, dtype=BF), torch.zeros(B, S, dtype=BF))
 
     cfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
-                   tactic_hint=getattr(TacticHintConfig, HINT),
+                   tactic_hint=_hint(HINT),
                    **MAX_SHAPES)
     print(f"[dbatch] compiling B={B} NG={NG} S={S} hint={HINT} "
           f"shapes={MAX_SHAPES.get('max_num_unique_shapes', 'unbounded')} "

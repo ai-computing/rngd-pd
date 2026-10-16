@@ -22,8 +22,8 @@ import torch
 from rngd_pd.kernels.prefill_full import (BF, H, M, NH, NKV, HD, G, PrefillModel,
                                 cpu_layer_p, HINT)
 from rngd_pd.kernels.prefill_chunk import rot_matrices
-from furiosa.torch.custom_ops import CompileModule
-from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig
+from rngd_pd.engines.fsdk import CompileModule
+from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
 
 
 def main():

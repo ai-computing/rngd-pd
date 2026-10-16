@@ -65,6 +65,11 @@ BASE_ENV = [
     # cannot compile it, and the worker drops back to group=2 if the artifact
     # is missing rather than crash-looping.
     ("RNGD_MAX_SHAPES", os.environ.get("RNGD_MAX_SHAPES", "8")),
+    # How long a decode worker waits for a layer's KV. The default five
+    # seconds only covers the transfer; it has to cover the prefill queue
+    # ahead of it, which grows with the decode batch width.
+    ("PD_KV_PULL_TIMEOUT", os.environ.get("PD_KV_PULL_TIMEOUT", "120")),
+    ("RNGD_BUCKETS", os.environ.get("RNGD_BUCKETS", "")),
 ]
 
 # Which decode scheduler the batched Furiosa worker runs. "static" holds a
@@ -75,6 +80,14 @@ RNGD_ADMIT_MIN = os.environ.get("RNGD_ADMIT_MIN", "2")
 # a host-side bake; the worker falls back to 2 when the artifact is not there.
 RNGD_GROUP = os.environ.get("RNGD_GROUP", "8")
 ATOM_C = os.environ.get("ATOM_C", "")         # ATOM prefill width; "" = S
+# The RNGD prefill graph is compiled for one width and a request pays all of
+# it whatever its prompt: 88 ms at C=512 for a 16-token prompt as much as for
+# a 448-token one. Separating the knob from S is the first step toward serving
+# several widths and routing each prompt to the smallest that fits.
+RNGD_C = os.environ.get("RNGD_C", "")
+# Extra prefill widths ride in BASE_ENV as RNGD_BUCKETS, read straight from the
+# environment there: BASE_ENV is built above this line, and a name defined
+# here would not exist yet when that list is evaluated.
 # Context width every graph is compiled for. Raising it means rebuilding every
 # artifact and doubling the KV that crosses per request, so it is one knob.
 S = os.environ.get("PD_S", "256")
@@ -82,7 +95,33 @@ S = os.environ.get("PD_S", "256")
 # cache never leaving it. Only three RNGD cards are usable here (npu3 has an
 # EDF loader fault), so it takes the batched decoder's card rather than adding
 # to the fleet — the two are mutually exclusive.
+# Decode widths the Furiosa side serves, one pod per width because the graph
+# shape is fixed at compile time. B is the only lever on decode efficiency:
+# a step reads every weight once and does B tokens with them, so its
+# arithmetic intensity -- and therefore its MFU ceiling -- is linear in B.
+RNGD_WIDTHS = [int(v) for v in os.environ.get("RNGD_WIDTHS", "1,4").split(",")]
+# How many prefill cards stand behind the decode pool. A prefill card runs near
+# 30% of peak and a decode card is held under 3% by bandwidth, so the ratio is
+# what sets system-level efficiency -- but a second prefill card only earns its
+# place when the prompt stream is heavy enough to keep it busy.
+PREFILL_N = int(os.environ.get("PD_PREFILL_N", "1"))
 SOLO = os.environ.get("PD_SOLO", "")
+# PD_SOLO replaces the batched decoder with the one-card control, which is the
+# right shape for an apples-to-apples efficiency number but makes the two
+# impossible to load at the same time. PD_SOLO_EXTRA keeps both up on the three
+# cards -- prefill, a decode pod, and solo -- so one load generator can hit
+# them under identical conditions instead of across two deployments minutes
+# apart. That matters here: the claim being tested is about behaviour under
+# concurrent load, and load is not reproducible across a redeploy.
+SOLO_EXTRA = os.environ.get("PD_SOLO_EXTRA", "")
+# Three usable RNGD cards, one pod each. Asking for more prefill cards than
+# that leaves over is a scheduling deadlock that shows up as Pending pods
+# twenty minutes later, so it is worth refusing here.
+RNGD_CARDS = int(os.environ.get("RNGD_CARDS", "3"))
+
+
+def rngd_decode_name(B):
+    return "sw-rngd-decode" if B == 1 else f"sw-rngd-decode-b{B}"
 SOLO_B = os.environ.get("PD_SOLO_B", "4")
 ATOM_C = ATOM_C or S               # one pass means width == context
 # "_lm" artifacts carry lm_head on the card. The card is 16.88 GB and the
@@ -92,21 +131,37 @@ ATOM_LM = os.environ.get("ATOM_LM", "_lm")
 
 # name, vendor, args, extra env, memory
 WORKERS = [
-    ("sw-rngd-prefill", "rngd",
-     f"--role prefill --backend rngd-full --C {S} --group 2 --chip 0 --S {S}", [], "64Gi"),
-    ("sw-rngd-decode", "rngd",
-     f"--role decode --backend rngd --chip 1 --S {S}", [], "64Gi"),
-    # Batched Furiosa decode: an eight-layer module reused four times. Two was
-    # not a choice, it was the largest that compiled — see RNGD_MAX_SHAPES
-    # above for what was actually binding. Chaining is close to free, so the
-    # win here is kernel quality, not the smaller dispatch count: at shapes=1
-    # the whole 32 layers compile into one call and run 60.19 ms/step, worse
-    # than the sixteen-call graph they replace.
-    ("sw-rngd-solo" if SOLO else "sw-rngd-decode-b4", "rngd",
-     (f"--role solo --C {S} --group 2 --B {SOLO_B} --batch-wait 8000 --chip 2 --S {S}" if SOLO else
-      f"--role decode --backend rngd --B 4 --group {RNGD_GROUP} --batch-wait 8000 "
-      f"--sched {RNGD_SCHED} --admit-min {RNGD_ADMIT_MIN} --chip 2 --S {S}"),
-     [], "96Gi"),
+    (f"sw-rngd-prefill{'' if i == 0 else i}", "rngd",
+     f"--role prefill --backend rngd-full --C {RNGD_C or S} --group 2 "
+     f"--chip {i} --S {S}",
+     [], "64Gi")
+    for i in range(PREFILL_N)
+] + ([
+    # One card holds prefill and decode with the cache never leaving it: the
+    # control the whole study needs, and mutually exclusive with the batched
+    # decoder because only three RNGD cards are usable here.
+    ("sw-rngd-solo", "rngd",
+     f"--role solo --C {S} --group 2 --decode-group {RNGD_GROUP} "
+     f"--B {SOLO_B} --batch-wait 8000 --chip {PREFILL_N} --S {S}", [], "96Gi"),
+] if SOLO else ([
+    # Same decode group as the disaggregated pod. Leaving solo on group=2
+    # while the PD decoder ran group=8 handed the comparison a confound worth
+    # about 9 ms a step -- solo's TPOT came out 33 ms against PD's 22 and it
+    # read as prefill interference, when most of it was just a worse kernel.
+    ("sw-rngd-solo", "rngd",
+     f"--role solo --C {S} --group 2 --decode-group {RNGD_GROUP} "
+     f"--B {SOLO_B} --batch-wait 8000 --sched {RNGD_SCHED} "
+     f"--admit-min {RNGD_ADMIT_MIN} "
+     f"--chip {PREFILL_N + len(RNGD_WIDTHS)} --S {S}", [], "96Gi"),
+] if SOLO_EXTRA else []) + [
+    (rngd_decode_name(B), "rngd",
+     (f"--role decode --backend rngd --chip {PREFILL_N + i} --S {S}" if B == 1 else
+      f"--role decode --backend rngd --B {B} --group {RNGD_GROUP} "
+      f"--batch-wait 8000 --sched {RNGD_SCHED} --admit-min {RNGD_ADMIT_MIN} "
+      f"--chip {PREFILL_N + i} --S {S}"),
+     [], "96Gi")
+    for i, B in enumerate(RNGD_WIDTHS)
+]) + [
     # Chunk width is what makes ATOM prefill linear in prompt length: at C=16
     # the weights are re-read P/16 times. C=128 cuts that eightfold.
     ("sw-atom-prefill", "atom",
@@ -117,7 +172,8 @@ WORKERS = [
 for b in (1, 2, 4):
     WORKERS.append((
         f"sw-atom-decode-b{b}", "atom",
-        f"--role decode --backend atom --B {b} --batch-wait 8000 --S {S}",
+        f"--role decode --backend atom --B {b} --batch-wait 8000 "
+        f"--sched {RNGD_SCHED} --admit-min {RNGD_ADMIT_MIN} --S {S}",
         [("RBLN_BATCH_ARTIFACT", f"{ART}/decode_S{S}_B{b}{ATOM_LM}.rbln"),
          ("RBLN_TABLES", f"{ART}/tables.npz")], "48Gi"))
 
@@ -126,13 +182,24 @@ def url(name):
     return f"http://{name}.{NS}.{SVC}"
 
 
-RNGD_DEC = ({"1": url("sw-rngd-decode")} if SOLO else
-            {"1": url("sw-rngd-decode"), "4": url("sw-rngd-decode-b4")})
+RNGD_DEC = ({} if SOLO else
+            {str(B): url(rngd_decode_name(B)) for B in RNGD_WIDTHS})
+
+# One URL when a single card prefills, a list when several do — the gateway
+# round-robins a list. Keeping the single case a bare string means every
+# existing config and every stored ConfigMap keeps its exact shape.
+RNGD_PRE = (url("sw-rngd-prefill") if PREFILL_N == 1 else
+            [url(f"sw-rngd-prefill{'' if i == 0 else i}") for i in range(PREFILL_N)])
+
+if PREFILL_N + (0 if SOLO else len(RNGD_WIDTHS)) + (1 if SOLO_EXTRA else 0) > RNGD_CARDS:
+    raise SystemExit(
+        f"RNGD 카드 {RNGD_CARDS}장인데 프리필 {PREFILL_N} + 디코드 "
+        f"{len(RNGD_WIDTHS)} 를 요구함 — PD_PREFILL_N 이나 RNGD_WIDTHS 를 줄일 것")
 
 TARGETS = {
-    "llama8b-rngd-alone": {"prefill": url("sw-rngd-prefill"),
+    "llama8b-rngd-alone": {"prefill": RNGD_PRE,
                            "decode": dict(RNGD_DEC)},
-    "llama8b-pd-forward": {"prefill": url("sw-rngd-prefill"),
+    "llama8b-pd-forward": {"prefill": RNGD_PRE,
                            "decode": {str(b): url(f"sw-atom-decode-b{b}")
                                       for b in (1, 2, 4)}},
     "llama8b-pd-reverse": {"prefill": url("sw-atom-prefill"),
@@ -141,7 +208,7 @@ TARGETS = {
                            "decode": {str(b): url(f"sw-atom-decode-b{b}")
                                       for b in (1, 2, 4)}},
 }
-if SOLO:
+if SOLO or SOLO_EXTRA:
     TARGETS["llama8b-solo"] = {"solo": url("sw-rngd-solo")}
 
 
