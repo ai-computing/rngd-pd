@@ -21,7 +21,7 @@ import numpy as np
 import torch
 
 from rngd_pd.kernels.decode_batch import DecodeModel, H, M, NH, NKV, HD, BF
-from furiosa.torch.custom_ops import CompileModule
+from rngd_pd.engines.fsdk import CompileModule
 from furiosa.torch.compiler import (Config as FCConfig, TacticHintConfig,
                                     TacticSortingPolicy)
 

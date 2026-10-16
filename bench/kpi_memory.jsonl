@@ -1,0 +1,1 @@
+{"model": "meta-llama/Llama-3.1-8B-Instruct", "S": 256, "nl": 32, "steps": 32, "kv_mb": 33.6, "host_staged": {"ms_p50": 23.35, "ms_mean": 23.37, "tok_s": 42.8}, "resident": {"ms_p50": 15.86, "ms_mean": 15.81, "tok_s": 63.25}, "speedup_x": 1.48}

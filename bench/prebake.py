@@ -20,7 +20,8 @@ import time
 
 import torch
 
-from rngd_pd.engines.decode_batch import decode_graph_spec, MAX_SHAPES
+from rngd_pd.engines.decode_batch import (decode_graph_spec, lmhead_graph_spec,
+                                          MAX_SHAPES)
 from rngd_pd.engines.artifact_cache import get_or_compile, exists, path_for
 from rngd_pd.paths import ARTIFACT_CACHE
 
@@ -37,6 +38,7 @@ POD_TORCH = os.environ.get("POD_TORCH", "2.11")
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--model", default="meta-llama/Llama-3.1-8B-Instruct")
     ap.add_argument("--B", type=int, default=4)
     ap.add_argument("--S", type=int, default=256)
     ap.add_argument("--group", type=int, default=8)
@@ -51,21 +53,29 @@ def main():
     print(f"torch {torch.__version__} (파드와 일치)")
 
     cap = MAX_SHAPES.get("max_num_unique_shapes", "무제한")
-    key, build = decode_graph_spec(a.B, a.S, a.group)
-    target = path_for(a.cache, key)
     print(f"B={a.B} S={a.S} group={a.group} shapes={cap}")
-    print(f"키 {key}\n경로 {target}")
-    if exists(target):
-        print("이미 구워져 있다 — 파드가 그대로 로드한다")
-        return
-
     os.makedirs(a.cache, exist_ok=True)
-    t0 = time.time()
-    _m, mode, secs = get_or_compile(a.cache, key, build, device=None)
-    print(f"{mode} in {secs:.0f}s (총 {time.time()-t0:.0f}s)")
-    assert exists(target), "컴파일은 됐는데 캐시에 안 남았다"
-    size = sum(os.path.getsize(target + e) for e in (".edf", ".w"))
-    print(f"캐시에 기록됨 {size/1e6:.1f} MB")
+
+    # Both graphs the pod would otherwise compile. Baking only the decode one
+    # left the lm_head behind, and at B=8 the pod dies compiling it -- the
+    # traceback names the lm_head, so the batch width never looks like the
+    # cause. The two belong in the same bake.
+    from transformers import AutoConfig
+    V = AutoConfig.from_pretrained(a.model).vocab_size
+    for label, (key, build) in (
+            ("decode", decode_graph_spec(a.B, a.S, a.group)),
+            ("lmhead", lmhead_graph_spec(a.B, V))):
+        target = path_for(a.cache, key)
+        print(f"[{label}] 키 {key}")
+        if exists(target):
+            print(f"[{label}] 이미 구워져 있다 — 파드가 그대로 로드한다")
+            continue
+        t0 = time.time()
+        _m, mode, secs = get_or_compile(a.cache, key, build, device=None)
+        assert exists(target), f"[{label}] 컴파일은 됐는데 캐시에 안 남았다"
+        size = sum(os.path.getsize(target + e) for e in (".edf", ".w"))
+        print(f"[{label}] {mode} in {secs:.0f}s, 캐시에 기록됨 {size/1e6:.1f} MB "
+              f"(총 {time.time()-t0:.0f}s)")
 
 
 if __name__ == "__main__":
