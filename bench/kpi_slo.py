@@ -37,7 +37,9 @@ import urllib.request
 
 import numpy as np
 
-GATEWAY = "http://192.0.2.3/rngd/llama8b-pd/completions"
+import cluster_env
+
+GATEWAY = cluster_env.gateway()
 TRACE = "/home/gspark/LLMServingSim/dataset/sharegpt_req300_rate10_llama.jsonl"
 SLO_MS = 150.0
 

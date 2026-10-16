@@ -27,7 +27,6 @@ in another configuration's number.
 """
 import argparse
 import json
-import os
 import subprocess
 import threading
 import time
@@ -35,11 +34,12 @@ import urllib.request
 
 import numpy as np
 
-GATEWAY = os.environ.get("PD_GATEWAY",
-                         "http://192.0.2.3/rngd/llama8b-pd/completions")
+import cluster_env
+
+GATEWAY = cluster_env.gateway()
 NS = "llm-serving"
 MODEL = "meta-llama/Llama-3.1-8B-Instruct"
-KUBECTL = ["ssh", "-p", "10022", "gspark@192.0.2.2", "kubectl"]
+KUBECTL = cluster_env.kubectl()
 
 RNGD_WEIGHT_BYTES = 8.03e9 * 2      # bf16, resident on the card
 ATOM_WEIGHT_BYTES = 6.98e9 * 2      # 32 layers fp16; embed/lm_head stay on host
