@@ -1,0 +1,21 @@
+name: rngd-pd
+layer: l3-serving
+kind: service
+summary: Llama-3.1-8B를 RNGD prefill + ATOM decode llm-d Pod로 분리 서빙하는 PD 서비스
+maturity: experimental
+hardware: [RNGD, ATOM]
+install: []                   # 패키징 없음: src/를 PYTHONPATH에 두고 실행
+test:
+  - PYTHONPATH=src python -m pytest -q tests/native_v4
+  - PYTHONPATH=src python -m rngd_pd.connector.transport
+  - python tests/test_connector_tcp.py
+deploy:
+  target: llm-d
+  manifests: deploy/k8s       # gen_sweep.py가 생성하는 평문 매니페스트 (kustomization 없음)
+  image: null                 # Pod는 ubuntu:22.04 + 호스트 마운트로 실행
+config:
+  env_example: cluster.example.env
+interfaces:
+  provides: [Workload, KVTransport, Metrics]
+  uses: []
+kpi: [MFU, 전력효율, 이종자원수, SLO]

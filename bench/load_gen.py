@@ -22,7 +22,6 @@ reported is what a caller feels: queueing included, per-request.
 """
 import argparse
 import json
-import os
 import threading
 import time
 import urllib.request
@@ -30,9 +29,9 @@ import urllib.request
 import numpy as np
 
 import _bootstrap  # noqa: F401
+import cluster_env
 
-GATEWAY = os.environ.get("PD_GATEWAY",
-                         "http://192.0.2.3/rngd/llama8b-pd/completions")
+GATEWAY = cluster_env.gateway()
 MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
 

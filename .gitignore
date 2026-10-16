@@ -23,3 +23,6 @@ venv/
 
 # run logs (results are kept as *.jsonl)
 *.log
+
+# site-specific endpoints (template: cluster.example.env)
+cluster.local.env
