@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd /home/user/workspace/01_pd_disag/rngd_llmd\\necho \\\"=== 1. 문법 ===\\\"; find src bench tests deploy -name \\\"*.py\\\" -print0 | xargs -0 python3 -m py_compile && echo \\\"  전부 OK\\\"\\necho \\\"===...",
-  "error": "Exit code 1\n=== 1. 문법 ===\nSorry: IndentationError: unexpected indent (serving_bench.py, line 59)=== 2. 옛 이름 잔존 ===\n=== 3. 패키지 내부 미해결 임포트 ===\nTraceback (most recent call last):\n  File \"<stdin>\", line 14, in <module>\n  File \"/usr/lib/python3.10/ast.py\", line 50, in parse\n    return compile(source, filename, mode, flags,\n  File \"<unknown>\", line 59\n    import numpy as np\nIndentationError: unexpected indent",
-  "timestamp": "2026-08-19T02:41:37.278Z",
-  "retry_count": 1
-}

@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"python3 -c \\\"\\nimport yaml,json\\ndocs=[d for d in yaml.safe_load_all(open('sweep-matrix.yaml')) if d]\\ncm=[d for d in docs if d['kind']=='ConfigMap'][0]\\nt=json.loads(cm['data']['targets.j...",
-  "error": "Exit code 1\nTraceback (most recent call last):\n  File \"<string>\", line 11, in <module>\nKeyError: 'template'\ntargets OK:\n  llama8b-rngd-alone -> {'prefill': 'http://sw-rngd-prefill.llm-serving.svc.cluster.local:8000', 'decode': 'http://sw-rngd-decode.llm-serving.svc.cluster.local:8000'}\n  llama8b-pd-forward -> {'prefill': 'http://sw-rngd-prefill.llm-serving.svc.cluster.local:8000', 'decode': {'1': 'http://sw-atom-decode-b1.llm-serving.svc.cluster.local:8000', '2': 'http://sw-atom-decode-b2.llm-se...",
-  "timestamp": "2026-08-18T12:49:35.206Z",
-  "retry_count": 1
-}
