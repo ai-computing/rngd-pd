@@ -44,21 +44,56 @@ KUBECTL = ["ssh", "-p", "10022", "user@192.0.2.2", "kubectl"]
 RNGD_WEIGHT_BYTES = 8.03e9 * 2      # bf16, resident on the card
 ATOM_WEIGHT_BYTES = 6.98e9 * 2      # 32 layers fp16; embed/lm_head stay on host
 
-# name, model route, batch widths, prefill pod, decode pods by width
-CONFIGS = [
-    ("rngd_alone", "llama8b-rngd-alone", [1, 4], "sw-rngd-prefill",
-     {1: "sw-rngd-decode", 4: "sw-rngd-decode-b4"}),
-    ("pd_forward", "llama8b-pd-forward", [1, 2, 4], "sw-rngd-prefill",
-     {b: f"sw-atom-decode-b{b}" for b in (1, 2, 4)}),
-    ("pd_reverse", "llama8b-pd-reverse", [1, 4], "sw-atom-prefill",
-     {1: "sw-rngd-decode", 4: "sw-rngd-decode-b4"}),
-    ("atom_alone", "llama8b-atom-alone", [1, 2, 4], "sw-atom-prefill",
-     {b: f"sw-atom-decode-b{b}" for b in (1, 2, 4)}),
-]
+# The deployment is no longer one fixed shape: decode width and the number of
+# prefill cards are both knobs now, and the sweep has to describe whatever was
+# actually applied or it will sample the wrong cards' power. These mirror
+# gen_sweep.py's RNGD_WIDTHS / PD_PREFILL_N and must be passed to match.
+def _rngd_decode_name(B):
+    return "sw-rngd-decode" if B == 1 else f"sw-rngd-decode-b{B}"
 
-# which physical RNGD index each pod was pinned to (--chip in the manifest)
-RNGD_CHIP = {"sw-rngd-prefill": 0, "sw-rngd-decode": 1,
-             "sw-rngd-decode-b4": 2}
+
+def build_configs(rngd_widths, atom_widths, prefill_n, solo_b=0):
+    """(name, route, widths, prefill pods, decode pods by width) per config.
+
+    `solo` is the control the whole study needs and it does not fit the shape:
+    one pod prefills and decodes with the cache never leaving the card, so it
+    has no prefill/decode pair and no handoff. It is listed with an empty
+    prefill list and itself as the decode pod, which is literally true and
+    keeps the power sampler counting exactly the one card it occupies.
+    """
+    rp = [f"sw-rngd-prefill{'' if i == 0 else i}" for i in range(prefill_n)]
+    rd = {b: _rngd_decode_name(b) for b in rngd_widths}
+    ad = {b: f"sw-atom-decode-b{b}" for b in atom_widths}
+    if solo_b:
+        return [("solo", "llama8b-solo", [solo_b], [], {solo_b: "sw-rngd-solo"})]
+    return [
+        ("rngd_alone", "llama8b-rngd-alone", sorted(rd), rp, rd),
+        ("pd_forward", "llama8b-pd-forward", sorted(ad), rp, ad),
+        ("pd_reverse", "llama8b-pd-reverse", sorted(rd), ["sw-atom-prefill"], rd),
+        ("atom_alone", "llama8b-atom-alone", sorted(ad), ["sw-atom-prefill"], ad),
+    ]
+
+
+def build_chipmap(rngd_widths, prefill_n, solo_b=0, solo_extra=False):
+    """Pod -> physical RNGD index, the same assignment gen_sweep.py emits.
+
+    Two layouts put solo on different cards. PD_SOLO replaces the batched
+    decoder, so solo lands on the card that pod would have had; PD_SOLO_EXTRA
+    keeps both and puts solo after them. Getting this wrong does not fail --
+    it samples an idle card and reports its power, which is how a solo run
+    came back at 40 W and 0% utilisation and doubled its GFLOPS/W.
+    """
+    m = {f"sw-rngd-prefill{'' if i == 0 else i}": i for i in range(prefill_n)}
+    if solo_b:
+        m["sw-rngd-solo"] = prefill_n + (len(rngd_widths) if solo_extra else 0)
+        return m
+    for i, b in enumerate(rngd_widths):
+        m[_rngd_decode_name(b)] = prefill_n + i
+    return m
+
+
+CONFIGS = build_configs([1, 4], [1, 2, 4], 1)
+RNGD_CHIP = build_chipmap([1, 4], 1)
 
 
 # --------------------------------------------------------------------------
@@ -73,6 +108,7 @@ class Sampler(threading.Thread):
         self.stop_flag = threading.Event()
         self.rngd_w, self.rngd_u = {}, {}
         self.atom_w, self.atom_u, self.atom_m = {}, {}, {}
+        self.load1, self.foreign_cpu = [], []
 
     def _rngd(self):
         try:
@@ -114,6 +150,30 @@ class Sampler(threading.Thread):
         except Exception:
             pass
 
+    def _host(self):
+        """CPU this host is spending on anything that is not ours.
+
+        The node is shared, and our path does real host-side work -- KV
+        marshalling, HTTP, the argmax on some paths -- so a neighbour's job
+        shows up in our latencies without touching a single NPU. Recording it
+        per cell is the difference between "this number is slow" and "this
+        number was measured while someone else had the machine".
+        """
+        try:
+            with open("/proc/loadavg") as fh:
+                self.load1.append(float(fh.read().split()[0]))
+            out = subprocess.run(
+                ["ps", "-eo", "user:32,pcpu", "--no-headers"],
+                capture_output=True, text=True, timeout=4).stdout
+            foreign = 0.0
+            for line in out.splitlines():
+                parts = line.split()
+                if len(parts) == 2 and parts[0] not in ("user", "root"):
+                    foreign += float(parts[1])
+            self.foreign_cpu.append(foreign)
+        except Exception:
+            pass
+
     def _atom(self):
         try:
             js = json.loads(subprocess.run(["rbln-stat", "--json"],
@@ -133,6 +193,7 @@ class Sampler(threading.Thread):
         while not self.stop_flag.is_set():
             self._rngd()
             self._atom()
+            self._host()
             time.sleep(self.period)
 
     def report(self, rngd_idxs, atom_devs):
@@ -146,6 +207,9 @@ class Sampler(threading.Thread):
             "atom_power_w": agg(self.atom_w, atom_devs, np.mean),
             "atom_util_pct": agg(self.atom_u, atom_devs, np.max),
             "atom_mem_gb": agg(self.atom_m, atom_devs, np.max),
+            "host_load1": round(float(np.mean(self.load1)), 2) if self.load1 else None,
+            "foreign_cpu_pct": round(float(np.mean(self.foreign_cpu)), 1)
+                               if self.foreign_cpu else None,
         }
 
 
@@ -265,12 +329,34 @@ def main():
     ap.add_argument("--D", type=int, default=16)
     ap.add_argument("--reps", type=int, default=3, help="timed reps per cell")
     ap.add_argument("--only", default="", help="comma-separated config names")
+    ap.add_argument("--rngd-widths", default="1,4",
+                    help="must match gen_sweep.py's RNGD_WIDTHS")
+    ap.add_argument("--atom-widths", default="1,2,4")
+    ap.add_argument("--prefill-n", type=int, default=1,
+                    help="must match gen_sweep.py's PD_PREFILL_N")
+    ap.add_argument("--atom-C", type=int, default=0,
+                    help="ATOM prefill chunk width; 0 = the context width S")
+    ap.add_argument("--S", type=int, default=256)
+    ap.add_argument("--solo-b", type=int, default=0,
+                    help="measure the one-card control at this batch width")
+    ap.add_argument("--solo-extra", action="store_true",
+                    help="solo runs alongside the decode pods (PD_SOLO_EXTRA), "
+                         "not in place of one — it changes which card it is on")
     a = ap.parse_args()
     P_LIST = [int(v) for v in a.P.split(",")]
+    rw = [int(v) for v in a.rngd_widths.split(",")]
+    aw = [int(v) for v in a.atom_widths.split(",")]
+    a.atom_C = a.atom_C or a.S
+    global CONFIGS, RNGD_CHIP
+    CONFIGS = build_configs(rw, aw, a.prefill_n, a.solo_b)
+    RNGD_CHIP = build_chipmap(rw, a.prefill_n, a.solo_b, a.solo_extra)
     keep = set(a.only.split(",")) if a.only else None
     cfgs = [c for c in CONFIGS if keep is None or c[0] in keep]
+    print(f"[sweep] S={a.S} RNGD widths={rw} ATOM widths={aw} "
+          f"prefill_n={a.prefill_n} chips={RNGD_CHIP}", flush=True)
 
-    pods = sorted({c[3] for c in cfgs} | {p for c in cfgs for p in c[4].values()})
+    pods = sorted({p for c in cfgs for p in c[3]} |
+                  {p for c in cfgs for p in c[4].values()})
     print(f"[sweep] pods needed: {pods}", flush=True)
     wait_ready(pods)
     amap = atom_device_map()
@@ -279,11 +365,15 @@ def main():
     pr = Prompts()
     rows = []
     fh = open(a.out, "w")
-    for name, model, widths, ppod, dpods in cfgs:
+    for name, model, widths, ppods, dpods in cfgs:
         for B in widths:
             dpod = dpods[B]
-            rngd_idxs = [RNGD_CHIP[p] for p in (ppod, dpod) if p in RNGD_CHIP]
-            atom_devs = [amap[p] for p in (ppod, dpod) if p in amap]
+            # Every card the cell occupies, prefill pool included: with two
+            # prefill pods behind one decode pod, sampling only the first would
+            # halve the configuration's reported power.
+            used = list(ppods) + [dpod]
+            rngd_idxs = [RNGD_CHIP[p] for p in used if p in RNGD_CHIP]
+            atom_devs = [amap[p] for p in used if p in amap]
             for P in P_LIST:
                 prompts = [pr.make(P) for _ in range(B)]
                 try:
@@ -310,22 +400,41 @@ def main():
                 pd = [o["pd"] for o in live]
                 med = lambda k: float(np.median([p[k] for p in pd]))
                 prefill_ms = med("prefill_ms")
+                # Each worker times its own request, and the device lock
+                # serialises them, so a per-request median understates how long
+                # the prefill card was actually occupied by the batch. The
+                # slowest request's prefill window is the closest thing we have
+                # to that span, and dividing B*P tokens by the median instead
+                # would report a prefill rate the card never sustained.
+                prefill_span_ms = float(np.max([p["prefill_ms"] for p in pd]))
+                ttft_span_ms = float(np.max([p["ttft_ms"] for p in pd]))
                 tpot_ms = med("tpot_ms")
                 n_out = sum(o["usage"]["completion_tokens"] for o in live)
                 # weights are streamed once per decode step regardless of B, and
                 # once per prefill pass — ATOM prefills in chunks of 16.
                 dec_bytes = (RNGD_WEIGHT_BYTES if dpod in RNGD_CHIP
                              else ATOM_WEIGHT_BYTES)
-                if ppod in RNGD_CHIP:
+                # solo has no separate prefill pod: the one card that decodes
+                # also prefilled, so its weight stream is the decode pod's.
+                pre_pod = ppods[0] if ppods else dpod
+                if pre_pod in RNGD_CHIP:
                     pre_bytes = RNGD_WEIGHT_BYTES          # one whole-prompt pass
                 else:
-                    pre_bytes = ATOM_WEIGHT_BYTES * int(np.ceil(P / 16))
-                row = {"config": name, "P": P, "D": a.D, "B": B,
+                    # ATOM prefills in chunks of C, and C is the context width
+                    # now, not the 16 an earlier build used. Leaving 16 here
+                    # inflated ATOM's prefill bandwidth by P/16 -- a prompt of
+                    # 224 tokens was credited with fourteen weight passes it
+                    # never made.
+                    pre_bytes = ATOM_WEIGHT_BYTES * int(np.ceil(P / a.atom_C))
+                row = {"config": name, "P": P, "D": a.D, "B": B, "S": a.S,
+                       "prefill_n": a.prefill_n,
                        "ttft_ms": round(med("ttft_ms"), 1),
                        "tpot_ms": round(tpot_ms, 2),
                        "tokens_s": round(n_out / (wall / 1e3), 2),
                        "wall_ms": round(wall, 1),
                        "prefill_ms": round(prefill_ms, 1),
+                       "prefill_span_ms": round(prefill_span_ms, 1),
+                       "ttft_span_ms": round(ttft_span_ms, 1),
                        "prefill_ms_per_token": round(prefill_ms / P, 3),
                        "handoff_ms": round(med("kv_save_ms") + med("kv_load_ms"), 1),
                        "kv_mb": pd[0]["kv_mb"],

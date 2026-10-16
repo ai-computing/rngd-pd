@@ -1,0 +1,1 @@
+{"hint": "ForLlmModelDecode", "shapes": 8, "sort": "Random", "compile_s": 502.6, "ms_step": 5.96, "ms_token": 0.74, "gbs": 2695}
