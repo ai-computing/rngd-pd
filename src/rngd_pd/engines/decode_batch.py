@@ -22,8 +22,9 @@ import torch
 
 from rngd_pd.kernels.decode_batch import (BF, H, M, NH, NKV, HD, G, DecodeModel,
                                 rot_batch, HINT, MAX_SHAPES)
-from furiosa.torch.custom_ops import CompileModule
-from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig
+from rngd_pd.engines.fsdk import CompileModule
+from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
+from rngd_pd.engines.fsdk import hint as _hint
 from rngd_pd.paths import ARTIFACT_CACHE
 
 MODEL = "meta-llama/Llama-3.1-8B-Instruct"
@@ -58,7 +59,7 @@ def decode_graph_spec(B, S, group):
               torch.zeros(B, HD, HD, dtype=BF),
               torch.zeros(B, S, dtype=BF), torch.zeros(B, S, dtype=BF))
     ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
-                    tactic_hint=getattr(TacticHintConfig, HINT),
+                    tactic_hint=_hint(HINT),
                     **MAX_SHAPES)
     build = lambda: CompileModule.from_module(DecodeModel(B, S, group), sample,
                                               compiler_config=ccfg)
@@ -88,6 +89,70 @@ def resolve_group(B, S, group, cache_dir, fallback=2):
           f"파드 안에서 굽는 것은 실패하므로 group={fallback}로 내린다. "
           f"되살리려면 호스트에서 bench/prebake.py --group {group}", flush=True)
     return fallback
+
+
+# Above this width the lm_head matmul stops being matrix-vector.
+LMHEAD_VECTOR_B = int(os.environ.get("RNGD_LMHEAD_VECTOR_B", "4"))
+
+
+def lmhead_graph_spec(B, V, NG=32):
+    """The cache key and the build for the on-card lm_head, in one place.
+
+    The decode graph was already baked on the host for exactly this reason,
+    but the lm_head was left for the pod to compile, and the pod cannot: it
+    raises UnsupportedOpError at B=8 where the same config compiles on the bare
+    host. That made every large-batch deployment a crash loop whose traceback
+    pointed at the lm_head rather than at the batch width, so the two are baked
+    together now and by the same key derivation as the decode graph.
+    """
+    import torch
+    from rngd_pd.engines.artifact_cache import cache_key
+    from rngd_pd.kernels import dsl_batch as LEB
+    from rngd_pd.engines.fsdk import CompileModule, TacticKernelModule
+    from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
+    from rngd_pd.engines.fsdk import NEW as _NEW
+
+    Vp = (V + NG - 1) // NG * NG
+
+    class LmHead(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.rms = TacticKernelModule(LEB.rms_dsl(B))
+
+        def forward(self, x, nw, eps, nh, wlm):
+            h = self.rms(x, nw, eps, nh)[0]              # [B,H]
+            return torch.matmul(wlm, h.t())              # [NG,Vp/NG,B]
+
+    sample = (torch.zeros(B, H, dtype=BF), torch.zeros(B, H, dtype=BF),
+              torch.zeros(B, H, dtype=torch.float32),
+              torch.zeros(B, H, dtype=torch.float32),
+              torch.zeros(NG, Vp // NG, H, dtype=BF))
+    # On 2026.2.0 the hint flips sign with the batch, and there is no rule to
+    # it: measured over all seven, the winner is ForLlmModelDecode at B=4
+    # (1.24 ms), ForMiscModel at B=8 (1.21) and Default at B=16 (1.34), while
+    # the losers sit at ~45 ms -- a 37x cliff, and the whole of "batched decode
+    # collapses past four", since the decode graph itself only goes 4.87 ->
+    # 5.96 ms a call. LMHEAD_VECTOR_B picks its way across that by hand.
+    #
+    # 2026.3.0 flattens it: every one of its seven hints lands in 1.08-1.37 ms
+    # at B=4, 8 and 16, so there is nothing to pick around and the width no
+    # longer enters. ComputeIOBalanced is the best of them at B=4 and B=16 and
+    # within 0.01 ms of the best at B=8.
+    if _NEW:
+        hint = TacticHintConfig.ForLlmModelComputeIOBalanced
+    else:
+        hint = (TacticHintConfig.ForLlmModelDecode if B <= LMHEAD_VECTOR_B
+                else TacticHintConfig.NoConstraint)
+    ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
+                    tactic_hint=hint)
+    # the hint belongs in the key: two widths that share one would otherwise
+    # load each other's artifact and the fix would silently do nothing
+    key = cache_key(kind="batch-lmhead", model=MODEL, B=B, V=V, groups=NG,
+                    hint=hint.__class__.__name__ + str(hint))
+    build = lambda: CompileModule.from_module(LmHead(), sample,
+                                              compiler_config=ccfg)
+    return key, build
+
 
 
 class BatchDecodeEngine:
@@ -177,35 +242,15 @@ class BatchDecodeEngine:
         one part of the step that still scales with B, and at B=4 it was three
         quarters of the time.
         """
-        from rngd_pd.kernels import dsl_batch as LEB
-        from furiosa.torch.custom_ops import CompileModule, TacticKernelModule
         B = self.B
         V = self.lm.shape[0]
         NG = 32
         Vp = (V + NG - 1) // NG * NG
         self.V, self.NGV, self.Vp = V, NG, Vp
-
-        class LmHead(torch.nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.rms = TacticKernelModule(LEB.rms_dsl(B))
-
-            def forward(self, x, nw, eps, nh, wlm):
-                h = self.rms(x, nw, eps, nh)[0]              # [B,H]
-                return torch.matmul(wlm, h.t())              # [NG,Vp/NG,B]
-
-        sample = (torch.zeros(B, H, dtype=BF), torch.zeros(B, H, dtype=BF),
-                  torch.zeros(B, H, dtype=torch.float32),
-                  torch.zeros(B, H, dtype=torch.float32),
-                  torch.zeros(NG, Vp // NG, H, dtype=BF))
-        ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
-                        tactic_hint=TacticHintConfig.ForLlmModelDecode)
-        build = lambda: CompileModule.from_module(LmHead(), sample,
-                                                  compiler_config=ccfg)
+        key, build = lmhead_graph_spec(B, V, NG)
         t0 = time.time()
         if cache_dir:
-            from rngd_pd.engines.artifact_cache import get_or_compile, cache_key
-            key = cache_key(kind="batch-lmhead", model=MODEL, B=B, V=V, groups=NG)
+            from rngd_pd.engines.artifact_cache import get_or_compile
             self.lmh, mode, secs = get_or_compile(cache_dir, key, build, device=None)
             print(f"[batch-lmhead] {mode} in {secs:.0f}s", flush=True)
         else:
@@ -223,23 +268,85 @@ class BatchDecodeEngine:
     def _df(self, v):
         return torch.from_numpy(np.ascontiguousarray(v)).to(torch.float32).to(self.dev)
 
-    def load_kv(self, Ks, Vs):
-        """Stack per-stream caches onto the card, one transfer per layer group."""
-        B, S = self.B, self.S
+    def prepare_kv(self, Ks, Vs):
+        """Everything the upload needs that does not touch the card.
+
+        The stack and the float32 -> bfloat16 cast are host work, and they are
+        the larger half: at B=4, S=512 the stack copies 536 MB and the cast
+        reads that and writes 268 MB, against a 268 MB transfer. Doing them
+        inside the device lock charged all of it to the card and blocked every
+        other device op for the duration. Split out, it can run while the other
+        card is still prefilling.
+        """
+        B = self.B
+        Ks, Vs = list(Ks), list(Vs)
         while len(Ks) < B:                       # pad the unused lanes
             Ks.append(Ks[-1]); Vs.append(Vs[-1])
-        K = np.stack(Ks, 1)                      # [nl,B,NKV,HD,S]
-        V = np.stack(Vs, 1)                      # [nl,B,NKV,S,HD]
-        Kd = [self._d(K[g * self.NG:(g + 1) * self.NG]) for g in range(self.ngroups)]
-        Vd = [self._d(V[g * self.NG:(g + 1) * self.NG]) for g in range(self.ngroups)]
+        # Entries arrive either as float32 numpy (no prefetch staged them) or
+        # as bfloat16 torch tensors the prefetch already cast during prefill.
+        # Stacking the cast form moves half the bytes and skips the cast here,
+        # which is the whole point of doing it early.
+        def cast(a):
+            return a if torch.is_tensor(a) else torch.from_numpy(
+                np.ascontiguousarray(a)).to(BF)
+        K = torch.stack([cast(a) for a in Ks], 1)   # [nl,B,NKV,HD,S]
+        V = torch.stack([cast(a) for a in Vs], 1)   # [nl,B,NKV,S,HD]
+        grp = lambda T, g: T[g * self.NG:(g + 1) * self.NG].contiguous()
+        return ([grp(K, g) for g in range(self.ngroups)],
+                [grp(V, g) for g in range(self.ngroups)])
+
+    @staticmethod
+    def stage_host_kv(K, V):
+        """float32 host arrays -> bfloat16 host tensors, off the critical path.
+
+        Runs in the prefetch thread while the other card is still prefilling,
+        so the batch inherits tensors that are already the width the card
+        wants. Touches no device, so it cannot contend with a decode in flight.
+        """
+        return (torch.from_numpy(np.ascontiguousarray(K)).to(BF),
+                torch.from_numpy(np.ascontiguousarray(V)).to(BF))
+
+    def upload_prepared_kv(self, prepared):
+        """The part that actually needs the card: one transfer per layer group.
+
+        Deliberately not named upload_kv — the class already has one, taking
+        host arrays, and shadowing it silently broke every batch with a
+        TypeError that pointed at the caller rather than the collision.
+        """
+        Kh, Vh = prepared
+        return ([t.to(self.dev) for t in Kh], [t.to(self.dev) for t in Vh])
+
+    def load_kv(self, Ks, Vs):
+        """Stack per-stream caches onto the card, one transfer per layer group."""
+        return self.upload_prepared_kv(self.prepare_kv(Ks, Vs))
+
+    def write_slot_kv(self, Kd, Vd, idx, K, V):
+        """Replace one lane of the resident cache, in place, on the card.
+
+        The claim that a slot cannot be replaced in place was never tested; it
+        can, bit-exactly, and it is what the continuous scheduler needed. The
+        round trip it replaces moves the whole batch to admit one stream --
+        B times the bytes that actually change -- and measured 67 ms per layer
+        group against 2.4 ms for the lane write.
+
+        K and V arrive either as float32 numpy or as the bfloat16 host tensors
+        the prefetch staged during prefill; both are accepted so the caller
+        does not have to care which path fed it.
+        """
+        cast = lambda a: a if torch.is_tensor(a) else torch.from_numpy(
+            np.ascontiguousarray(a)).to(BF)
+        Kh, Vh = cast(K), cast(V)
+        for g in range(self.ngroups):
+            sl = slice(g * self.NG, (g + 1) * self.NG)
+            Kd[g][:, idx] = Kh[sl].to(self.dev)
+            Vd[g][:, idx] = Vh[sl].to(self.dev)
         return Kd, Vd
 
     def download_kv(self, Kd, Vd):
         """Resident cache back to the host as [nl,B,NKV,HD,S] / [nl,B,NKV,S,HD].
 
-        Only needed when the batch composition changes: a slot cannot be
-        replaced in place, so the whole tensor is rebuilt around the new one.
-        In steady state the cache never leaves the card.
+        Kept for the blank/reset path and for diagnostics. Admission no longer
+        uses it -- see write_slot_kv.
         """
         # Cast on the host, not the card: bf16 -> f32 is unsupported on RNGD, so
         # .float() before .cpu() routes the whole tensor through a CPU-bridged

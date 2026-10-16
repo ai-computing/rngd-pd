@@ -32,12 +32,11 @@ import numpy as np
 import torch
 
 import furiosa.torch  # noqa: F401
-from furiosa.torch import native_device as nd
+from rngd_pd.engines.fsdk import open_device as _open_device
 
-nd.set_fusion(8)
-nd.set_mesh_kind(nd.MeshKind.Mesh(2))
-from furiosa.torch.custom_ops import TacticKernelModule, CompileModule  # noqa: E402
-from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig  # noqa: E402
+_open_device(8)
+from rngd_pd.engines.fsdk import TacticKernelModule, CompileModule  # noqa: E402
+from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig  # noqa: E402
 
 BF = torch.bfloat16
 H, M, NH, NKV, HD = 4096, 14336, 32, 8, 128

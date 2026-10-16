@@ -7,13 +7,13 @@ so tok/s ≈ B × single-batch until compute-bound (ridge ~171). This is THE rea
 Sweep batch: python3 llama_engine_batch.py --nl 8 --tactic Decode --batch 1,8,32,64
 """
 import torch, furiosa.torch
-from furiosa.torch import native_device as nd
-nd.set_fusion(8); nd.set_mesh_kind(nd.MeshKind.Mesh(2))
+from rngd_pd.engines.fsdk import open_device as _open_device
+_open_device(8, 2)
 import sys, math, time, argparse
 try: import _tv_patch  # noqa
 except Exception: pass
-from furiosa.torch.custom_ops import TacticKernelModule, CompileModule
-from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig
+from rngd_pd.engines.fsdk import TacticKernelModule, CompileModule
+from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
 
 H = 4096; M = 14336; NUM_HEADS = 32; NUM_KV = 8; HEAD_DIM = 128
 GQA_GROUP = NUM_HEADS // NUM_KV; EPS = 1e-5; NL = 32

@@ -22,11 +22,17 @@ import numpy as np
 import torch
 
 from rngd_pd.kernels.prefill_full import (BF, H, M, NH, NKV, HD, G, PrefillModel, HINT)
-from furiosa.torch.custom_ops import CompileModule
-from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig
+from rngd_pd.engines.fsdk import CompileModule
+from rngd_pd.engines.fsdk import FCConfig, NEW, dev_str, hint
 from rngd_pd.paths import ARTIFACT_CACHE
 
 MODEL = "meta-llama/Llama-3.1-8B-Instruct"
+
+
+def _compiler_config(tactic):
+    legacy = {} if NEW else dict(allow_external_operators=True,
+                                allow_unlowered_operators=True)
+    return FCConfig(tactic_hint=hint(tactic), **legacy)
 
 
 def rot_matrices_fast(inv, C):
@@ -43,13 +49,59 @@ def rot_matrices_fast(inv, C):
     return out
 
 
+class _DevicePrefillStage:
+    """One prefill, advanced a layer group at a time.
+
+    advance() runs the next group and returns True when the pass is done; the
+    caller holds the device lock for that call only, so a decode step can land
+    between groups. result() assembles the cache exactly as the blocking path
+    did.
+    """
+
+    def __init__(self, eng, tokens):
+        self.e, self.P = eng, len(tokens)
+        self.C = eng.pick(self.P)
+        if self.P > self.C:
+            raise ValueError(f"prompt {self.P} exceeds the widest compiled "
+                             f"bucket C={self.C}")
+        b = eng.buckets[self.C]
+        toks = list(tokens) + [tokens[-1]] * (self.C - self.P)
+        self.x = eng._d(eng.embed[toks].astype(np.float32))
+        self.Ks, self.Vs, self.g = [], [], 0
+        self._b = b
+
+    def advance(self, n=1):
+        """Run up to n layer groups; True when the pass is finished.
+
+        One group per iteration bounds the stall at ~4 ms but pairs every
+        group with a whole decode step, so admitting one stream costs sixteen
+        steps -- at B=8 that was 480 ms a stream and three seconds to fill the
+        batch. Several groups per iteration keeps the stall under one step
+        while cutting the admission to a handful of iterations.
+        """
+        for _ in range(n):
+            self.x, k, v = self.e._call(self._b, self.g, self.x)
+            self.Ks.append(k); self.Vs.append(v)
+            self.g += 1
+            if self.g >= self.e.ngroups:
+                return True
+        return False
+
+    def result(self):
+        return self.e._device_prefill_finish(self.C, self.P, self.Ks, self.Vs, self.x)
+
+
 class FullPrefillEngine:
-    def __init__(self, cfg, sd, C=256, group=2, chip=2, cache_dir=None):
+    def __init__(self, cfg, sd, C=256, group=2, chip=2, cache_dir=None, S=0):
+        # C is how wide a prompt this graph can take in one pass; S is how wide
+        # the cache the consumer keeps. They were one number, which made the
+        # prefill width impossible to lower without also lowering the context.
         self.C, self.NG = C, group
+        self.S = S or C
         self.nl = cfg.n_layers
         self.ngroups = self.nl // group
         assert self.nl % group == 0
-        self.dev = f"rngd:{chip}"
+        self.dev = dev_str(chip)
         self.eps = cfg.eps
         self.embed = sd["model.embed_tokens.weight"]
         self.lm = sd["lm_head.weight"]
@@ -57,56 +109,101 @@ class FullPrefillEngine:
         sq, sc = math.sqrt(H), 1.0 / math.sqrt(HD)
         d = self._d
 
-        self.groups = []
+        # Seven of the nine tensors a group needs do not depend on the width;
+        # only the two layernorm weights are tiled to C. Splitting them is what
+        # lets several widths live on one card: the 16 GB of projections are
+        # shared and a bucket costs C x 0.5 MB per layer on top.
+        self.gw = []
+        p = lambda i, k: sd[f"model.layers.{i}.{k}"].astype(np.float32)
         for g in range(self.ngroups):
             idx = range(g * group, (g + 1) * group)
-            p = lambda i, k: sd[f"model.layers.{i}.{k}"].astype(np.float32)
-            self.groups.append((
-                torch.stack([d(np.tile(p(i, "input_layernorm.weight") * sq, (C, 1))) for i in idx]),
+            self.gw.append((
                 torch.stack([d((p(i, "self_attn.q_proj.weight") * sc).T.copy()) for i in idx]),
                 torch.stack([d(p(i, "self_attn.k_proj.weight").T.copy()) for i in idx]),
                 torch.stack([d(p(i, "self_attn.v_proj.weight").T.copy()) for i in idx]),
                 torch.stack([d(p(i, "self_attn.o_proj.weight").T.copy()) for i in idx]),
-                torch.stack([d(np.tile(p(i, "post_attention_layernorm.weight") * sq, (C, 1))) for i in idx]),
                 torch.stack([d(p(i, "mlp.gate_proj.weight").T.copy()) for i in idx]),
                 torch.stack([d(p(i, "mlp.up_proj.weight").T.copy()) for i in idx]),
                 torch.stack([d(p(i, "mlp.down_proj.weight").T.copy()) for i in idx]),
             ))
+        # the untiled norms, kept on the host: 0.5 MB, and a new bucket needs them
+        self._n1 = [p(i, "input_layernorm.weight") * sq for i in range(self.nl)]
+        self._n2 = [p(i, "post_attention_layernorm.weight") * sq for i in range(self.nl)]
+        self._inv = cfg.inv_freq()
 
-        sample = (torch.zeros(C, H, dtype=BF),
-                  torch.zeros(C, H, dtype=torch.float32), torch.zeros(C, H, dtype=torch.float32),
-                  torch.zeros(group, C, H, dtype=BF),
-                  torch.zeros(group, H, NH * HD, dtype=BF), torch.zeros(group, H, NKV * HD, dtype=BF),
-                  torch.zeros(group, H, NKV * HD, dtype=BF), torch.zeros(group, NH * HD, H, dtype=BF),
-                  torch.zeros(group, C, H, dtype=BF),
-                  torch.zeros(group, H, M, dtype=BF), torch.zeros(group, H, M, dtype=BF),
-                  torch.zeros(group, M, H, dtype=BF),
-                  torch.zeros(C, HD, HD, dtype=BF), torch.zeros(1, G * C, C, dtype=BF))
-        ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
-                        tactic_hint=getattr(TacticHintConfig, HINT))
-        build = lambda: CompileModule.from_module(PrefillModel(C, group), sample,
-                                                  compiler_config=ccfg)
+        self.buckets = {}
+        self._cache_dir = cache_dir
         t0 = time.time()
-        if cache_dir:
-            from rngd_pd.engines.artifact_cache import get_or_compile, cache_key
-            key = cache_key(kind="full-prefill", model=MODEL, C=C, nl=group, hint=HINT)
-            self.m, mode, secs = get_or_compile(cache_dir, key, build, device=None)
-            print(f"[full-engine] {mode} in {secs:.0f}s", flush=True)
-        else:
-            self.m = build()
-            print(f"[full-engine] compiled in {time.time()-t0:.0f}s", flush=True)
-        self.m.to(self.dev)
-
-        inv = cfg.inv_freq()
-        self.eps_d = self._df(np.full((C, H), self.eps * H, np.float32))
-        self.nh_d = self._df(np.full((C, H), -0.5, np.float32))
-        self.rot = d(rot_matrices_fast(inv, C))
-        causal = np.triu(np.full((C, C), -1e4, np.float32), 1)
-        self.mask = d(np.tile(causal, (G, 1)).reshape(1, G * C, C))
+        self.add_bucket(C)
         self.compile_s = time.time() - t0
         self._zeroK = self._zeroV = None      # solo path, built on demand
         self._zeroKg = self._zeroVg = None    # per-group, streaming path
         self._build_lmhead(cache_dir)
+
+    def add_bucket(self, C):
+        """Compile (or load) one prefill width and build the tables it needs.
+
+        The graph costs the same whatever the prompt, so a single width means
+        a 21-token request pays a 512-wide pass -- 96% of it wasted, and it is
+        the prefill card that queues. Several widths let each request take the
+        smallest pass that fits. The vendor artifact carries eleven of these.
+        """
+        if C in self.buckets:
+            return self.buckets[C]
+        import torch
+        from rngd_pd.engines.fsdk import CompileModule
+        from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
+        d = self._d
+        sample = (torch.zeros(C, H, dtype=BF),
+                  torch.zeros(C, H, dtype=torch.float32), torch.zeros(C, H, dtype=torch.float32),
+                  torch.zeros(self.NG, C, H, dtype=BF),
+                  torch.zeros(self.NG, H, NH * HD, dtype=BF),
+                  torch.zeros(self.NG, H, NKV * HD, dtype=BF),
+                  torch.zeros(self.NG, H, NKV * HD, dtype=BF),
+                  torch.zeros(self.NG, NH * HD, H, dtype=BF),
+                  torch.zeros(self.NG, C, H, dtype=BF),
+                  torch.zeros(self.NG, H, M, dtype=BF), torch.zeros(self.NG, H, M, dtype=BF),
+                  torch.zeros(self.NG, M, H, dtype=BF),
+                  torch.zeros(C, HD, HD, dtype=BF), torch.zeros(1, G * C, C, dtype=BF))
+        ccfg = _compiler_config(HINT)
+        build = lambda: CompileModule.from_module(PrefillModel(C, self.NG), sample,
+                                                  compiler_config=ccfg)
+        t0 = time.time()
+        if self._cache_dir:
+            from rngd_pd.engines.artifact_cache import get_or_compile, cache_key
+            key = cache_key(kind="full-prefill", model=MODEL, C=C, nl=self.NG, hint=HINT)
+            m, mode, secs = get_or_compile(self._cache_dir, key, build, device=None)
+            print(f"[full-engine] C={C} {mode} in {secs:.0f}s", flush=True)
+        else:
+            m = build()
+            print(f"[full-engine] C={C} compiled in {time.time()-t0:.0f}s", flush=True)
+        m.to(self.dev)
+        causal = np.triu(np.full((C, C), -1e4, np.float32), 1)
+        norms = [(torch.stack([d(np.tile(self._n1[i], (C, 1)))
+                               for i in range(g * self.NG, (g + 1) * self.NG)]),
+                  torch.stack([d(np.tile(self._n2[i], (C, 1)))
+                               for i in range(g * self.NG, (g + 1) * self.NG)]))
+                 for g in range(self.ngroups)]
+        self.buckets[C] = {
+            "m": m, "norms": norms,
+            "eps": self._df(np.full((C, H), self.eps * H, np.float32)),
+            "nh": self._df(np.full((C, H), -0.5, np.float32)),
+            "rot": d(rot_matrices_fast(self._inv, C)),
+            "mask": d(np.tile(causal, (G, 1)).reshape(1, G * C, C)),
+            "zeroK": None, "zeroV": None, "zeroKg": None, "zeroVg": None}
+        self.C = max(self.buckets)               # widest prompt we can take
+        return self.buckets[C]
+
+    def pick(self, P):
+        """The narrowest compiled width that swallows this prompt."""
+        fits = [c for c in sorted(self.buckets) if c >= P]
+        return fits[0] if fits else max(self.buckets)
+
+    def _call(self, b, g, x):
+        n1, n2 = b["norms"][g]
+        wq, wk, wv, wo, wg, wu, wd = self.gw[g]
+        return b["m"](x, b["eps"], b["nh"], n1, wq, wk, wv, wo, n2, wg, wu, wd,
+                      b["rot"], b["mask"])
 
     def _build_lmhead(self, cache_dir):
         """Pick the next token on the card, not in numpy.
@@ -120,7 +217,7 @@ class FullPrefillEngine:
         """
         import math
         from rngd_pd.kernels import dsl_b1 as LE
-        from furiosa.torch.custom_ops import CompileModule, TacticKernelModule
+        from rngd_pd.engines.fsdk import CompileModule, TacticKernelModule
         from rngd_pd.engines.artifact_cache import get_or_compile, cache_key
         V = self.lm.shape[0]
         NG = 32
@@ -140,8 +237,7 @@ class FullPrefillEngine:
                   torch.zeros(H, dtype=torch.float32),
                   torch.zeros(H, dtype=torch.float32),
                   torch.zeros(NG, Vp // NG, H, dtype=BF))
-        ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
-                        tactic_hint=TacticHintConfig.ForLlmModelDecode)
+        ccfg = _compiler_config('ForLlmModelDecode')
         key = cache_key(kind="lmhead", V=V, H=H, tactic="decode-chunked", G=NG)
         build = lambda: CompileModule.from_module(LmHead(), sample,
                                                   compiler_config=ccfg)
@@ -190,21 +286,40 @@ class FullPrefillEngine:
         concatenating a pre-allocated zero block does the same job with the two
         operations that are known to stay on the card.
         """
-        C, P = self.C, len(tokens)
+        P = len(tokens)
+        C = self.pick(P)
         if P > C:
-            raise ValueError(f"prompt {P} exceeds the compiled prefill width C={C}")
-        toks = list(tokens) + [tokens[-1]] * (C - P)
-        x = self._d(self.embed[toks].astype(np.float32))
-        Ks, Vs = [], []
-        for g in range(self.ngroups):
-            x, k, v = self.m(x, self.eps_d, self.nh_d, *self.groups[g],
-                             self.rot, self.mask)
-            Ks.append(k)
-            Vs.append(v)
+            raise ValueError(f"prompt {P} exceeds the widest compiled bucket C={C}")
+        stage = self.begin_device_prefill(tokens)
+        while not stage.advance():
+            pass
+        return stage.result()
+
+    def begin_device_prefill(self, tokens):
+        """Prefill as sixteen resumable steps instead of one blocking call.
+
+        On the one-card path this pass runs between decode steps, holding the
+        device for its whole length -- 35 ms for the narrowest bucket, 66 ms
+        for the widest. That is one to three decode steps during which every
+        stream in flight stops. The pass is already sixteen graph calls, so
+        yielding between them bounds the stall at one call (~2-4 ms) without a
+        new graph, without a second copy of the weights, and without the KV
+        input a true chunked prefill would need.
+        """
+        return _DevicePrefillStage(self, tokens)
+
+    def _device_prefill_finish(self, C, P, Ks, Vs, x):
+        b = self.buckets[C]
+        self.last_C = C
         nxt = self._next_token(x, P)
         if self._zeroK is None:                       # allocated once, reused
-            self._zeroK = self._d(np.zeros((self.nl, NKV, HD, C), np.float32))
-            self._zeroV = self._d(np.zeros((self.nl, NKV, C, HD), np.float32))
+            # Padded to the decode context, not to the prefill width. Those
+            # were the same number while one graph served every prompt, and
+            # coupling them is what stops a narrower prefill bucket from
+            # feeding the same decode cache: the consumer's resident tensor is
+            # S wide whatever width produced it.
+            self._zeroK = self._d(np.zeros((self.nl, NKV, HD, self.S), np.float32))
+            self._zeroV = self._d(np.zeros((self.nl, NKV, self.S, HD), np.float32))
         kc = torch.cat([k[:, :, :, :P] for k in Ks], 0)
         vc = torch.cat([v[:, :, :P, :] for v in Vs], 0)
         Kp = torch.cat([kc, self._zeroK[:, :, :, P:]], -1)
@@ -225,21 +340,43 @@ class FullPrefillEngine:
         moves off is the bf16 encoding and the shm write, which is the larger
         part anyway.
         """
-        C, P = self.C, len(tokens)
+        P = len(tokens)
+        C = self.pick(P)
+        b = self.buckets[C]
         if P > C:
-            raise ValueError(f"prompt {P} exceeds the compiled prefill width C={C}")
+            raise ValueError(f"prompt {P} exceeds the widest compiled bucket C={C}")
         toks = list(tokens) + [tokens[-1]] * (C - P)
         x = self._d(self.embed[toks].astype(np.float32))
-        if self._zeroKg is None:
-            self._zeroKg = self._d(np.zeros((self.NG, NKV, HD, C), np.float32))
-            self._zeroVg = self._d(np.zeros((self.NG, NKV, C, HD), np.float32))
+        if b["zeroKg"] is None:
+            b["zeroKg"] = self._d(np.zeros((self.NG, NKV, HD, self.S), np.float32))
+            b["zeroVg"] = self._d(np.zeros((self.NG, NKV, self.S, HD), np.float32))
+        self.last_C = C
+        # Split the pass from the download. Narrowing C only shortens the
+        # first; the second moves an S-wide cache whatever the prompt was, so
+        # if it dominates then prefill buckets cannot pay on their own.
+        t_c = t_d = 0.0
         for g in range(self.ngroups):
-            x, k, v = self.m(x, self.eps_d, self.nh_d, *self.groups[g],
-                             self.rot, self.mask)
-            kf = torch.cat([k[:, :, :, :P], self._zeroKg[:, :, :, P:]], -1)
-            vf = torch.cat([v[:, :, :P, :], self._zeroVg[:, :, P:, :]], -2)
-            sink(g, kf.detach().cpu().float().numpy(),
-                 vf.detach().cpu().float().numpy())
+            t0 = time.perf_counter()
+            x, k, v = self._call(b, g, x)
+            # Padded to the decode context and shipped whole. Sending only
+            # the prompt's columns was tried and is slower here: both transfer
+            # legs are already hidden -- the save behind the rest of the pass
+            # (1.5-2 ms on the clock) and the load behind prefill (7-16 ms) --
+            # so narrowing them saves nothing visible, while placing a narrow
+            # block into a wide cache turns one contiguous copy into a strided
+            # one. TTFT p50 went 102 -> 129 ms. It becomes the right shape when
+            # S grows far enough that the transfer stops fitting behind
+            # prefill; at S=512 it does fit.
+            kf = torch.cat([k[:, :, :, :P], b["zeroKg"][:, :, :, P:]], -1)
+            vf = torch.cat([v[:, :, :P, :], b["zeroVg"][:, :, P:, :]], -2)
+            t1 = time.perf_counter()
+            kh = kf.detach().cpu().float().numpy()
+            vh = vf.detach().cpu().float().numpy()
+            t2 = time.perf_counter()
+            sink(g, kh, vh)
+            t_c += t1 - t0; t_d += t2 - t1
+        self.last_compute_ms = t_c * 1e3
+        self.last_download_ms = t_d * 1e3
         return self._next_token(x, P)
 
     def prefill(self, tokens):
@@ -274,7 +411,8 @@ def main():
     sd = {k: v.detach().numpy() for k, v in hf.state_dict().items()}
     del hf
 
-    eng = FullPrefillEngine(cfg, sd, C=a.C, group=a.group, chip=a.chip, cache_dir=a.cache)
+    eng = FullPrefillEngine(cfg, sd, C=a.C, group=a.group, chip=a.chip,
+                            cache_dir=a.cache, S=getattr(a, "S", 0))
     toks = tk.encode(a.prompt, add_special_tokens=False)
     eng.prefill(toks)                                  # warm up
     t0 = time.perf_counter()

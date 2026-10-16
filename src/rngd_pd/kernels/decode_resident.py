@@ -9,13 +9,13 @@ the runtime keeps them RESIDENT on device, feeding them back device→device wit
   python3 llama_engine_resident.py --model meta-llama/Llama-3.1-8B-Instruct --n 4
 """
 import torch, furiosa.torch
-from furiosa.torch import native_device as nd
-nd.set_fusion(8); nd.set_mesh_kind(nd.MeshKind.Mesh(2))
+from rngd_pd.engines.fsdk import open_device as _open_device
+_open_device(8, 2)
 import sys, math, time, argparse, numpy as np
 try: import _tv_patch  # noqa
 except Exception: pass
-from furiosa.torch.custom_ops import TacticKernelModule, CompileModule
-from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig
+from rngd_pd.engines.fsdk import TacticKernelModule, CompileModule
+from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
 from rngd_pd.kernels import dsl_b1 as LE
 from rngd_pd.engines.model import ModelConfig, GenericRuntime, rmsnorm
 

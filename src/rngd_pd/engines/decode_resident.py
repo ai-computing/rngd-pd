@@ -44,7 +44,7 @@ def build_engine(model, S, nl, chip):
     torch.set_grad_enabled(False)
     from rngd_pd.kernels import decode_resident as LER
     from rngd_pd.engines.artifact_cache import get_or_compile, cache_key
-    from furiosa.torch.custom_ops import CompileModule
+    from rngd_pd.engines.fsdk import CompileModule
     from transformers import AutoModelForCausalLM
     from rngd_pd.engines.model import ModelConfig
 
@@ -84,8 +84,8 @@ def build_lmhead(rt, LER, chip):
     import torch
     from rngd_pd.kernels import dsl_b1 as LE
     from rngd_pd.engines.artifact_cache import get_or_compile, cache_key
-    from furiosa.torch.custom_ops import CompileModule, TacticKernelModule
-    from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig
+    from rngd_pd.engines.fsdk import CompileModule, TacticKernelModule
+    from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
 
     H = LER.H
     V = rt.lm.shape[0]
@@ -138,8 +138,8 @@ def build_chunk_kernels(rt, LER, chip, C):
     """
     import torch
     from rngd_pd.engines.artifact_cache import get_or_compile, cache_key
-    from furiosa.torch.custom_ops import CompileModule
-    from furiosa.torch.compiler import Config as FCConfig, TacticHintConfig
+    from rngd_pd.engines.fsdk import CompileModule
+    from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
 
     nl, S = rt.nl, rt.S
     NKV, HD = LER.NKV, LER.HD

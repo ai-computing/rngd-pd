@@ -158,7 +158,8 @@ class FullPrefillWorker:
     that closed the gap with the vendor engine (0.14 ms/token against 0.10).
     KV comes out in the connector's layout, so the decode side is untouched."""
 
-    def __init__(self, chip, S, C=256, group=2, B=1, wait_ms=8000):
+    def __init__(self, chip, S, C=256, group=2, B=1, wait_ms=8000,
+                 decode_group=0, sched="static", admit_min=1):
         chip = resolve_chip(chip)
         import torch
         torch.set_grad_enabled(False)
@@ -171,12 +172,24 @@ class FullPrefillWorker:
         sd = {k: v.detach().numpy() for k, v in hf.state_dict().items()}
         del hf
         cache = str(ARTIFACT_CACHE)
-        self.eng = FullPrefillEngine(cfg, sd, C=C, group=group, chip=chip,
+        self.eng = FullPrefillEngine(cfg, sd, C=C, group=group, chip=chip, S=S,
                                      cache_dir=os.path.abspath(cache))
+        # Extra prefill widths. The graph costs the same whatever the prompt,
+        # so one width makes a 21-token request pay a 512-wide pass; each
+        # bucket lets a request take the smallest that fits. They share the
+        # projections already resident, so a bucket costs C x 0.5 MB a layer.
+        for c in sorted({int(v) for v in os.environ.get("RNGD_BUCKETS", "").split(",")
+                         if v.strip()}):
+            if c <= S:
+                self.eng.add_bucket(c)
         del sd
-        self.S, self.nl, self.C = C, cfg.n_layers, C
+        # Not `self.S = C`. The cache this worker hands over is S wide
+        # because that is what the decode side keeps; C only bounds how long a
+        # prompt one pass can swallow.
+        self.S, self.nl, self.C = S, cfg.n_layers, self.eng.C
         STATE.update(ready=True,
-                     detail=f"prefill rngd:{chip} kv-free C={C} {self.nl}L "
+                     detail=f"prefill rngd:{chip} kv-free "
+                            f"buckets={sorted(self.eng.buckets)} S={S} {self.nl}L "
                             f"ready in {time.time()-t0:.0f}s")
         print(f"[prefill] {STATE['detail']}", flush=True)
 
@@ -209,6 +222,9 @@ class FullPrefillWorker:
         return {"next": nxt, "pos": len(tokens), "layers": self.nl,
                 "kv_mb": round(kv_bytes[0] / 2 / 1e6, 1),
                 "prefill_ms": round(prefill_ms, 1),
+                "bucket_C": getattr(self.eng, "last_C", None),
+                "compute_ms": round(getattr(self.eng, "last_compute_ms", 0), 1),
+                "download_ms": round(getattr(self.eng, "last_download_ms", 0), 1),
                 "save_ms": round(max(save_ms, 0.0), 1),
                 "ms_per_token": round(prefill_ms / max(len(tokens), 1), 3)}
 
@@ -433,8 +449,12 @@ class DecodeWorkerBase:
         # views. Allocating 64 separate zeroed arrays meant a memset the loader
         # immediately overwrote, and stacking them afterwards copied the whole
         # cache a second time — 134 MB of pointless traffic per request.
-        K = np.empty((self.nl, self.NKV, self.HD, self.S), np.float32)
-        V = np.empty((self.nl, self.NKV, self.S, self.HD), np.float32)
+        # zeros, not empty: the producer now sends only the prompt's columns
+        # and the connector places them, so the tail has to start at zero. An
+        # allocator's fresh pages are already zero, which is free; writing the
+        # tail by hand was not.
+        K = np.zeros((self.nl, self.NKV, self.HD, self.S), np.float32)
+        V = np.zeros((self.nl, self.NKV, self.S, self.HD), np.float32)
         dk = [K[i] for i in range(self.nl)]
         dv = [V[i] for i in range(self.nl)]
         conn = RngdKVConnector(KVConnectorRole.WORKER, req_id=req_id,
@@ -645,7 +665,8 @@ class SoloWorker(_SoloBatchMixin):
     hands the decode session its device tensors directly.
     """
 
-    def __init__(self, chip, S, C=256, group=2, B=1, wait_ms=8000):
+    def __init__(self, chip, S, C=256, group=2, B=1, wait_ms=8000,
+                 decode_group=0, sched="static", admit_min=1):
         chip = resolve_chip(chip)
         import torch
         torch.set_grad_enabled(False)
@@ -661,8 +682,16 @@ class SoloWorker(_SoloBatchMixin):
         sd = {k: v.detach().numpy() for k, v in hf.state_dict().items()}
         del hf
         cache = str(ARTIFACT_CACHE)
-        self.pre = FullPrefillEngine(cfg, sd, C=C, group=group, chip=chip,
+        self.pre = FullPrefillEngine(cfg, sd, C=C, group=group, chip=chip, S=S,
                                      cache_dir=cache)
+        # The same buckets the disaggregated prefill worker gets. Giving them
+        # to one side only tilts the comparison -- and it tilted against solo,
+        # which was still paying a 512-wide pass for a 21-token prompt while
+        # the PD side had already stopped.
+        for c in sorted({int(v) for v in os.environ.get("RNGD_BUCKETS", "").split(",")
+                         if v.strip()}):
+            if c <= S:
+                self.pre.add_bucket(c)
         del sd
         # ~16 GB of prefill weights and ~16 GB of decode weights on one 48 GB
         # card; the two layouts differ enough that sharing them is not worth
@@ -675,11 +704,28 @@ class SoloWorker(_SoloBatchMixin):
             hf2 = AutoModelForCausalLM.from_pretrained(MODEL, dtype=torch.float32).eval()
             sd2 = {k: v.detach().numpy() for k, v in hf2.state_dict().items()}
             del hf2
-            self.dec = BatchDecodeEngine(cfg, sd2, B=B, S=S, group=group,
+            # The two stages do not share a layer budget. Prefill stops
+            # compiling above two layers per graph whatever the KV looks like,
+            # while the decode graph wants eight -- 17.6 ms a step against
+            # 26.2. One --group for both meant solo had to run the worse decode
+            # kernel, which then showed up in a PD-versus-solo comparison as if
+            # it were an architectural difference.
+            self.dec = BatchDecodeEngine(cfg, sd2, B=B, S=S,
+                                         group=decode_group or group,
                                          chip=chip, cache_dir=cache)
             del sd2
             self.sess = None
-            self.batcher = _Batcher(B, wait_ms, self._run_batch)
+            if sched == "continuous":
+                # The same scheduler the disaggregated worker runs. Its source
+                # of a new lane's cache is this card's own prefill, so the
+                # admit is a device-to-device slice write and never touches the
+                # host at all — cheaper than the disaggregated path, not more
+                # expensive, which is the point of measuring both under it.
+                self.batcher = _ContinuousScheduler(B, self.dec,
+                                                    self._produce_kv, admit_min,
+                                                    produce_owner=self)
+            else:
+                self.batcher = _Batcher(B, wait_ms, self._run_batch)
         else:
             self.cfg, self.rt = build_engine(MODEL, S, 32, chip=chip)
             self.sess = EngineSession(self.rt, LER,
@@ -687,9 +733,41 @@ class SoloWorker(_SoloBatchMixin):
             self.batcher = None
         self.S, self.C, self.nl = S, C, cfg.n_layers
         STATE.update(ready=True,
-                     detail=f"solo rngd:{chip} prefill C={C} + decode B={B} "
+                     detail=f"solo rngd:{chip} prefill buckets="
+                            f"{sorted(self.pre.buckets)} + decode B={B} "
                             f"{self.nl}L S={S} ready in {time.time()-t0:.0f}s")
         print(f"[solo] {STATE['detail']}", flush=True)
+
+    def _produce_kv(self, item):
+        """Prefill this stream here, and hand the scheduler its device cache.
+
+        Runs under the caller's DEVICE lock — _admit already holds it — so it
+        must not take the lock itself.
+        """
+        t0 = time.perf_counter()
+        Kp, Vp, nxt = self.pre.prefill_device(item["tokens"])
+        return Kp, Vp, nxt, len(item["tokens"]), (time.perf_counter() - t0) * 1e3
+
+    def begin_produce(self, item):
+        """Staged version: one layer group per advance, so decode keeps going.
+
+        The blocking form holds the card for the whole pass. Here the card is
+        held for one graph call at a time and the scheduler runs a decode step
+        between them, which is what stops an arriving prompt from freezing
+        every stream already in flight.
+        """
+        stage = self.pre.begin_device_prefill(item["tokens"])
+        t0 = time.perf_counter()
+
+        class _S:
+            def advance(_, n=1):
+                return stage.advance(n)
+
+            def result(_):
+                Kp, Vp, nxt = stage.result()
+                return (Kp, Vp, nxt, len(item["tokens"]),
+                        (time.perf_counter() - t0) * 1e3)
+        return _S()
 
     def run(self, tokens, max_new):
         if self.batcher:
@@ -731,21 +809,28 @@ class _ContinuousScheduler:
     request on its third token with one on its hundredth.
 
     The graph already allowed that — every stream carries its own position,
-    mask and rotation. What it does not allow is replacing one slot's cache in
-    place: the resident tensor is [NG, B, NKV, HD, S], one object. So a change
-    of composition costs a round trip, taken once per step no matter how many
-    slots change, and nothing at all while the batch is stable.
+    mask and rotation. One slot's cache can be replaced in place too, which is
+    what makes admission cheap; see BatchDecodeEngine.write_slot_kv.
+
+    `produce` is where a new stream's cache comes from, and it is the only
+    thing that differs between the disaggregated worker and the one-card
+    control: the first reads it out of /dev/shm, the second prefills it on the
+    same card and never leaves the device. Both end in a lane write, so both
+    can use this scheduler — which is the only way a static-versus-continuous
+    comparison between them means anything.
     """
 
-    def __init__(self, B, engine, load_kv, nl, NKV, HD, S, admit_min=1):
-        self.B, self.eng, self.load_kv = B, engine, load_kv
-        # A composition change costs a full round trip of the resident cache,
-        # roughly ten steps' worth. Admitting one stream at a time therefore
-        # spends more than it gains; waiting until this many slots are free
-        # amortises the trip. Ignored when the batch is idle, where there is
-        # nothing to preserve and the trip is cheap.
+    def __init__(self, B, engine, produce, admit_min=1, produce_owner=None):
+        self.B, self.eng, self.produce = B, engine, produce
+        # The object that owns `produce`; if it can stage a prefill a group at
+        # a time it exposes begin_produce, and the loop uses that instead.
+        self.produce_owner = produce_owner
+        # Admission used to cost a full round trip of the resident cache and
+        # this waited for several free slots to amortise it. A lane write is
+        # ~14 ms, so 1 is now the sensible floor.
         self.admit_min = admit_min
-        self.nl, self.NKV, self.HD, self.S = nl, NKV, HD, S
+        # The shapes used to be needed to allocate a blank host cache on every
+        # composition change. Lane writes made that allocation go away.
         self.slots = [None] * B
         self.pending = collections.deque()
         self.cv = threading.Condition()
@@ -754,6 +839,24 @@ class _ContinuousScheduler:
         # scheduling is worth anything here: the step costs the same whether
         # it carries one stream or B, so a step run half empty is half wasted.
         self.lane_steps, self.steps = 0, 0
+        # Where the empty lanes go. A lane can sit idle because nothing was
+        # waiting for it (starved: the request that will fill it is still
+        # upstream) or because something was waiting and the scheduler chose
+        # not to take it (held: admit_min). Occupancy alone cannot tell those
+        # apart, and they have opposite fixes.
+        self.starved_lane_steps = 0
+        self.held_lane_steps = 0
+        self.admit_stall_ms = 0.0
+        # A staged admission in progress: (slot, item, stage). Only the
+        # producers that share a card with decode bother to stage; the
+        # disaggregated one prefills elsewhere and has nothing to yield.
+        self._staging = None
+        self.stage_steps = 0
+        # Layer groups per scheduler iteration while a prefill is staged. Each
+        # group is ~4 ms against a ~22 ms decode step, so four keeps the stall
+        # inside one step's worth and still finishes a 32-layer pass in four
+        # iterations instead of sixteen.
+        self.stage_groups = int(os.environ.get("PD_STAGE_GROUPS", "4"))
         threading.Thread(target=self._loop, daemon=True).start()
 
     def submit(self, item):
@@ -771,60 +874,127 @@ class _ContinuousScheduler:
         return [s for s in self.slots if s]
 
     def _admit(self, taking, Kd, Vd):
-        """Place new streams' caches into the resident tensor, once."""
+        """Place new streams' caches into the resident tensor, lane by lane.
+
+        This used to download the whole batch, scatter the new streams into it
+        on the host, and upload all of it back -- moving B times the bytes that
+        changed, inside the device lock, on every composition change. That cost
+        is what made iteration-level scheduling lose to the static batcher.
+        Writing just the lane keeps the other streams on the card untouched.
+        """
         loaded = []
         for idx, item in taking:
-            K, V, load_ms, _lead, _staged = self.load_kv(item["req_id"])
-            loaded.append((idx, item, K, V, load_ms))
-        t0 = time.perf_counter()          # the trip only, not the shm read
-        if self._active():
-            hK, hV = self.eng.download_kv(Kd, Vd)
-        else:                                  # nothing to preserve
-            hK = np.zeros((self.nl, self.B, self.NKV, self.HD, self.S), np.float32)
-            hV = np.zeros((self.nl, self.B, self.NKV, self.S, self.HD), np.float32)
+            K, V, first, pos, aux_ms = self.produce(item)
+            item["first"], item["pos"] = first, pos
+            loaded.append((idx, item, K, V, aux_ms))
+        t0 = time.perf_counter()          # the write only, not the source
         for idx, _item, K, V, _ in loaded:
-            hK[:, idx] = K
-            hV[:, idx] = V
-        Kd, Vd = self.eng.upload_kv(hK, hV)
+            Kd, Vd = self.eng.write_slot_kv(Kd, Vd, idx, K, V)
         ms = (time.perf_counter() - t0) * 1e3
         self.admit_ms += ms
         self.admits += 1
+        # Admission runs under the device lock, so every millisecond here is a
+        # millisecond no stream advanced -- distinct from an idle lane.
+        self.admit_stall_ms += ms
         for idx, item, _K, _V, load_ms in loaded:
-            self.slots[idx] = {"item": item, "cur": item["first"], "pos": item["pos"],
-                               "outs": [item["first"]], "load_ms": load_ms,
-                               "steps": [], "t0": time.perf_counter()}
+            self._seat(idx, item, load_ms)
         return Kd, Vd
+
+    def _seat(self, idx, item, load_ms):
+        """Put an admitted stream into its lane."""
+        self.slots[idx] = {"item": item, "cur": item["first"], "pos": item["pos"],
+                           "pos0": item["pos"],
+                           # Counters are cumulative since the pod started,
+                           # so reading them raw mixes in every idle
+                           # stretch since boot -- that is how a 96%
+                           # occupancy got reported as 81%. Snapshot at
+                           # admit and difference at finish, and the number
+                           # describes this request's window and nothing
+                           # else.
+                           "s0": self.steps, "l0": self.lane_steps,
+                           "v0": self.starved_lane_steps,
+                           "h0": self.held_lane_steps,
+                           "outs": [item["first"]], "load_ms": load_ms,
+                           "steps": [], "t0": time.perf_counter()}
 
     def _finish(self, s):
         st = sorted(s["steps"])
+        dsteps = max(self.steps - s["s0"], 1)
+        win = lambda now, then: (now - then) / dsteps
         s["item"]["out"] = {
             "tokens": s["outs"], "load_ms": round(s["load_ms"], 1),
+            # The aux cost of getting this lane's cache: a shm load for the
+            # disaggregated worker, a prefill for the one-card control. The
+            # gateway's solo branch reads it under the second name.
+            "prefill_ms": round(s["load_ms"], 1),
+            "pos": s["pos0"],
+            # which prefill bucket served it, so a claim that both sides ran
+            # the same widths can be checked rather than asserted
+            "bucket_C": getattr(getattr(self.eng, "pre", None), "last_C", None),
             "tpot_ms": round(st[len(st) // 2], 1) if st else 0.0,
             "decode_ms": round((time.perf_counter() - s["t0"]) * 1e3, 1),
             "batch": len(self._active()), "batch_width": self.B,
             "sched": "continuous",
             "admit_ms": round(self.admit_ms / max(self.admits, 1), 1),
-            "occupancy": round(self.lane_steps / max(self.steps, 1), 2)}
+            "occupancy": round(win(self.lane_steps, s["l0"]), 2),
+            "starved_lanes": round(win(self.starved_lane_steps, s["v0"]), 2),
+            "held_lanes": round(win(self.held_lane_steps, s["h0"]), 2),
+            "occupancy_all": round(self.lane_steps / max(self.steps, 1), 2),
+            "admit_stall_ms": round(self.admit_stall_ms, 1)}
         s["item"]["ev"].set()
 
     def _loop(self):
         Kd, Vd = None, None
         while True:
             with self.cv:
-                while not self.pending and not self._active():
+                # A staged prefill counts as work even though nothing is
+                # pending and no lane is seated yet: without it the loop slept
+                # on the condition variable holding a half-finished pass, and
+                # the request never came back.
+                while (not self.pending and not self._active()
+                       and self._staging is None):
                     self.cv.wait()
                 free = [i for i, s in enumerate(self.slots) if s is None]
-                n = min(len(free), len(self.pending))
+                # Do not take anything while a staged prefill is in flight:
+                # popped items that the iteration then refuses to use are lost,
+                # and their requests never return.
+                n = 0 if self._staging is not None else min(len(free), len(self.pending))
                 if n and not self._active():
                     pass                       # idle: admit whatever is there
                 elif n < min(self.admit_min, len(free)):
                     n = 0                      # not worth a round trip yet
                 taking = [(free[k], self.pending.popleft()) for k in range(n)]
+                self.starved_lane_steps += len(free) - min(len(free), len(self.pending) + n)
+                self.held_lane_steps += (len(free) - n) - max(
+                    0, len(free) - len(self.pending) - n)
             try:
                 if Kd is None:
                     Kd, Vd = self.eng.blank_kv()
                 with DEVICE:
-                    if taking:
+                    if self._staging is not None:
+                        # one group of the prefill already under way, then fall
+                        # through to a decode step in the same iteration
+                        idx, item, stage = self._staging
+                        self.stage_steps += 1
+                        if stage.advance(self.stage_groups):
+                            K, V, first, pos, aux = stage.result()
+                            item["first"], item["pos"] = first, pos
+                            Kd, Vd = self.eng.write_slot_kv(Kd, Vd, idx, K, V)
+                            self._seat(idx, item, aux)
+                            self._staging = None
+                    elif (taking and self._active()
+                          and hasattr(self.produce_owner, "begin_produce")):
+                        # Stage only while there is something to protect. With
+                        # an empty batch there is no decode to interrupt, and
+                        # staging then admits one stream per sixteen
+                        # iterations -- at B=8 that took seconds to fill and
+                        # cost two thirds of the throughput. Idle, take them
+                        # all at once and block.
+                        idx, item = taking[0]
+                        self._staging = (idx, item, self.produce_owner.begin_produce(item))
+                        for rest in reversed(taking[1:]):
+                            self.pending.appendleft(rest[1])
+                    elif taking:
                         Kd, Vd = self._admit(taking, Kd, Vd)
                     live = [i for i, s in enumerate(self.slots) if s]
                     if not live:
@@ -862,6 +1032,45 @@ class _ContinuousScheduler:
                 Kd = Vd = None
 
 
+class _AtomResidentKV:
+    """The engine interface the continuous scheduler wants, over ATOM's cache.
+
+    ATOM's graph takes the whole [nl, B, ...] cache as an input every step and
+    the host places the new k/v afterwards, so the "resident" cache is a host
+    array rather than a device tensor. That makes a lane write a numpy slice
+    assignment -- cheaper than the Furiosa side's, which has to cross PCIe --
+    and it is the only thing the scheduler needs that this worker did not
+    already have. Everything else is the step it was running anyway.
+    """
+
+    def __init__(self, w):
+        self.w = w
+
+    def blank_kv(self):
+        w = self.w
+        return (np.zeros((w.nl, w.B, w.NKV, w.HD, w.S), np.float32),
+                np.zeros((w.nl, w.B, w.NKV, w.S, w.HD), np.float32))
+
+    def write_slot_kv(self, Kb, Vb, idx, K, V):
+        Kb[:, idx] = K
+        Vb[:, idx] = V
+        return Kb, Vb
+
+    def step(self, cur, pos, Kb, Vb):
+        w = self.w
+        pa = np.asarray(pos)
+        out = w.rt.run(w.embed[list(cur)], Kb, Vb, w._cos[pa], w._sin[pa],
+                       w._mask[pa], w._eye[pa])
+        lg = np.asarray(out[0])
+        k, v = np.asarray(out[1]), np.asarray(out[2])
+        nxt = []
+        for b in range(w.B):
+            Kb[:, b, :, :, pos[b]] = k[:, b]
+            Vb[:, b, :, pos[b], :] = v[:, b]
+            nxt.append(int(np.argmax(lg[b])))
+        return nxt, Kb, Vb
+
+
 class DecodeATOMBatch(DecodeWorkerBase):
     """B independent streams per graph pass, from the pre-compiled B artifact.
 
@@ -871,7 +1080,7 @@ class DecodeATOMBatch(DecodeWorkerBase):
     fixed-shape graph still runs — the padded lanes are dropped on the way out.
     """
 
-    def __init__(self, S, B, wait_ms=60):
+    def __init__(self, S, B, wait_ms=60, sched="static", admit_min=1):
         import torch
         torch.set_grad_enabled(False)
         from rngd_pd.vendors.rbln_decode_batch import build_runtime
@@ -895,11 +1104,23 @@ class DecodeATOMBatch(DecodeWorkerBase):
         self._sin = np.sin(ang).astype(np.float32)
         self._mask = np.triu(np.full((S, S), -1e4, np.float32), 1)
         self._eye = np.eye(S, dtype=np.float32)
-        self.batcher = _Batcher(B, wait_ms, self._run_batch)
+        self.sched = sched
+        if sched == "continuous":
+            # Same scheduler the Furiosa decoder runs. Leaving this one on the
+            # static batcher meant two of the four configurations were being
+            # compared under a different policy.
+            self.batcher = _ContinuousScheduler(B, _AtomResidentKV(self),
+                                                self._produce_kv, admit_min)
+        else:
+            self.batcher = _Batcher(B, wait_ms, self._run_batch)
         STATE.update(ready=True,
-                     detail=f"decode atom B={B} {self.nl}L S={S} ready in "
+                     detail=f"decode atom B={B} {sched} {self.nl}L S={S} ready in "
                             f"{time.time()-t0:.0f}s")
         print(f"[decode] {STATE['detail']}", flush=True)
+
+    def _produce_kv(self, item):
+        K, V, load_ms, _lead, _staged = self._load_kv(item["req_id"])
+        return K, V, item["first"], item["pos"], load_ms
 
     def run(self, req_id, first, pos, max_new):
         return self.batcher.submit({"req_id": req_id, "first": first,
@@ -982,8 +1203,7 @@ class DecodeRNGDBatch(DecodeWorkerBase):
         self.NKV, self.HD = cfg.n_kv, cfg.head_dim
         self.sched = sched
         if sched == "continuous":
-            self.batcher = _ContinuousScheduler(B, self.eng, self._load_kv,
-                                                self.nl, self.NKV, self.HD, S,
+            self.batcher = _ContinuousScheduler(B, self.eng, self._produce_kv,
                                                 admit_min)
         else:
             self.batcher = _Batcher(B, wait_ms, self._run_batch)
@@ -992,16 +1212,44 @@ class DecodeRNGDBatch(DecodeWorkerBase):
                             f"ready in {time.time()-t0:.0f}s")
         print(f"[decode] {STATE['detail']}", flush=True)
 
+    def _stage_kv(self, K, V):
+        """Cast to the card's width during prefill, not during the batch.
+
+        The base class stages nothing, which left this worker doing the cast
+        and the stack inside the batch -- 62-85 ms of host work per batch that
+        the decode card waited on. There is no device call here, so unlike the
+        B=1 worker's staging it never has to wait for the device lock.
+        """
+        from rngd_pd.engines.decode_batch import BatchDecodeEngine
+        return BatchDecodeEngine.stage_host_kv(K, V)
+
+    def _produce_kv(self, item):
+        """Where a disaggregated stream's cache comes from: the other card."""
+        K, V, load_ms, _lead, staged = self._load_kv(item["req_id"])
+        if staged is not None:
+            K, V = staged                      # bf16 host tensors from prefill
+        return K, V, item["first"], item["pos"], load_ms
+
     def run(self, req_id, first, pos, max_new):
         return self.batcher.submit({"req_id": req_id, "first": first,
                                     "pos": pos, "max_new": max_new})
 
     def _run_batch(self, items):
         B, n = self.B, len(items)
-        Ks, Vs, loads = [], [], []
+        Ks, Vs, loads, leads = [], [], [], []
+        # load_ms is how long the pull took, not how long this batch waited for
+        # it: with prefetch running the pull happened during prefill and the
+        # future is already resolved. Timing the collection separately is the
+        # only way to see what the handoff actually costs on the critical path.
+        t_wait = time.perf_counter()
+        staged_n = 0
         for it in items:
-            K, V, load_ms, _lead, _staged = self._load_kv(it["req_id"])
-            Ks.append(K); Vs.append(V); loads.append(load_ms)
+            K, V, load_ms, lead, staged = self._load_kv(it["req_id"])
+            if staged is not None:
+                K, V = staged                      # already bf16 host tensors
+                staged_n += 1
+            Ks.append(K); Vs.append(V); loads.append(load_ms); leads.append(lead)
+        kv_wait_ms = (time.perf_counter() - t_wait) * 1e3
         pos = [it["pos"] for it in items]
         cur = [it["first"] for it in items]
         pos += [pos[-1]] * (B - n)                  # padded lanes ride along
@@ -1009,9 +1257,17 @@ class DecodeRNGDBatch(DecodeWorkerBase):
         max_new = max(it["max_new"] for it in items)
         outs = [[c] for c in cur]
         ts = []
+        # Stack and cast before taking the lock. Both are host work and both
+        # are bigger than the transfer they feed, so holding the card through
+        # them stalled everything else on the device for no reason.
+        t_prep = time.perf_counter()
+        prepared = self.eng.prepare_kv(Ks, Vs)
+        prep_ms = (time.perf_counter() - t_prep) * 1e3
         t0 = time.perf_counter()
         with DEVICE:
-            Kd, Vd = self.eng.load_kv(Ks, Vs)
+            t_up = time.perf_counter()
+            Kd, Vd = self.eng.upload_prepared_kv(prepared)
+            upload_ms = (time.perf_counter() - t_up) * 1e3
             for _ in range(max_new - 1):
                 t1 = time.perf_counter()
                 cur, Kd, Vd = self.eng.step(cur, pos, Kd, Vd)
@@ -1026,6 +1282,11 @@ class DecodeRNGDBatch(DecodeWorkerBase):
             METRICS["decode_ms"] += wall * 1e3
             METRICS["tokens"] += sum(len(o) for o in outs[:n])
         return [{"tokens": outs[i], "load_ms": round(loads[i], 1),
+                 "kv_wait_ms": round(kv_wait_ms, 1),
+                 "upload_ms": round(upload_ms, 1),
+                 "kv_prep_ms": round(prep_ms, 1),
+                 "staged_n": staged_n,
+                 "lead_ms": round(leads[i], 1),
                  "tpot_ms": round(step, 1), "decode_ms": round(wall * 1e3, 1),
                  "batch": n, "batch_width": B} for i in range(n)]
 
@@ -1123,6 +1384,18 @@ class Gateway:
             return self.prefill, self.decode, "default"
         if "solo" in tgt:            # prefill and decode are the same worker
             return None, tgt["solo"], name
+        pre = tgt["prefill"]
+        if isinstance(pre, list):
+            # More than one prefill card behind one decode card. Prefill is a
+            # whole-prompt pass and the device lock serialises it, so a second
+            # prefill pod is the only way a prompt-heavy stream stops queueing
+            # behind itself -- and it is the ratio that decides system-level
+            # efficiency, since a prefill card runs near 30% of peak while a
+            # decode card is pinned under 3% by bandwidth. Round-robin is
+            # enough: the passes are the same size and the cards are identical.
+            with self.seq_lock:
+                self.seq += 1
+                pre = pre[self.seq % len(pre)]
         dec = tgt["decode"]
         if isinstance(dec, dict):                        # one pod per batch width
             B = str(int(body.get("batch", 1)))
@@ -1130,7 +1403,7 @@ class Gateway:
                 raise ValueError(f"{name}: batch {B} not served; "
                                  f"have {sorted(dec)}")
             dec = dec[B]
-        return tgt["prefill"], dec, name
+        return pre, dec, name
 
     def complete(self, body):
         prompt = body.get("prompt", "")
@@ -1164,7 +1437,14 @@ class Gateway:
                            "kv_mb": 0.0, "kv_save_ms": 0.0, "kv_load_ms": 0.0,
                            "tpot_ms": sl["tpot_ms"],
                            "decode_ms": sl["decode_ms"],
-                           "batch": 1, "batch_width": 1, "sched": "solo",
+                           "batch": sl.get("batch", 1),
+                           "batch_width": sl.get("batch_width", 1),
+                           "sched": sl.get("sched", "solo"),
+                           "pf_bucket_C": sl.get("bucket_C"),
+                           "admit_ms": sl.get("admit_ms"),
+                           "occupancy": sl.get("occupancy"),
+                           "starved_lanes": sl.get("starved_lanes"),
+                           "held_lanes": sl.get("held_lanes"),
                            "wall_ms": round(wall_ms, 1)}}
         # Layer groups land in shm one every ~3.3 ms across the pass, so the
         # decode side can drain them as they arrive rather than after. Wait for
@@ -1194,6 +1474,15 @@ class Gateway:
                        "kv_mb": pf["kv_mb"], "kv_save_ms": pf["save_ms"],
                        "kv_load_ms": dc["load_ms"],
                        "prefetch_lead_ms": dc.get("lead_ms"),
+                       "kv_wait_ms": dc.get("kv_wait_ms"),
+                       "upload_ms": dc.get("upload_ms"),
+                       "kv_prep_ms": dc.get("kv_prep_ms"),
+                       "pf_bucket_C": pf.get("bucket_C"),
+                       "pf_compute_ms": pf.get("compute_ms"),
+                       "pf_download_ms": pf.get("download_ms"),
+                       "staged_n": dc.get("staged_n"),
+                       "starved_lanes": dc.get("starved_lanes"),
+                       "held_lanes": dc.get("held_lanes"),
                        "kv_import_ms": dc.get("import_ms"),
                        "kv_staged": dc.get("staged"),
                        "tpot_ms": dc["tpot_ms"],
@@ -1291,6 +1580,9 @@ def main():
                          "batch is re-formed every step")
     ap.add_argument("--C", type=int, default=16, help="chunked prefill chunk size")
     ap.add_argument("--group", type=int, default=2, help="layers per compiled call")
+    ap.add_argument("--decode-group", type=int, default=0,
+                    help="solo only: layers per compiled DECODE call. Prefill "
+                         "caps at 2 whatever this is; 0 = same as --group")
     ap.add_argument("--chip", type=int, default=-1,  # -1 = whichever card k8s gave us
                     help="RNGD device index; -1 auto-detects from /dev/rngd")
     ap.add_argument("--S", type=int, default=256)
@@ -1331,7 +1623,8 @@ def main():
             # the batch artifact is what decides: with one present every width
             # (including B=1) goes through the same batched graph, so the sweep
             # compares like with like.
-            w = (DecodeATOMBatch(a.S, a.B, a.batch_wait)
+            w = (DecodeATOMBatch(a.S, a.B, a.batch_wait, sched=a.sched,
+                                 admit_min=a.admit_min)
                  if os.environ.get("RBLN_BATCH_ARTIFACT") else DecodeATOM(a.S))
         elif a.B > 1:
             w = DecodeRNGDBatch(a.chip, a.S, a.B, a.group, a.batch_wait,
@@ -1342,7 +1635,9 @@ def main():
                                             b.get("max_new", 8))
         routes["/prefetch"] = lambda b: w.prefetch(b["req_id"])
     elif a.role == "solo":
-        w = SoloWorker(a.chip, a.S, a.C, a.group, a.B, a.batch_wait)
+        w = SoloWorker(a.chip, a.S, a.C, a.group, a.B, a.batch_wait,
+                       decode_group=a.decode_group, sched=a.sched,
+                       admit_min=a.admit_min)
         routes["/solo"] = lambda b: w.run(b["tokens"], b.get("max_new", 8))
     else:
         targets = None

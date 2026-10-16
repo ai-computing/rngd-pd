@@ -18,7 +18,17 @@ def cache_key(**kw):
 
 
 def path_for(cache_dir, key):
-    return os.path.join(cache_dir, key)
+    """Artifacts live under the SDK that built them.
+
+    A 2026.2.0 EDF loading under 2026.3.0 would succeed and only be wrong in
+    the numbers, which is the failure mode that has already overturned three
+    conclusions here. Separating by directory rather than by key keeps the
+    existing artifacts usable -- they only have to move, not be rebuilt.
+    """
+    from rngd_pd.engines.fsdk import SDK
+    d = os.path.join(cache_dir, SDK)
+    os.makedirs(d, exist_ok=True)
+    return os.path.join(d, key)
 
 
 def exists(path):
@@ -40,8 +50,8 @@ def save(module, path):
 def load(path, device=None):
     """Rebuild a compiled CompileModule from a saved artifact. No recompile."""
     from furiosa.native_torch import ir
-    from furiosa.torch.custom_ops import CompileModule
-    from furiosa.torch.custom_ops.edf import EdfModule
+    from rngd_pd.engines.fsdk import CompileModule
+    from rngd_pd.engines.fsdk import EdfModule
     with open(path + ".edf", "rb") as f:
         edf = ir.Edf.deserialize(f.read())
     weight = torch.load(path + ".w", weights_only=False)

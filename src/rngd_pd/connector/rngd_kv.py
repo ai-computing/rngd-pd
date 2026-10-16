@@ -131,11 +131,26 @@ class RngdKVConnector(KVConnectorBase_V1):
             [f"layer.{i}" for i in range(self.n_layers)]
 
     def wait_for_layer_load(self, layer_name):
-        """DECODE/onload: block until this layer's KV is present; write into the local buffer."""
-        k = deser(self.t.pull(f"{self.req_id}/{layer_name}/k"))
-        v = deser(self.t.pull(f"{self.req_id}/{layer_name}/v"))
+        """DECODE/onload: block until this layer's KV is present; write into the local buffer.
+
+        The wait has to cover the prefill queue, not just the transfer. One
+        prefill card serialises the passes behind a B-wide decode batch, so the
+        last request in a batch of sixteen waits for fifteen prefills before
+        its first layer even exists -- and a five-second default turned that
+        into a pull timeout that reads like a transport fault. The ceiling
+        scales with the batch the deployment asks for, so it is configuration,
+        not a constant.
+        """
+        t = float(os.environ.get("PD_KV_PULL_TIMEOUT", "5"))
+        k = deser(self.t.pull(f"{self.req_id}/{layer_name}/k", timeout=t))
+        v = deser(self.t.pull(f"{self.req_id}/{layer_name}/v", timeout=t))
         if self._kv_caches is not None:
             li = int(layer_name.split(".")[-1])
+            # The producer may send only the columns the prompt filled --
+            # a 20-token prompt has no reason to ship a 512-wide cache -- so
+            # place what arrived and clear the rest. The tail matters: a decode
+            # step injects its k/v by adding at a one-hot slot, which only
+            # equals a write if the slot starts at zero.
             if isinstance(self._kv_caches, dict):
                 dst = self._kv_caches.get(layer_name)
                 if dst is not None: dst[0][:] = k; dst[1][:] = v
