@@ -20,3 +20,6 @@ venv/
 
 # OMC session state, not source
 .omc/
+
+# run logs (results are kept as *.jsonl)
+*.log
