@@ -231,6 +231,17 @@ class RunnerAndMetricsTests(unittest.TestCase):
         self.assertIn("airm_kv_transfer_ms", w.text())
         self.assertIn("airm_ttft_p90_ms", w.text())
 
+    def test_window_tpot_is_what_the_client_sees(self):
+        """A request that waited 400 ms for a decode lane: the engine step says 10 ms, the client 140."""
+        w = airm.Window()
+        resp = {"usage": {"completion_tokens": 4},
+                "pd": {"mode": "disaggregated-kv-transfer", "ttft_ms": 50.0, "tpot_ms": 10.0}}
+        w.record(0.0, 0.47, resp)                    # wall 470 ms = 50 TTFT + 400 wait + ~2 steps
+        self.assertIn("airm_tpot_p90_ms{component=\"rngd-pd\"} 140", w.text())
+        w2 = airm.Window()
+        w2.record(0.0, 0.1, {"usage": {"completion_tokens": 1}, "pd": {"ttft_ms": 50.0, "tpot_ms": 10.0}})
+        self.assertIn("airm_tpot_p90_ms{component=\"rngd-pd\"} 10", w2.text())   # one token: engine value
+
 
 if __name__ == "__main__":
     unittest.main()
