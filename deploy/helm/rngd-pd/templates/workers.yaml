@@ -34,6 +34,10 @@ spec:
         {{- include "rngd-pd.command" (list $ $args) | nindent 8 }}
         env:
         {{- include "rngd-pd.env" (list $ $c.env) | nindent 8 }}
+        {{- if $.Values.deviceAllocation.enabled }}
+        - {name: POD_UID, valueFrom: {fieldRef: {fieldPath: metadata.uid}}}
+        - {name: CONTAINER_NAME, value: worker}
+        {{- end }}
         ports: [{containerPort: {{ $.Values.service.port }}}]
         resources:
           {{- toYaml (default $.Values.resources $c.resources) | nindent 10 }}
@@ -47,9 +51,15 @@ spec:
           privileged: {{ $c.privileged }}
         volumeMounts:
         - {name: dshm, mountPath: /dev/shm}    # the KV path for kvTransport=shm
+        {{- if $.Values.deviceAllocation.enabled }}
+        - {name: device-plugins, mountPath: /var/lib/kubelet/device-plugins, readOnly: true}
+        {{- end }}
         {{- include "rngd-pd.mounts" $ | nindent 8 }}
       volumes:
       - {name: dshm, hostPath: {path: {{ $.Values.shm.hostPath }}, type: Directory}}
+      {{- if $.Values.deviceAllocation.enabled }}
+      - {name: device-plugins, hostPath: {path: {{ $.Values.deviceAllocation.checkpointDir }}, type: Directory}}
+      {{- end }}
       {{- include "rngd-pd.volumes" $ | nindent 6 }}
 {{- end }}
 {{- end }}

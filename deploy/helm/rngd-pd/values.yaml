@@ -29,6 +29,13 @@ shm:
   hostPath: /dev/shm
   root: /dev/shm/rngd_kv_cluster
 
+# --chip -1 (the default) uses the card k8s allocated. A privileged pod sees every
+# card on the node, so the worker reads its allocation from the kubelet's
+# device-plugin checkpoint (read-only) by pod UID. See src/rngd_pd/devices.py.
+deviceAllocation:
+  enabled: true
+  checkpointDir: /var/lib/kubelet/device-plugins
+
 # Extra hostPath mounts on every pod: [{name, hostPath, mountPath, readOnly}]
 hostMounts: []
 
