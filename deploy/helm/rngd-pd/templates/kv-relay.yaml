@@ -1,0 +1,63 @@
+{{- if and .Values.enabled .Values.kvRelay.enabled }}
+{{- $r := .Values.kvRelay }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-kv-relay
+  labels: {app.kubernetes.io/name: rngd-pd, app.kubernetes.io/component: kv-relay}
+data:
+  tcpkv.py: |-
+{{ .Files.Get "files/tcpkv.py" | indent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-kv-relay
+  labels: {app.kubernetes.io/name: rngd-pd, app.kubernetes.io/component: kv-relay}
+spec:
+  selector: {app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: kv-relay}
+  ports: [{name: kv, port: {{ $r.port }}, targetPort: {{ $r.port }}}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-kv-relay
+  labels: {app.kubernetes.io/name: rngd-pd, app.kubernetes.io/component: kv-relay}
+spec:
+  replicas: 1                       # one store: prefill and decode must reach the same one
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: kv-relay}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: kv-relay}
+      annotations:
+        checksum/tcpkv: {{ .Files.Get "files/tcpkv.py" | sha256sum | trunc 16 }}
+    spec:
+      {{- with $r.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $r.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: relay
+        image: "{{ $r.image.repository }}:{{ $r.image.tag }}"
+        imagePullPolicy: {{ $r.image.pullPolicy }}
+        command: [python3, -u, /relay/tcpkv.py, --port, {{ $r.port | quote }}]
+        env:
+        {{- range $k, $v := $r.env }}
+        - {name: {{ $k }}, value: {{ $v | quote }}}
+        {{- end }}
+        ports: [{containerPort: {{ $r.port }}}]
+        readinessProbe:
+          tcpSocket: {port: {{ $r.port }}}
+          periodSeconds: 5
+        resources:
+          {{- toYaml $r.resources | nindent 10 }}
+        volumeMounts:
+        - {name: code, mountPath: /relay, readOnly: true}
+      volumes:
+      - {name: code, configMap: {name: {{ .Release.Name }}-kv-relay}}
+{{- end }}
