@@ -369,9 +369,14 @@ class DecodeWorkerBase:
     _prefetch_lock = threading.Lock()
     # A prefetch holds two S-wide float32 buffers (~134 MB at S=256), so an
     # entry nobody ever collects is not a small leak. Requests that die between
-    # prefetch and decode leave exactly that, so keep the map bounded and drop
-    # the oldest — the dropped request just loads for itself, as it did before.
-    _prefetch_cap = 8
+    # prefetch and decode leave exactly that, so the map is bounded. A live
+    # entry must never be dropped, though: its job has already taken the
+    # request's KV out of /dev/shm, so the request would then wait for KV that
+    # is gone (rngd-pd#4). When the map is full a new request skips prefetch
+    # and loads for itself at admission; only entries older than the TTL,
+    # whose request has certainly been abandoned, are reclaimed.
+    _prefetch_cap = int(os.environ.get("PD_PREFETCH_CAP", "8"))
+    _prefetch_ttl_s = float(os.environ.get("PD_PREFETCH_TTL_S", "900"))
 
     def prefetch(self, req_id):
         with self._prefetch_lock:
@@ -379,10 +384,13 @@ class DecodeWorkerBase:
                 self._prefetch = {}
             if req_id in self._prefetch:
                 return {"prefetch": "already running"}
-            while len(self._prefetch) >= self._prefetch_cap:
-                oldest = next(iter(self._prefetch))          # insertion order
-                pool, _fut, _t0 = self._prefetch.pop(oldest)
+            now = time.perf_counter()
+            for old in [k for k, (_p, _f, t) in self._prefetch.items()
+                        if now - t > self._prefetch_ttl_s]:
+                pool, _fut, _t0 = self._prefetch.pop(old)
                 pool.shutdown(wait=False)
+            if len(self._prefetch) >= self._prefetch_cap:
+                return {"prefetch": "skipped (full)", "req_id": req_id}
             pool = ThreadPoolExecutor(max_workers=1)
             t0 = time.perf_counter()
             self._prefetch[req_id] = (pool,
@@ -803,8 +811,18 @@ class _ContinuousScheduler:
     comparison between them means anything.
     """
 
-    def __init__(self, B, engine, produce, admit_min=1, produce_owner=None):
+    def __init__(self, B, engine, produce, admit_min=1, produce_owner=None,
+                 produce_on_device=True):
         self.B, self.eng, self.produce = B, engine, produce
+        # A producer that only reads host memory (the disaggregated workers'
+        # shm load) starts in the background when the request arrives, and the
+        # loop admits only streams whose cache is ready. Run inside admission,
+        # one slow or missing KV stopped every stream on the card for the whole
+        # pull timeout (rngd-pd#4). The one-card control prefills on the card,
+        # so it keeps producing under the lock.
+        self.produce_on_device = produce_on_device
+        self._loader = None if produce_on_device else ThreadPoolExecutor(
+            max_workers=int(os.environ.get("PD_KV_LOADERS", "2")))
         # The object that owns `produce`; if it can stage a prefill a group at
         # a time it exposes begin_produce, and the loop uses that instead.
         self.produce_owner = produce_owner
@@ -845,6 +863,10 @@ class _ContinuousScheduler:
     def submit(self, item):
         item["ev"] = threading.Event()
         item["out"] = item["err"] = None
+        if self._loader is not None:
+            item["_fut"] = self._loader.submit(self.produce, item)
+            # wake the loop when the cache is in, not only when the request is
+            item["_fut"].add_done_callback(lambda _f: self._wake())
         with self.cv:
             self.pending.append(item)
             self.cv.notify()
@@ -855,6 +877,33 @@ class _ContinuousScheduler:
 
     def _active(self):
         return [s for s in self.slots if s]
+
+    def _wake(self):
+        with self.cv:
+            self.cv.notify()
+
+    def _ready_pending(self):
+        """Pending items the loop may take now, failing those whose load failed.
+
+        Called with self.cv held. On-device producers are always ready; a
+        background load is ready once its future is done.
+        """
+        if self._loader is None:
+            return len(self.pending)
+        keep = collections.deque()
+        ready = []
+        for item in self.pending:
+            fut = item["_fut"]
+            if not fut.done():
+                keep.append(item)
+            elif fut.exception() is not None:
+                item["err"] = fut.exception()      # this request only
+                item["ev"].set()
+            else:
+                item["_produced"] = fut.result()
+                ready.append(item)
+        self.pending = collections.deque(ready + list(keep))
+        return len(ready)
 
     def _admit(self, taking, Kd, Vd):
         """Place new streams' caches into the resident tensor, lane by lane.
@@ -867,7 +916,7 @@ class _ContinuousScheduler:
         """
         loaded = []
         for idx, item in taking:
-            K, V, first, pos, aux_ms = self.produce(item)
+            K, V, first, pos, aux_ms = item.pop("_produced", None) or self.produce(item)
             item["first"], item["pos"] = first, pos
             loaded.append((idx, item, K, V, aux_ms))
         t0 = time.perf_counter()          # the write only, not the source
@@ -934,14 +983,17 @@ class _ContinuousScheduler:
                 # pending and no lane is seated yet: without it the loop slept
                 # on the condition variable holding a half-finished pass, and
                 # the request never came back.
-                while (not self.pending and not self._active()
-                       and self._staging is None):
-                    self.cv.wait()
+                while True:
+                    ready = self._ready_pending()
+                    if ready or self._active() or self._staging is not None:
+                        break
+                    # nothing to step: wait for a request or a finished load
+                    self.cv.wait(timeout=None if not self.pending else 0.05)
                 free = [i for i, s in enumerate(self.slots) if s is None]
                 # Do not take anything while a staged prefill is in flight:
                 # popped items that the iteration then refuses to use are lost,
                 # and their requests never return.
-                n = 0 if self._staging is not None else min(len(free), len(self.pending))
+                n = 0 if self._staging is not None else min(len(free), ready)
                 if n and not self._active():
                     pass                       # idle: admit whatever is there
                 elif n < min(self.admit_min, len(free)):
@@ -1012,6 +1064,19 @@ class _ContinuousScheduler:
                         s["item"]["err"] = e
                         s["item"]["ev"].set()
                         self.slots[i] = None
+                # Items popped for this iteration but never seated would
+                # otherwise wait forever: their callers hang until the gateway
+                # times out (rngd-pd#4).
+                for _idx, item in taking:
+                    if not item["ev"].is_set():
+                        item["err"] = item.get("err") or e
+                        item["ev"].set()
+                if self._staging is not None:
+                    _idx, item, _stage = self._staging
+                    self._staging = None
+                    if not item["ev"].is_set():
+                        item["err"] = e
+                        item["ev"].set()
                 Kd = Vd = None
 
 
@@ -1093,7 +1158,8 @@ class DecodeATOMBatch(DecodeWorkerBase):
             # static batcher meant two of the four configurations were being
             # compared under a different policy.
             self.batcher = _ContinuousScheduler(B, _AtomResidentKV(self),
-                                                self._produce_kv, admit_min)
+                                                self._produce_kv, admit_min,
+                                                produce_on_device=False)
         else:
             self.batcher = _Batcher(B, wait_ms, self._run_batch)
         STATE.update(ready=True,
@@ -1187,7 +1253,7 @@ class DecodeRNGDBatch(DecodeWorkerBase):
         self.sched = sched
         if sched == "continuous":
             self.batcher = _ContinuousScheduler(B, self.eng, self._produce_kv,
-                                                admit_min)
+                                                admit_min, produce_on_device=False)
         else:
             self.batcher = _Batcher(B, wait_ms, self._run_batch)
         STATE.update(ready=True,
