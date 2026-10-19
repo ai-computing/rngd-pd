@@ -9,6 +9,10 @@ transport-agnostic and a NIXL plugin can drop in later without touching connecto
     ├─ TcpTransport    : TCP via kv_connector.py    (cross-node)
     └─ NixlTransport   : STUB — same interface, raises until NIXL is present (Phase 5)
 
+  select_transport(name) picks the path by name through rm-core's `airm.kv_transports` entry
+  points ($AIRM_KV_TRANSPORT, default "shm" = rngd_pd.airm.ShmTransport), so switching to
+  hetero-npu-p2p's `p2p` is configuration, not code.
+
 RNGD note: D2D link = host PCIe (no RDMA/NVLink), so shm/TCP is the real transport. NIXL is exposed
 as a pluggable backend with the same contract; the handshake hooks (handshake_metadata /
 set_remote_handshake) mirror vLLM's NIXL agent exchange so the connector code is future-proof.
@@ -21,9 +25,9 @@ import numpy as np
 # KV — fp16 collapses subnormals <6e-5 and can flip argmax on long prompts).
 WIRE = "fp16"
 
-def ser(arr):
+def ser(arr, wire=None):
     a = np.ascontiguousarray(arr)
-    if WIRE == "bf16":
+    if (wire or WIRE) == "bf16":
         # astype always copies, and the caller already hands us float32 — that
         # was a full extra pass over every layer's cache, 67 MB per request.
         f = a if a.dtype == np.float32 else a.astype(np.float32)
@@ -141,6 +145,112 @@ class NixlTransport(Transport):
         raise NotImplementedError("NixlTransport is a stub: connect/handshake not implemented yet.")
     def push(self, key, buf): raise NotImplementedError
     def pull(self, key, timeout=5.0): raise NotImplementedError
+
+
+class FencedTransport(Transport):
+    """Connector Transport over an rm-core KVTransport that only moves data between tiers.
+
+    A tier-to-tier transport such as hetero-npu-p2p's `p2p` copies device KV itself and has no
+    notion of the connector's key -> bytes handoff. push() plans and submits one transfer per key,
+    pull() waits on that transfer's completion fence and only then hands back the bytes; a failed
+    or missing fence raises rather than returning data the transport never confirmed.
+
+    Limits, by construction: handles are process-local, so prefill and decode must run in one
+    process (the hetero-npu-p2p coordinator) -- across pods every pull times out. The bytes the
+    connector consumes stay in this process; the transport only fences its own copy between
+    `src` and `dst` (host-dram placeholders unless given), using a 2-byte-per-token layout.
+    """
+    def __init__(self, impl, src=None, dst=None):
+        from rm_core import KVLayout, MemoryTier
+        self.impl = impl
+        self.name = impl.name
+        self.src = src or MemoryTier("prefill", "host-dram", 1 << 40)
+        self.dst = dst or MemoryTier("decode", "host-dram", 1 << 40)
+        self._layout = KVLayout(num_layers=1, num_kv_heads=1, head_dim=1, dtype="int8")   # 2 B/token
+        self._pending = {}
+        self._lock = threading.Lock()
+    def push(self, key, buf):
+        n = len(buf)
+        plan = self.impl.plan(key, self.src, self.dst, self._layout, self._layout,
+                              (0, max(1, (n + 1) // 2)))
+        with self._lock:
+            if key in self._pending:
+                raise ValueError(f"{self.name}: {key} pushed twice before it was pulled")
+            self._pending[key] = None                        # reserve before submitting
+        handle = self.impl.submit(plan)
+        with self._lock: self._pending[key] = (handle, buf)
+    def pull(self, key, timeout=5.0):
+        from rm_core import TransportError
+        t0 = time.time()
+        while True:
+            with self._lock: entry = self._pending.get(key)
+            if entry is not None: break
+            if time.time() - t0 > timeout: raise TimeoutError(f"pull timeout: {key}")
+            time.sleep(0.001)
+        handle, buf = entry
+        try:
+            res = self.impl.wait(handle, timeout_s=max(0.0, timeout - (time.time() - t0)))
+        finally:
+            with self._lock: self._pending.pop(key, None)     # a handle is waited at most once
+        if not res.ok:
+            raise TransportError(f"{self.name}: transfer {key} failed: {res.error}")
+        return buf
+    def close(self):
+        with _LOCK:
+            for k in [k for k, v in _FENCED.items() if v is self]: del _FENCED[k]
+        self.impl.close()
+
+
+# Our own adapters, for a checkout run from src/ without `pip install -e .` (the pods put
+# /app/src on PYTHONPATH). Same names and objects as the entry points in pyproject.toml.
+_OWN = {"shm": "rngd_pd.airm:ShmTransport"}
+_CLASSES = {}          # name -> implementation class, resolved once per process
+_FENCED = {}           # name -> the process's one FencedTransport (both sides share handles)
+_LOCK = threading.Lock()
+
+
+def _resolve(name, kw):
+    """An instance of the implementation registered as `name`; the class is looked up once."""
+    cls = _CLASSES.get(name)
+    if cls is not None:
+        return cls(**kw)
+    try:
+        from rm_core import registry
+    except ImportError:
+        # rm-core is not importable (a pod with only src/ on the path). Our own "shm" is the
+        # same /dev/shm path either way; any other name cannot be resolved and says so.
+        if name != "shm":
+            raise KeyError(f"AIRM_KV_TRANSPORT={name!r} needs rm-core installed")
+        _CLASSES[name] = cls = ShmTransport
+        return cls(**dict({"root": os.environ.get("PD_SHM_ROOT", "/dev/shm/rngd_kv_cluster")}, **kw))
+    try:
+        impl = registry.load("airm.kv_transports", name, **kw)
+    except KeyError:
+        if name not in _OWN: raise
+        import importlib
+        mod, obj = _OWN[name].split(":")
+        impl = getattr(importlib.import_module(mod), obj)(**kw)
+    _CLASSES[name] = type(impl)
+    return impl
+
+
+def select_transport(name=None, **kw) -> Transport:
+    """The connector's KV path, chosen by name from configuration (ai-rm protocol v0.1).
+
+    name falls back to $AIRM_KV_TRANSPORT, then "shm" (the /dev/shm host-staging path the
+    serving workers always used). The implementation comes from the `airm.kv_transports` entry
+    point of that name (rm_core.registry.load); kw goes to its constructor. One that speaks the
+    connector's push/pull is used as is; a tier-to-tier KVTransport is wrapped in FencedTransport.
+    An unknown name raises KeyError -- never a fallback to another path.
+    """
+    name = name or os.environ.get("AIRM_KV_TRANSPORT") or "shm"
+    with _LOCK:
+        if not kw and name in _FENCED: return _FENCED[name]
+        impl = _resolve(name, kw)
+        if isinstance(impl, Transport): return impl
+        t = FencedTransport(impl)
+        if not kw: _FENCED[name] = t
+        return t
 
 
 def make_transport(backend="shm", **kw) -> Transport:

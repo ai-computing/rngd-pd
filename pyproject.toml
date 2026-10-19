@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rngd-pd"
+version = "0.1.0"
+description = "Llama-3.1-8B PD-disaggregated serving: Furiosa RNGD prefill + Rebellions ATOM decode under llm-d"
+requires-python = ">=3.10"
+# The NPU stacks (furiosa, rebellions, vllm) come from the host; they are not pip dependencies.
+dependencies = [
+    "rm-core @ git+https://github.com/ai-computing/rm-core@v0.1.0",
+    "numpy",
+]
+
+[project.entry-points."airm.kv_transports"]
+shm = "rngd_pd.airm:ShmTransport"
+
+[project.entry-points."airm.workloads"]
+rngd-pd = "rngd_pd.airm:run"
+
+[tool.setuptools.packages.find]
+where = ["src"]
