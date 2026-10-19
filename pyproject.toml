@@ -9,7 +9,7 @@ description = "Llama-3.1-8B PD-disaggregated serving: Furiosa RNGD prefill + Reb
 requires-python = ">=3.10"
 # The NPU stacks (furiosa, rebellions, vllm) come from the host; they are not pip dependencies.
 dependencies = [
-    "rm-core @ git+https://github.com/ai-computing/rm-core@v0.1.0",
+    "rm-core @ git+https://github.com/ai-computing/rm-core@v0.1.1",
     "numpy",
 ]
 
