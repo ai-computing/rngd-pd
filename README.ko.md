@@ -155,6 +155,7 @@ $PY -m rngd_pd.engines.decode_batch --B 4 --group 2 --chip 2
 | Entry-point 그룹 | 이름 | 객체 |
 |---|---|---|
 | `airm.kv_transports` | `shm` | `rngd_pd.airm:ShmTransport` |
+| `airm.kv_transports` | `nixl` | `rngd_pd.kv_nixl:NixlTransport` |
 | `airm.workloads` | `rngd-pd` | `rngd_pd.airm:run` |
 
 ```python
@@ -180,6 +181,46 @@ decode 쪽에서 다시 카드로 올라간다. 장치 간 P2P DMA가 아니다(
 prefill·decode Pod가 같은 노드의 `/dev/shm`을 마운트해야 한다. host-dram → host-dram(같은 머신)만 지원하고,
 dtype은 `bf16`/`fp16`, 양쪽 layout이 같아야 한다. 실패를 다른 경로로 대체하지 않는다.
 `conformance_case()`는 같은 호스트의 shm tier 둘을 쓰며, 서빙 디렉터리 대신 옆의 전용 디렉터리에 쓴다.
+</details>
+
+<details>
+<summary><b><code>nixl</code> 전송 (NIXL로 RNGD → ATOM)</b></summary>
+<br>
+
+`rngd_pd.kv_nixl.NixlTransport`는 요청 하나의 KV를 NIXL과 hetero-npu-p2p의 `HETERO_NPU` backend plugin
+([docs/nixl-backend.md](https://github.com/ai-computing/hetero-npu-p2p/blob/master/docs/nixl-backend.md))으로 live 할당 사이에서 옮긴다.
+호출자가 요청마다 할당을 묶고(`bind(request_id, NixlBinding(src, dst, context))`) `plan` → `submit` → `wait`를
+부른다. `wait`가 완료 fence이며, 요청의 모든 DMA 명령이 끝난 뒤에 반환한다.
+
+| 경로 | 원본 → 대상 | 데이터 경로 |
+|---|---|---|
+| `rngd → dmabuf` | RNGD device DRAM → export된 ATOM DMA-BUF | **직접** PCIe P2P, 호스트 메모리 없음 |
+| `rngd → host` | RNGD device DRAM → 고정 호스트 페이지 | 명시적 staging 구간 |
+| `host → rngd` | 고정 호스트 페이지 → RNGD device DRAM | 명시적 staging 구간 |
+| RNGD → RNGD, ATOM → 무엇이든, host → host | — | `plan()`에서 거부. RNGD → RNGD는 두 staging 구간을 호출자가 직접 plan한다 |
+
+레이아웃은 rngd-pd의 것이다. K `[layers, kv_heads, head_dim, S]`, V `[layers, kv_heads, S, head_dim]`, bf16,
+S 폭. 바이트만 복사하고 변환하지 않으며, 다른 경로로 대체하지도 않는다. backend는 호스트 하나에 agent 하나만
+허용한다. 그래서 agent를 가진 프로세스가 RNGD tensor(`data_ptr()`, PE0 장치 경로)를 보고 ATOM DMA-BUF fd를
+가지고 있어야 한다(다른 프로세스가 할당했으면 `SCM_RIGHTS`로 넘긴다).
+
+**서빙 파드는 여전히 `shm`을 쓴다.** `AIRM_KV_TRANSPORT=nixl`은 `p2p`처럼 `FencedTransport`로 이 transport를 고르며,
+host tier push는 `TransportError`로 실패한다. 서빙 prefill 워커는 KV를 호스트로 내리고, ATOM decode 그래프는
+매 step 캐시 전체를 호스트 입력으로 받으므로, transport가 채울 device buffer가 양쪽 모두에 없다. 엔진 쪽 요구는
+[aicomp#48](https://github.com/ai-computing/aicomp/issues/48)에 남겼다.
+
+**노드 검증**은 `bench/nixl_kv_check.py`와 `bench/nixl_decode_tokens.py`로 했다. RNGD 2장과 ATOM 1장을 가진 Pod
+하나에서 실행했다(Llama-3.1-8B, S=512, 6–471 토큰 프롬프트 5개, 각 KV 67.1 MB).
+
+| | 요청당 시간 | 바이트 |
+|---|--:|---|
+| `shm`(서빙 경로): device 다운로드 + decode 쪽 `/dev/shm` 로드 | 14–17 ms + 26–32 ms | — |
+| `nixl` RNGD → ATOM DMA-BUF(직접, queue depth 4) | **1.63 ms**(~41 GB/s) | 원본·`shm` payload와 같음, 5/5 |
+| `nixl` RNGD → host(staging 구간) | 10–14 ms | 같음, 5/5 |
+| `nixl` host → 두 번째 RNGD(staging 구간, 위 구간과 합치면 RNGD → RNGD) | 12–15 ms | 같음(SDK readback), 5/5 |
+
+RNGD → ATOM으로 건너간 KV로 ATOM decode(B=1 그래프, 32 토큰)를 돌린 결과는 `shm` KV로 돌린 결과와 토큰이 같았다
+(프롬프트 5/5). 캐시는 먼저 ATOM 버퍼에서 다시 읽었다(위 참고).
 </details>
 
 <details>
@@ -316,6 +357,7 @@ src/rngd_pd/          패키지 — import해서 쓰며 sys.path에 끼워 넣�
     cluster.py          prefill / decode / router HTTP 워커
     proxy.py
   airm.py             ai-rm protocol v0.1 adapter (ShmTransport, run)
+  kv_nixl.py          NIXL + HETERO_NPU 위의 `nixl` KVTransport (RNGD -> ATOM DMA-BUF, staging 구간)
   paths.py            저장소 루트, 아티팩트 캐시, shm 루트 — 한 곳에서 계산
 
 bench/                측정 진입점 (직접 실행)
@@ -353,5 +395,7 @@ tests/
 - [ ] `--chip -1` 대신 device plugin이 배정한 카드 사용
 - [ ] ai-rm에서 RNGD → ATOM decode와 live buffer `p2p` 전송을 종단 간 실행
 - [ ] 실제 길이 트래픽을 위한 더 긴 컴파일 시퀀스 길이
-- [ ] continuous batching 상시 서버, NIXL 전송, Envoy ext-proc EPP
+- [x] hetero-npu-p2p HETERO_NPU backend 위의 `nixl` KV 전송(RNGD → ATOM DMA-BUF 직접, RNGD ↔ host 구간), 노드에서 바이트·토큰 일치
+- [ ] 서빙 파드에서 `nixl`: 양쪽의 device 상주 KV ([aicomp#48](https://github.com/ai-computing/aicomp/issues/48))
+- [ ] continuous batching 상시 서버, Envoy ext-proc EPP
 - [ ] Optimus Prime으로 통합 ([계획](https://github.com/ai-computing/ai-rm/blob/master/docs/engine-integration.md))

@@ -1,0 +1,343 @@
+{
+ "run": "2026-10-19, one pod on the RNGD+ATOM node: 2 RNGD + 1 ATOM; bench/nixl_kv_check.py then bench/nixl_decode_tokens.py --tokens 32",
+ "S": 512,
+ "layers": 32,
+ "kv_bytes": 67108864,
+ "queue_depth": 4,
+ "prompts": [
+  {
+   "prompt_tokens": 6,
+   "next": 264,
+   "shm_next": 264,
+   "shm_save_ms": 1.3,
+   "shm_download_ms": 17.5,
+   "shm_load_ms": 28.8,
+   "device_equals_shm": true,
+   "kp_ptr": "0x8379c0000",
+   "vp_ptr": "0x8359c0000",
+   "rngd_host_ms": [
+    10.69,
+    10.35,
+    11.82
+   ],
+   "rngd_host_bytes_equal": true,
+   "host_rngd_ms": [
+    12.31,
+    12.14,
+    12.1
+   ],
+   "rngd_rngd_bytes_equal": true,
+   "rngd_atom_ms": [
+    1.63,
+    1.65,
+    1.65
+   ],
+   "rngd_atom_bytes_equal": true
+  },
+  {
+   "prompt_tokens": 13,
+   "next": 4185,
+   "shm_next": 4185,
+   "shm_save_ms": 1.2,
+   "shm_download_ms": 17.4,
+   "shm_load_ms": 30.2,
+   "device_equals_shm": true,
+   "kp_ptr": "0x8378e0000",
+   "vp_ptr": "0x8358e0000",
+   "rngd_host_ms": [
+    12.67,
+    11.88,
+    11.82
+   ],
+   "rngd_host_bytes_equal": true,
+   "host_rngd_ms": [
+    12.49,
+    12.13,
+    12.07
+   ],
+   "rngd_rngd_bytes_equal": true,
+   "rngd_atom_ms": [
+    1.65,
+    1.63,
+    1.63
+   ],
+   "rngd_atom_bytes_equal": true
+  },
+  {
+   "prompt_tokens": 121,
+   "next": 3492,
+   "shm_next": 3492,
+   "shm_save_ms": 1.4,
+   "shm_download_ms": 16.4,
+   "shm_load_ms": 26.3,
+   "device_equals_shm": true,
+   "kp_ptr": "0x8359e0000",
+   "vp_ptr": "0x8339e0000",
+   "rngd_host_ms": [
+    12.64,
+    11.89,
+    11.84
+   ],
+   "rngd_host_bytes_equal": true,
+   "host_rngd_ms": [
+    12.33,
+    12.1,
+    12.14
+   ],
+   "rngd_rngd_bytes_equal": true,
+   "rngd_atom_ms": [
+    1.65,
+    1.63,
+    1.63
+   ],
+   "rngd_atom_bytes_equal": true
+  },
+  {
+   "prompt_tokens": 74,
+   "next": 674,
+   "shm_next": 674,
+   "shm_save_ms": 1.4,
+   "shm_download_ms": 14.3,
+   "shm_load_ms": 27.2,
+   "device_equals_shm": true,
+   "kp_ptr": "0x835fc0000",
+   "vp_ptr": "0x833fc0000",
+   "rngd_host_ms": [
+    12.59,
+    11.92,
+    14.37
+   ],
+   "rngd_host_bytes_equal": true,
+   "host_rngd_ms": [
+    14.99,
+    14.77,
+    14.75
+   ],
+   "rngd_rngd_bytes_equal": true,
+   "rngd_atom_ms": [
+    1.66,
+    1.63,
+    1.63
+   ],
+   "rngd_atom_bytes_equal": true
+  },
+  {
+   "prompt_tokens": 471,
+   "next": 4037,
+   "shm_next": 4037,
+   "shm_save_ms": 1.3,
+   "shm_download_ms": 15.8,
+   "shm_load_ms": 31.9,
+   "device_equals_shm": true,
+   "kp_ptr": "0x82f1a0000",
+   "vp_ptr": "0x82d1a0000",
+   "rngd_host_ms": [
+    12.69,
+    11.9,
+    11.92
+   ],
+   "rngd_host_bytes_equal": true,
+   "host_rngd_ms": [
+    12.33,
+    12.09,
+    12.12
+   ],
+   "rngd_rngd_bytes_equal": true,
+   "rngd_atom_ms": [
+    1.65,
+    1.62,
+    1.65
+   ],
+   "rngd_atom_bytes_equal": true
+  }
+ ],
+ "tokens": [
+  {
+   "file": "kv-0.npz",
+   "prompt_tokens": 6,
+   "tokens": 32,
+   "kv_bytes_equal": true,
+   "token_exact": true,
+   "shm": [
+    264,
+    3363,
+    315,
+    30363,
+    11,
+    1989,
+    11,
+    11401,
+    11,
+    323,
+    36105,
+    13
+   ],
+   "nixl": [
+    264,
+    3363,
+    315,
+    30363,
+    11,
+    1989,
+    11,
+    11401,
+    11,
+    323,
+    36105,
+    13
+   ]
+  },
+  {
+   "file": "kv-1.npz",
+   "prompt_tokens": 13,
+   "tokens": 32,
+   "kv_bytes_equal": true,
+   "token_exact": true,
+   "shm": [
+    4185,
+    351,
+    94140,
+    864,
+    7712,
+    323,
+    17322,
+    374,
+    264,
+    1920,
+    430,
+    18808
+   ],
+   "nixl": [
+    4185,
+    351,
+    94140,
+    864,
+    7712,
+    323,
+    17322,
+    374,
+    264,
+    1920,
+    430,
+    18808
+   ]
+  },
+  {
+   "file": "kv-2.npz",
+   "prompt_tokens": 121,
+   "tokens": 32,
+   "kv_bytes_equal": true,
+   "token_exact": true,
+   "shm": [
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492
+   ],
+   "nixl": [
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492,
+    3492
+   ]
+  },
+  {
+   "file": "kv-3.npz",
+   "prompt_tokens": 74,
+   "tokens": 32,
+   "kv_bytes_equal": true,
+   "token_exact": true,
+   "shm": [
+    674,
+    80783,
+    8668,
+    198,
+    755,
+    76798,
+    1471,
+    997,
+    262,
+    422,
+    308,
+    2717
+   ],
+   "nixl": [
+    674,
+    80783,
+    8668,
+    198,
+    755,
+    76798,
+    1471,
+    997,
+    262,
+    422,
+    308,
+    2717
+   ]
+  },
+  {
+   "file": "kv-4.npz",
+   "prompt_tokens": 471,
+   "tokens": 32,
+   "kv_bytes_equal": true,
+   "token_exact": true,
+   "shm": [
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037
+   ],
+   "nixl": [
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037,
+    4037
+   ]
+  }
+ ],
+ "measurements_summary": {
+  "kv_transfer_ms": {
+   "n": 45,
+   "min": 1.62,
+   "max": 14.993
+  },
+  "kv_transfer_gbps": {
+   "n": 45,
+   "min": 4.476,
+   "max": 41.419
+  }
+ }
+}
