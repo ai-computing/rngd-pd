@@ -141,9 +141,11 @@ class TcpTransport(Transport):
     def _log(op, key, buf, t0):
         """AIRM_KV_TCP_LOG=1: one line per blob (key, bytes, sha256 prefix, ms) for byte-exact audits."""
         if os.environ.get("AIRM_KV_TCP_LOG", "0") not in ("0", ""):
-            import hashlib
-            print(f"[kv-tcp] {op} {key} {len(buf)} {hashlib.sha256(buf).hexdigest()[:16]} "
-                  f"{(time.perf_counter() - t0) * 1e3:.2f}ms", flush=True)
+            import hashlib, sys
+            # one write per line: concurrent requests log from several threads
+            sys.stdout.write(f"[kv-tcp] {op} {key} {len(buf)} {hashlib.sha256(buf).hexdigest()[:16]} "
+                             f"{(time.perf_counter() - t0) * 1e3:.2f}ms\n")
+            sys.stdout.flush()
     def handshake_metadata(self):
         return {"tcp": "%s:%d" % self.remote} if self.remote else {}
     def close(self):
