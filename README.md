@@ -64,7 +64,7 @@ A Helm chart deploys prefill, decode and an OpenAI-style gateway that joins an e
 > **Experimental.** Known limits:
 > - Graphs are compiled for a fixed context length: 512 tokens in the ai-rm deployment (chart default `seqLen: 256`). Requests with input + output above the compiled length do not fit.
 > - The gateway serves only **non-streaming** `POST /v1/completions`.
-> - `--chip -1` takes the first visible card. A privileged pod with `/dev/rngd` mounted sees every card, so prefill and decode can collide unless the cards are pinned.
+> - `--chip -1` uses the card the device plugin allocated. A privileged pod sees every card, so the worker reads its allocation from the kubelet device-plugin checkpoint (the chart mounts it read-only and passes `POD_UID`); without that record and with several cards visible it stops instead of guessing.
 > - KV over `shm` needs prefill and decode on the same node; it has been verified on a single node only.
 > - There is no standalone container image: pods run `ubuntu:22.04` with this repository and the host SDK and drivers mounted by hostPath.
 > - Graphs must be compiled on the host beforehand to fill `artifacts_cache/`.
@@ -356,7 +356,7 @@ Open items from [ROADMAP.md](ROADMAP.md) and the ai-rm end-to-end run:
 
 - [x] ai-rm protocol v0.1 adapter: `shm` KVTransport, KV path by name, workload runner, `airm_*` metrics, Helm chart
 - [x] RNGD + RNGD PD serving through llm-d on the live cluster ([ai-rm e2e](https://github.com/ai-computing/ai-rm/blob/master/docs/e2e.md))
-- [ ] Use the card the device plugin allocated instead of `--chip -1`
+- [x] Use the card the device plugin allocated, also in privileged pods
 - [ ] RNGD → ATOM decode and the `p2p` transport with live buffers end to end under ai-rm
 - [ ] Larger compiled sequence lengths for real-length traffic
 - [ ] Always-on server with continuous batching; NIXL transport; Envoy ext-proc EPP
