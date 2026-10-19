@@ -9,13 +9,15 @@ install:
   - python3 -m pip install --user -e .   # rm-core + entry points; NPU SDK와 vllm은 호스트 것을 사용
 test:
   - python -m rm_core.conformance airm.kv_transports shm
-  - PYTHONPATH=src python -m pytest -q tests/native_v4 tests/test_airm.py
+  - PYTHONPATH=src python -m pytest -q tests/native_v4 tests/test_airm.py tests/test_kv_nixl.py
   - PYTHONPATH=src python -m rngd_pd.connector.transport
   - python tests/test_connector_tcp.py
   - helm template deploy/helm/rngd-pd
 adapters:
   - group: airm.kv_transports
     name: shm                 # rngd_pd.airm:ShmTransport (/dev/shm host staging, bf16 wire)
+  - group: airm.kv_transports
+    name: nixl                # rngd_pd.kv_nixl:NixlTransport (NIXL + hetero-npu-p2p HETERO_NPU, RNGD -> ATOM DMA-BUF)
   - group: airm.workloads
     name: rngd-pd             # rngd_pd.airm:run
 deploy:

@@ -15,6 +15,7 @@ dependencies = [
 
 [project.entry-points."airm.kv_transports"]
 shm = "rngd_pd.airm:ShmTransport"
+nixl = "rngd_pd.kv_nixl:NixlTransport"
 
 [project.entry-points."airm.workloads"]
 rngd-pd = "rngd_pd.airm:run"
