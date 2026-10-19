@@ -65,7 +65,7 @@ Helm chart가 prefill, decode, 그리고 기존 InferencePool에 합류하는 Op
 > - 그래프는 고정 컨텍스트 길이로 컴파일된다. ai-rm 배포에서는 512 토큰(chart 기본값 `seqLen: 256`)이며, 입력+출력이 컴파일 길이를 넘는 요청은 처리할 수 없다.
 > - gateway는 **non-streaming** `POST /v1/completions`만 서빙한다.
 > - `--chip -1`은 device plugin이 할당한 카드를 쓴다. privileged Pod는 모든 카드를 보므로, 워커는 kubelet device-plugin 체크포인트에서 자기 할당을 읽는다(chart가 읽기 전용으로 마운트하고 `POD_UID`를 넘김). 기록이 없고 카드가 여러 장 보이면 추측하지 않고 멈춘다. 이때 카드는 보이는 카드 중 순번으로 지정된다(`npu2`가 없으면 `npu3`은 `rngd:2`). 런타임이 기대하는 번호이며, `--chip N`도 같은 순번을 받는다.
-> - `shm`으로 KV를 넘기려면 prefill과 decode가 같은 노드에 있어야 하며, 단일 노드에서만 검증했다.
+> - `shm`으로 KV를 넘기려면 prefill과 decode가 같은 노드에 있어야 한다. 노드 사이에는 `tcp`(아래)를 쓴다. CPU 노드의 relay를 거쳐 바이트·토큰 단위로 일치함을 확인했지만, NPU 노드 두 대 사이의 NPU 간 전송은 실행하지 않았고 1 GbE에서 67 MB 전달에 약 0.8초가 걸린다.
 > - 독립 컨테이너 이미지는 없다. Pod는 `ubuntu:22.04`에 이 저장소와 호스트 SDK·드라이버를 hostPath로 마운트해 실행한다.
 > - 그래프는 호스트에서 미리 컴파일해 `artifacts_cache/`를 채워야 한다.
 
@@ -80,6 +80,7 @@ python -m rm_core.conformance airm.kv_transports shm
 python -m pytest -q tests/native_v4 tests/test_airm.py
 python -m rngd_pd.connector.transport
 python tests/test_connector_tcp.py
+python -m pytest -q tests/test_kv_tcp.py      # tcp 전송, relay 서버, conformance
 helm template deploy/helm/rngd-pd
 ```
 
@@ -155,6 +156,7 @@ $PY -m rngd_pd.engines.decode_batch --B 4 --group 2 --chip 2
 | Entry-point 그룹 | 이름 | 객체 |
 |---|---|---|
 | `airm.kv_transports` | `shm` | `rngd_pd.airm:ShmTransport` |
+| `airm.kv_transports` | `tcp` | `rngd_pd.airm:TcpTransport` |
 | `airm.kv_transports` | `nixl` | `rngd_pd.kv_nixl:NixlTransport` |
 | `airm.workloads` | `rngd-pd` | `rngd_pd.airm:run` |
 
@@ -181,6 +183,23 @@ decode 쪽에서 다시 카드로 올라간다. 장치 간 P2P DMA가 아니다(
 prefill·decode Pod가 같은 노드의 `/dev/shm`을 마운트해야 한다. host-dram → host-dram(같은 머신)만 지원하고,
 dtype은 `bf16`/`fp16`, 양쪽 layout이 같아야 한다. 실패를 다른 경로로 대체하지 않는다.
 `conformance_case()`는 같은 호스트의 shm tier 둘을 쓰며, 서빙 디렉터리 대신 옆의 전용 디렉터리에 쓴다.
+</details>
+
+<details>
+<summary><b><code>tcp</code> 전송 (노드 간)</b></summary>
+<br>
+
+**`tcp`는 네트워크를 거치는 host staging이다.** prefill 워커가 층마다 K와 V(bf16 wire, S=512에서 1 MiB blob)를
+`TcpKVServer`([`connector/tcpkv.py`](src/rngd_pd/connector/tcpkv.py), 표준 라이브러리만 씀)에 밀어 넣고, decode 워커가
+거기서 가져간다. 아직 오지 않은 blob은 서버가 기다린다. 연결은 프로세스마다 재사용하고, blob마다 CRC-32를 달아 서버와
+수신 측이 확인한다(`AIRM_KV_TCP_CRC=0`이면 생략). 서버 주소는 `AIRM_KV_TCP_ADDR=host:port`. chart의 `kvRelay`는 서버를 아무
+노드(CPU 노드면 충분)의 relay 파드로 띄우고 워커에 주소를 넣는다. 세 번째 노드의 relay를 쓰면 두 구간이 모두 네트워크를
+건너고, decode 워커 옆에 서버를 두면 pull은 로컬이다. `AIRM_KV_TCP_LOG=1`은 감사용으로 blob마다 크기와 SHA-256을 남긴다.
+
+클러스터 측정(ai-rm [기준선](https://github.com/ai-computing/ai-rm/blob/master/docs/ko/baselines.md), NPU 노드의 RNGD
+prefill·RNGD decode, CPU 노드의 relay, 1 GbE): blob 2,112개 중 2,112개가 양 끝에서 같았고, 요청 32개 중 32개가 `shm`과 같은
+출력이었다. 요청 하나씩 67 MB를 758 ms(push), 832 ms(pull)에 옮기고, 동시 8개면 방향마다 0.117 GB/s(NIC 회선 속도)다.
+`bench/kv_tcp_bench.py`로 잰다.
 </details>
 
 <details>

@@ -65,7 +65,7 @@ A Helm chart deploys prefill, decode and an OpenAI-style gateway that joins an e
 > - Graphs are compiled for a fixed context length: 512 tokens in the ai-rm deployment (chart default `seqLen: 256`). Requests with input + output above the compiled length do not fit.
 > - The gateway serves only **non-streaming** `POST /v1/completions`.
 > - `--chip -1` uses the card the device plugin allocated. A privileged pod sees every card, so the worker reads its allocation from the kubelet device-plugin checkpoint (the chart mounts it read-only and passes `POD_UID`); without that record and with several cards visible it stops instead of guessing. The card is then addressed by its position among the visible cards (`rngd:2` for `npu3` when `npu2` is absent), which is what the runtime expects; `--chip N` takes that ordinal too.
-> - KV over `shm` needs prefill and decode on the same node; it has been verified on a single node only.
+> - KV over `shm` needs prefill and decode on the same node. Across nodes use `tcp` (below): verified byte- and token-exact through a relay on a CPU node, but NPU to NPU on two NPU nodes has not run, and at 1 GbE each 67 MB handoff takes ~0.8 s.
 > - There is no standalone container image: pods run `ubuntu:22.04` with this repository and the host SDK and drivers mounted by hostPath.
 > - Graphs must be compiled on the host beforehand to fill `artifacts_cache/`.
 
@@ -80,6 +80,7 @@ python -m rm_core.conformance airm.kv_transports shm
 python -m pytest -q tests/native_v4 tests/test_airm.py
 python -m rngd_pd.connector.transport
 python tests/test_connector_tcp.py
+python -m pytest -q tests/test_kv_tcp.py      # tcp transport, relay server, conformance
 helm template deploy/helm/rngd-pd
 ```
 
@@ -155,6 +156,7 @@ $PY -m rngd_pd.engines.decode_batch --B 4 --group 2 --chip 2
 | Entry-point group | Name | Object |
 |---|---|---|
 | `airm.kv_transports` | `shm` | `rngd_pd.airm:ShmTransport` |
+| `airm.kv_transports` | `tcp` | `rngd_pd.airm:TcpTransport` |
 | `airm.kv_transports` | `nixl` | `rngd_pd.kv_nixl:NixlTransport` |
 | `airm.workloads` | `rngd-pd` | `rngd_pd.airm:run` |
 
@@ -183,6 +185,24 @@ hetero-npu-p2p).
 host-dram on the same machine is supported, dtype `bf16`/`fp16`, with identical layouts on both sides. Failures
 are not replaced by another path. `conformance_case()` uses two shm tiers on the same host and writes to a
 dedicated directory next to the serving one.
+</details>
+
+<details>
+<summary><b><code>tcp</code> transport (cross-node)</b></summary>
+<br>
+
+**`tcp` is host staging over the network.** The prefill worker pushes each layer's K and V (bf16 wire, 1 MiB blobs at
+S=512) to a `TcpKVServer` ([`connector/tcpkv.py`](src/rngd_pd/connector/tcpkv.py), standard library only); the decode
+worker takes them from it, the server waiting for a blob that has not arrived yet. Connections are pooled per process,
+and each blob carries a CRC-32 checked by the server and the receiver (`AIRM_KV_TCP_CRC=0` skips it). The server is
+named by `AIRM_KV_TCP_ADDR=host:port`; the chart's `kvRelay` runs it as a relay pod on any node (a CPU node is enough)
+and sets the address for the workers. With a relay on a third node both legs cross the network; a server next to the
+decode worker makes the pull local. `AIRM_KV_TCP_LOG=1` logs size and SHA-256 per blob for audits.
+
+Measured on the cluster (ai-rm [baselines](https://github.com/ai-computing/ai-rm/blob/master/docs/baselines.md),
+RNGD prefill and RNGD decode on the NPU node, relay on a CPU node, 1 GbE): 2,112 of 2,112 blobs identical on both ends,
+the same output as `shm` for 32 of 32 requests; 67 MB per request in 758 ms (push) and 832 ms (pull) one at a time,
+0.117 GB/s per direction with 8 in flight (the NIC's line rate). `bench/kv_tcp_bench.py` measures it.
 </details>
 
 <details>
