@@ -31,13 +31,16 @@ hiding it inside TPOT would make a starved batch look fast.
 """
 import argparse
 import json
+import os
 import threading
 import time
 import urllib.request
 
 import numpy as np
 
+import _bootstrap  # noqa: F401
 import cluster_env
+from rngd_pd import airm
 
 GATEWAY = cluster_env.gateway()
 TRACE = "/home/user/LLMServingSim/dataset/sharegpt_req300_rate10_llama.jsonl"
@@ -110,6 +113,7 @@ def post(model, item, batch, timeout=1800):
     return {"latency_ms": (time.perf_counter() - t0) * 1e3,
             "ttft_ms": pd.get("ttft_ms"), "tpot_ms": pd.get("tpot_ms"),
             "prefill_ms": pd.get("prefill_ms"),
+            "kv_save_ms": pd.get("kv_save_ms"), "kv_load_ms": pd.get("kv_load_ms"),
             "out_tokens": d["usage"]["completion_tokens"],
             "prompt_tokens": d["usage"]["prompt_tokens"],
             "occupancy": pd.get("occupancy"),
@@ -241,7 +245,12 @@ def main():
                        "starved_lanes": _med(done, "starved_lanes"),
                        "starved_p90": _pct(done, "starved_lanes", 90),
                        "trace_kept_pct": round((1 - drop) * 100, 1),
-                       "slo_met": bool(ok)}
+                       "slo_met": bool(ok),
+                       # The same quantities under ai-rm's metric names
+                       # (ttft_p90_ms, tpot_p90_ms, tok_s, kv_transfer_ms), so
+                       # this file, airm_* on the gateway and report.py agree.
+                       **airm.summarize(done, wall),
+                       "kv_transport": os.environ.get("AIRM_KV_TRANSPORT", "shm")}
                 fh.write(json.dumps(row, ensure_ascii=False) + "\n"); fh.flush()
                 print(f"[{name:11s} B={B} N={N}] {row['requests']:3d} req  "
                       f"{row['tokens_s']:6.1f} tok/s ({row['tokens_s_per_card']:5.1f}/card)  "

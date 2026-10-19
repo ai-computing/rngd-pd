@@ -1,0 +1,55 @@
+{{- if .Values.enabled }}
+{{- range $role := list "prefill" "decode" }}
+{{- $c := index $.Values $role }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-{{ $role }}
+  labels: {app.kubernetes.io/name: rngd-pd, app.kubernetes.io/component: {{ $role }}}
+spec:
+  selector: {app.kubernetes.io/instance: {{ $.Release.Name }}, app.kubernetes.io/component: {{ $role }}}
+  ports: [{port: {{ $.Values.service.port }}, targetPort: {{ $.Values.service.port }}}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}-{{ $role }}
+  labels: {app.kubernetes.io/name: rngd-pd, app.kubernetes.io/component: {{ $role }}, llm-d.ai/role: {{ $role }}}
+spec:
+  replicas: {{ $c.replicas }}
+  strategy: {type: Recreate}        # the card cannot be shared during a rollout
+  selector:
+    matchLabels: {app.kubernetes.io/instance: {{ $.Release.Name }}, app.kubernetes.io/component: {{ $role }}}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/instance: {{ $.Release.Name }}, app.kubernetes.io/component: {{ $role }}, llm-d.ai/role: {{ $role }}}
+    spec:
+      {{- include "rngd-pd.affinity" (list $ $c.acceleratorLabel) | nindent 6 }}
+      containers:
+      - name: worker
+        image: {{ include "rngd-pd.image" $ | quote }}
+        imagePullPolicy: {{ $.Values.image.pullPolicy }}
+        {{- $args := printf "--role %s --backend %s --S %v --port %v %s" $role $c.backend $.Values.seqLen $.Values.service.port (join " " $c.args) }}
+        {{- include "rngd-pd.command" (list $ $args) | nindent 8 }}
+        env:
+        {{- include "rngd-pd.env" (list $ $c.env) | nindent 8 }}
+        ports: [{containerPort: {{ $.Values.service.port }}}]
+        resources:
+          {{- toYaml (default $.Values.resources $c.resources) | nindent 10 }}
+        readinessProbe:
+          httpGet: {path: /health, port: {{ $.Values.service.port }}}
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 90      # cold start: weights + graph load
+        securityContext:
+          seccompProfile: {type: Unconfined}   # vendor docs: NPU access needs it
+          privileged: {{ $c.privileged }}
+        volumeMounts:
+        - {name: dshm, mountPath: /dev/shm}    # the KV path for kvTransport=shm
+        {{- include "rngd-pd.mounts" $ | nindent 8 }}
+      volumes:
+      - {name: dshm, hostPath: {path: {{ $.Values.shm.hostPath }}, type: Directory}}
+      {{- include "rngd-pd.volumes" $ | nindent 6 }}
+{{- end }}
+{{- end }}

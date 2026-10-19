@@ -86,11 +86,12 @@ class _CfgFromNpz:
 def _conn(n_layers):
     from rngd_pd.connector import transport as kv_transport
     kv_transport.WIRE = "bf16"                    # bit-exact for bf16-valued KV
-    from rngd_pd.connector.transport import ShmTransport
+    from rngd_pd.connector.transport import select_transport
     from rngd_pd.connector.rngd_kv import RngdKVConnector
     from vllm.distributed.kv_transfer.kv_connector.v1.base import KVConnectorRole
     os.makedirs(SHM_ROOT, exist_ok=True)
-    return RngdKVConnector, KVConnectorRole, ShmTransport
+    # The KV path is named by $AIRM_KV_TRANSPORT (default "shm": /dev/shm under PD_SHM_ROOT).
+    return RngdKVConnector, KVConnectorRole, select_transport
 
 
 # --------------------------------------------------------------------------
@@ -115,7 +116,7 @@ class PrefillWorker:
         print(f"[prefill] {STATE['detail']}", flush=True)
 
     def run(self, req_id, tokens):
-        RngdKVConnector, KVConnectorRole, ShmTransport = _conn(self.nl)
+        RngdKVConnector, KVConnectorRole, kv_path = _conn(self.nl)
         with DEVICE:
             t0 = time.perf_counter()
             Kp, Vp = self.sess.fresh_kv()
@@ -127,7 +128,7 @@ class PrefillWorker:
             Kh, Vh = self.sess.export_kv(Kp, Vp)
         t1 = time.perf_counter()
         conn = RngdKVConnector(KVConnectorRole.WORKER, req_id=req_id,
-                               transport=ShmTransport(SHM_ROOT), n_layers=self.nl)
+                               transport=kv_path(), n_layers=self.nl)
         for i in range(self.nl):
             conn.save_kv_layer(f"layer.{i}", (Kh[i], Vh[i]))
         conn.wait_for_save()
@@ -195,9 +196,9 @@ class FullPrefillWorker:
 
     def run(self, req_id, tokens):
         """Prefill, sending each layer group out while the next one computes."""
-        RngdKVConnector, KVConnectorRole, ShmTransport = _conn(self.nl)
+        RngdKVConnector, KVConnectorRole, kv_path = _conn(self.nl)
         conn = RngdKVConnector(KVConnectorRole.WORKER, req_id=req_id,
-                               transport=ShmTransport(SHM_ROOT), n_layers=self.nl)
+                               transport=kv_path(), n_layers=self.nl)
         NG = self.eng.NG
         pending, kv_bytes = [], [0]
         pool = ThreadPoolExecutor(max_workers=1)      # one writer, ordered
@@ -274,7 +275,7 @@ class PrefillATOM:
                 mask)
 
     def run(self, req_id, tokens):
-        RngdKVConnector, KVConnectorRole, ShmTransport = _conn(self.nl)
+        RngdKVConnector, KVConnectorRole, kv_path = _conn(self.nl)
         C, P = self.C, len(tokens)
         pad = list(tokens) + [tokens[-1]] * (-P % C)     # whole chunks only
         K = np.zeros((self.nl, self.NKV, self.HD, self.S), np.float32)
@@ -297,7 +298,7 @@ class PrefillATOM:
         nxt = int(np.argmax(self.lm @ hid[(P - 1) % C]))
         t1 = time.perf_counter()
         conn = RngdKVConnector(KVConnectorRole.WORKER, req_id=req_id,
-                               transport=ShmTransport(SHM_ROOT), n_layers=self.nl)
+                               transport=kv_path(), n_layers=self.nl)
         for i in range(self.nl):
             conn.save_kv_layer(f"layer.{i}", (K[i], V[i]))
         conn.wait_for_save()
@@ -338,14 +339,14 @@ class ChunkPrefillWorker:
         print(f"[prefill] {STATE['detail']}", flush=True)
 
     def run(self, req_id, tokens):
-        RngdKVConnector, KVConnectorRole, ShmTransport = _conn(self.nl)
+        RngdKVConnector, KVConnectorRole, kv_path = _conn(self.nl)
         with DEVICE:
             t0 = time.perf_counter()
             Kh, Vh, nxt = self.eng.prefill(tokens)
             prefill_ms = (time.perf_counter() - t0) * 1e3
         t1 = time.perf_counter()
         conn = RngdKVConnector(KVConnectorRole.WORKER, req_id=req_id,
-                               transport=ShmTransport(SHM_ROOT), n_layers=self.nl)
+                               transport=kv_path(), n_layers=self.nl)
         for i in range(self.nl):
             conn.save_kv_layer(f"layer.{i}", (Kh[i], Vh[i]))
         conn.wait_for_save()
@@ -444,7 +445,7 @@ class DecodeWorkerBase:
             pool.shutdown(wait=False)
 
     def _load_kv_now(self, req_id):
-        RngdKVConnector, KVConnectorRole, ShmTransport = _conn(self.nl)
+        RngdKVConnector, KVConnectorRole, kv_path = _conn(self.nl)
         # One contiguous buffer per side, handed to the connector as per-layer
         # views. Allocating 64 separate zeroed arrays meant a memset the loader
         # immediately overwrote, and stacking them afterwards copied the whole
@@ -458,7 +459,7 @@ class DecodeWorkerBase:
         dk = [K[i] for i in range(self.nl)]
         dv = [V[i] for i in range(self.nl)]
         conn = RngdKVConnector(KVConnectorRole.WORKER, req_id=req_id,
-                               transport=ShmTransport(SHM_ROOT), n_layers=self.nl)
+                               transport=kv_path(), n_layers=self.nl)
         conn.register_kv_caches((dk, dv))
         conn.bind_connector_metadata(conn.build_connector_meta(None))
         t0 = time.perf_counter()
@@ -1646,6 +1647,11 @@ def main():
                 targets = json.load(fh)
         g = Gateway(a.prefill, a.decode, a.S, targets)
         routes["/v1/completions"] = g.complete
+        if os.environ.get("AIRM_METRICS_PORT"):   # airm_* series for Prometheus (ai-rm v0.1)
+            from rngd_pd import airm
+            window = airm.Window()
+            airm.serve_metrics(window, int(os.environ["AIRM_METRICS_PORT"]))
+            routes["/v1/completions"] = window.observe(g.complete)
 
     while True:
         time.sleep(3600)
