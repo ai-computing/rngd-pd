@@ -35,6 +35,7 @@ from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
+from rngd_pd.devices import resolve_chip
 from rngd_pd.paths import ARTIFACT_CACHE
 
 
@@ -50,25 +51,6 @@ STATE = {"ready": False, "detail": "starting"}
 METRICS = {"requests": 0, "prefill_ms": 0.0, "decode_ms": 0.0, "kv_bytes": 0,
            "save_ms": 0.0, "load_ms": 0.0, "tokens": 0}
 LOCK = threading.Lock()
-
-
-def resolve_chip(want):
-    """--chip -1 means "whichever card we were actually given".
-
-    The Furiosa device plugin passes the physical device nodes through with
-    their original index (a pod granted one card can see /dev/rngd/npu2*), so a
-    hardcoded rngd:0 dies with "device index out of range" inside k8s.
-    """
-    if want >= 0:
-        return want
-    import glob
-    import re
-    seen = sorted({int(m.group(1)) for p in glob.glob("/dev/rngd/npu*mgmt")
-                   for m in [re.search(r"npu(\d+)mgmt", p)] if m})
-    if not seen:
-        raise RuntimeError("no RNGD device visible under /dev/rngd")
-    print(f"[chip] devices visible: {seen} -> using rngd:{seen[0]}", flush=True)
-    return seen[0]
 
 
 class _CfgFromNpz:
@@ -1584,7 +1566,7 @@ def main():
     ap.add_argument("--decode-group", type=int, default=0,
                     help="solo only: layers per compiled DECODE call. Prefill "
                          "caps at 2 whatever this is; 0 = same as --group")
-    ap.add_argument("--chip", type=int, default=-1,  # -1 = whichever card k8s gave us
+    ap.add_argument("--chip", type=int, default=-1,  # -1 = the card k8s allocated (rngd_pd.devices)
                     help="RNGD device index; -1 auto-detects from /dev/rngd")
     ap.add_argument("--S", type=int, default=256)
     ap.add_argument("--port", type=int, default=8100)
