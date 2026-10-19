@@ -128,7 +128,11 @@ class TcpTransport(Transport):
 
 
 class NixlTransport(Transport):
-    """STUB — NIXL (RDMA/UCX) backend, same Transport contract. Not present on RNGD yet.
+    """STUB — a key->bytes NIXL path for the connector. Not built.
+
+    The NIXL path that exists is rngd_pd.kv_nixl.NixlTransport (AIRM_KV_TRANSPORT=nixl): an rm-core
+    tier-to-tier transport over hetero-npu-p2p's HETERO_NPU backend (RNGD -> ATOM DMA-BUF, RNGD <->
+    host staging legs), which select_transport() wraps in FencedTransport like `p2p`.
 
     Kept so the connector can select backend='nixl' unchanged once NIXL lands (Phase 5). RNGD has no
     RDMA (D2D=host PCIe); a real impl would map NIXL to host-staged transfers. Fails LOUD — never a
@@ -203,7 +207,7 @@ class FencedTransport(Transport):
 
 # Our own adapters, for a checkout run from src/ without `pip install -e .` (the pods put
 # /app/src on PYTHONPATH). Same names and objects as the entry points in pyproject.toml.
-_OWN = {"shm": "rngd_pd.airm:ShmTransport"}
+_OWN = {"shm": "rngd_pd.airm:ShmTransport", "nixl": "rngd_pd.kv_nixl:NixlTransport"}
 _CLASSES = {}          # name -> implementation class, resolved once per process
 _FENCED = {}           # name -> the process's one FencedTransport (both sides share handles)
 _LOCK = threading.Lock()

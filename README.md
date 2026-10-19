@@ -155,6 +155,7 @@ $PY -m rngd_pd.engines.decode_batch --B 4 --group 2 --chip 2
 | Entry-point group | Name | Object |
 |---|---|---|
 | `airm.kv_transports` | `shm` | `rngd_pd.airm:ShmTransport` |
+| `airm.kv_transports` | `nixl` | `rngd_pd.kv_nixl:NixlTransport` |
 | `airm.workloads` | `rngd-pd` | `rngd_pd.airm:run` |
 
 ```python
@@ -182,6 +183,48 @@ hetero-npu-p2p).
 host-dram on the same machine is supported, dtype `bf16`/`fp16`, with identical layouts on both sides. Failures
 are not replaced by another path. `conformance_case()` uses two shm tiers on the same host and writes to a
 dedicated directory next to the serving one.
+</details>
+
+<details>
+<summary><b><code>nixl</code> transport (RNGD → ATOM over NIXL)</b></summary>
+<br>
+
+`rngd_pd.kv_nixl.NixlTransport` moves one request's KV between live allocations through NIXL and
+hetero-npu-p2p's `HETERO_NPU` backend plugin ([docs/nixl-backend.md](https://github.com/ai-computing/hetero-npu-p2p/blob/master/docs/nixl-backend.md)).
+The caller binds the allocations for each request (`bind(request_id, NixlBinding(src, dst, context))`), then runs
+`plan` → `submit` → `wait`. `wait` is the completion fence: it returns once every DMA command of the request has
+completed.
+
+| Route | Source → destination | Data path |
+|---|---|---|
+| `rngd → dmabuf` | RNGD device DRAM → exported ATOM DMA-BUF | **direct** PCIe P2P, no host memory |
+| `rngd → host` | RNGD device DRAM → pinned host pages | explicit staging leg |
+| `host → rngd` | pinned host pages → RNGD device DRAM | explicit staging leg |
+| RNGD → RNGD, ATOM → anything, host → host | — | refused at `plan()`. For RNGD → RNGD, plan the two staging legs yourself |
+
+The layout is rngd-pd's: K `[layers, kv_heads, head_dim, S]` and V `[layers, kv_heads, S, head_dim]`, bf16, S wide.
+The transport copies bytes and never converts them, and it never falls back to another path. The backend allows
+one agent on one host, so the process that owns the agent must see the RNGD tensor (`data_ptr()`, PE0 device path)
+and hold the ATOM DMA-BUF fds (passed with `SCM_RIGHTS` if another process allocated them).
+
+**The serving pods still use `shm`.** `AIRM_KV_TRANSPORT=nixl` selects this transport through `FencedTransport`
+like `p2p`, and its host-tier push fails with `TransportError`. The serving prefill worker downloads KV to the host,
+and the ATOM decode graph takes the whole cache as a host input on every step, so neither side holds a device
+buffer the transport could fill. The engine-side need is filed on
+[aicomp#48](https://github.com/ai-computing/aicomp/issues/48).
+
+**Verified on the node** with `bench/nixl_kv_check.py` and `bench/nixl_decode_tokens.py`, run in one pod with 2
+RNGD cards and 1 ATOM card (Llama-3.1-8B, S=512, 5 prompts of 6–471 tokens, 67.1 MB of KV each):
+
+| | Time per request | Bytes |
+|---|--:|---|
+| `shm` (serving path): device download + `/dev/shm` load at the decode side | 14–17 ms + 26–32 ms | — |
+| `nixl` RNGD → ATOM DMA-BUF (direct, queue depth 4) | **1.63 ms** (~41 GB/s) | equal to the source and to the `shm` payload, 5/5 |
+| `nixl` RNGD → host (staging leg) | 10–14 ms | equal, 5/5 |
+| `nixl` host → second RNGD (staging leg; with the leg above, RNGD → RNGD) | 12–15 ms | equal (SDK readback), 5/5 |
+
+ATOM decode (B=1 graph, 32 tokens) from the KV that crossed RNGD → ATOM gave the same tokens as from the `shm`
+KV, 5/5 prompts. The cache was read back from the ATOM buffer first (see above).
 </details>
 
 <details>
@@ -321,6 +364,7 @@ src/rngd_pd/          the package — imported, never sys.path-injected
     cluster.py          prefill / decode / router HTTP workers
     proxy.py
   airm.py             ai-rm protocol v0.1 adapter (ShmTransport, run)
+  kv_nixl.py          `nixl` KVTransport over NIXL + HETERO_NPU (RNGD -> ATOM DMA-BUF, staging legs)
   paths.py            repo root, artifact cache, shm root — worked out once
 
 bench/                measurement entry points (run directly)
@@ -359,5 +403,7 @@ Open items from [ROADMAP.md](ROADMAP.md) and the ai-rm end-to-end run:
 - [x] Use the card the device plugin allocated, also in privileged pods
 - [ ] RNGD → ATOM decode and the `p2p` transport with live buffers end to end under ai-rm
 - [ ] Larger compiled sequence lengths for real-length traffic
-- [ ] Always-on server with continuous batching; NIXL transport; Envoy ext-proc EPP
+- [x] `nixl` KV transport over hetero-npu-p2p's HETERO_NPU backend (RNGD → ATOM DMA-BUF direct, RNGD ↔ host legs); byte- and token-exact on the node
+- [ ] Serving pods on `nixl`: device-resident KV on both sides ([aicomp#48](https://github.com/ai-computing/aicomp/issues/48))
+- [ ] Always-on server with continuous batching; Envoy ext-proc EPP
 - [ ] Consolidation into Optimus Prime ([plan](https://github.com/ai-computing/ai-rm/blob/master/docs/engine-integration.md))
