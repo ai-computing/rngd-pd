@@ -293,9 +293,17 @@ class Window:
         self.lock = threading.Lock()
 
     def record(self, t0, t1, resp):
+        """One finished request. TPOT is the one a client sees, (wall - TTFT) / (tokens - 1): the
+        decode worker's `pd.tpot_ms` is its median graph step, which leaves out the wait for a lane
+        and the admission stalls, so it stays flat while the decode side saturates (rm-controller's
+        rebalancer reads this gauge to decide when decode needs cards)."""
         pd = resp.get("pd", {}) if isinstance(resp, dict) else {}
-        rec = {"t0": t0, "t1": t1, "ttft_ms": pd.get("ttft_ms"), "tpot_ms": pd.get("tpot_ms"),
-               "out_tokens": (resp.get("usage") or {}).get("completion_tokens", 0)}
+        n = (resp.get("usage") or {}).get("completion_tokens", 0) if isinstance(resp, dict) else 0
+        ttft = pd.get("ttft_ms")
+        wall = (t1 - t0) * 1e3
+        tpot = (max(0.0, wall - ttft) / (n - 1) if isinstance(ttft, (int, float)) and n and n > 1
+                else pd.get("tpot_ms"))
+        rec = {"t0": t0, "t1": t1, "ttft_ms": ttft, "tpot_ms": tpot, "out_tokens": n}
         if pd.get("mode") == "disaggregated-kv-transfer":
             rec.update(kv_save_ms=pd.get("kv_save_ms"), kv_load_ms=pd.get("kv_load_ms"))
         with self.lock:
