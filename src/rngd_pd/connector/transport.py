@@ -6,7 +6,7 @@ transport-agnostic and a NIXL plugin can drop in later without touching connecto
   Transport (ABC): push(key, buf) / pull(key, timeout) / close()
     ├─ InProcTransport : in-process dict          (unit tests, single process)
     ├─ ShmTransport    : /dev/shm file-backed      (cross-process, same host — RNGD default)
-    ├─ TcpTransport    : TCP via kv_connector.py    (cross-node)
+    ├─ TcpTransport    : TCP to a TcpKVServer      (cross-node; tcpkv.py, the server can be a relay)
     └─ NixlTransport   : STUB — same interface, raises until NIXL is present (Phase 5)
 
   select_transport(name) picks the path by name through rm-core's `airm.kv_transports` entry
@@ -101,29 +101,55 @@ class ShmTransport(Transport):
 
 
 class TcpTransport(Transport):
-    """Cross-node TCP transport wrapping kv_connector.py's TcpKVServer / tcp_push / tcp_pull.
+    """Cross-node KV over TCP (rngd_pd.connector.tcpkv): push to and take from one TcpKVServer.
 
-    remote=(host, port) is the decode-side server this connector pushes to / pulls from.
-    Optionally starts a local server (serve_port) so this node can also receive.
+    remote=(host, port) is that server; without it, $AIRM_KV_TCP_ADDR ("host:port"). Prefill and
+    decode name the same server, which can run beside the decode worker (serve_port= starts one in this
+    process) or on a third node as a relay; neither worker has to reach the other. Connections are
+    pooled and kept open, and every blob carries a CRC-32 checked on arrival and on delivery
+    (AIRM_KV_TCP_CRC=0 skips it), so a pull returns the pushed bytes or raises. select_transport("tcp")
+    hands every caller in a process one instance (`shared`), so the pool outlives a request.
     """
+    shared = True
+
     def __init__(self, remote=None, serve_port=None):
-        from rngd_pd.connector.base import tcp_push, tcp_pull, TcpKVServer
-        self._push, self._pull, self._Server = tcp_push, tcp_pull, TcpKVServer
-        self.remote = remote                                # (host, port)
+        from rngd_pd.connector.tcpkv import TcpKVClient, TcpKVServer, parse_addr
         self.server = None
         if serve_port is not None:
             self.server = TcpKVServer(serve_port); self.server.start()
+            serve_port = self.server.wait_ready()
+        if remote is None and os.environ.get("AIRM_KV_TCP_ADDR"):
+            remote = parse_addr(os.environ["AIRM_KV_TCP_ADDR"])
+        if remote is None and serve_port is not None:
+            remote = ("127.0.0.1", serve_port)
+        self.remote = tuple(remote) if remote else None    # (host, port)
+        self._client = TcpKVClient(*self.remote) if self.remote else None
+    def _need(self):
+        if self._client is None:
+            raise ValueError("tcp transport needs remote=(host, port) or AIRM_KV_TCP_ADDR=host:port")
+        return self._client
     def push(self, key, buf):
-        assert self.remote, "TcpTransport.push needs remote=(host,port)"
-        self._push(self.remote[0], self.remote[1], key, buf)
+        t0 = time.perf_counter()
+        self._need().push(key, buf)
+        self._log("push", key, buf, t0)
     def pull(self, key, timeout=5.0):
-        host, port = self.remote; t0 = time.time()
-        while True:
-            data = self._pull(host, port, key)              # server pops; empty until pushed
-            if data: return data
-            if time.time() - t0 > timeout: raise TimeoutError(f"pull timeout: {key}")
-            time.sleep(0.002)
+        t0 = time.perf_counter()
+        buf = self._need().take(key, timeout=timeout)       # the server waits; no polling
+        self._log("pull", key, buf, t0)
+        return buf
+    @staticmethod
+    def _log(op, key, buf, t0):
+        """AIRM_KV_TCP_LOG=1: one line per blob (key, bytes, sha256 prefix, ms) for byte-exact audits."""
+        if os.environ.get("AIRM_KV_TCP_LOG", "0") not in ("0", ""):
+            import hashlib, sys
+            # one write per line: concurrent requests log from several threads
+            sys.stdout.write(f"[kv-tcp] {op} {key} {len(buf)} {hashlib.sha256(buf).hexdigest()[:16]} "
+                             f"{(time.perf_counter() - t0) * 1e3:.2f}ms\n")
+            sys.stdout.flush()
+    def handshake_metadata(self):
+        return {"tcp": "%s:%d" % self.remote} if self.remote else {}
     def close(self):
+        if self._client: self._client.close()
         if self.server: self.server.stop()
 
 
@@ -207,9 +233,11 @@ class FencedTransport(Transport):
 
 # Our own adapters, for a checkout run from src/ without `pip install -e .` (the pods put
 # /app/src on PYTHONPATH). Same names and objects as the entry points in pyproject.toml.
-_OWN = {"shm": "rngd_pd.airm:ShmTransport", "nixl": "rngd_pd.kv_nixl:NixlTransport"}
+_OWN = {"shm": "rngd_pd.airm:ShmTransport", "tcp": "rngd_pd.airm:TcpTransport",
+        "nixl": "rngd_pd.kv_nixl:NixlTransport"}
 _CLASSES = {}          # name -> implementation class, resolved once per process
 _FENCED = {}           # name -> the process's one FencedTransport (both sides share handles)
+_SHARED = {}           # name -> the process's one instance of a transport that holds connections
 _LOCK = threading.Lock()
 
 
@@ -221,8 +249,11 @@ def _resolve(name, kw):
     try:
         from rm_core import registry
     except ImportError:
-        # rm-core is not importable (a pod with only src/ on the path). Our own "shm" is the
-        # same /dev/shm path either way; any other name cannot be resolved and says so.
+        # rm-core is not importable (a pod with only src/ on the path). Our own "shm" and "tcp"
+        # are the same paths either way; any other name cannot be resolved and says so.
+        if name == "tcp":
+            _CLASSES[name] = cls = TcpTransport
+            return cls(**kw)
         if name != "shm":
             raise KeyError(f"AIRM_KV_TRANSPORT={name!r} needs rm-core installed")
         _CLASSES[name] = cls = ShmTransport
@@ -250,8 +281,12 @@ def select_transport(name=None, **kw) -> Transport:
     name = name or os.environ.get("AIRM_KV_TRANSPORT") or "shm"
     with _LOCK:
         if not kw and name in _FENCED: return _FENCED[name]
+        if not kw and name in _SHARED: return _SHARED[name]
         impl = _resolve(name, kw)
-        if isinstance(impl, Transport): return impl
+        if isinstance(impl, Transport):
+            # The workers ask for the path once per request; a connection pool must outlive that.
+            if not kw and getattr(impl, "shared", False): _SHARED[name] = impl
+            return impl
         t = FencedTransport(impl)
         if not kw: _FENCED[name] = t
         return t

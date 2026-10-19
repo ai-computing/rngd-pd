@@ -20,6 +20,20 @@ airm:
   placement: ""
   metricsPort: 9400      # gateway: airm_* series on /metrics
 
+# Cross-node KV (airm.kvTransport: tcp): a relay that holds each request's KV between the prefill
+# push and the decode pull (src/rngd_pd/connector/tcpkv.py, shipped as files/tcpkv.py). It needs no
+# accelerator, so it can run on any CPU node; the workers get AIRM_KV_TCP_ADDR pointing at it. With
+# tcp and no relay, set AIRM_KV_TCP_ADDR in env to a TcpKVServer of your own.
+kvRelay:
+  enabled: false
+  port: 5577
+  image: {repository: "python", tag: "3.11-slim", pullPolicy: IfNotPresent}
+  nodeSelector: {}       # e.g. a CPU node: {kubernetes.io/hostname: <node>}
+  affinity: {}
+  resources:
+    requests: {cpu: "2", memory: 4Gi}
+  env: {}                # AIRM_KV_TCP_TTL_S (900), AIRM_KV_TCP_CRC (1)
+
 model: meta-llama/Llama-3.1-8B-Instruct
 seqLen: 256              # S the graphs were compiled for
 env: {}                  # extra env for every pod (name: value)

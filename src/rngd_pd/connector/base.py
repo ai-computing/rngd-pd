@@ -10,7 +10,7 @@ KV block format (contiguous, self-describing):
 
   python kv_connector.py            # self-test: shm vs tcp round-trip + timing
 """
-import socket, struct, threading, time
+import struct, time
 from multiprocessing import shared_memory
 import numpy as np
 
@@ -58,64 +58,28 @@ class ShmConnector:
 
 
 # ---- remote transport: TCP (cross-node) ----
-class TcpKVServer(threading.Thread):
-    """Holds pushed KV blocks in memory; serves pulls. Runs on the decode node."""
-    def __init__(self, port):
-        super().__init__(daemon=True)
-        self.port = port; self.store = {}; self._stop = False
-
-    def run(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind(("0.0.0.0", self.port)); s.listen(8); s.settimeout(0.5)
-        while not self._stop:
-            try:
-                c, _ = s.accept()
-            except socket.timeout:
-                continue
-            threading.Thread(target=self._handle, args=(c,), daemon=True).start()
-        s.close()
-
-    def _handle(self, c):
-        op = c.recv(1)                                       # b'P' push | b'G' get
-        klen = struct.unpack("<i", _recvn(c, 4))[0]
-        key = _recvn(c, klen).decode()
-        if op == b"P":
-            n = struct.unpack("<q", _recvn(c, 8))[0]
-            self.store[key] = _recvn(c, n)
-            c.sendall(b"OK")
-        else:
-            data = self.store.pop(key, b"")
-            c.sendall(struct.pack("<q", len(data)) + data)
-        c.close()
-
-    def stop(self): self._stop = True
-
-
-def _recvn(c, n):
-    buf = b""
-    while len(buf) < n:
-        p = c.recv(n - len(buf))
-        if not p:
-            break
-        buf += p
-    return buf
+# The server and the pooled client live in tcpkv.py (standard library only, so a relay pod needs nothing
+# else). These two keep the old one-shot call shape.
+from rngd_pd.connector.tcpkv import TcpKVClient, TcpKVServer  # noqa: E402,F401
 
 
 def tcp_push(host, port, key, data):
-    c = socket.create_connection((host, port))
-    kb = key.encode()
-    c.sendall(b"P" + struct.pack("<i", len(kb)) + kb + struct.pack("<q", len(data)) + data)
-    assert c.recv(2) == b"OK"; c.close()
+    c = TcpKVClient(host, port)
+    try:
+        c.push(key, data)
+    finally:
+        c.close()
 
 
 def tcp_pull(host, port, key):
-    c = socket.create_connection((host, port))
-    kb = key.encode()
-    c.sendall(b"G" + struct.pack("<i", len(kb)) + kb)
-    n = struct.unpack("<q", _recvn(c, 8))[0]
-    data = _recvn(c, n); c.close()
-    return data
+    """The blob under `key`, taken from the server, or b"" if nothing is there yet."""
+    c = TcpKVClient(host, port)
+    try:
+        return bytes(c.take(key, timeout=0))
+    except TimeoutError:
+        return b""
+    finally:
+        c.close()
 
 
 def _selftest():
@@ -133,10 +97,7 @@ def _selftest():
     ok_shm = (got == blob) and f2 == 12095 and np.allclose(c2[0][0], ck[0][0])
 
     # tcp round-trip (loopback)
-    srv = TcpKVServer(0)
-    import socket as _s
-    ss = _s.socket(); ss.bind(("127.0.0.1", 0)); port = ss.getsockname()[1]; ss.close()
-    srv.port = port; srv.start(); time.sleep(0.2)
+    srv = TcpKVServer(0, "127.0.0.1"); srv.start(); port = srv.wait_ready()
     t = time.perf_counter()
     tcp_push("127.0.0.1", port, "kvtest", blob); gt = tcp_pull("127.0.0.1", port, "kvtest")
     ttcp = (time.perf_counter() - t) * 1000
