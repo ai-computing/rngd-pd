@@ -75,7 +75,8 @@ def resolve_chip(want, env=os.environ, dev_root="/dev/rngd", checkpoint=CHECKPOI
     """--chip N pins a card; --chip -1 means "the card k8s allocated to this pod".
 
     Order: the kubelet allocation (works in privileged pods), else the only
-    visible card. Several visible cards and no allocation record is an error,
+    visible card. Returns the torch device ordinal: in a pod that sees several
+    cards, the allocated card's position among them. Several visible cards and no allocation record is an error,
     because picking one would collide with the other pods on the node.
     """
     if want >= 0:
@@ -91,5 +92,12 @@ def resolve_chip(want, env=os.environ, dev_root="/dev/rngd", checkpoint=CHECKPOI
                 "set POD_UID and mount the kubelet device-plugins directory, or pass --chip")
     if not cards:
         raise RuntimeError(f"no RNGD device visible under {dev_root}")
-    print(f"[chip] {source}: {cards} -> using rngd:{cards[0]}", flush=True)
-    return cards[0]
+    host = cards[0]
+    # The torch device ordinal counts the visible cards, it is not the host index:
+    # on a node with npu0, npu1, npu3 a privileged pod reaches npu3 as rngd:2, and
+    # rngd:3 is "device index out of range". A pod that sees one card keeps its
+    # host index, as before.
+    visible = visible_cards(dev_root)
+    ordinal = visible.index(host) if len(visible) > 1 and host in visible else host
+    print(f"[chip] {source}: {cards} -> npu{host}, using rngd:{ordinal}", flush=True)
+    return ordinal
