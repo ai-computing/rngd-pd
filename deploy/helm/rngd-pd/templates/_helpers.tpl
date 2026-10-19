@@ -22,6 +22,9 @@ affinity:
 {{- define "rngd-pd.env" -}}
 {{- $root := index . 0 -}}{{- $extra := index . 1 -}}
 {{- $fixed := dict "PYTHONPATH" $root.Values.pythonPath "PYTHONUNBUFFERED" "1" "VLLM_PLUGINS" "" "MODEL" $root.Values.model "PD_SHM_ROOT" $root.Values.shm.root "AIRM_KV_TRANSPORT" ($root.Values.airm.kvTransport | default "shm") }}
+{{- if $root.Values.kvRelay.enabled }}
+{{- $_ := set $fixed "AIRM_KV_TCP_ADDR" (printf "%s-kv-relay:%v" $root.Release.Name $root.Values.kvRelay.port) }}
+{{- end }}
 {{- range $k, $v := merge (dict) $extra $root.Values.env $fixed }}
 - {name: {{ $k }}, value: {{ $v | quote }}}
 {{- end }}

@@ -10,6 +10,12 @@ handoff behave.
                 other side. It is also still the connector's push/pull
                 Transport, so select_transport("shm") hands the serving
                 workers exactly the object they used before.
+  TcpTransport  rngd_pd.connector.transport.TcpTransport (bf16 wire over TCP to
+                a TcpKVServer, connector/tcpkv.py) as an rm-core KVTransport,
+                entry point name `tcp`. The same host staging as shm on both
+                ends, with the network in between: prefill pushes to the server,
+                decode takes from it, and the server can be a relay on a third
+                node. Cross-node; CRC-checked end to end.
   run           workload runner, entry point `airm.workloads` name `rngd-pd`:
                 starts one serving role (prefill, decode or gateway) of
                 rngd_pd.serving.cluster with the KV path named in its config.
@@ -43,54 +49,38 @@ WIRE_DTYPES = ("bf16", "fp16")          # what the shm wire can carry, 2 bytes a
 # --------------------------------------------------------------------------
 # L2: KV transport
 # --------------------------------------------------------------------------
-class ShmTransport(_kv.ShmTransport):
-    """KV between two host-memory tiers on one machine, through /dev/shm.
+class _KeyedKV:
+    """rm-core KVTransport methods over a connector Transport (key -> bytes).
 
-    Keyword arguments: root -- the shared directory (default $PD_SHM_ROOT, else
-    /dev/shm/rngd_kv_cluster). Prefill and decode must see the same one, which
-    in k8s means a hostPath /dev/shm on both pods.
-
-    submit() writes the segment and publishes it atomically (write, fsync,
-    rename), so once wait() has found it the data is visible at the
-    destination. wait() never falls back to another path: a missing or short
-    segment is ok=False. take() reads the delivered KV back and consumes it.
+    A subclass sets `name` and `SCOPE`, implements supports() and _detail(), and gives
+    _fetch(key, timeout) (the delivered bytes, TimeoutError if absent) and _consume(key) (the same
+    bytes once more, then gone).
     """
 
-    name = "shm"
-
-    def __init__(self, root=None):
-        # Not super().__init__: the directory is created on first write, so constructing one
-        # (as the conformance runner does) never touches the serving root.
-        self.root = str(root or os.environ.get("PD_SHM_ROOT") or SHM_ROOT)
+    def _init_kv(self):
         self._pending = {}                  # token -> (plan, key, started)
-        self._written = set()               # keys this instance published, for close()
         self._delivered = {}                # (request id, tokens) -> key, waited but not taken
         self._lock = threading.Lock()
         self.measurements = collections.deque(maxlen=1024)
 
-    def push(self, key, buf):
-        os.makedirs(self.root, exist_ok=True)
-        super().push(key, buf)
-
-    # -- rm-core KVTransport --------------------------------------------
-    def supports(self, src, dst):
-        return src.kind == "host-dram" and dst.kind == "host-dram" and src.name != dst.name
+    def _sent(self, key):
+        """Hook: submit() published `key`."""
 
     def plan(self, request_id, src, dst, src_layout, dst_layout, tokens):
         if not self.supports(src, dst):
-            raise TransportError(f"shm: only host-dram -> host-dram on one machine, "
+            raise TransportError(f"{self.name}: {self.SCOPE}, "
                                  f"not {src.kind}:{src.name} -> {dst.kind}:{dst.name}")
         src_layout.validate(); dst_layout.validate()
         if src_layout != dst_layout:
-            raise TransportError("shm: src and dst layouts differ; convert in the model adapter")
+            raise TransportError(f"{self.name}: src and dst layouts differ; convert in the model adapter")
         if src_layout.dtype not in WIRE_DTYPES:
-            raise TransportError(f"shm: wire carries {WIRE_DTYPES}, not {src_layout.dtype}")
+            raise TransportError(f"{self.name}: wire carries {WIRE_DTYPES}, not {src_layout.dtype}")
         start, end = tokens
         if not 0 <= start < end:
-            raise TransportError(f"shm: bad token range {tokens}")
+            raise TransportError(f"{self.name}: bad token range {tokens}")
         return TransferPlan(request_id, src.validate(), dst.validate(), src_layout, dst_layout,
                             (start, end), (end - start) * src_layout.bytes_per_token(),
-                            detail={"root": self.root, "wire": src_layout.dtype})
+                            detail=dict(self._detail(), wire=src_layout.dtype))
 
     def submit(self, plan, kv=None):
         """kv: the token range's KV as an array of (end-start) * bytes_per_token / 2
@@ -99,24 +89,24 @@ class ShmTransport(_kv.ShmTransport):
         if kv is None:
             kv = np.zeros(n, np.float32)
         elif np.asarray(kv).size != n:
-            raise ContractError(f"shm: kv has {np.asarray(kv).size} elements, plan needs {n}")
+            raise ContractError(f"{self.name}: kv has {np.asarray(kv).size} elements, plan needs {n}")
         token = uuid.uuid4().hex
         key = f"{plan.request_id}/{plan.dst.name}/{plan.tokens[0]}-{plan.tokens[1]}.{token[:8]}"
         started = time.perf_counter()
         self.push(key, _kv.ser(np.asarray(kv, np.float32), wire=plan.detail.get("wire", "bf16")))
         with self._lock:
             self._pending[token] = (plan, key, started)
-            self._written.add(key)
+        self._sent(key)
         return TransferHandle(plan.request_id, self.name, token)
 
     def wait(self, handle, timeout_s):
         with self._lock:
             entry = self._pending.pop(handle.token, None)
         if entry is None:
-            raise TransportError(f"shm: unknown or already-waited handle {handle.token}")
+            raise TransportError(f"{self.name}: unknown or already-waited handle {handle.token}")
         plan, key, started = entry
         try:
-            got = _kv.deser(self.pull(key, timeout=timeout_s)).size * 2
+            got = _kv.deser(self._fetch(key, timeout_s)).size * 2
         except TimeoutError as e:
             return TransferResult(plan.request_id, False, 0, time.perf_counter() - started, str(e))
         seconds = time.perf_counter() - started
@@ -131,14 +121,59 @@ class ShmTransport(_kv.ShmTransport):
         return TransferResult(plan.request_id, True, plan.nbytes, seconds)
 
     def take(self, plan):
-        """The delivered KV for `plan` (float32), removing the segment."""
+        """The delivered KV for `plan` (float32), removing it."""
         with self._lock:
             key = self._delivered.pop((plan.request_id, plan.tokens), None)
         if key is None:
-            raise TransportError(f"shm: nothing delivered for {plan.request_id} {plan.tokens}")
-        arr = _kv.deser(self.pull(key, timeout=0))
+            raise TransportError(f"{self.name}: nothing delivered for {plan.request_id} {plan.tokens}")
+        return _kv.deser(self._consume(key))
+
+
+class ShmTransport(_KeyedKV, _kv.ShmTransport):
+    """KV between two host-memory tiers on one machine, through /dev/shm.
+
+    Keyword arguments: root -- the shared directory (default $PD_SHM_ROOT, else
+    /dev/shm/rngd_kv_cluster). Prefill and decode must see the same one, which
+    in k8s means a hostPath /dev/shm on both pods.
+
+    submit() writes the segment and publishes it atomically (write, fsync,
+    rename), so once wait() has found it the data is visible at the
+    destination. wait() never falls back to another path: a missing or short
+    segment is ok=False. take() reads the delivered KV back and consumes it.
+    """
+
+    name = "shm"
+    SCOPE = "only host-dram -> host-dram on one machine"
+
+    def __init__(self, root=None):
+        # Not super().__init__: the directory is created on first write, so constructing one
+        # (as the conformance runner does) never touches the serving root.
+        self.root = str(root or os.environ.get("PD_SHM_ROOT") or SHM_ROOT)
+        self._written = set()               # keys this instance published, for close()
+        self._init_kv()
+
+    def push(self, key, buf):
+        os.makedirs(self.root, exist_ok=True)
+        super().push(key, buf)
+
+    # -- rm-core KVTransport --------------------------------------------
+    def supports(self, src, dst):
+        return src.kind == "host-dram" and dst.kind == "host-dram" and src.name != dst.name
+
+    def _detail(self):
+        return {"root": self.root}
+
+    def _sent(self, key):
+        with self._lock:
+            self._written.add(key)
+
+    def _fetch(self, key, timeout):
+        return self.pull(key, timeout=timeout)
+
+    def _consume(self, key):
+        buf = self.pull(key, timeout=0)
         self._unlink(key)
-        return arr
+        return buf
 
     def close(self):
         with self._lock:
@@ -178,6 +213,56 @@ class ShmTransport(_kv.ShmTransport):
             raise NoHardware(f"shm root {self.root} is not writable: {e}") from e
         return (MemoryTier("shm-prefill", "host-dram", 1 << 30),
                 MemoryTier("shm-decode", "host-dram", 1 << 30),
+                KVLayout(num_layers=2, num_kv_heads=2, head_dim=8, dtype="bf16"))
+
+
+class TcpTransport(_KeyedKV, _kv.TcpTransport):
+    """KV between two host-memory tiers on any two machines, over TCP (connector/tcpkv.py).
+
+    Keyword arguments: remote -- (host, port) of the TcpKVServer both sides use (default
+    $AIRM_KV_TCP_ADDR), serve_port -- also run that server in this process. Like shm it is a
+    HOST-STAGING path: KV leaves the card, crosses host memory and the network, and is uploaded on the
+    other side. Every blob carries a CRC-32 checked by the server and by the receiver, so wait() is ok
+    only for the bytes submit() sent. The server hands a blob out once, so wait() keeps it for take().
+    """
+
+    name = "tcp"
+    SCOPE = "only host-dram -> host-dram"
+
+    def __init__(self, remote=None, serve_port=None):
+        _kv.TcpTransport.__init__(self, remote=remote, serve_port=serve_port)
+        self._held = {}                     # key -> bytes fetched by wait(), until take()
+        self._init_kv()
+
+    def supports(self, src, dst):
+        return src.kind == "host-dram" and dst.kind == "host-dram" and src.name != dst.name
+
+    def _detail(self):
+        return {"server": "%s:%d" % self.remote if self.remote else None}
+
+    def _fetch(self, key, timeout):
+        buf = self.pull(key, timeout=timeout)
+        with self._lock:
+            self._held[key] = buf
+        return buf
+
+    def _consume(self, key):
+        with self._lock:
+            return self._held.pop(key)
+
+    def close(self):
+        with self._lock:
+            self._pending.clear()
+            self._delivered.clear()
+            self._held.clear()
+        _kv.TcpTransport.close(self)
+
+    def conformance_case(self):
+        """Two host tiers and a server on a free loopback port in this process. No device or network."""
+        if self.remote is None:
+            _kv.TcpTransport.__init__(self, serve_port=0)
+        return (MemoryTier("tcp-prefill", "host-dram", 1 << 30),
+                MemoryTier("tcp-decode", "host-dram", 1 << 30),
                 KVLayout(num_layers=2, num_kv_heads=2, head_dim=8, dtype="bf16"))
 
 

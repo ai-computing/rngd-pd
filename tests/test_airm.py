@@ -53,7 +53,7 @@ class _Env:
         self.tmp = tempfile.TemporaryDirectory(dir="/dev/shm" if os.access("/dev/shm", os.W_OK) else None)
         self.wire = kv.WIRE
         kv.WIRE = "bf16"
-        kv._FENCED.clear(); kv._CLASSES.clear()
+        kv._FENCED.clear(); kv._CLASSES.clear(); kv._SHARED.clear()
         self.env = mock.patch.dict(os.environ, {"PD_SHM_ROOT": self.tmp.name})
         self.env.start()
         os.environ.pop("AIRM_KV_TRANSPORT", None)
@@ -61,7 +61,7 @@ class _Env:
     def tearDown(self):
         self.env.stop()
         kv.WIRE = self.wire
-        kv._FENCED.clear(); kv._CLASSES.clear()
+        kv._FENCED.clear(); kv._CLASSES.clear(); kv._SHARED.clear()
         self.tmp.cleanup()
 
 
