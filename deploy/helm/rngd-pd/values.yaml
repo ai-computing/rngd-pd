@@ -1,0 +1,69 @@
+# rngd-pd: prefill pod (RNGD) -> KV -> decode pod (ATOM), behind an OpenAI-style
+# gateway that carries the InferencePool selector label.
+#
+# No site values here. Addresses, host paths and node names come from the
+# cluster override (ai-rm deploy/clusters/<name>/), never from this file.
+enabled: true
+
+# The worker image must provide python3 with this repo's src/ on PYTHONPATH and
+# the vendor runtimes (furiosa / rebellions / vllm) importable. The current
+# cluster runs ubuntu:22.04 plus host mounts (hostMounts below) and a bootstrap
+# command; an image that bakes everything in leaves both empty.
+image: {repository: "ubuntu", tag: "22.04", pullPolicy: IfNotPresent}
+bootstrap: ""            # shell run before the worker starts (e.g. apt-get install ...)
+pythonPath: /app/src     # where src/ is inside the container. kvTransport other than shm
+                         # also needs rm-core (and that transport's package) on this path
+python: python3
+
+airm:
+  kvTransport: shm       # entry point in airm.kv_transports; shm = /dev/shm host staging
+  placement: ""
+  metricsPort: 9400      # gateway: airm_* series on /metrics
+
+model: meta-llama/Llama-3.1-8B-Instruct
+seqLen: 256              # S the graphs were compiled for
+env: {}                  # extra env for every pod (name: value)
+
+# KV over shm needs prefill and decode to share the node's /dev/shm.
+shm:
+  hostPath: /dev/shm
+  root: /dev/shm/rngd_kv_cluster
+
+# Extra hostPath mounts on every pod: [{name, hostPath, mountPath, readOnly}]
+hostMounts: []
+
+nodeAffinity: {}         # set to override the per-role label affinity below
+resources: {}
+
+prefill:
+  replicas: 1
+  backend: rngd-full
+  args: ["--C", "256", "--group", "2"]
+  acceleratorLabel: airm.ai-computing.io/furiosa.RNGD
+  privileged: true       # npuNp2pmem is outside the device plugin's allowlist
+  resources:
+    limits: {furiosa.ai/rngd: "1"}
+    requests: {cpu: "8", memory: 64Gi, furiosa.ai/rngd: "1"}
+  env: {}
+
+decode:
+  replicas: 1
+  backend: atom
+  args: []
+  acceleratorLabel: airm.ai-computing.io/rebellions.ATOM
+  privileged: false
+  resources:
+    limits: {rebellions.ai/ATOM: "1"}
+    requests: {cpu: "8", memory: 96Gi, rebellions.ai/ATOM: "1"}
+  env: {}                # e.g. RBLN_ARTIFACT, RBLN_TABLES from the cluster override
+
+gateway:
+  replicas: 1
+  appLabel: llama8b-pd   # InferencePool selector
+  args: []
+  resources:
+    requests: {cpu: "2", memory: 4Gi}
+  env: {}
+
+service:
+  port: 8000

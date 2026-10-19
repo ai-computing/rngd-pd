@@ -1,0 +1,63 @@
+{{- if .Values.enabled }}
+{{- $c := .Values.gateway }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-gateway
+  labels: {app.kubernetes.io/name: rngd-pd, app.kubernetes.io/component: gateway}
+spec:
+  selector: {app: {{ $c.appLabel }}, app.kubernetes.io/instance: {{ .Release.Name }}}
+  ports:
+  - {name: http, port: {{ .Values.service.port }}, targetPort: {{ .Values.service.port }}}
+  - {name: metrics, port: {{ .Values.airm.metricsPort }}, targetPort: {{ .Values.airm.metricsPort }}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-gateway
+  labels: {app: {{ $c.appLabel }}, app.kubernetes.io/name: rngd-pd, app.kubernetes.io/component: gateway, llm-d.ai/role: pd-gateway}
+spec:
+  replicas: {{ $c.replicas }}
+  selector:
+    matchLabels: {app: {{ $c.appLabel }}, app.kubernetes.io/instance: {{ .Release.Name }}}
+  template:
+    metadata:
+      labels: {app: {{ $c.appLabel }}, app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: gateway, llm-d.ai/role: pd-gateway}
+      annotations:
+        airm.ai-computing.io/scrape: "true"
+        prometheus.io/port: {{ .Values.airm.metricsPort | quote }}
+        prometheus.io/path: /metrics
+    spec:
+      {{- with .Values.nodeAffinity }}
+      affinity:
+        nodeAffinity:
+          {{- toYaml . | nindent 10 }}
+      {{- end }}
+      containers:
+      - name: gateway
+        image: {{ include "rngd-pd.image" . | quote }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- $port := .Values.service.port }}
+        {{- $args := printf "--role gateway --S %v --port %v --prefill http://%s-prefill:%v --decode http://%s-decode:%v %s" .Values.seqLen $port .Release.Name $port .Release.Name $port (join " " $c.args) }}
+        {{- include "rngd-pd.command" (list . $args) | nindent 8 }}
+        env:
+        {{- include "rngd-pd.env" (list . $c.env) | nindent 8 }}
+        - {name: AIRM_METRICS_PORT, value: {{ .Values.airm.metricsPort | quote }}}
+        ports:
+        - {name: http, containerPort: {{ .Values.service.port }}}
+        - {name: metrics, containerPort: {{ .Values.airm.metricsPort }}}
+        resources:
+          {{- toYaml $c.resources | nindent 10 }}
+        readinessProbe:
+          httpGet: {path: /health, port: {{ .Values.service.port }}}
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 30
+        {{- if .Values.hostMounts }}
+        volumeMounts:
+        {{- include "rngd-pd.mounts" . | nindent 8 }}
+      volumes:
+      {{- include "rngd-pd.volumes" . | nindent 6 }}
+        {{- end }}
+{{- end }}

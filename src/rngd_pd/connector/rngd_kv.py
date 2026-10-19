@@ -18,7 +18,7 @@ import sys, os, time
 from dataclasses import dataclass, field
 import numpy as np
 
-from rngd_pd.connector.transport import Transport, InProcTransport, ser, deser
+from rngd_pd.connector.transport import Transport, InProcTransport, ser, deser, select_transport
 
 from vllm.distributed.kv_transfer.kv_connector.v1.base import (
     KVConnectorBase_V1, KVConnectorRole, KVConnectorMetadata)
@@ -37,7 +37,8 @@ class RngdKVConnectorMetadata(KVConnectorMetadata):
 class RngdKVConnector(KVConnectorBase_V1):
     """vLLM KVConnectorBase_V1 subclass for RNGD PD disaggregation + KV offload."""
 
-    def __init__(self, *args, req_id="r0", transport: Transport = None, n_layers=0, **kw):
+    def __init__(self, *args, req_id="r0", transport: Transport = None, n_layers=0,
+                 kv_transport=None, **kw):
         # --- dispatch: vLLM (VllmConfig, role, ...) vs standalone (KVConnectorRole, ...) ---
         if args and isinstance(args[0], KVConnectorRole):
             # standalone: (role, req_id?, transport?, n_layers?) — positional back-compat
@@ -61,9 +62,14 @@ class RngdKVConnector(KVConnectorBase_V1):
             xfer = getattr(self._kv_transfer_config, "kv_connector_extra_config", {}) or {}
             req_id = xfer.get("req_id", req_id)
             n_layers = xfer.get("n_layers", n_layers)
+            kv_transport = xfer.get("kv_transport", kv_transport)
 
         self.req_id = req_id
         self.n_layers = n_layers
+        # An injected transport wins; otherwise a configured name ($AIRM_KV_TRANSPORT or
+        # kv_transport=) picks the path through the ai-rm registry; otherwise in-process.
+        if transport is None and (kv_transport or os.environ.get("AIRM_KV_TRANSPORT")):
+            transport = select_transport(kv_transport)
         self.t = transport or InProcTransport()
         self._kv_caches = None
         self._saved = {}
