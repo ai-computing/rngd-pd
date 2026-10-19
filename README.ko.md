@@ -64,7 +64,7 @@ Helm chart가 prefill, decode, 그리고 기존 InferencePool에 합류하는 Op
 > **실험 단계.** 알려진 한계:
 > - 그래프는 고정 컨텍스트 길이로 컴파일된다. ai-rm 배포에서는 512 토큰(chart 기본값 `seqLen: 256`)이며, 입력+출력이 컴파일 길이를 넘는 요청은 처리할 수 없다.
 > - gateway는 **non-streaming** `POST /v1/completions`만 서빙한다.
-> - `--chip -1`은 device plugin이 할당한 카드를 쓴다. privileged Pod는 모든 카드를 보므로, 워커는 kubelet device-plugin 체크포인트에서 자기 할당을 읽는다(chart가 읽기 전용으로 마운트하고 `POD_UID`를 넘김). 기록이 없고 카드가 여러 장 보이면 추측하지 않고 멈춘다.
+> - `--chip -1`은 device plugin이 할당한 카드를 쓴다. privileged Pod는 모든 카드를 보므로, 워커는 kubelet device-plugin 체크포인트에서 자기 할당을 읽는다(chart가 읽기 전용으로 마운트하고 `POD_UID`를 넘김). 기록이 없고 카드가 여러 장 보이면 추측하지 않고 멈춘다. 이때 카드는 보이는 카드 중 순번으로 지정된다(`npu2`가 없으면 `npu3`은 `rngd:2`). 런타임이 기대하는 번호이며, `--chip N`도 같은 순번을 받는다.
 > - `shm`으로 KV를 넘기려면 prefill과 decode가 같은 노드에 있어야 하며, 단일 노드에서만 검증했다.
 > - 독립 컨테이너 이미지는 없다. Pod는 `ubuntu:22.04`에 이 저장소와 호스트 SDK·드라이버를 hostPath로 마운트해 실행한다.
 > - 그래프는 호스트에서 미리 컴파일해 `artifacts_cache/`를 채워야 한다.

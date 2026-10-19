@@ -64,7 +64,7 @@ A Helm chart deploys prefill, decode and an OpenAI-style gateway that joins an e
 > **Experimental.** Known limits:
 > - Graphs are compiled for a fixed context length: 512 tokens in the ai-rm deployment (chart default `seqLen: 256`). Requests with input + output above the compiled length do not fit.
 > - The gateway serves only **non-streaming** `POST /v1/completions`.
-> - `--chip -1` uses the card the device plugin allocated. A privileged pod sees every card, so the worker reads its allocation from the kubelet device-plugin checkpoint (the chart mounts it read-only and passes `POD_UID`); without that record and with several cards visible it stops instead of guessing.
+> - `--chip -1` uses the card the device plugin allocated. A privileged pod sees every card, so the worker reads its allocation from the kubelet device-plugin checkpoint (the chart mounts it read-only and passes `POD_UID`); without that record and with several cards visible it stops instead of guessing. The card is then addressed by its position among the visible cards (`rngd:2` for `npu3` when `npu2` is absent), which is what the runtime expects; `--chip N` takes that ordinal too.
 > - KV over `shm` needs prefill and decode on the same node; it has been verified on a single node only.
 > - There is no standalone container image: pods run `ubuntu:22.04` with this repository and the host SDK and drivers mounted by hostPath.
 > - Graphs must be compiled on the host beforehand to fill `artifacts_cache/`.

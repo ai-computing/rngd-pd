@@ -53,7 +53,8 @@ class ResolveChip(unittest.TestCase):
             ("other-pod", "worker", devices.RESOURCE, {"0": [UUIDS[0]]}),
             (POD, "worker", devices.RESOURCE, {"1": [UUIDS[3]]}),
         ])
-        self.assertEqual(node.resolve(env={"POD_UID": POD}), 3)
+        # npu3 is the third visible card: the runtime calls it rngd:2
+        self.assertEqual(node.resolve(env={"POD_UID": POD}), 2)
 
     def test_flat_device_list_and_container_filter(self):
         node = Node([0, 1, 3], [
