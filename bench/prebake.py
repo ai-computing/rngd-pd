@@ -31,8 +31,8 @@ from rngd_pd.paths import ARTIFACT_CACHE
 # don't match expected argument spec". The pods put ~/.local ahead of the venv
 # on PYTHONPATH, so they run furiosa-torch against torch 2.11 even though the
 # venv ships 2.10. Bake with the same combination or the artifact is poison:
-#   PYTHONPATH=src:/home/gspark/.local/lib/python3.10/site-packages \
-#     /home/gspark/venvs/furiosa/bin/python bench/prebake.py ...
+#   PYTHONPATH=src:~/.local/lib/python3.10/site-packages \
+#     ~/venvs/furiosa/bin/python bench/prebake.py ...
 POD_TORCH = os.environ.get("POD_TORCH", "2.11")
 
 
@@ -49,7 +49,7 @@ def main():
         raise SystemExit(
             f"torch {torch.__version__} 로는 구우면 안 된다 — 파드는 {POD_TORCH}.x 를 쓴다.\n"
             f"버전이 어긋난 아티팩트는 조용히 로드된 뒤 호출 시점에 터진다.\n"
-            f"PYTHONPATH 에 /home/gspark/.local/lib/python3.10/site-packages 를 앞세워 다시 실행할 것.")
+            f"PYTHONPATH 에 ~/.local/lib/python3.10/site-packages 를 앞세워 다시 실행할 것.")
     print(f"torch {torch.__version__} (파드와 일치)")
 
     cap = MAX_SHAPES.get("max_num_unique_shapes", "무제한")

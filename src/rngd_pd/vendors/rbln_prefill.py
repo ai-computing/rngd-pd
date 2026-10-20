@@ -213,7 +213,7 @@ def main():
     ap.add_argument("--C", type=int, default=16)
     ap.add_argument("--device", type=int, default=1,
                     help="ATOM device index (0 is held by the decode pod)")
-    ap.add_argument("--artifact", default="/home/gspark/rbln-llama8b-pd/prefill_S256_C16.rbln")
+    ap.add_argument("--artifact", default=os.path.expanduser("~/rbln-llama8b-pd/prefill_S256_C16.rbln"))
     ap.add_argument("--kv-out", default="/dev/shm/atom_prefill_kv.npz")
     ap.add_argument("--prompt", default="The three primary colors are red, "
                     "blue and yellow. The capital of France is")

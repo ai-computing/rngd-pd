@@ -14,6 +14,7 @@ because a split that raises one while wrecking the other is not an improvement.
 """
 import argparse
 import json
+import os
 import statistics as st
 import threading
 import time
@@ -32,14 +33,14 @@ def main():
     ap.add_argument("--concurrency", default="8,32,64")
     ap.add_argument("--max-tokens", type=int, default=16)
     ap.add_argument("--reps", type=int, default=2)
-    ap.add_argument("--out", default="/home/gspark/workspace/01_pd_disag/rngd_llmd/bench/sweep_vendor_dup.jsonl")
+    ap.add_argument("--out", default=os.path.expanduser("~/workspace/01_pd_disag/rngd_llmd/bench/sweep_vendor_dup.jsonl"))
     a = ap.parse_args()
 
     urls = a.urls.split(",")
     npus = [int(x) for x in a.npus.split(",")]
     from transformers import AutoTokenizer
     tk = AutoTokenizer.from_pretrained(
-        "/home/gspark/workspace/01_pd_disag/furiosa-bench/artifacts/llama8b-pfbatch")
+        os.path.expanduser("~/workspace/01_pd_disag/furiosa-bench/artifacts/llama8b-pfbatch"))
     filler = ("The three primary colors are red, blue and yellow. Mixing them yields "
               "the secondary colors orange, green and purple. Painters have relied on "
               "this relationship for centuries and printers still exploit it today. ")

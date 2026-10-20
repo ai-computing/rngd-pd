@@ -132,11 +132,12 @@ the KV path from `airm.kvTransport`. Site values (hostPaths, image, model artifa
 override, never in this repository. The decode role defaults to ATOM; to decode on RNGD, also remove the ATOM
 request in the override (`rebellions.ai/ATOM: null`), because a map merge keeps it.
 
-**Experiment sweeps.** The sweep manifests are generated and applied directly:
+**Experiment sweeps.** The sweep manifests are generated, then the node name and home directory
+(`${RNGD_PD_NODE}`, `${RNGD_PD_HOME}`, set in `cluster.local.env`) are filled in when applying:
 
 ```bash
 python3 deploy/k8s/gen_sweep.py > deploy/k8s/sweep-matrix.yaml
-kubectl apply -f deploy/k8s/sweep-matrix.yaml
+python3 deploy/k8s/render.py deploy/k8s/sweep-matrix.yaml | kubectl apply -f -
 ```
 
 Pods mount this directory at `/app` and run `python -m rngd_pd.serving.cluster`. One card per pod, so
@@ -312,6 +313,7 @@ Variables already exported in the shell take precedence.
 | `LLMD_GATEWAY_URL` | yes (unless `PD_GATEWAY` is set) | llm-d gateway base URL, e.g. `http://<gateway-host>:<port>` |
 | `PD_GATEWAY` | no | Full completions URL; overrides `LLMD_GATEWAY_URL` |
 | `KUBECTL_CMD` | no | How to run kubectl (default `kubectl`), e.g. `ssh -p <ssh-port> <user>@<node-ip> kubectl` |
+| `RNGD_PD_NODE`, `RNGD_PD_HOME` | for `deploy/k8s/render.py` | Node the experiment pods are pinned to, and the home directory whose Python trees they mount |
 </details>
 
 ## 📊 Results

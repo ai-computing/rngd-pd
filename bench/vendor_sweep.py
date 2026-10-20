@@ -16,6 +16,7 @@ off the streaming API and sampling card power/utilisation alongside.
 """
 import argparse
 import json
+import os
 import statistics as st
 import subprocess
 import threading
@@ -115,12 +116,12 @@ def main():
     ap.add_argument("--concurrency", default="1,2,4,8,16")
     ap.add_argument("--max-tokens", type=int, default=16)
     ap.add_argument("--reps", type=int, default=2)
-    ap.add_argument("--out", default="/home/gspark/workspace/01_pd_disag/rngd_llmd/bench/sweep_vendor.jsonl")
+    ap.add_argument("--out", default=os.path.expanduser("~/workspace/01_pd_disag/rngd_llmd/bench/sweep_vendor.jsonl"))
     a = ap.parse_args()
 
     from transformers import AutoTokenizer
     tk = AutoTokenizer.from_pretrained(
-        "/home/gspark/workspace/01_pd_disag/furiosa-bench/artifacts/llama8b-pfbatch")
+        os.path.expanduser("~/workspace/01_pd_disag/furiosa-bench/artifacts/llama8b-pfbatch"))
     filler = ("The three primary colors are red, blue and yellow. Mixing them yields "
               "the secondary colors orange, green and purple. Painters have relied on "
               "this relationship for centuries and printers still exploit it today. ")

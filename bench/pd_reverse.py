@@ -70,7 +70,7 @@ def main():
     ap.add_argument("--D", type=int, default=8)
     ap.add_argument("--chip", type=int, default=2)
     ap.add_argument("--atom-device", type=int, default=1)
-    ap.add_argument("--artifact", default="/home/gspark/rbln-llama8b-pd/prefill_S256_C16.rbln")
+    ap.add_argument("--artifact", default=os.path.expanduser("~/rbln-llama8b-pd/prefill_S256_C16.rbln"))
     ap.add_argument("--prompt", default="The three primary colors are red, "
                     "blue and yellow. The capital of France is")
     a = ap.parse_args()

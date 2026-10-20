@@ -355,10 +355,10 @@ def main():
     ap.add_argument("--chip", type=int, default=2)
     ap.add_argument("--atom-device", type=int, default=0)
     ap.add_argument("--reps", type=int, default=3)
-    ap.add_argument("--artifact-dir", default="/home/gspark/rbln-llama8b-pd")
+    ap.add_argument("--artifact-dir", default=os.path.expanduser("~/rbln-llama8b-pd"))
     ap.add_argument("--prefill-artifact",
-                    default="/home/gspark/rbln-llama8b-pd/prefill_S256_C16.rbln")
-    ap.add_argument("--out", default="/home/gspark/workspace/01_pd_disag/rngd_llmd/bench/sweep_hetero.jsonl")
+                    default=os.path.expanduser("~/rbln-llama8b-pd/prefill_S256_C16.rbln"))
+    ap.add_argument("--out", default=os.path.expanduser("~/workspace/01_pd_disag/rngd_llmd/bench/sweep_hetero.jsonl"))
     a = ap.parse_args()
 
     eng = Engines(a)

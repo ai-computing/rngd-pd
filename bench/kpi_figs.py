@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 sys.path.insert(0, str(Path(__file__).parent))
 from kpi import kpi_row
 
-OUT = Path("/home/gspark/workspace/01_pd_disag/report/figs")
+OUT = Path("~/workspace/01_pd_disag/report/figs").expanduser()
 SURFACE, INK, INK2, INK3, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#8a8983", "#e6e5e0"
 
 # fixed slot order -- the entity owns the hue for the life of the report
@@ -45,7 +45,7 @@ plt.rcParams.update({
 
 
 def load(f):
-    p = Path("/home/gspark/workspace/01_pd_disag/rngd_llmd") / f
+    p = Path("~/workspace/01_pd_disag/rngd_llmd").expanduser() / f
     return [kpi_row(json.loads(l)) for l in open(p)]
 
 
@@ -282,7 +282,7 @@ def fig_pd_vs_solo():
     rows = []
     for f in ("pd_vs_solo_balanced", "pd_vs_solo_mid",
               "pd_vs_solo_longgen", "pd_vs_solo_decodeheavy"):
-        p = Path("/home/gspark/workspace/01_pd_disag/rngd_llmd/bench") / f"{f}.jsonl"
+        p = Path("~/workspace/01_pd_disag/rngd_llmd/bench").expanduser() / f"{f}.jsonl"
         rows += [json.loads(l) for l in open(p)]
 
     pts = {}

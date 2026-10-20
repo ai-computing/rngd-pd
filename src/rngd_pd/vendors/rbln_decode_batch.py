@@ -200,7 +200,7 @@ def main():
     ap.add_argument("--B", type=int, default=2)
     ap.add_argument("--batches", default="1,2,4")
     ap.add_argument("--device", type=int, default=0)
-    ap.add_argument("--artifact-dir", default="/home/gspark/rbln-llama8b-pd")
+    ap.add_argument("--artifact-dir", default=os.path.expanduser("~/rbln-llama8b-pd"))
     ap.add_argument("--suffix", default="", help="artifact name suffix")
     ap.add_argument("--smoke", action="store_true")
     a = ap.parse_args()

@@ -18,9 +18,9 @@
 # (a docker build would have to copy 12 GB into a context directory first).
 set -euo pipefail
 
-REPO=${REPO:-/home/gspark/workspace/01_pd_disag/rngd_llmd}
-VENV=${VENV:-/home/gspark/venvs/furiosa}
-USERSITE=${USERSITE:-/home/gspark/.local/lib/python3.10/site-packages}
+REPO=${REPO:-$HOME/workspace/01_pd_disag/rngd_llmd}
+VENV=${VENV:-$HOME/venvs/furiosa}
+USERSITE=${USERSITE:-$HOME/.local/lib/python3.10/site-packages}
 TAG=${TAG:-latest}
 APT="python3.10 python3.10-distutils libpython3.10 ca-certificates"
 
