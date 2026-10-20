@@ -132,11 +132,12 @@ python3 bench/sweep_report.py bench/sweep_llmd.jsonl
 클러스터 override에 넣는다. decode role의 기본값은 ATOM이다. RNGD로 decode하려면 override에서 ATOM 요청도
 지워야 한다(`rebellions.ai/ATOM: null`). map merge만으로는 그 요청이 남는다.
 
-**실험 sweep.** sweep 매니페스트는 생성해서 바로 적용한다:
+**실험 sweep.** sweep 매니페스트를 생성하고, 적용할 때 노드 이름과 홈 디렉터리(`${RNGD_PD_NODE}`,
+`${RNGD_PD_HOME}`, `cluster.local.env`에 설정)를 채운다:
 
 ```bash
 python3 deploy/k8s/gen_sweep.py > deploy/k8s/sweep-matrix.yaml
-kubectl apply -f deploy/k8s/sweep-matrix.yaml
+python3 deploy/k8s/render.py deploy/k8s/sweep-matrix.yaml | kubectl apply -f -
 ```
 
 Pod는 이 디렉터리를 `/app`에 마운트하고 `python -m rngd_pd.serving.cluster`를 실행한다. Pod당 카드 1장이므로
@@ -306,6 +307,7 @@ export한 값이 우선한다.
 | `LLMD_GATEWAY_URL` | 예 (`PD_GATEWAY`가 없을 때) | llm-d 게이트웨이 기본 URL, 예 `http://<gateway-host>:<port>` |
 | `PD_GATEWAY` | 아니오 | completions 전체 URL. 설정하면 `LLMD_GATEWAY_URL`보다 우선 |
 | `KUBECTL_CMD` | 아니오 | kubectl 실행 방식 (기본 `kubectl`), 예 `ssh -p <ssh-port> <user>@<node-ip> kubectl` |
+| `RNGD_PD_NODE`, `RNGD_PD_HOME` | `deploy/k8s/render.py`에 필요 | 실험 Pod를 고정할 노드, Pod가 Python 트리를 마운트하는 홈 디렉터리 |
 </details>
 
 ## 📊 결과

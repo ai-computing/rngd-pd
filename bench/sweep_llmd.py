@@ -26,6 +26,7 @@ in another configuration's number.
   python3 bench/sweep_llmd.py --out bench/sweep_llmd.jsonl
 """
 import argparse
+import getpass
 import json
 import subprocess
 import threading
@@ -168,7 +169,7 @@ class Sampler(threading.Thread):
             foreign = 0.0
             for line in out.splitlines():
                 parts = line.split()
-                if len(parts) == 2 and parts[0] not in ("user", "root"):
+                if len(parts) == 2 and parts[0] not in (getpass.getuser(), "root"):
                     foreign += float(parts[1])
             self.foreign_cpu.append(foreign)
         except Exception:

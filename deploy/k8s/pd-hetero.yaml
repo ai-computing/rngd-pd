@@ -42,7 +42,7 @@ spec:
     metadata:
       labels: {app: hetero-pd-prefill, llm-d.ai/role: prefill}
     spec:
-      nodeSelector: {kubernetes.io/hostname: npu-node-1}
+      nodeSelector: {kubernetes.io/hostname: ${RNGD_PD_NODE}}
       containers:
       - name: worker
         image: ubuntu:22.04
@@ -53,7 +53,7 @@ spec:
           set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec /venv/bin/python /app/serving/pd_cluster.py \
             --role prefill --backend rngd-full --C 256 --group 2 --chip 0 --S 256 --port 8000
         env:
-        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: PYTHONPATH, value: "${RNGD_PD_HOME}/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
         - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
         - {name: PYTHONUNBUFFERED, value: "1"}
@@ -80,7 +80,7 @@ spec:
           privileged: true
         volumeMounts:
         - {name: venv, mountPath: /venv, readOnly: true}
-        - {name: local-pkgs, mountPath: /home/user/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: local-pkgs, mountPath: ${RNGD_PD_HOME}/.local/lib/python3.10/site-packages, readOnly: true}
         - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
         - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
         - {name: libs, mountPath: /host-libs, readOnly: true}
@@ -96,15 +96,15 @@ spec:
         - {name: devrngd, mountPath: /dev/rngd}
       volumes:
       - {name: devrngd, hostPath: {path: /dev/rngd, type: Directory}}
-      - {name: venv, hostPath: {path: /home/user/venvs/furiosa, type: Directory}}
-      - {name: local-pkgs, hostPath: {path: /home/user/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: venv, hostPath: {path: ${RNGD_PD_HOME}/venvs/furiosa, type: Directory}}
+      - {name: local-pkgs, hostPath: {path: ${RNGD_PD_HOME}/.local/lib/python3.10/site-packages, type: Directory}}
       - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
       - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
       - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
       - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
       - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
-      - {name: app, hostPath: {path: /home/user/workspace/01_pd_disag/rngd_llmd, type: Directory}}
-      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}
+      - {name: app, hostPath: {path: ${RNGD_PD_HOME}/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: ${RNGD_PD_HOME}/.cache/huggingface, type: Directory}}
       - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
 ---
 apiVersion: apps/v1
@@ -121,7 +121,7 @@ spec:
     metadata:
       labels: {app: hetero-pd-decode, llm-d.ai/role: decode}
     spec:
-      nodeSelector: {kubernetes.io/hostname: npu-node-1}
+      nodeSelector: {kubernetes.io/hostname: ${RNGD_PD_NODE}}
       containers:
       - name: worker
         image: ubuntu:22.04
@@ -132,7 +132,7 @@ spec:
           set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata >/dev/null; exec python3.10 /app/serving/pd_cluster.py \
             --role decode --backend atom --S 256 --port 8000
         env:
-        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: PYTHONPATH, value: "${RNGD_PD_HOME}/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
         - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"}
         - {name: PYTHONUNBUFFERED, value: "1"}
@@ -156,7 +156,7 @@ spec:
           # capabilities are NOT dropped: these containers apt-get at startup,
           # and apt drops privileges via seteuid/setgroups to do it.
         volumeMounts:
-        - {name: local-pkgs, mountPath: /home/user/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: local-pkgs, mountPath: ${RNGD_PD_HOME}/.local/lib/python3.10/site-packages, readOnly: true}
         - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
         - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
         - {name: libs, mountPath: /host-libs, readOnly: true}
@@ -167,16 +167,16 @@ spec:
         - {name: dshm, mountPath: /dev/shm}
         - {name: artifacts, mountPath: /artifacts, readOnly: true}
       volumes:
-      - {name: local-pkgs, hostPath: {path: /home/user/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: local-pkgs, hostPath: {path: ${RNGD_PD_HOME}/.local/lib/python3.10/site-packages, type: Directory}}
       - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
       - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
       - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
       - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
       - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
-      - {name: app, hostPath: {path: /home/user/workspace/01_pd_disag/rngd_llmd, type: Directory}}
-      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}
+      - {name: app, hostPath: {path: ${RNGD_PD_HOME}/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: ${RNGD_PD_HOME}/.cache/huggingface, type: Directory}}
       - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
-      - {name: artifacts, hostPath: {path: /home/user/rbln-llama8b-pd, type: Directory}}
+      - {name: artifacts, hostPath: {path: ${RNGD_PD_HOME}/rbln-llama8b-pd, type: Directory}}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -191,7 +191,7 @@ spec:
     metadata:
       labels: {app: llama8b-pd, llm-d.ai/role: pd-gateway}
     spec:
-      nodeSelector: {kubernetes.io/hostname: npu-node-1}
+      nodeSelector: {kubernetes.io/hostname: ${RNGD_PD_NODE}}
       containers:
       - name: gateway
         image: ubuntu:22.04
@@ -204,7 +204,7 @@ spec:
             --prefill http://hetero-pd-prefill.llm-serving.svc.cluster.local:8000 \
             --decode http://hetero-pd-decode.llm-serving.svc.cluster.local:8000
         env:
-        - {name: PYTHONPATH, value: "/home/user/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
+        - {name: PYTHONPATH, value: "${RNGD_PD_HOME}/.local/lib/python3.10/site-packages:/host-sys-local-pkgs:/host-sys-pkgs"}
         - {name: LD_LIBRARY_PATH, value: "/host-rbln-lib:/host-libs"}
         - {name: PYTHONUNBUFFERED, value: "1"}
         - {name: HF_HOME, value: /hf}
@@ -221,7 +221,7 @@ spec:
           # capabilities are NOT dropped: these containers apt-get at startup,
           # and apt drops privileges via seteuid/setgroups to do it.
         volumeMounts:
-        - {name: local-pkgs, mountPath: /home/user/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: local-pkgs, mountPath: ${RNGD_PD_HOME}/.local/lib/python3.10/site-packages, readOnly: true}
         - {name: sys-local-pkgs, mountPath: /host-sys-local-pkgs, readOnly: true}
         - {name: sys-pkgs, mountPath: /host-sys-pkgs, readOnly: true}
         - {name: libs, mountPath: /host-libs, readOnly: true}
@@ -230,11 +230,11 @@ spec:
         - {name: app, mountPath: /app}
         - {name: hf, mountPath: /hf}
       volumes:
-      - {name: local-pkgs, hostPath: {path: /home/user/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: local-pkgs, hostPath: {path: ${RNGD_PD_HOME}/.local/lib/python3.10/site-packages, type: Directory}}
       - {name: sys-local-pkgs, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
       - {name: sys-pkgs, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
       - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
       - {name: rbln-lib, hostPath: {path: /usr/lib, type: Directory}}
       - {name: rbln-bin, hostPath: {path: /usr/bin, type: Directory}}
-      - {name: app, hostPath: {path: /home/user/workspace/01_pd_disag/rngd_llmd, type: Directory}}
-      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}
+      - {name: app, hostPath: {path: ${RNGD_PD_HOME}/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: hf, hostPath: {path: ${RNGD_PD_HOME}/.cache/huggingface, type: Directory}}

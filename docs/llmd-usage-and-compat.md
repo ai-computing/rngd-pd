@@ -107,7 +107,7 @@ m, mode, secs = get_or_compile("/artifacts", key, compile_fn=lambda: build_runti
 ### 3.6 컨테이너 / K8s (blueprint)
 ```bash
 FURIOSA_INDEX_URL=<wheel-index> docker compose -f deploy/docker-compose.yaml up   # gateway+2워커
-kubectl apply -f deploy/k8s/         # gateway(Deploy/Svc/ServiceMonitor) + prefill/decode 풀(xPyD)
+kubectl apply -f deploy/k8s/gateway.yaml -f deploy/k8s/workers.yaml   # gateway(Deploy/Svc/ServiceMonitor) + prefill/decode 풀(xPyD)
 ```
 
 ### API (OpenAI 유사)

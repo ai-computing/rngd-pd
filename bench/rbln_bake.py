@@ -25,7 +25,7 @@ def main():
     ap.add_argument("--S", type=int, default=256)
     ap.add_argument("--batches", default="4")
     ap.add_argument("--suffix", default="_lm")
-    ap.add_argument("--artifact-dir", default="/home/user/rbln-llama8b-pd")
+    ap.add_argument("--artifact-dir", default=os.path.expanduser("~/rbln-llama8b-pd"))
     a = ap.parse_args()
 
     import rebel

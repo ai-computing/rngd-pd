@@ -29,7 +29,7 @@ def main():
     p = argparse.ArgumentParser()
     for name in ['model', 'fxb', 'artifact', 'tables', 'cases', 'out']:
         p.add_argument('--'+name, type=Path, required=True)
-    p.add_argument('--furiosa-python', default='/home/user/venvs/furiosa-2026.4/bin/python')
+    p.add_argument('--furiosa-python', default=os.path.expanduser('~/venvs/furiosa-2026.4/bin/python'))
     p.add_argument('--rngd-device', default='npu:0')
     p.add_argument('--atom-device', type=int, default=0)
     p.add_argument('--atom-devices', help='comma-separated independent decode cards; requires --pipeline')

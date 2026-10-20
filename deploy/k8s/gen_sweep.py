@@ -18,27 +18,30 @@ The router carries the InferencePool's `app` label, so every request still
 arrives through the cluster gateway → InferencePool → EPP path. It picks the
 pair from the request's model name and the decode width from a `batch` field.
 
-  python3 gen_sweep.py > sweep-matrix.yaml && kubectl apply -f sweep-matrix.yaml
+  python3 gen_sweep.py > sweep-matrix.yaml && python3 render.py sweep-matrix.yaml | kubectl apply -f -
+
+The node name and the home directory stay ${RNGD_PD_NODE} / ${RNGD_PD_HOME} in the output;
+render.py fills them from cluster.local.env.
 """
 import json
 import os
 
 NS = "llm-serving"
-NODE = "npu-node-1"
+NODE = "${RNGD_PD_NODE}"
 APP = "llama8b-pd"                      # the InferencePool selector
 ART = "/artifacts"
 SVC = f"svc.cluster.local:8000"
 
 HOST_MOUNTS = [
-    ("local-pkgs", "/home/user/.local/lib/python3.10/site-packages",
-     "/home/user/.local/lib/python3.10/site-packages"),
+    ("local-pkgs", "${RNGD_PD_HOME}/.local/lib/python3.10/site-packages",
+     "${RNGD_PD_HOME}/.local/lib/python3.10/site-packages"),
     ("sys-local-pkgs", "/host-sys-local-pkgs", "/usr/local/lib/python3.10/dist-packages"),
     ("sys-pkgs", "/host-sys-pkgs", "/usr/lib/python3/dist-packages"),
     ("libs", "/host-libs", "/usr/lib/x86_64-linux-gnu"),
     ("rbln-lib", "/host-rbln-lib", "/usr/lib"),
     ("rbln-bin", "/host-rbln-bin", "/usr/bin"),
 ]
-APP_DIR = "/home/user/workspace/01_pd_disag/rngd_llmd"
+APP_DIR = "${RNGD_PD_HOME}/workspace/01_pd_disag/rngd_llmd"
 
 APT = ("set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; "
        "apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev "
@@ -46,7 +49,7 @@ APT = ("set -eu; export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; "
 
 BASE_ENV = [
     # /app/src first: the package is imported, not path-hacked into place.
-    ("PYTHONPATH", "/app/src:/home/user/.local/lib/python3.10/site-packages:"
+    ("PYTHONPATH", "/app/src:${RNGD_PD_HOME}/.local/lib/python3.10/site-packages:"
                    "/host-sys-local-pkgs:/host-sys-pkgs"),
     ("LD_LIBRARY_PATH", "/host-rbln-lib:/host-libs"),
     ("PATH", "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-rbln-bin"),
@@ -234,13 +237,13 @@ def volumes(vendor):
     out = [f"      - {{name: {n}, hostPath: {{path: {hp}, type: Directory}}}}"
            for n, _, hp in HOST_MOUNTS]
     out += [f"      - {{name: app, hostPath: {{path: {APP_DIR}, type: Directory}}}}",
-            "      - {name: hf, hostPath: {path: /home/user/.cache/huggingface, type: Directory}}",
+            "      - {name: hf, hostPath: {path: ${RNGD_PD_HOME}/.cache/huggingface, type: Directory}}",
             "      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}"]
     if vendor == "rngd":
-        out += ["      - {name: venv, hostPath: {path: /home/user/venvs/furiosa, type: Directory}}",
+        out += ["      - {name: venv, hostPath: {path: ${RNGD_PD_HOME}/venvs/furiosa, type: Directory}}",
                 "      - {name: devrngd, hostPath: {path: /dev/rngd, type: Directory}}"]
     else:
-        out += ["      - {name: artifacts, hostPath: {path: /home/user/rbln-llama8b-pd, type: Directory}}"]
+        out += ["      - {name: artifacts, hostPath: {path: ${RNGD_PD_HOME}/rbln-llama8b-pd, type: Directory}}"]
     return "\n".join(out)
 
 
@@ -352,7 +355,7 @@ spec:
         volumeMounts:
 {mounts("atom").replace('        - {name: artifacts, mountPath: /artifacts, readOnly: true}', '        - {name: cfg, mountPath: /cfg, readOnly: true}')}
       volumes:
-{volumes("atom").replace('      - {name: artifacts, hostPath: {path: /home/user/rbln-llama8b-pd, type: Directory}}', '      - {name: cfg, configMap: {name: pd-sweep-targets}}')}
+{volumes("atom").replace('      - {name: artifacts, hostPath: {path: ${RNGD_PD_HOME}/rbln-llama8b-pd, type: Directory}}', '      - {name: cfg, configMap: {name: pd-sweep-targets}}')}
 """
 
 

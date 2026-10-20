@@ -3,6 +3,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import os
 import signal
 import threading
 import time
@@ -160,7 +161,7 @@ def main():
     p.add_argument('--prefill-http-port',type=int,default=18601);p.add_argument('--decode-http-port',type=int,default=18602)
     p.add_argument('--prefill-port',type=int,default=18621);p.add_argument('--receive-port',type=int,default=18622)
     p.add_argument('--prefill-concurrency',type=int,default=4)
-    p.add_argument('--furiosa-python',default='/home/user/venvs/furiosa-2026.4/bin/python')
+    p.add_argument('--furiosa-python',default=os.path.expanduser('~/venvs/furiosa-2026.4/bin/python'))
     a=p.parse_args();engine=ServiceEngine(a);tokenizer=AutoTokenizer.from_pretrained(a.model,local_files_only=True)
     generation_path=Path(a.model)/'generation_config.json'
     configured=json.loads(generation_path.read_text()).get('eos_token_id',[]) if generation_path.exists() else []

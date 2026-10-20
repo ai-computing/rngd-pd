@@ -43,7 +43,7 @@ import cluster_env
 from rngd_pd import airm
 
 GATEWAY = cluster_env.gateway()
-TRACE = "/home/user/LLMServingSim/dataset/sharegpt_req300_rate10_llama.jsonl"
+TRACE = os.path.expanduser("~/LLMServingSim/dataset/sharegpt_req300_rate10_llama.jsonl")
 SLO_MS = 150.0
 
 # config name -> gateway model route, and the decode widths it serves
