@@ -16,6 +16,11 @@ handoff behave.
                 ends, with the network in between: prefill pushes to the server,
                 decode takes from it, and the server can be a relay on a third
                 node. Cross-node; CRC-checked end to end.
+  NixlUcxTransport  rngd_pd.connector.transport.NixlUcxTransport (connector/ucxkv.py) as an
+                rm-core KVTransport, entry point name `nixl-ucx`. Host staging like tcp, but
+                the bytes move by a one-sided NIXL READ over the UCX backend between
+                NIXL-registered arenas; the TcpKVServer carries only descriptors. UCX_TLS
+                picks the wire (tcp today, rc/ud verbs with an RDMA NIC): RDMA is configuration.
   run           workload runner, entry point `airm.workloads` name `rngd-pd`:
                 starts one serving role (prefill, decode or gateway) of
                 rngd_pd.serving.cluster with the KV path named in its config.
@@ -263,6 +268,76 @@ class TcpTransport(_KeyedKV, _kv.TcpTransport):
             _kv.TcpTransport.__init__(self, serve_port=0)
         return (MemoryTier("tcp-prefill", "host-dram", 1 << 30),
                 MemoryTier("tcp-decode", "host-dram", 1 << 30),
+                KVLayout(num_layers=2, num_kv_heads=2, head_dim=8, dtype="bf16"))
+
+
+class NixlUcxTransport(_KeyedKV, _kv.NixlUcxTransport):
+    """KV between two host-memory tiers on any two machines, through NIXL's UCX backend (ucxkv.py).
+
+    Keyword arguments: remote -- (host, port) of the TcpKVServer for descriptors (default
+    $AIRM_KV_TCP_ADDR), serve_port -- also run that server in this process, agent -- a nixl_agent with
+    UCX (tests pass a fake), pool_bytes -- arena size per side. HOST-STAGING like tcp; the network leg
+    is UCX's (UCX_TLS). Every blob carries a CRC-32 checked by the reader, so wait() is ok only for the
+    bytes submit() staged. wait() reads the blob and keeps it for take().
+    """
+
+    name = "nixl-ucx"
+    SCOPE = "only host-dram -> host-dram"
+
+    def __init__(self, remote=None, serve_port=None, agent=None, pool_bytes=None):
+        _kv.NixlUcxTransport.__init__(self, remote=remote, serve_port=serve_port, agent=agent,
+                                      pool_bytes=pool_bytes)
+        self._held = {}
+        self._init_kv()
+
+    def supports(self, src, dst):
+        return src.kind == "host-dram" and dst.kind == "host-dram" and src.name != dst.name
+
+    def _detail(self):
+        return dict(self.store.describe(), server="%s:%d" % self.remote if self.remote else None)
+
+    def wait(self, handle, timeout_s):
+        """A READ that failed (UCX error, CRC mismatch, no NIXL) is ok=False, never data."""
+        started = time.perf_counter()
+        try:
+            return super().wait(handle, timeout_s)
+        except TransportError:                       # unknown or already-waited handle
+            raise
+        except (IOError, RuntimeError) as e:
+            return TransferResult(handle.request_id, False, 0, time.perf_counter() - started, str(e))
+
+    def _fetch(self, key, timeout):
+        buf = self.pull(key, timeout=timeout)
+        with self._lock:
+            self._held[key] = buf
+        return buf
+
+    def _consume(self, key):
+        with self._lock:
+            return self._held.pop(key)
+
+    def close(self):
+        with self._lock:
+            self._pending.clear()
+            self._delivered.clear()
+            self._held.clear()
+        _kv.NixlUcxTransport.close(self)
+
+    def conformance_case(self):
+        """Two host tiers, a descriptor server on a free loopback port, and this process's NIXL agent
+        on both ends (UCX loopback). NoHardware when NIXL with UCX is not installed."""
+        from rm_core.conformance import NoHardware
+        try:
+            self.store._get_agent()
+        except RuntimeError as e:
+            raise NoHardware(str(e)) from e
+        if self.remote is None:
+            from rngd_pd.connector.tcpkv import TcpKVClient, TcpKVServer
+            self.server = TcpKVServer(0, "127.0.0.1"); self.server.start()
+            self.remote = ("127.0.0.1", self.server.wait_ready())
+            self._client = self.store.control = TcpKVClient(*self.remote)
+        return (MemoryTier("ucx-prefill", "host-dram", 1 << 30),
+                MemoryTier("ucx-decode", "host-dram", 1 << 30),
                 KVLayout(num_layers=2, num_kv_heads=2, head_dim=8, dtype="bf16"))
 
 

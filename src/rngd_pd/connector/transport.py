@@ -7,6 +7,7 @@ transport-agnostic and a NIXL plugin can drop in later without touching connecto
     ├─ InProcTransport : in-process dict          (unit tests, single process)
     ├─ ShmTransport    : /dev/shm file-backed      (cross-process, same host — RNGD default)
     ├─ TcpTransport    : TCP to a TcpKVServer      (cross-node; tcpkv.py, the server can be a relay)
+    ├─ NixlUcxTransport: NIXL UCX READ, host-staged (cross-node; ucxkv.py, RDMA by UCX_TLS alone)
     └─ NixlTransport   : STUB — same interface, raises until NIXL is present (Phase 5)
 
   select_transport(name) picks the path by name through rm-core's `airm.kv_transports` entry
@@ -153,6 +154,63 @@ class TcpTransport(Transport):
         if self.server: self.server.stop()
 
 
+class NixlUcxTransport(Transport):
+    """Cross-node KV through NIXL's UCX backend (rngd_pd.connector.ucxkv): host-staged, one-sided READ.
+
+    push() stages the blob in this process's NIXL-registered arena and publishes a small descriptor in
+    the TcpKVServer at remote=(host, port) or $AIRM_KV_TCP_ADDR (the `tcp` transport's relay or a server
+    beside decode; it carries descriptors only). pull() takes the descriptor and READs the bytes from
+    the pushing process over UCX, so the prefill process must stay up until decode has read. The wire
+    is UCX's: UCX_TLS=tcp on today's nodes, rc/ud verbs once an RDMA NIC is there (ai-rm#46) -- the
+    code does not change. CRC-32 per blob end to end (AIRM_KV_TCP_CRC=0 skips it); AIRM_KV_UCX_LOG=1
+    logs size + SHA-256 per blob. One shared instance per process (select_transport), so the agent,
+    its registered arenas and the UCX endpoints outlive a request. No fallback: no NIXL raises.
+    """
+    shared = True
+
+    def __init__(self, remote=None, serve_port=None, agent=None, pool_bytes=None):
+        from rngd_pd.connector.tcpkv import TcpKVClient, TcpKVServer, parse_addr
+        from rngd_pd.connector.ucxkv import UcxKVStore
+        self.server = None
+        if serve_port is not None:
+            self.server = TcpKVServer(serve_port); self.server.start()
+            serve_port = self.server.wait_ready()
+        if remote is None and os.environ.get("AIRM_KV_TCP_ADDR"):
+            remote = parse_addr(os.environ["AIRM_KV_TCP_ADDR"])
+        if remote is None and serve_port is not None:
+            remote = ("127.0.0.1", serve_port)
+        self.remote = tuple(remote) if remote else None
+        self._client = TcpKVClient(*self.remote) if self.remote else None
+        self.store = UcxKVStore(self._client, agent=agent, pool_bytes=pool_bytes)
+    def _need(self):
+        if self._client is None:
+            raise ValueError("nixl-ucx transport needs remote=(host, port) or AIRM_KV_TCP_ADDR=host:port "
+                             "(a TcpKVServer for the descriptors)")
+        return self.store
+    def push(self, key, buf):
+        t0 = time.perf_counter()
+        self._need().push(key, buf)
+        self._log("push", key, buf, t0)
+    def pull(self, key, timeout=5.0):
+        t0 = time.perf_counter()
+        buf = self._need().pull(key, timeout=timeout)
+        self._log("pull", key, buf, t0)
+        return buf
+    @staticmethod
+    def _log(op, key, buf, t0):
+        if os.environ.get("AIRM_KV_UCX_LOG", "0") not in ("0", ""):
+            import hashlib, sys
+            sys.stdout.write(f"[kv-ucx] {op} {key} {len(buf)} {hashlib.sha256(buf).hexdigest()[:16]} "
+                             f"{(time.perf_counter() - t0) * 1e3:.2f}ms\n")
+            sys.stdout.flush()
+    def handshake_metadata(self):
+        return dict(self.store.describe(), descriptors="%s:%d" % self.remote if self.remote else None)
+    def close(self):
+        self.store.close()
+        if self._client: self._client.close()
+        if self.server: self.server.stop()
+
+
 class NixlTransport(Transport):
     """STUB — a key->bytes NIXL path for the connector. Not built.
 
@@ -234,7 +292,7 @@ class FencedTransport(Transport):
 # Our own adapters, for a checkout run from src/ without `pip install -e .` (the pods put
 # /app/src on PYTHONPATH). Same names and objects as the entry points in pyproject.toml.
 _OWN = {"shm": "rngd_pd.airm:ShmTransport", "tcp": "rngd_pd.airm:TcpTransport",
-        "nixl": "rngd_pd.kv_nixl:NixlTransport"}
+        "nixl": "rngd_pd.kv_nixl:NixlTransport", "nixl-ucx": "rngd_pd.airm:NixlUcxTransport"}
 _CLASSES = {}          # name -> implementation class, resolved once per process
 _FENCED = {}           # name -> the process's one FencedTransport (both sides share handles)
 _SHARED = {}           # name -> the process's one instance of a transport that holds connections
@@ -249,10 +307,10 @@ def _resolve(name, kw):
     try:
         from rm_core import registry
     except ImportError:
-        # rm-core is not importable (a pod with only src/ on the path). Our own "shm" and "tcp"
-        # are the same paths either way; any other name cannot be resolved and says so.
-        if name == "tcp":
-            _CLASSES[name] = cls = TcpTransport
+        # rm-core is not importable (a pod with only src/ on the path). Our own "shm", "tcp" and
+        # "nixl-ucx" are the same paths either way; any other name cannot be resolved and says so.
+        if name in ("tcp", "nixl-ucx"):
+            _CLASSES[name] = cls = TcpTransport if name == "tcp" else NixlUcxTransport
             return cls(**kw)
         if name != "shm":
             raise KeyError(f"AIRM_KV_TRANSPORT={name!r} needs rm-core installed")
@@ -293,11 +351,12 @@ def select_transport(name=None, **kw) -> Transport:
 
 
 def make_transport(backend="shm", **kw) -> Transport:
-    """Factory: backend ∈ {inproc, shm, tcp, nixl}."""
+    """Factory: backend ∈ {inproc, shm, tcp, nixl-ucx, nixl}."""
     b = backend.lower()
     if b == "inproc": return InProcTransport()
     if b == "shm":    return ShmTransport(**kw)
     if b == "tcp":    return TcpTransport(**kw)
+    if b == "nixl-ucx": return NixlUcxTransport(**kw)
     if b == "nixl":   return NixlTransport(**kw)
     raise ValueError(f"unknown transport backend: {backend}")
 
