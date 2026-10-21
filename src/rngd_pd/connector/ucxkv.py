@@ -19,7 +19,7 @@ stale bytes. Nothing falls back to another path: no NIXL, no UCX, or a failed RE
 
 Environment: AIRM_KV_UCX_POOL_MB (arena per side, 1024), AIRM_KV_UCX_XFER_TIMEOUT_S (60),
 AIRM_KV_TCP_CRC (1), AIRM_KV_TCP_ADDR (the descriptor store), UCX_* (UCX's own, e.g. UCX_TLS,
-UCX_NET_DEVICES).
+UCX_NET_DEVICES; UCX_TCP_TX/RX_SEG_SIZE default to 64 KiB here).
 """
 import json
 import os
@@ -40,8 +40,15 @@ def _crc_on():
     return os.environ.get("AIRM_KV_TCP_CRC", "1") not in ("0", "false", "no")
 
 
+# UCX's tcp transport moves 8 KiB segments by default; 64 KiB took a 1 MiB READ from 0.26 to 0.44 GB/s
+# (two processes, one pod, UCX_TLS=tcp). Verbs transports ignore these. The environment wins.
+UCX_DEFAULTS = {"UCX_TCP_TX_SEG_SIZE": "65536", "UCX_TCP_RX_SEG_SIZE": "65536"}
+
+
 def _default_agent(name):
     """A NIXL agent with the UCX backend; UCX reads its UCX_* environment here."""
+    for k, v in UCX_DEFAULTS.items():
+        os.environ.setdefault(k, v)
     from nixl._api import nixl_agent, nixl_agent_config
     agent = nixl_agent(name, nixl_agent_config(backends=[]))
     agent.create_backend(BACKEND, {})
