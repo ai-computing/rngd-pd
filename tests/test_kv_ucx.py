@@ -345,65 +345,82 @@ class AdapterTests(_Env, unittest.TestCase):
 
 def _nixl_available():
     try:
-        import nixl._api  # noqa: F401
-        return True
+        import importlib.util
+        return importlib.util.find_spec("nixl") is not None
     except Exception:
         return False
 
 
+_CHILD_HEAD = """
+import hashlib, os, sys, time
+sys.path.insert(0, {src!r})
+from rngd_pd.connector import tcpkv, ucxkv
+def store():
+    return ucxkv.UcxKVStore(tcpkv.TcpKVClient("127.0.0.1", {port}), pool_bytes=64 << 20)
+def blob(i):
+    return hashlib.sha256(str(i).encode()).digest() * (1 << 15)      # 1 MiB, distinct per i
+def drained(s, t=30):
+    end = time.time() + t
+    while s.pending() and time.time() < end:
+        time.sleep(0.01)
+    return not s.pending()
+"""
+
+
 @unittest.skipUnless(_nixl_available(), "nixl (with the UCX plugin) is not importable here")
 class RealNixlTests(unittest.TestCase):
-    """The installed NIXL + UCX, UCX_TLS=tcp unless the environment says otherwise."""
+    """The installed NIXL + UCX, UCX_TLS=tcp unless the environment says otherwise.
+
+    Every real agent lives in a child process: with the nixl_cu12 wheel, a process that loaded the
+    system rdma-core first (vLLM's KV connector imports do) segfaults in libnl's exit handler after a
+    UCX agent existed -- at exit only, after the work is done (see README, limits). The children keep
+    that out of the test runner's exit code.
+    """
 
     def setUp(self):
-        os.environ.setdefault("UCX_TLS", "tcp")
         self.srv, self.port = _server()
+        self.env = dict(os.environ, UCX_TLS=os.environ.get("UCX_TLS", "tcp"))
 
     def tearDown(self):
         self.srv.stop()
 
+    def child(self, body):
+        code = _CHILD_HEAD.format(src=os.path.join(ROOT, "src"), port=self.port) + textwrap.dedent(body)
+        return subprocess.Popen([sys.executable, "-c", code], stdout=subprocess.PIPE, text=True, env=self.env)
+
     def test_two_agents_one_process(self):
-        p = ucxkv.UcxKVStore(tcpkv.TcpKVClient("127.0.0.1", self.port), pool_bytes=64 << 20)
-        d = ucxkv.UcxKVStore(tcpkv.TcpKVClient("127.0.0.1", self.port), pool_bytes=64 << 20)
-        try:
-            blobs = {f"r/layer.{i}/k": os.urandom(1 << 20) for i in range(16)}
-            for k, b in blobs.items():
-                p.push(k, b)
-            for k, b in blobs.items():
-                self.assertEqual(bytes(d.pull(k, timeout=10)), b)
-            self.assertTrue(_wait(lambda: not p.pending(), 10), "UCX notification did not free the slots")
-        finally:
+        c = self.child("""
+            p, d = store(), store()
+            for i in range(16):
+                p.push("r/%d" % i, blob(i))
+            ok = all(bytes(d.pull("r/%d" % i, timeout=10)) == blob(i) for i in range(16))
+            print("exact", ok, "drained", drained(p), flush=True)
             d.close(); p.close()
+        """)
+        out, _ = c.communicate(timeout=120)
+        self.assertIn("exact True drained True", out)
 
     def test_two_processes(self):
-        """prefill in a child process, decode here: the cross-process path the pods take."""
-        code = textwrap.dedent(f"""
-            import hashlib, os, sys, time
-            sys.path.insert(0, {os.path.join(ROOT, 'src')!r})
-            from rngd_pd.connector import tcpkv, ucxkv
-            s = ucxkv.UcxKVStore(tcpkv.TcpKVClient("127.0.0.1", {self.port}), pool_bytes=64 << 20)
+        """prefill in one child, decode in another: the cross-process path the pods take."""
+        pf = self.child("""
+            s = store()
             for i in range(8):
-                b = hashlib.sha256(str(i).encode()).digest() * (1 << 15)
-                s.push("x/%d" % i, b)
-            end = time.time() + 30
-            while s.pending() and time.time() < end:
-                time.sleep(0.01)
-            print("left", len(s.pending()), flush=True)
+                s.push("x/%d" % i, blob(i))
+            print("drained", drained(s), flush=True)
             s.close()
         """)
-        child = subprocess.Popen([sys.executable, "-c", code], stdout=subprocess.PIPE, text=True)
-        d = ucxkv.UcxKVStore(tcpkv.TcpKVClient("127.0.0.1", self.port), pool_bytes=64 << 20)
+        dc = self.child("""
+            s = store()
+            print("exact", all(bytes(s.pull("x/%d" % i, timeout=60)) == blob(i) for i in range(8)), flush=True)
+            s.close()
+        """)
         try:
-            import hashlib
-            for i in range(8):
-                want = hashlib.sha256(str(i).encode()).digest() * (1 << 15)
-                self.assertEqual(bytes(d.pull(f"x/{i}", timeout=60)), want)
-            out, _ = child.communicate(timeout=60)
-            self.assertIn("left 0", out)
+            self.assertIn("exact True", dc.communicate(timeout=120)[0])
+            self.assertIn("drained True", pf.communicate(timeout=120)[0])
         finally:
-            d.close()
-            if child.poll() is None:
-                child.kill()
+            for c in (pf, dc):
+                if c.poll() is None:
+                    c.kill()
 
 
 if __name__ == "__main__":
