@@ -81,6 +81,7 @@ python -m pytest -q tests/native_v4 tests/test_airm.py
 python -m rngd_pd.connector.transport
 python tests/test_connector_tcp.py
 python -m pytest -q tests/test_kv_tcp.py      # tcp transport, relay server, conformance
+python -m pytest -q tests/test_kv_ucx.py      # nixl-ucx (fake NIXL; real NIXL + UCX where installed)
 helm template deploy/helm/rngd-pd
 ```
 
@@ -159,6 +160,7 @@ $PY -m rngd_pd.engines.decode_batch --B 4 --group 2 --chip 2
 | `airm.kv_transports` | `shm` | `rngd_pd.airm:ShmTransport` |
 | `airm.kv_transports` | `tcp` | `rngd_pd.airm:TcpTransport` |
 | `airm.kv_transports` | `nixl` | `rngd_pd.kv_nixl:NixlTransport` |
+| `airm.kv_transports` | `nixl-ucx` | `rngd_pd.airm:NixlUcxTransport` |
 | `airm.workloads` | `rngd-pd` | `rngd_pd.airm:run` |
 
 ```python
@@ -204,6 +206,48 @@ Measured on the cluster (ai-rm [baselines](https://github.com/ai-computing/ai-rm
 RNGD prefill and RNGD decode on the NPU node, relay on a CPU node, 1 GbE): 2,112 of 2,112 blobs identical on both ends,
 the same output as `shm` for 32 of 32 requests; 67 MB per request in 758 ms (push) and 832 ms (pull) one at a time,
 0.117 GB/s per direction with 8 in flight (the NIC's line rate). `bench/kv_tcp_bench.py` measures it.
+</details>
+
+<details>
+<summary><b><code>nixl-ucx</code> transport (cross-node, RDMA-ready)</b></summary>
+<br>
+
+**`nixl-ucx` is host staging with NIXL's UCX backend carrying the bytes.** It is the cross-node path that becomes RDMA
+by configuration ([ai-rm#46](https://github.com/ai-computing/ai-rm/issues/46)). The prefill worker copies each blob into
+a host arena registered with NIXL once and publishes a ~400-byte descriptor (agent metadata, address, length, CRC-32)
+under the blob's key in the same `TcpKVServer` the `tcp` transport uses (`AIRM_KV_TCP_ADDR`, chart `kvRelay`). The decode
+worker takes the descriptor and pulls the bytes with a one-sided NIXL READ into its own registered arena
+([`connector/ucxkv.py`](src/rngd_pd/connector/ucxkv.py)); the READ's notification frees the prefill slot (unread slots
+expire after `AIRM_KV_TCP_TTL_S`). The prefill process must stay up until decode has read. A failed READ or a CRC
+mismatch raises; nothing falls back to another path.
+
+The wire is UCX's choice from its environment, so the code does not change between today and RDMA:
+
+| Network | Setting |
+|---|---|
+| today, no RDMA device | `UCX_TLS=tcp` (`UCX_TCP_TX/RX_SEG_SIZE` default to 64 KiB here) |
+| RoCE v2 / InfiniBand NIC, or soft-RoCE (`rdma_rxe`) | `UCX_TLS=rc,ud,sm,self`, `UCX_NET_DEVICES=<mlx5_0:1 / irdma0:1 / rxe0:1>` |
+
+Needs `nixl` with the UCX plugin importable by the workers (the `nixl` + `nixl-cu12` 1.5.0 wheels; the plugin and UCX
+are bundled, CUDA is not needed: `pip install --no-deps nixl==1.5.0 nixl-cu12==1.5.0 numpy`). Arena size per side:
+`AIRM_KV_UCX_POOL_MB` (1024). `AIRM_KV_UCX_LOG=1` logs size and SHA-256 per blob. `python -m rngd_pd.connector.ucxkv`
+prints what the host's NIXL/UCX would use.
+
+Measured 2026-10-21 (`bench/kv_ucx_bench.py`: 67.1 MB per request at S=512, 64 blobs, a pod on the NPU node pushing to
+a pod on a CPU node, the server beside decode, 1 GbE, `UCX_TLS=tcp`, SHA-256 per blob):
+
+| | 1 in flight, one way | 8 in flight, both runs |
+|---|--:|--:|
+| `nixl-ucx`, run 1 / run 2 | 790 / 920 ms (0.085 / 0.073 GB/s) | 0.100 / 0.076 GB/s |
+| `tcp`, same pods, run 1 / run 2 | 780 / 996 ms (0.086 / 0.067 GB/s) | 0.097 / 0.090 GB/s |
+
+All 8,192 blobs (both runs) byte-exact. Over 1 GbE both are link-bound and equal within the run-to-run spread; run 2 shared the link
+with other jobs. Without the link (two processes in one pod) a request moves at 0.44 GB/s with `nixl-ucx` over UCX-TCP
+and 0.55 GB/s with `tcp`, so on a 10 GbE link without RDMA use `tcp` until `nixl-ucx` is measured there; the gain of
+`nixl-ucx` is RDMA. Not yet run: serving with NPU workers on `nixl-ucx` (token-exact check) and any RDMA transport (no
+RDMA device on the NPU nodes, ai-rm#46). With the `nixl_cu12` wheel, a worker process that imported vLLM's KV connector
+before creating the agent loads two rdma-core copies and segfaults in libnl's exit handler when it exits (after the work
+is done); the tests keep real agents in child processes.
 </details>
 
 <details>
