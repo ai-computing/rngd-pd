@@ -17,6 +17,7 @@ dependencies = [
 shm = "rngd_pd.airm:ShmTransport"
 tcp = "rngd_pd.airm:TcpTransport"
 nixl = "rngd_pd.kv_nixl:NixlTransport"
+nixl-ucx = "rngd_pd.airm:NixlUcxTransport"
 
 [project.entry-points."airm.workloads"]
 rngd-pd = "rngd_pd.airm:run"

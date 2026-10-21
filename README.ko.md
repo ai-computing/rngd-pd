@@ -81,6 +81,7 @@ python -m pytest -q tests/native_v4 tests/test_airm.py
 python -m rngd_pd.connector.transport
 python tests/test_connector_tcp.py
 python -m pytest -q tests/test_kv_tcp.py      # tcp 전송, relay 서버, conformance
+python -m pytest -q tests/test_kv_ucx.py      # nixl-ucx (가짜 NIXL, 설치된 곳에서는 실제 NIXL + UCX)
 helm template deploy/helm/rngd-pd
 ```
 
@@ -159,6 +160,7 @@ $PY -m rngd_pd.engines.decode_batch --B 4 --group 2 --chip 2
 | `airm.kv_transports` | `shm` | `rngd_pd.airm:ShmTransport` |
 | `airm.kv_transports` | `tcp` | `rngd_pd.airm:TcpTransport` |
 | `airm.kv_transports` | `nixl` | `rngd_pd.kv_nixl:NixlTransport` |
+| `airm.kv_transports` | `nixl-ucx` | `rngd_pd.airm:NixlUcxTransport` |
 | `airm.workloads` | `rngd-pd` | `rngd_pd.airm:run` |
 
 ```python
@@ -201,6 +203,45 @@ dtype은 `bf16`/`fp16`, 양쪽 layout이 같아야 한다. 실패를 다른 경�
 prefill·RNGD decode, CPU 노드의 relay, 1 GbE): blob 2,112개 중 2,112개가 양 끝에서 같았고, 요청 32개 중 32개가 `shm`과 같은
 출력이었다. 요청 하나씩 67 MB를 758 ms(push), 832 ms(pull)에 옮기고, 동시 8개면 방향마다 0.117 GB/s(NIC 회선 속도)다.
 `bench/kv_tcp_bench.py`로 잰다.
+</details>
+
+<details>
+<summary><b><code>nixl-ucx</code> 전송 (노드 간, RDMA 대비)</b></summary>
+<br>
+
+**`nixl-ucx`는 NIXL의 UCX 백엔드가 바이트를 옮기는 host staging이다.** 설정만 바꾸면 RDMA가 되는 노드 간 경로다
+([ai-rm#46](https://github.com/ai-computing/ai-rm/issues/46)). prefill 워커는 blob을 NIXL에 한 번 등록한 host arena에
+복사하고, `tcp` 전송과 같은 `TcpKVServer`(`AIRM_KV_TCP_ADDR`, chart `kvRelay`)에 blob 키로 약 400바이트 descriptor(agent
+metadata, 주소, 길이, CRC-32)를 올린다. decode 워커는 descriptor를 가져가 자신의 등록 arena로 단방향 NIXL READ를 한다
+([`connector/ucxkv.py`](src/rngd_pd/connector/ucxkv.py)). READ 알림이 prefill 슬롯을 비우고, 읽히지 않은 슬롯은
+`AIRM_KV_TCP_TTL_S` 뒤에 만료된다. decode가 읽을 때까지 prefill 프로세스가 살아 있어야 한다. READ 실패나 CRC 불일치는 예외를
+내며 다른 경로로 대체하지 않는다.
+
+전송 방식은 UCX가 환경 변수로 고르므로 지금과 RDMA 사이에 코드가 바뀌지 않는다.
+
+| 네트워크 | 설정 |
+|---|---|
+| 지금, RDMA 장치 없음 | `UCX_TLS=tcp` (`UCX_TCP_TX/RX_SEG_SIZE` 기본 64 KiB) |
+| RoCE v2 / InfiniBand NIC, 또는 soft-RoCE(`rdma_rxe`) | `UCX_TLS=rc,ud,sm,self`, `UCX_NET_DEVICES=<mlx5_0:1 / irdma0:1 / rxe0:1>` |
+
+워커가 UCX 플러그인이 든 `nixl`을 import할 수 있어야 한다(`nixl` + `nixl-cu12` 1.5.0 wheel에 플러그인과 UCX가 들어 있고 CUDA는
+필요 없다: `pip install --no-deps nixl==1.5.0 nixl-cu12==1.5.0 numpy`). 쪽마다 arena 크기는 `AIRM_KV_UCX_POOL_MB`(1024).
+`AIRM_KV_UCX_LOG=1`은 blob마다 크기와 SHA-256을 남긴다. `python -m rngd_pd.connector.ucxkv`는 호스트의 NIXL/UCX 설정을 보여 준다.
+
+2026-10-21 측정(`bench/kv_ucx_bench.py`: S=512 요청당 67.1 MB, blob 64개, NPU 노드의 파드가 CPU 노드의 파드로 push, 서버는
+decode 옆, 1 GbE, `UCX_TLS=tcp`, blob마다 SHA-256):
+
+| | 동시 1개, 단방향 | 동시 8개, 두 실행 |
+|---|--:|--:|
+| `nixl-ucx`, 1차 / 2차 | 790 / 920 ms (0.085 / 0.073 GB/s) | 0.100 / 0.076 GB/s |
+| `tcp`, 같은 파드, 1차 / 2차 | 780 / 996 ms (0.086 / 0.067 GB/s) | 0.097 / 0.090 GB/s |
+
+두 실행의 blob 8,192개 모두 바이트 일치. 1 GbE에서는 둘 다 링크가 한계라 실행 간 편차 안에서 같다. 2차는 다른 작업과 링크를 나눠 썼다.
+링크가 없으면(한 파드의 두 프로세스) 요청 하나가 UCX-TCP 위 `nixl-ucx`로 0.44 GB/s, `tcp`로 0.55 GB/s이므로, RDMA 없는 10 GbE
+링크에서는 `nixl-ucx`를 거기서 재기 전까지 `tcp`를 쓴다. `nixl-ucx`의 이득은 RDMA다. 아직 하지 않은 것: NPU 워커가 `nixl-ucx`로
+서빙하는 실행(토큰 일치 확인)과 RDMA 전송(NPU 노드에 RDMA 장치 없음, ai-rm#46). `nixl_cu12` wheel에서는 vLLM KV connector를 먼저
+import한 뒤 agent를 만든 워커 프로세스가 rdma-core를 두 벌 올리고, 종료할 때(작업이 끝난 뒤) libnl exit handler에서 segfault가
+난다. 테스트는 실제 agent를 자식 프로세스에서 돌린다.
 </details>
 
 <details>

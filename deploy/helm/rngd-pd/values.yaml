@@ -16,7 +16,9 @@ pythonPath: /app/src     # where src/ is inside the container. kvTransport other
 python: python3
 
 airm:
-  kvTransport: shm       # entry point in airm.kv_transports; shm = /dev/shm host staging
+  kvTransport: shm       # entry point in airm.kv_transports; shm = /dev/shm host staging,
+                         # tcp / nixl-ucx = cross-node (both use kvRelay or AIRM_KV_TCP_ADDR;
+                         # nixl-ucx also needs nixl on pythonPath and UCX_TLS in env, README)
   placement: ""
   metricsPort: 9400      # gateway: airm_* series on /metrics
 
