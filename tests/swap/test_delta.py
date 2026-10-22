@@ -71,6 +71,22 @@ class DeltaTest(unittest.TestCase):
         self.assertEqual(og.summary()["names"], ["b.weight"])
         self.assertEqual(og.upload_bytes, 256)
 
+    def test_refine_drops_neighbours_flagged_by_a_coarse_range(self):
+        t = dict(self.t)
+        b = bytearray(t["b.weight"][2])
+        b[100] = 7
+        t["b.weight"] = ("BF16", [16, 8], bytes(b))
+        write_st(os.path.join(self.new, "m.safetensors"), t)
+        h = delta.read_header(os.path.join(self.new, "m.safetensors"))
+        # one coarse range over a, all of b and c
+        start = h["a.weight"]["start"]
+        coarse = {"m.safetensors": [(start, h["c.weight"]["end"] - start)]}
+        raw = delta.plan_update(self.base, self.new, coarse, refine=False)
+        self.assertEqual(sorted(raw.tensors), ["a.weight", "b.weight", "c.weight"])
+        fine = delta.plan_update(self.base, self.new, coarse)
+        self.assertEqual(sorted(fine.tensors), ["b.weight"])
+        self.assertEqual(fine.tensors["b.weight"]["rows"], [(6, 7)])
+
     def test_unpaired_file_is_all_new_and_shape_change_is_whole(self):
         doc = {"files": [{"path": "x.safetensors", "size": 10}]}
         self.assertEqual(delta.load_onggi_ranges(doc), {"x.safetensors": [(0, 10)]})

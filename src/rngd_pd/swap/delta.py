@@ -146,23 +146,57 @@ class UpdatePlan:
                     names=sorted(self.tensors))
 
 
-def plan_update(base_dir, new_dir, ranges_by_file=None, block=1 << 20):
+def _row_bytes(info):
+    n = DTYPE_BYTES[info["dtype"]]
+    for d in info["shape"][1:]:
+        n *= d
+    return n
+
+
+def refine_rows(base_path, base_info, new_path, new_info, rows):
+    """Keep only the rows whose bytes really differ between the two files.
+
+    A changed range from onggi is chunk-granular: a chunk that straddles a
+    tensor boundary flags the neighbour too, although its bytes are the same.
+    Reading just the flagged rows from both files settles it exactly, at the
+    cost of reading the flagged bytes twice (never the whole checkpoint).
+    """
+    rb = _row_bytes(new_info)
+    out = []
+    with open(base_path, "rb") as fb, open(new_path, "rb") as fn:
+        for r0, r1 in rows:
+            fb.seek(base_info["start"] + r0 * rb)
+            fn.seek(new_info["start"] + r0 * rb)
+            a, b = fb.read((r1 - r0) * rb), fn.read((r1 - r0) * rb)
+            if a == b:
+                continue
+            for i in range(r1 - r0):
+                if a[i * rb:(i + 1) * rb] != b[i * rb:(i + 1) * rb]:
+                    if out and out[-1][1] == r0 + i:
+                        out[-1] = (out[-1][0], r0 + i + 1)
+                    else:
+                        out.append((r0 + i, r0 + i + 1))
+    return out
+
+
+def plan_update(base_dir, new_dir, ranges_by_file=None, block=1 << 20, refine=True):
     """Plan an update from the checkpoint in base_dir to the one in new_dir.
 
     ranges_by_file: {relative file path: [(offset, length)]} for the files of
     new_dir, as load_onggi_ranges gives it. None compares the files locally.
     A file missing from the mapping is taken as unchanged; a tensor whose
     dtype or shape differs between the two headers is planned whole.
+    refine: check the flagged rows against base_dir's bytes (refine_rows) and
+    drop tensors in which nothing actually changed.
     """
     files = sorted(f for f in os.listdir(new_dir) if f.endswith(".safetensors"))
     tensors, header_changes = {}, set()
     changed = total = 0
-    base_headers = {}
-    for f in files:
-        bp = os.path.join(base_dir, f)
-        if os.path.exists(bp):
-            for name, info in read_header(bp).items():
-                base_headers[name] = info
+    base_headers, base_file = {}, {}
+    for f in sorted(x for x in os.listdir(base_dir) if x.endswith(".safetensors")):
+        for name, info in read_header(os.path.join(base_dir, f)).items():
+            base_headers[name] = info
+            base_file[name] = os.path.join(base_dir, f)
     for f in files:
         np_ = os.path.join(new_dir, f)
         hdr = read_header(np_)
@@ -176,8 +210,13 @@ def plan_update(base_dir, new_dir, ranges_by_file=None, block=1 << 20):
         changed += sum(n for _, n in rng)
         for name, spans in tensors_touched(hdr, rng).items():
             info = hdr[name]
-            tensors[name] = dict(file=f, rows=rows_of(info, spans),
-                                 bytes=info["end"] - info["start"])
+            rows = rows_of(info, spans)
+            old = base_headers.get(name)
+            if refine and old is not None and old["dtype"] == info["dtype"]                     and old["shape"] == info["shape"] and info["shape"]:
+                rows = refine_rows(base_file[name], old, np_, info, rows)
+                if not rows:
+                    continue
+            tensors[name] = dict(file=f, rows=rows, bytes=info["end"] - info["start"])
         for name, info in hdr.items():
             old = base_headers.get(name)
             if old is None or old["dtype"] != info["dtype"] or old["shape"] != info["shape"]:
