@@ -1,0 +1,56 @@
+{
+ "S": 1024,
+ "reference_width": 16,
+ "ref_file": "greedy_rngd_pd_base_S1024.jsonl",
+ "topk": 20,
+ "teacher_forced": {
+  "16:Default": {
+   "steps": 819,
+   "top1_agree": 0.99512,
+   "guard_violations": 0,
+   "dlogit_mean": 0.0292,
+   "dlogit_max": 0.375,
+   "kl_topk_mean": 0.000333,
+   "kl_topk_max": 0.015536
+  },
+  "8:Default": {
+   "steps": 819,
+   "top1_agree": 0.99389,
+   "guard_violations": 0,
+   "dlogit_mean": 0.0324,
+   "dlogit_max": 0.375,
+   "kl_topk_mean": 0.000263,
+   "kl_topk_max": 0.010816
+  }
+ },
+ "perplexity": {
+  "16:Default": {
+   "steps": 1648,
+   "top1_agree": 0.98301,
+   "guard_violations": 0,
+   "dlogit_mean": 0.025,
+   "dlogit_max": 0.1875,
+   "kl_topk_mean": 0.000507,
+   "kl_topk_max": 0.017518,
+   "ppl_tokens": 1648,
+   "ppl_old": 15.0432,
+   "ppl_new": 15.0419,
+   "ppl_rel_pct": -0.009
+  },
+  "8:Default": {
+   "steps": 1648,
+   "top1_agree": 0.98604,
+   "guard_violations": 0,
+   "dlogit_mean": 0.0279,
+   "dlogit_max": 0.1875,
+   "kl_topk_mean": 0.00056,
+   "kl_topk_max": 0.019388,
+   "ppl_tokens": 1648,
+   "ppl_old": 15.0432,
+   "ppl_new": 15.0292,
+   "ppl_rel_pct": -0.093
+  }
+ },
+ "ppl_text_tokens": 1784,
+ "date": "2026-10-22"
+}

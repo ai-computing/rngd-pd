@@ -1,0 +1,52 @@
+{
+ "S": 1024,
+ "B": 16,
+ "decode_group": 8,
+ "buckets": [
+  128,
+  256,
+  512
+ ],
+ "prefill": {
+  "128": {
+   "bucket": 128,
+   "group_calls": 16,
+   "call_ms": 2.109,
+   "calls_total_ms": 33.74,
+   "embed_upload_ms": null,
+   "finish_ms": 14.568,
+   "lane_write_ms": 3.38,
+   "total_ms": 63.472
+  }
+ },
+ "decode": {
+  "embed_upload_ms": 2.582,
+  "tables_upload_ms": 1.809,
+  "groups_ms": 42.1,
+  "lmhead_ms": 1.87,
+  "logits_download_ms": 0.518,
+  "logits_cast_ms": 4.138,
+  "argmax_ms": 2.697,
+  "total_ms": 58.013,
+  "group_call_ms": 10.417,
+  "engine_step_ms": 57.209
+ },
+ "scheduler": {
+  "1": {
+   "ttft_ms": 852.323,
+   "tpot_ms": 58.15,
+   "scheduler_step_ms": 57.8
+  },
+  "4": {
+   "ttft_ms": 167.055,
+   "tpot_ms": 58.932,
+   "scheduler_step_ms": 57.3
+  },
+  "16": {
+   "ttft_ms": 512.628,
+   "tpot_ms": 60.274,
+   "scheduler_step_ms": 53.8
+  }
+ },
+ "date": "2026-10-22"
+}
