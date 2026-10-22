@@ -360,6 +360,23 @@ Variables already exported in the shell take precedence.
 | `RNGD_PD_NODE`, `RNGD_PD_HOME` | for `deploy/k8s/render.py` | Node the experiment pods are pinned to, and the home directory whose Python trees they mount |
 </details>
 
+## 🔁 Delta load
+
+A running engine can switch to another compiled variant of Llama-3.1-8B, a batch width or a sequence bucket,
+keeping on the NPU what is already there ([#17](https://github.com/ai-computing/rngd-pd/issues/17),
+[`src/rngd_pd/swap/`](src/rngd_pd/swap), details in [docs/delta-load.md](docs/delta-load.md)).
+
+- **RNGD:** one device copy of the weights is shared by every decode variant, because the graphs take the weights
+  as inputs. `swap(variant)` loads only that variant's graph (1–6 MB). With a new checkpoint that differs in part,
+  `apply_delta()` uploads only the tensors whose bytes changed, planned from `onggi diff --ranges`.
+- **Measured on one RNGD card** (B4/B8/B16 at S512 and B4 at S256):
+  - swap: 0.55–1.2 s from request to first token, 0.06–0.54 s back to a prepared variant;
+  - full reload: 21–23 s;
+  - greedy tokens identical to a full reload in every case;
+  - each extra variant costs under 0.25 GiB of device memory.
+- **Partial update:** 3 changed tensors (151 MB of 16 GB) took 0.84 s to the first token on the new weights,
+  with tokens identical to a full load of the new checkpoint.
+
 ## 📊 Results
 
 **ai-rm end-to-end run** (from [ai-rm docs/e2e.md](https://github.com/ai-computing/ai-rm/blob/master/docs/e2e.md)):

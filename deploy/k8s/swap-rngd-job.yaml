@@ -1,0 +1,85 @@
+# Delta-load bench on one RNGD card (#17): python -m rngd_pd.swap.bench_rngd all.
+#
+# Run-and-exit: one card from the device plugin, a deadline and a TTL; the
+# card is released when the bench exits. The graphs are loaded from the
+# artifact cache (bake them on the host first with bench/prebake.py and
+# RNGD_MAX_SHAPES=8), never compiled here. WORK is a host directory holding a
+# checkout of this repo (WORK/rngd-pd) and receiving the results (WORK/out).
+#
+#   kubectl create namespace rngd-swap
+#   python3 deploy/k8s/render.py deploy/k8s/swap-rngd-job.yaml | kubectl apply -f -
+#   kubectl -n rngd-swap logs -f job/swap-rngd
+#   kubectl delete namespace rngd-swap
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: swap-rngd
+  namespace: rngd-swap
+  labels: {app: swap-rngd}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 3600
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels: {app: swap-rngd}
+    spec:
+      restartPolicy: Never
+      nodeSelector: {kubernetes.io/hostname: ${RNGD_PD_NODE}}
+      containers:
+      - name: bench
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive
+          apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 libdrm2 libnuma1 libgomp1 ca-certificates >/dev/null
+          ln -sf python3.10 /usr/bin/python3        # the venvs point at /usr/bin/python3
+          M=$(ls -d $HF_HOME/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/*/ | head -1)
+          DELTA=""; [ -d "$WORK/ckpt_delta" ] && DELTA="--delta-new $WORK/ckpt_delta"
+          RANGES=""; [ -f "$WORK/ranges.json" ] && RANGES="--ranges $WORK/ranges.json"
+          mkdir -p $WORK/out
+          # results belong to the owner of WORK, not to the container's root
+          trap 'chown -R $(stat -c %u:%g $WORK) $WORK/out' EXIT
+          cd $WORK/rngd-pd/src
+          $PY -m rngd_pd.swap.bench_rngd all --ckpt $M --chip -1 --cache /cache --mem \
+            --variants $VARIANTS $DELTA $RANGES --out $WORK/out/swap_rngd.json
+        env:
+        - {name: WORK, value: "${RNGD_PD_HOME}/tmp/swap17"}
+        - {name: VARIANTS, value: "B4,S512 B8,S512 B16,S512 B4,S256"}
+        - {name: PY, value: "${RNGD_PD_HOME}/venvs/furiosa/bin/python"}
+        # the graphs were baked with the torch in ~/.local (bench/prebake.py)
+        - {name: PYTHONPATH, value: "${RNGD_PD_HOME}/tmp/swap17/rngd-pd/src:${RNGD_PD_HOME}/.local/lib/python3.10/site-packages"}
+        - {name: RNGD_MAX_SHAPES, value: "8"}
+        - {name: LD_LIBRARY_PATH, value: "/host-libs"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: PYTHONDONTWRITEBYTECODE, value: "1"}
+        - {name: POD_UID, valueFrom: {fieldRef: {fieldPath: metadata.uid}}}
+        - {name: CONTAINER_NAME, value: bench}
+        - {name: HF_HOME, value: "${RNGD_PD_HOME}/.cache/huggingface"}
+        resources:
+          limits: {furiosa.ai/rngd: "1", memory: 160Gi}
+          requests: {cpu: "16", memory: 96Gi, furiosa.ai/rngd: "1"}
+        # The fused 8-PE device needs npuNp2pmem, outside the device plugin's
+        # allowlist, so the pod is privileged like the chart's prefill pod. It
+        # then sees every card; --chip -1 picks the one k8s allocated from the
+        # kubelet checkpoint (src/rngd_pd/devices.py) and touches no other.
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - {name: work, mountPath: "${RNGD_PD_HOME}/tmp/swap17"}
+        - {name: venvs, mountPath: "${RNGD_PD_HOME}/venvs", readOnly: true}
+        - {name: local-pkgs, mountPath: "${RNGD_PD_HOME}/.local/lib/python3.10/site-packages", readOnly: true}
+        - {name: hf, mountPath: "${RNGD_PD_HOME}/.cache/huggingface", readOnly: true}
+        - {name: cache, mountPath: /cache, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: device-plugins, mountPath: /var/lib/kubelet/device-plugins, readOnly: true}
+      volumes:
+      - {name: work, hostPath: {path: "${RNGD_PD_HOME}/tmp/swap17", type: Directory}}
+      - {name: venvs, hostPath: {path: "${RNGD_PD_HOME}/venvs", type: Directory}}
+      - {name: local-pkgs, hostPath: {path: "${RNGD_PD_HOME}/.local/lib/python3.10/site-packages", type: Directory}}
+      - {name: hf, hostPath: {path: "${RNGD_PD_HOME}/.cache/huggingface", type: Directory}}
+      - {name: cache, hostPath: {path: "${RNGD_PD_HOME}/workspace/01_pd_disag/rngd_llmd/artifacts_cache", type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: device-plugins, hostPath: {path: /var/lib/kubelet/device-plugins, type: Directory}}

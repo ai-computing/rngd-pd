@@ -351,6 +351,23 @@ export한 값이 우선한다.
 | `RNGD_PD_NODE`, `RNGD_PD_HOME` | `deploy/k8s/render.py`에 필요 | 실험 Pod를 고정할 노드, Pod가 Python 트리를 마운트하는 홈 디렉터리 |
 </details>
 
+## 🔁 델타 로드
+
+실행 중인 엔진이 Llama-3.1-8B의 다른 컴파일 변형(배치 폭이나 시퀀스 버킷)으로 바꿀 때, NPU에 이미 올라간 것은 그대로 두는
+기능이다 ([#17](https://github.com/ai-computing/rngd-pd/issues/17), [`src/rngd_pd/swap/`](src/rngd_pd/swap),
+자세한 내용은 [docs/delta-load.md](docs/delta-load.md)).
+
+- **RNGD:** 그래프가 가중치를 입력으로 받으므로 모든 decode 변형이 디바이스의 가중치 한 벌을 함께 쓴다. `swap(variant)`는 그
+  변형의 그래프(1–6 MB)만 읽는다. 일부만 다른 새 체크포인트는 `apply_delta()`가 바이트가 바뀐 텐서만 올린다. 바뀐 텐서는
+  `onggi diff --ranges`로 정한다.
+- **RNGD 카드 1장 측정** (S512의 B4/B8/B16, S256의 B4):
+  - swap: 요청부터 첫 토큰까지 0.55–1.2 s, 이미 준비된 변형으로 돌아가면 0.06–0.54 s;
+  - 전체 재로드: 21–23 s;
+  - greedy 토큰은 모든 경우 전체 재로드와 같다;
+  - 변형 하나를 더 올리는 데 드는 디바이스 메모리는 0.25 GiB 미만이다.
+- **부분 갱신:** 바뀐 텐서 3개(16 GB 중 151 MB)를 올리고 새 가중치로 첫 토큰까지 0.84 s 걸렸다. 토큰은 새 체크포인트를
+  전체 로드한 것과 같다.
+
 ## 📊 결과
 
 **ai-rm 종단 간 실행** ([ai-rm docs/e2e.md](https://github.com/ai-computing/ai-rm/blob/master/docs/e2e.md)에서 인용):
