@@ -381,6 +381,26 @@ bundle through its first token in 10 ms, but preparation delayed a concurrent
 request by 1.44 s. See the [experiment, versions, commands and limits](experiments/2026-10-22-delta-swap.md).
 The default cluster worker and in-flight KV are not automatically migrated.
 
+- **RNGD:** one device copy of the weights is shared by every decode variant, because the graphs take the weights
+  as inputs. `swap(variant)` loads only that variant's graph (1–6 MB). With a new checkpoint that differs in part,
+  `apply_delta()` uploads only the tensors whose bytes changed, planned from `onggi diff --ranges`.
+- **Measured on one RNGD card** (B4/B8/B16 at S512 and B4 at S256):
+  - swap: 0.55–1.2 s from request to first token, 0.06–0.54 s back to a prepared variant;
+  - full reload: 21–23 s;
+  - greedy tokens identical to a full reload in every case;
+  - each extra variant costs under 0.25 GiB of device memory.
+- **Partial update:** 3 changed tensors (151 MB of 16 GB) took 0.84 s to the first token on the new weights,
+  with tokens identical to a full load of the new checkpoint.
+- **ATOM:** the weights are compiled into the graph, and rebel 0.11 has no public call to bind a graph to weights
+  already on the card. So the variants go into one compile session (documented *bucketing*: one weight copy, one
+  runtime, the graph picked by input shape).
+  - **Swap inside a session:** 0.11–0.20 s from request to first token (the first step), against a 13.3–13.7 s full
+    reload; tokens identical.
+  - **New variant:** recompile the session with it, without a card; `HostPool` parses it on the host while the old
+    session serves; the switch then takes 0.80 s to the first token.
+  - **Weights as torch-rbln device inputs:** they stay shared across graphs, but steps are 5–7× slower and each new
+    graph compiles in-process (about 60 s), so this path is documented, not used.
+
 ## 📊 Results
 
 **ai-rm end-to-end run** (from [ai-rm docs/e2e.md](https://github.com/ai-computing/ai-rm/blob/master/docs/e2e.md)):

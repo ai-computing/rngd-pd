@@ -25,12 +25,18 @@ from rngd_pd.kernels.decode_batch import (BF, H, M, NH, NKV, HD, G, DecodeModel,
 from rngd_pd.engines.fsdk import CompileModule
 from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
 from rngd_pd.engines.fsdk import hint as _hint
+from rngd_pd.engines.fsdk import dev_str
 from rngd_pd.paths import ARTIFACT_CACHE
 
 MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
+# 2026.3.0 dropped these two options (always on); 2026.2.0 needs them.
+from rngd_pd.engines.fsdk import NEW as _NEW_SDK  # noqa: E402
+_LEGACY = {} if _NEW_SDK else dict(allow_external_operators=True,
+                                   allow_unlowered_operators=True)
 
-def decode_graph_spec(B, S, group):
+
+def decode_graph_spec(B, S, group, hint=None):
     """The cache key and the build for one decode graph, in one place.
 
     The pod does not have to be the thing that compiles. Its 96Gi cap with the
@@ -44,8 +50,9 @@ def decode_graph_spec(B, S, group):
     the old uncapped artifact and the change does nothing at all.
     """
     from rngd_pd.engines.artifact_cache import cache_key
+    hint = hint or HINT
     key = cache_key(kind="batch-decode", model=MODEL, B=B, S=S, nl=group,
-                    hint=HINT, **MAX_SHAPES)
+                    hint=hint, **MAX_SHAPES)
     def build():
         sample = (torch.zeros(B, H, dtype=BF),
                   torch.zeros(B, H, dtype=torch.float32), torch.zeros(B, H, dtype=torch.float32),
@@ -59,9 +66,7 @@ def decode_graph_spec(B, S, group):
                   torch.zeros(group, B, NKV, S, HD, dtype=BF),
                   torch.zeros(B, HD, HD, dtype=BF),
                   torch.zeros(B, S, dtype=BF), torch.zeros(B, S, dtype=BF))
-        ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
-                        tactic_hint=_hint(HINT),
-                        **MAX_SHAPES)
+        ccfg = FCConfig(tactic_hint=_hint(hint), **_LEGACY, **MAX_SHAPES)
         return CompileModule.from_module(DecodeModel(B, S, group), sample,
                                          compiler_config=ccfg)
     return key, build
@@ -124,26 +129,11 @@ def lmhead_graph_spec(B, V, NG=32):
             h = self.rms(x, nw, eps, nh)[0]              # [B,H]
             return torch.matmul(wlm, h.t())              # [NG,Vp/NG,B]
 
-    # On 2026.2.0 the hint flips sign with the batch, and there is no rule to
-    # it: measured over all seven, the winner is ForLlmModelDecode at B=4
-    # (1.24 ms), ForMiscModel at B=8 (1.21) and Default at B=16 (1.34), while
-    # the losers sit at ~45 ms -- a 37x cliff, and the whole of "batched decode
-    # collapses past four", since the decode graph itself only goes 4.87 ->
-    # 5.96 ms a call. LMHEAD_VECTOR_B picks its way across that by hand.
-    #
-    # 2026.3.0 flattens it: every one of its seven hints lands in 1.08-1.37 ms
-    # at B=4, 8 and 16, so there is nothing to pick around and the width no
-    # longer enters. ComputeIOBalanced is the best of them at B=4 and B=16 and
-    # within 0.01 ms of the best at B=8.
     if _NEW:
         hint = TacticHintConfig.ForLlmModelComputeIOBalanced
     else:
         hint = (TacticHintConfig.ForLlmModelDecode if B <= LMHEAD_VECTOR_B
                 else TacticHintConfig.NoConstraint)
-    ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
-                    tactic_hint=hint)
-    # the hint belongs in the key: two widths that share one would otherwise
-    # load each other's artifact and the fix would silently do nothing
     key = cache_key(kind="batch-lmhead", model=MODEL, B=B, V=V, groups=NG,
                     hint=hint.__class__.__name__ + str(hint))
     def build():
@@ -151,19 +141,39 @@ def lmhead_graph_spec(B, V, NG=32):
                   torch.zeros(B, H, dtype=torch.float32),
                   torch.zeros(B, H, dtype=torch.float32),
                   torch.zeros(NG, Vp // NG, H, dtype=BF))
+        ccfg = FCConfig(tactic_hint=hint, **_LEGACY)
         return CompileModule.from_module(LmHead(), sample, compiler_config=ccfg)
     return key, build
 
 
 
+def greedy_tokens(logits, Vp, V, B):
+    """Argmax per stream of the on-card lm_head output [NG, Vp/NG, B].
+
+    It used to widen all Vp x B logits to float32 numpy and argmax column by
+    column: 3.4-4.1 ms of every B=16 step on the host (#14 phase 2). torch's
+    argmax on the bf16 tensor gives the same index -- the widening is exact
+    and both return the first maximum -- in a fraction of that.
+    """
+    lg = logits.detach().cpu().reshape(Vp, B)[:V]
+    return torch.argmax(lg, dim=0).tolist()
+
+
 class BatchDecodeEngine:
-    def __init__(self, cfg, sd, B=2, S=256, group=2, chip=2, cache_dir=None):
-        group = resolve_group(B, S, group, cache_dir)
+    def __init__(self, cfg, sd, B=2, S=256, group=2, chip=2, cache_dir=None,
+                 share=None, hint=None):
+        """`share`: another BatchDecodeEngine (same S and group) whose 16 GB of
+        projection weights and lm_head this one reuses. The graph takes the
+        weights as inputs, so another width costs only its own graph, its
+        B-tiled norms and its cache (see engines/tiers.py). `hint`: the decode
+        graph's tactic hint, if not DECODE_TACTIC_HINT."""
+        group = share.NG if share is not None else resolve_group(B, S, group, cache_dir)
+        self.hint = hint or HINT
         self.B, self.S, self.NG = B, S, group
         self.nl = cfg.n_layers
         self.ngroups = self.nl // group
         assert self.nl % group == 0
-        self.dev = f"rngd:{chip}"
+        self.dev = dev_str(chip)
         self.eps = cfg.eps
         self.embed = sd["model.embed_tokens.weight"]
         self.lm = sd["lm_head.weight"]
@@ -176,6 +186,14 @@ class BatchDecodeEngine:
         for g in range(self.ngroups):
             idx = range(g * group, (g + 1) * group)
             p = lambda i, k: sd[f"model.layers.{i}.{k}"].astype(np.float32)
+            if share is not None:
+                w = share.groups[g]
+                self.groups.append((
+                    torch.stack([d(np.tile(p(i, "input_layernorm.weight") * sq, (B, 1))) for i in idx]),
+                    *w[1:5],
+                    torch.stack([d(np.tile(p(i, "post_attention_layernorm.weight") * sq, (B, 1))) for i in idx]),
+                    *w[6:]))
+                continue
             self.groups.append((
                 torch.stack([d(np.tile(p(i, "input_layernorm.weight") * sq, (B, 1))) for i in idx]),
                 torch.stack([d((p(i, "self_attn.q_proj.weight") * sc).T.copy()) for i in idx]),
@@ -188,7 +206,7 @@ class BatchDecodeEngine:
                 torch.stack([d(p(i, "mlp.down_proj.weight").T.copy()) for i in idx]),
             ))
 
-        key, build = decode_graph_spec(B, S, group)
+        key, build = decode_graph_spec(B, S, group, self.hint)
         t0 = time.time()
         if cache_dir:
             from rngd_pd.engines.artifact_cache import get_or_compile
@@ -201,7 +219,7 @@ class BatchDecodeEngine:
         self.eps_d = self._df(np.full((B, H), self.eps * H, np.float32))
         self.nh_d = self._df(np.full((B, H), -0.5, np.float32))
         self._build_tables()
-        self._build_lmhead(cache_dir)
+        self._build_lmhead(cache_dir, share)
 
     def _build_tables(self):
         """Everything a step needs that depends only on position, built once.
@@ -230,7 +248,7 @@ class BatchDecodeEngine:
         rot[:, i + half, i] = -sn
         self._rot = rot
 
-    def _build_lmhead(self, cache_dir):
+    def _build_lmhead(self, cache_dir, share=None):
         """lm_head on the card, batched.
 
         bench/pd_engine.build_lmhead already established the shape that works:
@@ -258,9 +276,12 @@ class BatchDecodeEngine:
             self.lmh = build()
             print(f"[batch-lmhead] compiled in {time.time()-t0:.0f}s", flush=True)
         self.lmh.to(self.dev)
-        wlm = np.zeros((Vp, H), np.float32)
-        wlm[:V] = self.lm
-        self.wlm_d = self._d(wlm.reshape(NG, Vp // NG, H))
+        if share is not None:
+            self.wlm_d = share.wlm_d               # 1 GB, the same for every width
+        else:
+            wlm = np.zeros((Vp, H), np.float32)
+            wlm[:V] = self.lm
+            self.wlm_d = self._d(wlm.reshape(NG, Vp // NG, H))
         self.norm_d = self._d(np.tile(self.norm * math.sqrt(H), (self.B, 1)))
 
     def _d(self, v):
@@ -388,6 +409,12 @@ class BatchDecodeEngine:
 
     def step(self, toks, positions, Kd, Vd):
         """One token for each of B streams. Returns next tokens and the cache."""
+        logits, Kd, Vd = self.step_logits(toks, positions, Kd, Vd)
+        return greedy_tokens(logits, self.Vp, self.V, self.B), Kd, Vd
+
+    def step_logits(self, toks, positions, Kd, Vd):
+        """The same step, returning the lm_head output itself ([NG, Vp/NG, B],
+        on the card) -- for teacher-forced comparisons (bench/teacher_forced.py)."""
         B, S = self.B, self.S
         pos = np.asarray(positions)
         x = self._d(self.embed[list(toks)])          # [B,H], one gather
@@ -400,8 +427,7 @@ class BatchDecodeEngine:
             Kd[g], Vd[g] = Kf, Vf
         out = self.lmh(x, self.norm_d, self.eps_d, self.nh_d, self.wlm_d)
         logits = out[0] if isinstance(out, (tuple, list)) else out
-        lg = logits.detach().cpu().float().numpy().reshape(self.Vp, B)[:self.V]
-        return [int(np.argmax(lg[:, b])) for b in range(B)], Kd, Vd
+        return logits, Kd, Vd
 
 
 def main():

@@ -43,6 +43,12 @@ def main():
     ap.add_argument("--S", type=int, default=256)
     ap.add_argument("--group", type=int, default=8)
     ap.add_argument("--cache", default=str(ARTIFACT_CACHE))
+    ap.add_argument("--prefill", default="",
+                    help="comma-separated prefill widths C to bake as well "
+                         "(the solo/prefill worker's buckets, layer group 2)")
+    ap.add_argument("--prefill-group", type=int, default=2)
+    ap.add_argument("--no-decode", action="store_true",
+                    help="bake only the --prefill widths")
     a = ap.parse_args()
 
     if not torch.__version__.startswith(POD_TORCH):
@@ -62,9 +68,16 @@ def main():
     # cause. The two belong in the same bake.
     from transformers import AutoConfig
     V = AutoConfig.from_pretrained(a.model).vocab_size
-    for label, (key, build) in (
-            ("decode", decode_graph_spec(a.B, a.S, a.group)),
-            ("lmhead", lmhead_graph_spec(a.B, V))):
+    specs = [] if a.no_decode else [
+        ("decode", decode_graph_spec(a.B, a.S, a.group)),
+        ("lmhead", lmhead_graph_spec(a.B, V))]
+    if a.prefill:
+        # Same key derivation as FullPrefillEngine.add_bucket, so a width baked
+        # here without a card is the one the worker loads.
+        from rngd_pd.engines.prefill_full import prefill_graph_spec
+        specs += [(f"prefill C={c}", prefill_graph_spec(c, a.prefill_group))
+                  for c in sorted({int(v) for v in a.prefill.split(",") if v.strip()})]
+    for label, (key, build) in specs:
         target = path_for(a.cache, key)
         print(f"[{label}] 키 {key}")
         if exists(target):

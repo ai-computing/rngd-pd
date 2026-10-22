@@ -17,6 +17,12 @@ DTYPE_BYTES = {"BF16": 2, "F16": 2, "F32": 4, "F64": 8, "I8": 1, "U8": 1,
                "I16": 2, "U16": 2, "I32": 4, "U32": 4, "I64": 8, "U64": 8,
                "BOOL": 1, "F8_E4M3": 1, "F8_E5M2": 1}
 
+CHECKPOINT_GRAPH_KEYS = (
+    "model_type", "hidden_size", "intermediate_size", "num_hidden_layers",
+    "num_attention_heads", "num_key_value_heads", "head_dim", "vocab_size",
+    "rms_norm_eps", "rope_theta", "rope_scaling", "tie_word_embeddings",
+    "hidden_act", "attention_bias", "mlp_bias")
+
 
 def _relative(path):
     from pathlib import PurePosixPath
@@ -92,15 +98,17 @@ def load_onggi_ranges(doc):
             doc = json.load(f)
     elif isinstance(doc, str):
         doc = json.loads(doc)
+    if not isinstance(doc, dict) or not isinstance(doc.get("files"), list):
+        raise ValueError("onggi diff must contain a files list")
     out = {}
-    for fd in doc.get("files") or []:
+    for fd in doc["files"]:
         path = _relative(fd["path"])
         if path in out:
             raise ValueError(f"duplicate file range entry: {path}")
         if not fd.get("base"):
             out[path] = _ranges([(0, fd["size"])])
         else:
-            if ("changed" not in fd and (fd.get("changed_runs", 0) > 0
+            if (not fd.get("changed") and (fd.get("changed_runs", 0) > 0
                     or fd.get("moved", 0) > 0 or fd.get("new", 0) > 0)):
                 raise ValueError("diff omits changed ranges; run onggi diff --ranges --json")
             out[path] = _ranges(fd.get("changed") or [])

@@ -1,121 +1,106 @@
-from threading import Event
+"""ATOM session logic without a card: rebel is replaced by a fake."""
+import json
+import os
+import sys
+import tempfile
+import types
+import unittest
 from types import SimpleNamespace
-import pytest
 
-from rngd_pd.swap.atom import AtomBundle, SwappableAtom
+import numpy as np
+
+from rngd_pd.swap.atom import AtomSession, HostPool, Tables
 from rngd_pd.swap.variants import Variant
 
 
-V1, V4 = Variant(1, 32), Variant(4, 32)
+class FakeRuntime:
+    """Logits favour token (sum of x) % V; k/v rows are filled with the lane index."""
+
+    def __init__(self, nl, nkv, hd, V=7):
+        self.nl, self.nkv, self.hd, self.V = nl, nkv, hd, V
+        self.shapes = []
+
+    def run(self, x, K, V, cos, sin, mask, oh):
+        B = x.shape[0]
+        self.shapes.append((B, mask.shape[1]))
+        logits = np.zeros((B, self.V), np.float32)
+        for b in range(B):
+            logits[b, int(abs(x[b].sum())) % self.V] = 1
+        k = np.tile(np.arange(B, dtype=np.float32)[None, :, None, None], (self.nl, 1, self.nkv, self.hd))
+        return logits, k, k.copy()
 
 
-class Runtime:
-    def __init__(self, name):
-        self.name = name
+class FakeCompiled:
+    def __init__(self, path):
+        self.path = path
 
-    def run(self, *inputs):
-        return self.name, inputs
-
-
-def model(path, device):
-    return SimpleNamespace(
-        rbln_config=SimpleNamespace(max_seq_len=32, decoder_batch_sizes=[1, 4],
-            expected_compiled_model_names=["prefill", "decoder_batch_1", "decoder_batch_4"]),
-        model=[Runtime(path + n) for n in ("prefill", "B1", "B4")])
+    def create_runtime(self, device=0, tensor_type="np"):
+        return FakeRuntime(2, 2, 4)
 
 
-def test_switch_keeps_weight_owner_and_never_reloads():
-    calls = []
-    def load(path, device):
-        calls.append((path, device))
-        return model(path, device)
-    with SwappableAtom({"a": AtomBundle("a", (V1, V4))}, loader=load) as e:
-        assert e.swap(V1)["strategy"] == "full-load"
-        owner = e._loaded["a"]["model"]
-        assert e.swap(V4)["strategy"] == "shared-session"
-        assert e.run(7) == ("aB4", (7,))
-        e.swap(V1)
-        assert e._loaded["a"]["model"] is owner
-        assert calls == [("a", 0)]
-        with pytest.raises(ValueError):
-            e.release("a")
+def fake_rebel():
+    m = types.ModuleType("rebel")
+    m.RBLNCompiledModel = FakeCompiled
+    return m
 
 
-def test_warm_bundle_loading_does_not_block_current_requests():
-    entered, finish = Event(), Event()
-    def load(path, device):
-        if path == "b":
-            entered.set()
-            assert finish.wait(5)
-        return model(path, device)
-    bundles = {n: AtomBundle(n, (V1, V4)) for n in ("a", "b")}
-    with SwappableAtom(bundles, loader=load) as e:
-        e.swap(V1, "a")
-        future = e.prepare_async(V1, "b")
-        try:
-            assert entered.wait(2)
-            assert e.run(9) == ("aB1", (9,))
-            with pytest.raises(RuntimeError, match="not prepared"):
-                e.swap(V4, "b", require_ready=True)
-            assert e.active_bundle == "a"
-        finally:
-            finish.set()
-        future.result(5)
-        info = e.swap(V4, "b", require_ready=True)
-        assert info["strategy"] == "warm-pool"
-        assert not info["weights_uploaded_on_swap"]
-        e.release("a")
-        assert "a" not in e._loaded
+def tables():
+    t = Tables.__new__(Tables)
+    t.cfg = SimpleNamespace(n_kv=2, head_dim=4)
+    t.inv = np.array([1.0, 0.5], np.float32)
+    t.embed = np.arange(10 * 3, dtype=np.float32).reshape(10, 3)
+    return t
 
 
-def test_failed_prepare_leaves_active_model_usable():
-    def load(path, device):
-        if path == "b":
-            raise MemoryError("HBM full")
-        return model(path, device)
-    with SwappableAtom({n: AtomBundle(n, (V1,)) for n in ("a", "b")}, loader=load) as e:
-        e.swap(V1, "a")
-        with pytest.raises(MemoryError):
-            e.swap(V1, "b")
-        assert e.run() == ("aB1", ())
+class AtomSessionTest(unittest.TestCase):
+    def setUp(self):
+        self._old = sys.modules.get("rebel")
+        sys.modules["rebel"] = fake_rebel()
+        self.d = tempfile.mkdtemp()
+        self.path = os.path.join(self.d, "s.rbln")
+        open(self.path, "wb").close()
+        with open(self.path + ".json", "w") as f:
+            json.dump({"layers": 2, "variants": ["B1-S8", "B4-S8"]}, f)
+
+    def tearDown(self):
+        if self._old is None:
+            sys.modules.pop("rebel", None)
+        else:
+            sys.modules["rebel"] = self._old
+
+    def test_swap_selects_by_shape_and_refuses_outside(self):
+        s = AtomSession(self.path, tables())
+        self.assertEqual([v.name for v in s.variants], ["B1-S8", "B4-S8"])
+        s.swap(Variant(4, 8, 0))
+        K, V = s.blank_kv()
+        self.assertEqual(K.shape, (2, 4, 2, 4, 8))
+        s.step([1, 2, 3, 4], [0, 1, 2, 3], K, V)
+        self.assertEqual(s.rt.shapes[-1], (4, 8))
+        self.assertEqual(float(K[0, 2, 0, 0, 2]), 2.0)     # lane 2's row written at its position
+        self.assertEqual(float(K[0, 2, 0, 0, 3]), 0.0)
+        with self.assertRaises(KeyError):
+            s.swap(Variant(2, 16, 0))
+
+    def test_step_inputs(self):
+        x, cos, sin, mask, oh = tables().step_inputs([1, 2], [0, 3], 5)
+        self.assertEqual(mask[1].tolist(), [0, 0, 0, 0, -1e4])
+        self.assertEqual(oh[1].tolist(), [0, 0, 0, 1, 0])
+        np.testing.assert_allclose(cos[1], np.cos([3.0, 1.5]), rtol=1e-6)
+
+    def test_host_pool_switch(self):
+        s = AtomSession(self.path, tables())
+        p2 = os.path.join(self.d, "s2.rbln")
+        open(p2, "wb").close()
+        with open(p2 + ".json", "w") as f:
+            json.dump({"layers": 2, "variants": ["B1-S8", "B4-S8", "B2-S16"]}, f)
+        pool = HostPool()
+        pool.prepare(p2)
+        s2, t = pool.switch(s, tables())
+        self.assertIsNone(s.rt)                            # the old session is closed
+        self.assertTrue(s2.timings["parsed_before"])
+        self.assertTrue(s2.has(Variant(2, 16, 0)))
+        self.assertIn("parse_in_background_s", t)
 
 
-def test_wrong_compiled_shape_is_rejected_before_activation():
-    with SwappableAtom({"a": AtomBundle("a", (Variant(2, 32),))}, loader=model) as e:
-        with pytest.raises(ValueError, match="does not contain"):
-            e.swap(Variant(2, 32))
-        assert e.active is None
-
-
-def test_ambiguous_variant_requires_bundle_and_close_is_final():
-    e = SwappableAtom({n: AtomBundle(n, (V1,)) for n in ("a", "b")}, loader=model)
-    try:
-        with pytest.raises(ValueError, match="ambiguous"):
-            e.swap(V1)
-    finally:
-        e.close()
-    with pytest.raises(RuntimeError, match="closed"):
-        e.swap(V1, "a")
-
-
-def test_generation_timing_records_first_token_and_selector_routes_batch():
-    import torch
-    from rngd_pd.swap import BatchSelector
-    def load(path, device):
-        m = model(path, device)
-        def generate(input_ids, attention_mask, max_new_tokens, do_sample, streamer):
-            streamer.put(input_ids)
-            streamer.put(torch.full((input_ids.shape[0],), 7))
-            streamer.end()
-            return torch.cat([input_ids, torch.full((input_ids.shape[0], max_new_tokens), 7)], 1)
-        m.generate = generate
-        return m
-    with SwappableAtom({"a": AtomBundle("a", (V1, V4))}, loader=load) as e:
-        e.swap(V1)
-        tokens, ttft = e.generate([[1, 2]], 3, timed=True)
-        assert tokens == [[7, 7, 7]] and ttft >= 0
-        selector = BatchSelector([1, 4], start=1, up_after=1)
-        e.select(selector, depth=3, context=16)
-        assert e.active == V4
-        with pytest.raises(ValueError, match="fits"):
-            e.select(selector, depth=3, context=64)
+if __name__ == "__main__":
+    unittest.main()

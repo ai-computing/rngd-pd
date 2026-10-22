@@ -402,6 +402,11 @@ class SwappableDecode:
 
     # ------------------------------------------------------------------ delta
 
+    def load_delta(self, new_checkpoint, **options):
+        """Plan and apply changed weights (ranges JSON, live onggi, or local diff)."""
+        from .load import load_delta
+        return load_delta(self, new_checkpoint, **options)
+
     @_serialized
     def apply_delta(self, new_checkpoint, plan, mode="inplace"):
         """Update changed tensors at a drained request boundary.
@@ -420,11 +425,8 @@ class SwappableDecode:
                 or plan.new_dir != os.path.realpath(new.path)):
             raise ValueError("delta plan does not describe the resident and target checkpoints")
         # Changing graph semantics is a full reload, not a weight update.
-        keys = ("model_type", "hidden_size", "intermediate_size", "num_hidden_layers",
-                "num_attention_heads", "num_key_value_heads", "head_dim", "vocab_size",
-                "rms_norm_eps", "rope_theta", "rope_scaling", "tie_word_embeddings",
-                "hidden_act", "attention_bias", "mlp_bias")
-        if any(old.config.get(k) != new.config.get(k) for k in keys):
+        from .delta import CHECKPOINT_GRAPH_KEYS
+        if any(old.config.get(k) != new.config.get(k) for k in CHECKPOINT_GRAPH_KEYS):
             raise ValueError("checkpoint graph/rotary configuration changed; reload required")
         if plan.removed or set(old.where) != set(new.where):
             raise ValueError("checkpoint tensor set changed; reload required")

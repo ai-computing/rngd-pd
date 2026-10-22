@@ -19,6 +19,7 @@ def test_cached_graph_specs_allocate_no_example_tensors(monkeypatch):
     sdk.FCConfig = Mock()
     sdk.TacticHintConfig = SimpleNamespace(ForLlmModelDecode="decode", NoConstraint="none")
     sdk.hint = lambda value: value
+    sdk.dev_str = lambda value: f"rngd:{value}"
     sdk.NEW = False
     dsl = ModuleType("rngd_pd.kernels.dsl_batch")
     dsl.rms_dsl = Mock()

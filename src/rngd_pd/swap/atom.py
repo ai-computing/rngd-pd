@@ -1,226 +1,289 @@
-"""Select co-compiled ATOM decoders without loading their weights again.
+"""Delta load on ATOM with the public rebel API only.
 
-An optimum-rbln bundle is compiled with decoder_batch_sizes in ONE
-CompileContext(use_weight_sharing=True). Its prefill and decoder runtimes
-must be kept alive together. An independently compiled bundle has separate
-weights: prepare_async() overlaps its full load with serving the active one,
-provided both fit. No device addresses or compiled files are patched.
+On ATOM a separately compiled graph cannot attach to weights another graph has
+already put on the card (rebel 0.11 has no public call for it; see the README).
+What the public API does provide is *bucketing*: `rebel.compile_from_torch`
+with a list of input configurations compiles one model with one graph per
+input shape, served by one runtime that "selects the bucket from the input
+shape" (docs.rbln.ai, Bucketing). So the variants go into one compile session:
+
+  build_session()   one compile, one graph per (B, S) variant, weights once;
+                    runs without a card (npu="RBLN-CA22");
+  AtomSession       loads it; swap(v) only changes the shape of the next call,
+                    so the runtime picks v's graph;
+  HostPool          the fast reload for a variant outside the running session:
+                    the next session's .rbln is read and parsed on the host
+                    (RBLNCompiledModel, the slow part of a reload) while the
+                    current one serves; the switch then only destroys the old
+                    runtime and creates the new one;
+  accumulating      a variant outside the session triggers build_session() with
+                    the variant added (a card-free compile), then a HostPool
+                    switch at a quiet moment; later swaps inside it are free.
+
+The decode graph is rngd-pd's batched ATOM decode (vendors/rbln_decode_batch:
+fp16 weights on the card, host KV in and the step's k/v rows out), with the
+batch width and sequence length read from the inputs so one module traces at
+every bucket.
 """
-from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass
-from threading import RLock
+import json
+import os
+import threading
 import time
 
-from .variants import Variant
+import numpy as np
+
+H_DEFAULT = 4096
 
 
-@dataclass(frozen=True)
-class AtomBundle:
-    path: str
-    variants: tuple
-
-    def __post_init__(self):
-        if not self.variants or any(not isinstance(v, Variant) for v in self.variants):
-            raise ValueError("a bundle needs compiled Variant objects")
-        if len(set(self.variants)) != len(self.variants):
-            raise ValueError("duplicate variants in a bundle")
+def _now():
+    return time.perf_counter()
 
 
-def _load_bundle(path, device):
-    from optimum.rbln import RBLNAutoModelForCausalLM
-    return RBLNAutoModelForCausalLM.from_pretrained(
-        path, export=False, rbln_config={"device": device})
+def load_checkpoint(model_dir, layers=None):
+    """(cfg namespace, {name: float32 numpy}) straight from safetensors; no embedding."""
+    from types import SimpleNamespace
+    from safetensors import safe_open
+    from rngd_pd.engines.model import ModelConfig
+    with open(os.path.join(model_dir, "config.json")) as f:
+        c = json.load(f)
+    c.setdefault("head_dim", None)
+    cfg = ModelConfig(SimpleNamespace(**c))
+    nl = layers or cfg.n_layers
+    sd = {}
+    for fn in sorted(os.listdir(model_dir)):
+        if not fn.endswith(".safetensors"):
+            continue
+        with safe_open(os.path.join(model_dir, fn), framework="pt") as f:
+            for k in f.keys():
+                if k.startswith("model.layers.") and int(k.split(".")[2]) >= nl:
+                    continue
+                sd[k] = f.get_tensor(k).float().numpy()
+    return cfg, sd, nl
 
 
-class SwappableAtom:
-    """ATOM engine with swap(), raw run() and greedy generate().
+def decode_module(cfg, sd, nl):
+    """The batched ATOM decode with B and S taken from the inputs."""
+    import torch
+    from rngd_pd.vendors.rbln_decode_batch import LlamaDecodeBatchRBLN
 
-    Use the request methods here so a swap waits for the current request to
-    drain. A shape change starts a NEW request; KV from the old shape is not
-    migrated. Background loading uses one thread, not an agent or process.
-    """
+    class ShapeFree(LlamaDecodeBatchRBLN):
+        def _rope(self, x, nh, cos, sin):
+            B, half = x.shape[0], self.HD // 2
+            xr = x.view(B, nh, self.HD)
+            a, b = xr[..., :half], xr[..., half:]
+            cos = cos.view(B, 1, half)
+            sin = sin.view(B, 1, half)
+            return torch.cat([a * cos - b * sin, b * cos + a * sin], -1)
 
-    def __init__(self, bundles, device=0, loader=None):
-        if not bundles or any(not isinstance(b, AtomBundle) for b in bundles.values()):
-            raise ValueError("bundles must map names to AtomBundle objects")
-        self.bundles = dict(bundles)
-        self.device = device
-        self._loader = loader or _load_bundle
-        self._lock = RLock()
-        self._pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="atom-warm")
-        self._pending = {}
-        self._loaded = {}
-        self.active = self.active_bundle = None
-        self._closed = False
+        def forward(self, x, Kp, Vp, cos, sin, mask, oh):
+            self.B, self.S = x.shape[0], mask.shape[1]
+            return super().forward(x, Kp, Vp, cos, sin, mask, oh)
 
-    def _resolve(self, variant, bundle=None):
-        if self._closed:
-            raise RuntimeError("engine is closed")
-        names = [n for n, b in self.bundles.items() if variant in b.variants]
-        if bundle is None:
-            if len(names) != 1:
-                raise ValueError("variant is missing or ambiguous; specify bundle")
-            bundle = names[0]
-        if bundle not in names:
-            raise ValueError(f"{variant.name} is not compiled in bundle {bundle!r}")
-        return bundle
+    return ShapeFree(cfg, sd, 512, nl, 1).eval()
 
-    def _load(self, name):
-        start = time.perf_counter()
-        model = self._loader(self.bundles[name].path, self.device)
-        config = model.rbln_config
-        for v in self.bundles[name].variants:
-            if v.S != config.max_seq_len or v.B not in config.decoder_batch_sizes:
-                raise ValueError(f"bundle {name!r} does not contain {v.name}")
-        names = list(config.expected_compiled_model_names)
-        # Keep the model, including the prefill weight owner, alive. Keeping
-        # only a decoder runtime can release the shared context too early.
-        runtimes = {v: model.model[names.index(f"decoder_batch_{v.B}")]
-                    for v in self.bundles[name].variants}
-        return dict(model=model, runtimes=runtimes,
-                    prepare_s=time.perf_counter() - start,
-                    prepared_at_s=time.perf_counter())
 
-    def prepare_async(self, variant, bundle=None):
-        """Start a separate bundle's full load; failures stay on the Future.
+def input_info(cfg, nl, B, S):
+    H, NKV, HD = cfg.hidden, cfg.n_kv, cfg.head_dim
+    f = "float32"
+    return [("x", [B, H], f), ("Kp", [nl, B, NKV, HD, S], f), ("Vp", [nl, B, NKV, S, HD], f),
+            ("cos", [B, HD // 2], f), ("sin", [B, HD // 2], f), ("mask", [B, S], f),
+            ("oh", [B, S], f)]
 
-        Loading does not change the active engine. A failed or memory-limited
-        warm load can be retried explicitly with prepare_async().
-        """
-        with self._lock:
-            name = self._resolve(variant, bundle)
-            future = self._pending.get(name)
-            if future is None or (future.done() and future.exception() is not None):
-                if name in self._loaded:
-                    return None
-                future = self._pool.submit(self._load, name)
-                self._pending[name] = future
-            return future
 
-    def prepare(self, variant, bundle=None):
-        with self._lock:
-            name = self._resolve(variant, bundle)
-            if name in self._loaded:
-                return dict(prepared=False, prepare_s=0.0)
-            future = self.prepare_async(variant, name)
-        # A slow load must not hold the request lock: current serving proceeds.
-        loaded = future.result()
-        with self._lock:
-            self._resolve(variant, name)
-            self._loaded[name] = loaded
-            return dict(prepared=True, prepare_s=loaded["prepare_s"])
+def build_session(model_dir, out_path, variants, layers=None,
+                  npu=os.environ.get("RBLN_PART", "RBLN-CA22")):
+    """Compile every variant into one .rbln (bucketing). No card needed."""
+    import rebel
+    import torch
+    torch.set_grad_enabled(False)
+    t0 = _now()
+    cfg, sd, nl = load_checkpoint(model_dir, layers)
+    mod = decode_module(cfg, sd, nl)
+    del sd
+    t1 = _now()
+    infos = [input_info(cfg, nl, v.B, v.S) for v in variants]
+    cm = rebel.compile_from_torch(mod, input_info=infos, npu=npu)
+    t2 = _now()
+    os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+    cm.save(out_path)
+    meta = dict(model=os.path.basename(os.path.normpath(model_dir)), layers=nl,
+                variants=[v.name for v in variants], compiler=rebel.__version__,
+                load_s=t1 - t0, compile_s=t2 - t1, save_s=_now() - t2,
+                device_alloc=cm.get_total_device_alloc(),
+                file_bytes=os.path.getsize(out_path))
+    with open(out_path + ".json", "w") as f:
+        json.dump(meta, f, indent=1)
+    return meta
 
-    def swap(self, variant, bundle=None, require_ready=False):
-        start = time.perf_counter()
-        with self._lock:
-            name = self._resolve(variant, bundle)
-            ready = name in self._loaded
-            future = self._pending.get(name)
-            background_ready = (future is not None and future.done()
-                                and future.exception() is None)
-            if require_ready and not ready and (future is None or not future.done()):
-                raise RuntimeError(f"bundle {name!r} is not prepared")
-            if require_ready and not ready:
-                self._loaded[name] = future.result()  # propagate a failed warm load; do not retry
-        info = self.prepare(variant, name)
-        with self._lock:
-            same = name == self.active_bundle
-            strategy = "shared-session" if same else (
-                "warm-pool" if ready or background_ready else "full-load")
-            self.active_bundle, self.active = name, variant
-            return dict(info, variant=variant.name, bundle=name, strategy=strategy,
-                        weights_uploaded_on_swap=not ready and strategy == "full-load",
-                        swap_s=time.perf_counter() - start)
 
-    def _state(self):
-        if self._closed or self.active is None:
-            raise RuntimeError("no active ATOM variant")
-        return self._loaded[self.active_bundle]
+class Tables:
+    """Embedding and per-position inputs (host side)."""
 
-    def run(self, *inputs, **kwargs):
-        """Run inputs for the selected compiled decoder; output is synchronous."""
-        with self._lock:
-            return self._state()["runtimes"][self.active].run(*inputs, **kwargs)
+    def __init__(self, model_dir, cfg=None):
+        from safetensors import safe_open
+        with open(os.path.join(model_dir, "model.safetensors.index.json")) as f:
+            where = json.load(f)["weight_map"]
+        name = "model.embed_tokens.weight"
+        with safe_open(os.path.join(model_dir, where[name]), framework="pt") as f:
+            self.embed = f.get_tensor(name).float().numpy()
+        if cfg is None:
+            from types import SimpleNamespace
+            from rngd_pd.engines.model import ModelConfig
+            with open(os.path.join(model_dir, "config.json")) as f:
+                c = json.load(f)
+            c.setdefault("head_dim", None)
+            cfg = ModelConfig(SimpleNamespace(**c))
+        self.cfg = cfg
+        self.inv = cfg.inv_freq()
 
-    def generate(self, prompts, n_new, timed=False):
-        """Greedy tokens for B equal-length token-id prompts, with fresh KV."""
-        start = time.perf_counter()
-        import torch
-        with self._lock:
-            state = self._state()
-            v = self.active
-            if (len(prompts) != v.B or not prompts or not prompts[0]
-                    or len({len(p) for p in prompts}) != 1 or n_new < 1
-                    or len(prompts[0]) + n_new > v.S):
-                raise ValueError("prompts/generation do not fit the selected variant")
-            ids = torch.tensor(prompts, dtype=torch.int64)
-            class FirstToken:
-                def __init__(self):
-                    self.prompt_seen = False
-                    self.seconds = None
+    def step_inputs(self, toks, pos, S):
+        pos = np.asarray(pos)
+        ang = pos.astype(np.float32)[:, None] * self.inv[None, :]
+        mask = np.where(np.arange(S)[None, :] <= pos[:, None], 0.0, -1e4).astype(np.float32)
+        oh = (np.arange(S)[None, :] == pos[:, None]).astype(np.float32)
+        return (self.embed[list(toks)].astype(np.float32), np.cos(ang).astype(np.float32),
+                np.sin(ang).astype(np.float32), mask, oh)
 
-                def put(self, value):
-                    if not self.prompt_seen:
-                        self.prompt_seen = True
-                    elif self.seconds is None:
-                        self.seconds = time.perf_counter() - start
 
-                def end(self):
-                    pass
+class AtomSession:
+    """One loaded session (.rbln with several buckets) on one ATOM device."""
 
-            timer = FirstToken()
-            result = state["model"].generate(input_ids=ids, attention_mask=torch.ones_like(ids),
-                                             max_new_tokens=n_new, do_sample=False,
-                                             **({"streamer": timer} if timed else {}))
-            tokens = result[:, ids.shape[1]:].tolist()
-            if timed:
-                if timer.seconds is None:
-                    raise RuntimeError("runtime did not emit first-token timing")
-                return tokens, timer.seconds
-            return tokens
-
-    def select(self, selector, depth, context, bundle=None):
-        """Queue-depth hook; invoke at a request boundary after draining KV."""
-        with self._lock:
-            self._state()
-            name = bundle or self.active_bundle
-            candidates = [v for v in self.bundles[name].variants
-                          if v.B == selector.fit(depth) and v.S >= context]
-            if not candidates:
-                raise ValueError("no compiled variant fits depth and context")
-            batch = selector.observe(depth)
-            candidates = [v for v in self.bundles[name].variants
-                          if v.B == batch and v.S >= context]
-            if not candidates:
-                raise ValueError("selector batch is not in the bundle")
-            return self.swap(min(candidates, key=lambda v: v.S), name)
-
-    def release(self, bundle):
-        with self._lock:
-            if bundle == self.active_bundle:
-                raise ValueError("cannot release the active bundle")
-            future = self._pending.get(bundle)
-            if future is not None and not future.done():
-                raise RuntimeError("cannot release a bundle while it is loading")
-            self._loaded.pop(bundle, None)
-            self._pending.pop(bundle, None)
-
-    def allocations(self):
-        """SDK allocation evidence per bundle and graph, without filling HBM."""
-        with self._lock:
-            return {name: [rt.get_alloc_per_node_by_key() for rt in st["model"].model]
-                    for name, st in self._loaded.items()}
+    def __init__(self, path, tables, device=0, compiled=None, variants=None):
+        import rebel
+        self.path, self.tables, self.device = path, tables, device
+        t0 = _now()
+        self.compiled = compiled or rebel.RBLNCompiledModel(path)
+        t1 = _now()
+        self.rt = self.compiled.create_runtime(device=device, tensor_type="np")
+        t2 = _now()
+        meta = {}
+        if os.path.exists(path + ".json"):
+            with open(path + ".json") as f:
+                meta = json.load(f)
+        self.nl = meta.get("layers", 32)
+        from rngd_pd.swap.variants import Variant
+        self.variants = variants or [Variant.parse(n, 0) for n in meta.get("variants", [])]
+        self.active = self.variants[0] if self.variants else None
+        self.timings = dict(parse_s=t1 - t0, create_runtime_s=t2 - t1,
+                            parsed_before=compiled is not None)
 
     def close(self):
-        self._pool.shutdown(wait=True)
-        with self._lock:
-            self._closed = True
-            self.active = self.active_bundle = None
-            self._loaded.clear()
-            self._pending.clear()
+        self.rt = None
+        self.compiled = None
 
-    def __enter__(self):
-        return self
+    def has(self, v):
+        return any(x.B == v.B and x.S == v.S for x in self.variants)
 
-    def __exit__(self, *exc):
-        self.close()
+    def swap(self, v):
+        """Select v's graph: the next call has its shapes. Nothing is loaded."""
+        t0 = _now()
+        if not self.has(v):
+            raise KeyError(f"{v.name} is not in this session ({[x.name for x in self.variants]})")
+        self.active = v
+        return dict(swap_s=_now() - t0, variant=v.name, in_session=True)
+
+    def blank_kv(self):
+        c, v = self.tables.cfg, self.active
+        return (np.zeros((self.nl, v.B, c.n_kv, c.head_dim, v.S), np.float32),
+                np.zeros((self.nl, v.B, c.n_kv, v.S, c.head_dim), np.float32))
+
+    def step(self, toks, pos, K, V):
+        v = self.active
+        x, cos, sin, mask, oh = self.tables.step_inputs(toks, pos, v.S)
+        out = self.rt.run(x, K, V, cos, sin, mask, oh)
+        logits, k, vv = (np.asarray(o) for o in out[:3])
+        for b, p in enumerate(pos):
+            K[:, b, :, :, p] = k[:, b]
+            V[:, b, :, p, :] = vv[:, b]
+        return [int(t) for t in np.argmax(logits, axis=-1)], K, V
+
+    def first_step(self):
+        v = self.active
+        t0 = _now()
+        K, V = self.blank_kv()
+        self.step([1] * v.B, [0] * v.B, K, V)
+        return _now() - t0
+
+    def generate(self, prompts, n_new):
+        v = self.active
+        assert len(prompts) == v.B and len({len(p) for p in prompts}) == 1
+        P = len(prompts[0])
+        t0 = _now()
+        K, V = self.blank_kv()
+        nxt = None
+        for p in range(P):
+            nxt, K, V = self.step([pr[p] for pr in prompts], [p] * v.B, K, V)
+        ttft = _now() - t0
+        outs = [[t] for t in nxt]
+        ts = []
+        for p in range(P, P + n_new - 1):
+            t1 = _now()
+            nxt, K, V = self.step(nxt, [p] * v.B, K, V)
+            ts.append(_now() - t1)
+            for b, t in enumerate(nxt):
+                outs[b].append(t)
+        ts.sort()
+        self.last_step_s = ts[len(ts) // 2] if ts else None
+        return outs, ttft
+
+
+def warm_page_cache(path, block=64 << 20):
+    """Read a file once so the next open is served from the page cache."""
+    t0 = _now()
+    with open(path, "rb", buffering=0) as f:
+        while f.read(block):
+            pass
+    return _now() - t0
+
+
+class HostPool:
+    """Prepare the next session on the host while the current one serves.
+
+    prepare(path) reads and parses the .rbln in a background thread
+    (RBLNCompiledModel: host memory only, the card is not touched). switch()
+    then closes the running session and creates the runtime from the parsed
+    model: the device part of a reload only. The card never holds both, so the
+    cost is host memory (about the .rbln size), not device memory.
+    """
+
+    def __init__(self):
+        self._thread = None
+        self._result = None
+
+    def prepare(self, path):
+        def work():
+            import rebel
+            t0 = _now()
+            try:
+                cm = rebel.RBLNCompiledModel(path)
+                self._result = dict(path=path, compiled=cm, parse_s=_now() - t0)
+            except Exception as e:  # noqa: BLE001 - reported by switch()
+                self._result = dict(path=path, error=e)
+        self._result = None
+        self._thread = threading.Thread(target=work, daemon=True)
+        self._thread.start()
+
+    def ready(self):
+        return self._thread is not None and not self._thread.is_alive()
+
+    def switch(self, current, tables, device=0):
+        """Close `current` and start the prepared session. Returns (session, timings)."""
+        t0 = _now()
+        self._thread.join()
+        waited = _now() - t0
+        r = self._result
+        if "error" in r:
+            raise r["error"]
+        t1 = _now()
+        if current is not None:
+            current.close()
+            import gc
+            gc.collect()
+        t2 = _now()
+        sess = AtomSession(r["path"], tables, device=device, compiled=r["compiled"])
+        t3 = _now()
+        return sess, dict(wait_prepare_s=waited, close_s=t2 - t1, create_s=t3 - t2,
+                          parse_in_background_s=r["parse_s"])
+
+# Optimum-rbln bundle API retained alongside native rebel sessions.
+from .atom_bundles import AtomBundle, SwappableAtom  # noqa: F401,E402
