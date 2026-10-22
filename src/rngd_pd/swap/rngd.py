@@ -113,6 +113,10 @@ class SwappableDecode:
     def __init__(self, checkpoint, group=8, chip=0, cache_dir=None,
                  allow_compile=False, log=print):
         import torch
+        # Importing the decode graph module configures the fused 8-PE device
+        # (fsdk.open_device). It has to happen before the first device tensor:
+        # a tensor allocated earlier lands on one PE's share of the memory.
+        import rngd_pd.engines.decode_batch  # noqa: F401
         from rngd_pd.engines.fsdk import dev_str
         from rngd_pd.paths import ARTIFACT_CACHE
         torch.set_grad_enabled(False)
