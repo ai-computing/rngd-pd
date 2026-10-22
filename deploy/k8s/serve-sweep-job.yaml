@@ -56,6 +56,7 @@ spec:
         - {name: RNGD_BUCKETS, value: "128,256,512"}
         - {name: B, value: "16"}
         - {name: RNGD_MAX_SHAPES, value: "8"}
+        - {name: RNGD_ADMIT, value: "block"}      # admit a burst back to back (#14)
         - {name: RNGD_ARTIFACT_CACHE, value: "/cache"}
         - {name: HARNESS_PY, value: "${RNGD_PD_HOME}/venvs/furiosa-2026.4/bin/python"}
         # rngd-pd's graphs were baked with the torch in ~/.local (bench/prebake.py);

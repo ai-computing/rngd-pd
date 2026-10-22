@@ -61,7 +61,7 @@ echo "[job] server ready after $((i * 5)) s"
 if [ "${GREEDY:-0}" != 0 ]; then
   hpy "$HERE/vendor_sweep.py" --engine "$ENGINE" --url http://127.0.0.1:$PORT \
       --model llama8b --contexts "$CONTEXTS" --max-tokens "${MAX_TOKENS:-64}" \
-      --greedy "$GREEDY" --out "$OUT"
+      --greedy "$GREEDY" ${GREEDY_TOGETHER:+--greedy-together} --out "$OUT"
 else
   hpy "$HERE/vendor_sweep.py" --engine "$ENGINE" --url http://127.0.0.1:$PORT \
       --model llama8b --npu "${NPU:-auto}" --contexts "$CONTEXTS" --concurrency "$CONC" \
