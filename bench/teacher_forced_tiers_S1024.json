@@ -1,0 +1,56 @@
+{
+ "S": 1024,
+ "reference_width": 16,
+ "ref_file": "greedy_rngd_pd_base_S1024.jsonl",
+ "topk": 20,
+ "teacher_forced": {
+  "8": {
+   "steps": 819,
+   "top1_agree": 0.99634,
+   "guard_violations": 0,
+   "dlogit_mean": 0.0306,
+   "dlogit_max": 0.375,
+   "kl_topk_mean": 0.000296,
+   "kl_topk_max": 0.010606
+  },
+  "4": {
+   "steps": 819,
+   "top1_agree": 0.99267,
+   "guard_violations": 0,
+   "dlogit_mean": 0.034,
+   "dlogit_max": 0.375,
+   "kl_topk_mean": 0.000312,
+   "kl_topk_max": 0.009711
+  }
+ },
+ "perplexity": {
+  "8": {
+   "steps": 1716,
+   "top1_agree": 0.9831,
+   "guard_violations": 0,
+   "dlogit_mean": 0.0264,
+   "dlogit_max": 0.1875,
+   "kl_topk_mean": 0.000638,
+   "kl_topk_max": 0.018744,
+   "ppl_tokens": 1716,
+   "ppl_old": 12.1945,
+   "ppl_new": 12.1841,
+   "ppl_rel_pct": -0.086
+  },
+  "4": {
+   "steps": 1716,
+   "top1_agree": 0.98718,
+   "guard_violations": 0,
+   "dlogit_mean": 0.0255,
+   "dlogit_max": 0.25,
+   "kl_topk_mean": 0.000557,
+   "kl_topk_max": 0.021006,
+   "ppl_tokens": 1716,
+   "ppl_old": 12.1945,
+   "ppl_new": 12.1793,
+   "ppl_rel_pct": -0.125
+  }
+ },
+ "ppl_text_tokens": 1784,
+ "date": "2026-10-22"
+}

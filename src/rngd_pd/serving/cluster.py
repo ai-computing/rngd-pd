@@ -705,6 +705,20 @@ class SoloWorker(_SoloBatchMixin):
             self.dec = BatchDecodeEngine(cfg, sd2, B=B, S=S,
                                          group=decode_group or group,
                                          chip=chip, cache_dir=cache)
+            # Narrower decode widths on the same weights (RNGD_DECODE_TIERS,
+            # e.g. "4,8"; RNGD_TIER_HINTS, e.g. "4:ForMiscModel", picks a tactic
+            # hint per width). A step runs at the narrowest width that covers
+            # the live lanes, so one request is not charged a 16-wide step.
+            tiers = sorted({int(v) for v in os.environ.get("RNGD_DECODE_TIERS", "").split(",")
+                            if v.strip() and int(v) < B})
+            hints = dict(kv.split(":") for kv in os.environ.get("RNGD_TIER_HINTS", "").split(",")
+                         if ":" in kv)
+            if tiers and sched == "continuous":
+                from rngd_pd.engines.tiers import TieredDecode
+                self.dec = TieredDecode([self.dec] + [
+                    BatchDecodeEngine(cfg, sd2, B=b, S=S, chip=chip, cache_dir=cache,
+                                      share=self.dec, hint=hints.get(str(b)))
+                    for b in tiers])
             del sd2
             self.sess = None
             if sched == "continuous":
@@ -1039,7 +1053,10 @@ class _ContinuousScheduler:
             try:
                 if Kd is None:
                     Kd, Vd = self.eng.blank_kv()
+                tell = getattr(self.eng, "set_live", None)    # TieredDecode
                 with DEVICE:
+                    if tell:
+                        tell([i for i, s in enumerate(self.slots) if s])
                     if self._staging is not None:
                         # one group of the prefill already under way, then fall
                         # through to a decode step in the same iteration
@@ -1068,6 +1085,8 @@ class _ContinuousScheduler:
                     live = [i for i, s in enumerate(self.slots) if s]
                     if not live:
                         continue
+                    if tell:
+                        tell(live)
                     pos = [self.slots[i]["pos"] if self.slots[i] else 0
                            for i in range(self.B)]
                     cur = [self.slots[i]["cur"] if self.slots[i] else 0
