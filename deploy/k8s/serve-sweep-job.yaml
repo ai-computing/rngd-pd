@@ -1,0 +1,103 @@
+# One engine, one RNGD card, one sweep: bench/serve_sweep_job.sh inside a Job.
+#
+# The Job asks the device plugin for exactly one card, starts the engine on it,
+# runs bench/vendor_sweep.py against localhost, writes the jsonl to the node's
+# ${RNGD_PD_HOME}/rngd-perf-out and exits, which releases the card. Run the
+# engines one after another (edit ENGINE and the engine variables below):
+#
+#   kubectl create namespace rngd-perf
+#   python3 deploy/k8s/render.py deploy/k8s/serve-sweep-job.yaml | kubectl apply -f -
+#   kubectl -n rngd-perf logs -f job/serve-sweep
+#   kubectl -n rngd-perf delete job serve-sweep
+#
+# Graphs are not compiled here (see README: compile on the host with
+# bench/prebake.py); the rngd-pd worker loads them from artifacts_cache.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: serve-sweep
+  namespace: rngd-perf
+  labels: {app: serve-sweep}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 10800
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels: {app: serve-sweep}
+    spec:
+      restartPolicy: Never
+      nodeSelector: {kubernetes.io/hostname: ${RNGD_PD_NODE}}
+      containers:
+      - name: sweep
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive
+          apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 python3.10-dev python3-pip libdrm2 libnuma1 libgomp1 ca-certificates tzdata curl >/dev/null
+          exec bash /app/bench/serve_sweep_job.sh
+        env:
+        - {name: POD_UID, valueFrom: {fieldRef: {fieldPath: metadata.uid}}}
+        - {name: ENGINE, value: "furiosa-llm"}
+        - {name: CONTEXTS, value: "128,512,1024,2048"}
+        - {name: CONC, value: "1,2,4,8,16"}
+        - {name: MAX_TOKENS, value: "64"}
+        - {name: REPS, value: "2"}
+        - {name: OUT, value: "/out/harness_furiosa_llm.jsonl"}
+        # furiosa-llm (reference)
+        - {name: FURIOSA_LLM, value: "${RNGD_PD_HOME}/venvs/furiosa-2026.4/bin/furiosa-llm"}
+        - {name: ARTIFACT, value: "/artifacts/llama8b-pfbatch"}
+        # rngd-pd solo worker
+        - {name: PY, value: "${RNGD_PD_HOME}/venvs/furiosa/bin/python"}
+        - {name: S, value: "1152"}
+        - {name: C, value: "1024"}
+        - {name: RNGD_BUCKETS, value: "128,256,512"}
+        - {name: B, value: "16"}
+        - {name: RNGD_MAX_SHAPES, value: "8"}
+        - {name: RNGD_ARTIFACT_CACHE, value: "/cache"}
+        - {name: HARNESS_PY, value: "${RNGD_PD_HOME}/venvs/furiosa-2026.4/bin/python"}
+        # rngd-pd's graphs were baked with the torch in ~/.local (bench/prebake.py);
+        # furiosa-llm runs on its own venv, so serve_sweep_job.sh drops this for it
+        - {name: PYTHONPATH, value: "/app/src:${RNGD_PD_HOME}/.local/lib/python3.10/site-packages"}
+        - {name: LD_LIBRARY_PATH, value: "/host-libs"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-bin"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: VLLM_PLUGINS, value: ""}
+        - {name: HF_HOME, value: "/hf"}
+        - {name: MODEL, value: "meta-llama/Llama-3.1-8B-Instruct"}
+        resources:
+          limits: {furiosa.ai/rngd: "1", memory: 192Gi}
+          requests: {cpu: "16", memory: 96Gi, furiosa.ai/rngd: "1"}
+        # furiosa-torch cannot open the card from an unprivileged pod ("device
+        # index out of range"). Privileged sees every card, so the worker and
+        # the runner read this pod's allocation from the kubelet checkpoint
+        # (rngd_pd.devices) and touch only that card.
+        securityContext:
+          seccompProfile: {type: Unconfined}
+          privileged: true
+        volumeMounts:
+        - {name: app, mountPath: /app, readOnly: true}
+        - {name: out, mountPath: /out}
+        - {name: venvs, mountPath: ${RNGD_PD_HOME}/venvs, readOnly: true}
+        - {name: local-pkgs, mountPath: ${RNGD_PD_HOME}/.local/lib/python3.10/site-packages, readOnly: true}
+        - {name: artifacts, mountPath: /artifacts, readOnly: true}
+        - {name: cache, mountPath: /cache, readOnly: true}
+        - {name: hf, mountPath: /hf, readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: bin, mountPath: /host-bin, readOnly: true}
+        - {name: dshm, mountPath: /dev/shm}
+        - {name: device-plugins, mountPath: /var/lib/kubelet/device-plugins, readOnly: true}
+      volumes:
+      - {name: app, hostPath: {path: ${RNGD_PD_HOME}/workspace/01_pd_disag/rngd_llmd, type: Directory}}
+      - {name: out, hostPath: {path: ${RNGD_PD_HOME}/rngd-perf-out, type: DirectoryOrCreate}}
+      - {name: venvs, hostPath: {path: ${RNGD_PD_HOME}/venvs, type: Directory}}
+      - {name: local-pkgs, hostPath: {path: ${RNGD_PD_HOME}/.local/lib/python3.10/site-packages, type: Directory}}
+      - {name: artifacts, hostPath: {path: ${RNGD_PD_HOME}/workspace/01_pd_disag/furiosa-bench/artifacts, type: Directory}}
+      - {name: cache, hostPath: {path: ${RNGD_PD_HOME}/workspace/01_pd_disag/rngd_llmd/artifacts_cache, type: Directory}}
+      - {name: hf, hostPath: {path: ${RNGD_PD_HOME}/.cache/huggingface, type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: dshm, hostPath: {path: /dev/shm, type: Directory}}
+      - {name: device-plugins, hostPath: {path: /var/lib/kubelet/device-plugins, type: Directory}}

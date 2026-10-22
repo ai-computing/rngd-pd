@@ -30,6 +30,7 @@ import os
 import sys
 import threading
 import time
+import types
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -760,13 +761,25 @@ class SoloWorker(_SoloBatchMixin):
                         (time.perf_counter() - t0) * 1e3)
         return _S()
 
-    def run(self, tokens, max_new):
+    def run(self, tokens, max_new, on_token=None):
+        """Generate max_new tokens; on_token(t), if given, sees each one as it
+        is produced (the continuous scheduler and the B=1 path stream; the
+        static batcher hands them all over when its batch ends)."""
         if self.batcher:
-            return self.batcher.submit({"tokens": tokens, "max_new": max_new})
+            item = {"tokens": tokens, "max_new": max_new}
+            if isinstance(self.batcher, _ContinuousScheduler):
+                item["on_token"] = on_token
+            out = self.batcher.submit(item)
+            if on_token is not None and "on_token" not in item:
+                for t in out["tokens"]:
+                    on_token(t)
+            return out
         with DEVICE:
             t0 = time.perf_counter()
             Kp, Vp, nxt = self.pre.prefill_device(tokens)
             prefill_ms = (time.perf_counter() - t0) * 1e3
+            if on_token is not None:
+                on_token(nxt)
             outs, ts = [nxt], []
             cur, p = nxt, len(tokens)
             t1 = time.perf_counter()
@@ -774,6 +787,8 @@ class SoloWorker(_SoloBatchMixin):
                 t2 = time.perf_counter()
                 cur, Kp, Vp = self.sess.step(cur, p, Kp, Vp)
                 ts.append((time.perf_counter() - t2) * 1e3)
+                if on_token is not None:
+                    on_token(cur)
                 outs.append(cur)
                 p += 1
             decode_ms = (time.perf_counter() - t1) * 1e3
@@ -787,6 +802,17 @@ class SoloWorker(_SoloBatchMixin):
                 "decode_ms": round(decode_ms, 1),
                 "tpot_ms": round(ts[len(ts) // 2], 1) if ts else 0.0,
                 "kv_mb": 0.0, "save_ms": 0.0, "load_ms": 0.0}
+
+
+def _emit(item, token):
+    """Hand one generated token to a streaming caller, if there is one.
+
+    The scheduler owns the device thread, so this must never block: callers
+    pass a queue's put_nowait or a list's append.
+    """
+    cb = item.get("on_token")
+    if cb is not None:
+        cb(token)
 
 
 class _ContinuousScheduler:
@@ -948,6 +974,7 @@ class _ContinuousScheduler:
                            "h0": self.held_lane_steps,
                            "outs": [item["first"]], "load_ms": load_ms,
                            "steps": [], "t0": time.perf_counter()}
+        _emit(item, item["first"])
 
     def _finish(self, s):
         st = sorted(s["steps"])
@@ -1046,6 +1073,7 @@ class _ContinuousScheduler:
                     s = self.slots[i]
                     s["steps"].append(dt)
                     s["outs"].append(nxt[i])
+                    _emit(s["item"], nxt[i])
                     s["cur"] = nxt[i]
                     s["pos"] += 1
                     if len(s["outs"]) >= s["item"]["max_new"]:
@@ -1544,6 +1572,110 @@ class Gateway:
                        "wall_ms": round(wall_ms, 1)}}
 
 
+class SoloOpenAI:
+    """OpenAI-style POST /v1/completions served by the one-card worker itself.
+
+    The gateway in front of the disaggregated pairs answers only without
+    streaming, so it cannot show when each token left the card. This front
+    sits on the solo worker, streams one SSE chunk per generated token, and
+    takes the prompt either as text or as token IDs, so a benchmark can send
+    identical inputs to this engine and to any other OpenAI server.
+
+    Generation is greedy and always runs to max_tokens (the engine has no
+    stop condition), so `finish_reason` is always "length".
+    """
+
+    def __init__(self, worker, S, served_model, tokenizer=None):
+        if tokenizer is None:
+            from transformers import AutoTokenizer
+            tokenizer = AutoTokenizer.from_pretrained(MODEL)
+        self.w, self.S, self.model, self.tk = worker, S, served_model, tokenizer
+        self.seq, self.lock = 0, threading.Lock()
+
+    def _prompt(self, body):
+        prompt = body.get("prompt")
+        if isinstance(prompt, list) and len(prompt) == 1 and isinstance(prompt[0], (list, str)):
+            prompt = prompt[0]                    # a batch of one
+        if isinstance(prompt, str):
+            return self.tk.encode(prompt, add_special_tokens=True)
+        if isinstance(prompt, list) and prompt and all(type(t) is int for t in prompt):
+            return list(prompt)
+        raise ValueError("prompt must be a string or a list of token IDs")
+
+    def complete(self, body):
+        if body.get("temperature", 0) not in (0, 0.0) or body.get("n", 1) != 1:
+            raise ValueError("only greedy decoding with n=1 is supported")
+        toks = self._prompt(body)
+        max_new = int(body.get("max_tokens") or 16)
+        widest = max(self.w.pre.buckets)
+        if max_new < 1 or len(toks) > widest or len(toks) + max_new > self.S:
+            raise ValueError(f"prompt {len(toks)} + max_tokens {max_new} does not fit "
+                             f"(widest prefill bucket {widest}, context S={self.S})")
+        with self.lock:
+            self.seq += 1
+            rid = f"cmpl-solo-{int(time.time() * 1000)}-{self.seq}"
+        created = int(time.time())
+        usage = {"prompt_tokens": len(toks), "completion_tokens": max_new,
+                 "total_tokens": len(toks) + max_new}
+        if not body.get("stream", False):
+            out = self.w.run(toks, max_new)
+            return {"id": rid, "object": "text_completion", "created": created,
+                    "model": self.model,
+                    "choices": [{"index": 0, "text": self.tk.decode(out["tokens"]),
+                                 "logprobs": None, "finish_reason": "length"}],
+                    "usage": usage, "token_ids": out["tokens"]}
+        opts = body.get("stream_options") or {}
+        return self._stream(toks, max_new, rid, created, usage,
+                            bool(opts.get("include_usage", False)))
+
+    def _stream(self, toks, max_new, rid, created, usage, include_usage):
+        import queue
+        q = queue.Queue()
+        done = object()
+
+        def work():
+            try:
+                self.w.run(toks, max_new, on_token=q.put_nowait)
+                q.put_nowait(done)
+            except Exception as e:                 # surfaces in the stream
+                q.put_nowait(e)
+        threading.Thread(target=work, daemon=True).start()
+
+        def chunk(text, finish, tok=None):
+            c = {"id": rid, "object": "text_completion", "created": created,
+                 "model": self.model,
+                 "choices": [{"index": 0, "text": text, "logprobs": None,
+                              "finish_reason": finish}]}
+            if tok is not None:
+                c["token_ids"] = [tok]
+            return "data: " + json.dumps(c) + "\n\n"
+
+        def gen():
+            ids, sent = [], ""
+            while True:
+                v = q.get()
+                if v is done:
+                    break
+                if isinstance(v, Exception):
+                    yield "data: " + json.dumps({"error": {"message": repr(v)}}) + "\n\n"
+                    return
+                ids.append(int(v))
+                # hold back an incomplete UTF-8 sequence instead of sending U+FFFD
+                text = self.tk.decode(ids, skip_special_tokens=True).rstrip("�")
+                delta = ""
+                if text.startswith(sent):
+                    delta, sent = text[len(sent):], text
+                yield chunk(delta, None, int(v))
+            text = self.tk.decode(ids, skip_special_tokens=True)
+            yield chunk(text[len(sent):] if text.startswith(sent) else "", "length")
+            if include_usage:
+                u = {"id": rid, "object": "text_completion", "created": created,
+                     "model": self.model, "choices": [], "usage": usage}
+                yield "data: " + json.dumps(u) + "\n\n"
+            yield "data: [DONE]\n\n"
+        return gen()
+
+
 def _post(url, obj, timeout=600):
     req = urllib.request.Request(url, data=json.dumps(obj).encode(),
                                  headers={"Content-Type": "application/json"})
@@ -1568,6 +1700,21 @@ def make_handler(routes):
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
+
+        def _stream(self, chunks):
+            """Server-sent events, one write per chunk, closed at the end."""
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Connection", "close")
+            self.end_headers()
+            self.close_connection = True
+            try:
+                for c in chunks:
+                    self.wfile.write(c.encode())
+                    self.wfile.flush()
+            except (BrokenPipeError, ConnectionResetError):
+                pass                               # the client went away
 
         def do_GET(self):
             if self.path.rstrip("/") in ("/health", "/healthz"):
@@ -1605,7 +1752,13 @@ def make_handler(routes):
             if not STATE["ready"]:
                 return self._send(503, STATE)
             try:
-                return self._send(200, fn(body))
+                out = fn(body)
+                if isinstance(out, types.GeneratorType):
+                    return self._stream(out)
+                return self._send(200, out)
+            except ValueError as e:                # a request the server refuses
+                return self._send(400, {"error": {"message": str(e),
+                                                  "type": "invalid_request_error"}})
             except Exception as e:
                 import traceback
                 traceback.print_exc()
@@ -1688,6 +1841,10 @@ def main():
                        decode_group=a.decode_group, sched=a.sched,
                        admit_min=a.admit_min)
         routes["/solo"] = lambda b: w.run(b["tokens"], b.get("max_new", 8))
+        # OpenAI-style front on the worker itself, with streaming
+        # (bench/vendor_sweep.py drives it and furiosa-llm the same way)
+        oa = SoloOpenAI(w, a.S, os.environ.get("SERVED_MODEL_NAME", MODEL))
+        routes["/v1/completions"] = oa.complete
     else:
         targets = None
         if a.targets_file:
