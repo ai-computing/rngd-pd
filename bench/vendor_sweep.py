@@ -41,6 +41,24 @@ FILLER = ("The three primary colors are red, blue and yellow. Mixing them yields
           "this relationship for centuries and printers still exploit it today. ")
 
 
+# Fixed prompts for --greedy: varied enough that a numerical change shows up
+# as a different continuation, unlike the repetitive sweep filler.
+GREEDY_PROMPTS = [
+    "The capital of France is",
+    "Write a Python function that returns the n-th Fibonacci number.\n\ndef fib(n):",
+    "Q: A train leaves at 3:15 pm and arrives at 6:40 pm. How long is the trip?\nA:",
+    "Translate to German: The weather is nice today, so we will go for a walk.",
+    "List three causes of the French Revolution:\n1.",
+    "In 1969, Neil Armstrong",
+    "The mitochondria is the powerhouse of the cell because",
+    "Once upon a time in a small village by the sea, there lived an old fisherman who",
+    "SELECT name, COUNT(*) FROM orders GROUP BY",
+    "Explain why the sky is blue in one paragraph.",
+    "Here is a haiku about autumn leaves:\n",
+    "The derivative of x^3 * sin(x) with respect to x is",
+]
+
+
 class Sampler(threading.Thread):
     """Card power (W) and utilisation (%) from furiosa-smi, every `period` s.
 
@@ -171,18 +189,21 @@ def main():
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
 
     if a.greedy:
-        fixed = np.random.default_rng(1234)     # same prompts for every engine
+        # GREEDY_PROMPTS one at a time, then N sweep-style prompts per P with a
+        # fixed seed; the same token IDs go to every engine.
+        fixed = np.random.default_rng(1234)
+        cases = [(len(ids), "text", ids) for ids in
+                 (bos + tk.encode(t, add_special_tokens=False) for t in GREEDY_PROMPTS)]
+        cases += [(P, "sweep", prompt_ids(P, fixed)) for P in ctxs for _ in range(a.greedy)]
         with open(a.out, "w") as fh:
-            for P in ctxs:
-                for i in range(a.greedy):
-                    ids = prompt_ids(P, fixed)
-                    res = []
-                    stream_once(a.url, a.model, ids, a.max_tokens, res)
-                    r = res[0]
-                    row = dict(meta, P=P, idx=i, prompt_ids=ids, out_ids=r["ids"],
-                               text=r["text"], err=r["err"])
-                    fh.write(json.dumps(row) + "\n"); fh.flush()
-                    print(f"P={P} #{i}: {r['err'] or repr(r['text'][:60])}")
+            for i, (P, kind, ids) in enumerate(cases):
+                res = []
+                stream_once(a.url, a.model, ids, a.max_tokens, res)
+                r = res[0]
+                row = dict(meta, P=P, idx=i, kind=kind, prompt_ids=ids, out_ids=r["ids"],
+                           text=r["text"], err=r["err"])
+                fh.write(json.dumps(row) + "\n"); fh.flush()
+                print(f"#{i} {kind} P={P}: {r['err'] or repr(r['text'][:60])}")
         print(f"wrote -> {a.out}")
         return
 

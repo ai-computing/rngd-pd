@@ -1,0 +1,53 @@
+{
+ "S": 512,
+ "B": 4,
+ "decode_group": 8,
+ "buckets": [
+  128,
+  256,
+  512
+ ],
+ "prefill": {
+  "128": {
+   "bucket": 128,
+   "group_calls": 16,
+   "call_ms": 1.505,
+   "calls_total_ms": 24.08,
+   "embed_upload_ms": null,
+   "finish_ms": 4.251,
+   "lane_write_ms": 1.458,
+   "total_ms": 31.449
+  }
+ },
+ "decode": {
+  "embed_upload_ms": 0.286,
+  "tables_upload_ms": 0.677,
+  "groups_ms": 17.958,
+  "lmhead_ms": 1.427,
+  "logits_download_ms": 0.319,
+  "logits_cast_ms": 0.168,
+  "argmax_ms": 0.614,
+  "total_ms": 21.474,
+  "group_call_ms": 4.42,
+  "engine_step_ms": 21.54
+ },
+ "scheduler": {
+  "1": {
+   "ttft_ms": 100.518,
+   "tpot_ms": 21.771,
+   "scheduler_step_ms": 21.6
+  },
+  "4": {
+   "ttft_ms": 254.396,
+   "tpot_ms": 26.715,
+   "scheduler_step_ms": 22.0
+  },
+  "16": {
+   "ttft_ms": 2767.493,
+   "tpot_ms": 24.315,
+   "scheduler_step_ms": 22.5
+  }
+ },
+ "date": "2026-10-22",
+ "card": "one RNGD, furiosa-torch 2026.2.0"
+}
