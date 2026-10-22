@@ -208,37 +208,27 @@ class FullPrefillEngine:
     def _build_lmhead(self, cache_dir):
         """Pick the next token on the card, not in numpy.
 
-        Prefill ends by choosing one token, and it was doing that with
-        `lm @ rmsnorm(hidden)` on the host — a 2.1 GB read for a single
-        argmax. The decode side already had this compiled (chunking V into 32
-        groups reaches ~565 GB/s against 23 for the monolithic matvec), and its
-        module takes a 1-D hidden state, which is exactly what the last prompt
-        position is. Same cache key, so nothing recompiles.
+        Prefill ends by choosing one token, and `lm @ rmsnorm(hidden)` on the
+        host is a 2.1 GB read for a single argmax. The matmul runs on the card
+        with V chunked into 32 groups ([32, V/32, H] @ [H, 1], 4.7 ms for
+        Llama-3.1-8B). The RMS norm of the one row stays on the host: compiled
+        together with the matmul it fails on furiosa-torch 2026.4 ("Inconsistent
+        tensor group offsets", #15), and on one row it costs nothing.
         """
-        import math
-        from rngd_pd.kernels import dsl_b1 as LE
-        from rngd_pd.engines.fsdk import CompileModule, TacticKernelModule
+        from rngd_pd.engines.fsdk import CompileModule
         from rngd_pd.engines.artifact_cache import get_or_compile, cache_key
-        V = self.lm.shape[0]
+        V, H_ = self.lm.shape
         NG = 32
         Vp = (V + NG - 1) // NG * NG
         self.V, self.Vp = V, Vp
 
         class LmHead(torch.nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.rms = TacticKernelModule(LE.RMS_NORM)
+            def forward(self, wlm, h):
+                return torch.matmul(wlm, h)          # [NG, Vp/NG, 1]
 
-            def forward(self, x, nw, eps, nh, wlm):
-                h = self.rms(x, nw, eps, nh)[0]
-                return torch.matmul(wlm, h)          # [NG, Vp/NG]
-
-        sample = (torch.zeros(H, dtype=BF), torch.zeros(H, dtype=BF),
-                  torch.zeros(H, dtype=torch.float32),
-                  torch.zeros(H, dtype=torch.float32),
-                  torch.zeros(NG, Vp // NG, H, dtype=BF))
+        sample = (torch.zeros(NG, Vp // NG, H_, dtype=BF), torch.zeros(H_, 1, dtype=BF))
         ccfg = _compiler_config('ForLlmModelDecode')
-        key = cache_key(kind="lmhead", V=V, H=H, tactic="decode-chunked", G=NG)
+        key = cache_key(kind="lmhead-matmul", V=V, H=H_, tactic="decode-chunked", G=NG)
         build = lambda: CompileModule.from_module(LmHead(), sample,
                                                   compiler_config=ccfg)
         if cache_dir:
@@ -247,19 +237,23 @@ class FullPrefillEngine:
         else:
             self.lmh = build()
         self.lmh.to(self.dev)
-        wpad = np.zeros((Vp, H), np.float32)
+        wpad = np.zeros((Vp, H_), np.float32)
         wpad[:V] = self.lm
-        self.wlm_d = self._d(wpad.reshape(NG, Vp // NG, H))
-        self.lm_norm_d = self._d(self.norm * math.sqrt(H))
-        self.lm_eps_d = self._df(np.full(H, self.eps * H, np.float32))
-        self.lm_nh_d = self._df(np.full(H, -0.5, np.float32))
+        self.wlm_d = self._d(wpad.reshape(NG, Vp // NG, H_))
+        self.last_logits = None
+
+    def _logits(self, x, P):
+        """Last prompt position -> logits [V] (host, float32); norm on the host, matmul on the card."""
+        h = x[P - 1].detach().cpu().float().numpy()
+        h = h / np.sqrt(np.mean(h * h) + self.eps) * self.norm
+        out = self.lmh(self.wlm_d, self._d(h.reshape(-1, 1)))
+        lg = out[0] if isinstance(out, (tuple, list)) else out
+        return lg.detach().cpu().float().numpy().reshape(-1)[:self.V]
 
     def _next_token(self, x, P):
-        """Last prompt position -> next token, with the matmul on the card."""
-        out = self.lmh(x[P - 1], self.lm_norm_d, self.lm_eps_d, self.lm_nh_d,
-                       self.wlm_d)
-        lg = (out[0] if isinstance(out, (tuple, list)) else out)
-        return int(np.argmax(lg.detach().cpu().float().numpy().reshape(-1)[:self.V]))
+        """Last prompt position -> next token (greedy); the logits stay in last_logits for sampling."""
+        self.last_logits = self._logits(x, P)
+        return int(np.argmax(self.last_logits))
 
     def _d(self, v):
         return torch.from_numpy(np.ascontiguousarray(v)).to(BF).to(self.dev)
