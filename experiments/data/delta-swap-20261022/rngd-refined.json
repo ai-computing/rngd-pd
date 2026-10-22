@@ -1,0 +1,428 @@
+{
+  "variant": "B4-S256-g8",
+  "prompt_tokens": 8,
+  "new_tokens": 8,
+  "refine": true,
+  "rows": [
+    {
+      "round": 0,
+      "target": "new",
+      "plan_s": 0.13232680596411228,
+      "apply_call_s": 0.6638405059929937,
+      "plan": {
+        "tensors": 1,
+        "upload_bytes": 117440512,
+        "changed_bytes": 117440512,
+        "total_bytes": 16060522496,
+        "header_changes": [],
+        "removed": [],
+        "names": [
+          "model.layers.0.mlp.down_proj.weight"
+        ]
+      },
+      "apply": {
+        "delta_s": 0.20997733890544623,
+        "uploaded_bytes": 117440512,
+        "mode": "inplace",
+        "tensors": 1,
+        "host_only": []
+      },
+      "request_to_first_token_s": 1.0209786939667538,
+      "prompt_ttft_s": 0.2248113820096478,
+      "tokens": [
+        [
+          198,
+          791,
+          1176,
+          3094,
+          304,
+          279,
+          1920,
+          315
+        ],
+        [
+          29,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946
+        ],
+        [
+          9831,
+          16969,
+          13094,
+          1847,
+          13094,
+          1847,
+          13094,
+          1847
+        ],
+        [
+          198,
+          220,
+          482,
+          320,
+          1019,
+          8,
+          23432,
+          2095
+        ]
+      ],
+      "tokens_equal_fresh": true
+    },
+    {
+      "round": 0,
+      "target": "base",
+      "plan_s": 0.13778487301897258,
+      "apply_call_s": 0.22381027997471392,
+      "plan": {
+        "tensors": 1,
+        "upload_bytes": 117440512,
+        "changed_bytes": 117440512,
+        "total_bytes": 16060522496,
+        "header_changes": [],
+        "removed": [],
+        "names": [
+          "model.layers.0.mlp.down_proj.weight"
+        ]
+      },
+      "apply": {
+        "delta_s": 0.2031901169102639,
+        "uploaded_bytes": 117440512,
+        "mode": "inplace",
+        "tensors": 1,
+        "host_only": []
+      },
+      "request_to_first_token_s": 0.5990902219200507,
+      "prompt_ttft_s": 0.23749506892636418,
+      "tokens": [
+        [
+          198,
+          791,
+          1176,
+          1403,
+          5238,
+          315,
+          279,
+          33894
+        ],
+        [
+          29,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946
+        ],
+        [
+          9831,
+          19954,
+          13094,
+          66965,
+          29726,
+          13094,
+          33390,
+          33353
+        ],
+        [
+          198,
+          220,
+          482,
+          220,
+          16,
+          13,
+          15,
+          13
+        ]
+      ],
+      "tokens_equal_fresh": true
+    },
+    {
+      "round": 1,
+      "target": "new",
+      "plan_s": 0.1352271910291165,
+      "apply_call_s": 0.22370137891266495,
+      "plan": {
+        "tensors": 1,
+        "upload_bytes": 117440512,
+        "changed_bytes": 117440512,
+        "total_bytes": 16060522496,
+        "header_changes": [],
+        "removed": [],
+        "names": [
+          "model.layers.0.mlp.down_proj.weight"
+        ]
+      },
+      "apply": {
+        "delta_s": 0.20755319006275386,
+        "uploaded_bytes": 117440512,
+        "mode": "inplace",
+        "tensors": 1,
+        "host_only": []
+      },
+      "request_to_first_token_s": 0.5764265420148149,
+      "prompt_ttft_s": 0.21749797207303345,
+      "tokens": [
+        [
+          198,
+          791,
+          1176,
+          3094,
+          304,
+          279,
+          1920,
+          315
+        ],
+        [
+          29,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946
+        ],
+        [
+          9831,
+          16969,
+          13094,
+          1847,
+          13094,
+          1847,
+          13094,
+          1847
+        ],
+        [
+          198,
+          220,
+          482,
+          320,
+          1019,
+          8,
+          23432,
+          2095
+        ]
+      ],
+      "tokens_equal_fresh": true
+    },
+    {
+      "round": 1,
+      "target": "base",
+      "plan_s": 0.15115576703101397,
+      "apply_call_s": 0.23278180102352053,
+      "plan": {
+        "tensors": 1,
+        "upload_bytes": 117440512,
+        "changed_bytes": 117440512,
+        "total_bytes": 16060522496,
+        "header_changes": [],
+        "removed": [],
+        "names": [
+          "model.layers.0.mlp.down_proj.weight"
+        ]
+      },
+      "apply": {
+        "delta_s": 0.20779251295607537,
+        "uploaded_bytes": 117440512,
+        "mode": "inplace",
+        "tensors": 1,
+        "host_only": []
+      },
+      "request_to_first_token_s": 0.6146588129922748,
+      "prompt_ttft_s": 0.23072124493774027,
+      "tokens": [
+        [
+          198,
+          791,
+          1176,
+          1403,
+          5238,
+          315,
+          279,
+          33894
+        ],
+        [
+          29,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946
+        ],
+        [
+          9831,
+          19954,
+          13094,
+          66965,
+          29726,
+          13094,
+          33390,
+          33353
+        ],
+        [
+          198,
+          220,
+          482,
+          220,
+          16,
+          13,
+          15,
+          13
+        ]
+      ],
+      "tokens_equal_fresh": true
+    },
+    {
+      "round": 2,
+      "target": "new",
+      "plan_s": 0.15334328392054886,
+      "apply_call_s": 0.23332943802233785,
+      "plan": {
+        "tensors": 1,
+        "upload_bytes": 117440512,
+        "changed_bytes": 117440512,
+        "total_bytes": 16060522496,
+        "header_changes": [],
+        "removed": [],
+        "names": [
+          "model.layers.0.mlp.down_proj.weight"
+        ]
+      },
+      "apply": {
+        "delta_s": 0.21236556000076234,
+        "uploaded_bytes": 117440512,
+        "mode": "inplace",
+        "tensors": 1,
+        "host_only": []
+      },
+      "request_to_first_token_s": 0.6104003109503537,
+      "prompt_ttft_s": 0.22372758900746703,
+      "tokens": [
+        [
+          198,
+          791,
+          1176,
+          3094,
+          304,
+          279,
+          1920,
+          315
+        ],
+        [
+          29,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946
+        ],
+        [
+          9831,
+          16969,
+          13094,
+          1847,
+          13094,
+          1847,
+          13094,
+          1847
+        ],
+        [
+          198,
+          220,
+          482,
+          320,
+          1019,
+          8,
+          23432,
+          2095
+        ]
+      ],
+      "tokens_equal_fresh": true
+    },
+    {
+      "round": 2,
+      "target": "base",
+      "plan_s": 0.15383030090015382,
+      "apply_call_s": 0.23718294501304626,
+      "plan": {
+        "tensors": 1,
+        "upload_bytes": 117440512,
+        "changed_bytes": 117440512,
+        "total_bytes": 16060522496,
+        "header_changes": [],
+        "removed": [],
+        "names": [
+          "model.layers.0.mlp.down_proj.weight"
+        ]
+      },
+      "apply": {
+        "delta_s": 0.21023705403786153,
+        "uploaded_bytes": 117440512,
+        "mode": "inplace",
+        "tensors": 1,
+        "host_only": []
+      },
+      "request_to_first_token_s": 0.6134825309272856,
+      "prompt_ttft_s": 0.22246928501408547,
+      "tokens": [
+        [
+          198,
+          791,
+          1176,
+          1403,
+          5238,
+          315,
+          279,
+          33894
+        ],
+        [
+          29,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946
+        ],
+        [
+          9831,
+          19954,
+          13094,
+          66965,
+          29726,
+          13094,
+          33390,
+          33353
+        ],
+        [
+          198,
+          220,
+          482,
+          220,
+          16,
+          13,
+          15,
+          13
+        ]
+      ],
+      "tokens_equal_fresh": true
+    }
+  ],
+  "source_sha256": {
+    "delta.py": "ed91001d87e12014217917cbfdd2048ffd476efa7da1618ce36c3f1277747567",
+    "rngd.py": "fe980c522c3b5b77ad8d1a8ef8b905564cae2d9127d5763bf3bdd5530f0fba70",
+    "verify_refined_delta.py": "dd9d54eaa488d39777ed8ebeeafb9600daec06bea65ad146de31852f4a98cece"
+  },
+  "verified_commit": "03e57da1af60e30776e6544f94ac28aafa940914"
+}

@@ -372,7 +372,7 @@ request-to-first-token latency on the specified 8B checkpoints:
 | Change | Full reload | Retained/prepared path |
 |---|---:|---:|
 | RNGD B4/B8, S256/S512 | 20.6–23.5 s | 0.25–0.45 s |
-| RNGD changed 117 MB projection, precomputed ranges | 22.43 s | 0.947 s |
+| RNGD changed 117 MB projection, refined precomputed ranges | 22.43 s | 0.58–1.02 s |
 | ATOM co-compiled B1/B8, S512 | 19.6–20.3 s | 0.071–0.564 s |
 
 All compared generated token IDs equal fresh destination loads. Independent

@@ -91,6 +91,26 @@ safetensors header. It uses the real `onggi diff --ranges --json` schema,
 verified against `onggi/pkg/store/diff.go`; **onggi itself was not executed in
 this measurement**. The range is conservative at whole-tensor granularity.
 
+## Integrated refined planner verification
+
+After merging upstream PR #21 and CI PR #20 at `03e57da`,
+`verify_refined_delta.py` applied the fixture update and its inverse in three
+rounds using the default `refine=True` planner. All **192 generated tokens**
+matched the corresponding fresh destinations. Each update uploaded exactly
+117,440,512 B. Request-through-first-token latency was **0.576–1.021 s** across
+six updates (first forward update 1.021 s; later forward updates 0.576/0.610 s).
+The source commit and runtime/harness hashes are in
+[rngd-refined.json](data/delta-swap-20261022/rngd-refined.json).
+
+Reproduce after producing the fixture and fresh-load reference above:
+
+```bash
+"$RNGD_PY" experiments/verify_refined_delta.py --base "$CHECKPOINT" \
+  --new checkpoint_delta --ranges experiments/data/delta-swap-20261022/projection-ranges.json \
+  --reference experiments/data/delta-swap-20261022/rngd.json --cache "$CACHE" \
+  --chip 0 --rounds 3 --out refined.json
+```
+
 ## ATOM shared compilation session
 
 Full bundle reload through the first token: **20.343 s at B1**, **19.635 s at
@@ -202,8 +222,8 @@ specified checkpoint revision and unchanged shard layout. Regenerate it from
 offset from a compiled artifact. ATOM's device must be allocated by the device
 plugin or otherwise accessible in its current RSD group.
 
-CPU verification: **68 passed, 1 platform skip on Windows; 69 passed in Linux
-CI** ([run](https://github.com/ai-computing/rngd-pd/actions/runs/39762385502)).
+CPU verification after integration: **69 passed, 1 platform skip on Windows;
+70 passed in Linux CI** ([run](https://github.com/ai-computing/rngd-pd/actions/runs/39764757684)).
 The tests cover rollback, incompatible checkpoints, stale KV, range validation,
 lazy graph samples, shared owners, warm-load failure and selection policy.
 Hardware benchmark processes completed; the independently allocated validation
@@ -212,6 +232,7 @@ resumed, stopped or changed.
 
 ## Evidence
 
+- [Integrated refined RNGD verification](data/delta-swap-20261022/rngd-refined.json)
 - [RNGD runs and source hashes](data/delta-swap-20261022/rngd.json)
 - [ATOM shared-session run and source hashes](data/delta-swap-20261022/atom.json)
 - [ATOM independent warm-pool run](data/delta-swap-20261022/atom-warm.json)
