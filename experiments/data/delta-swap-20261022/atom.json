@@ -590,6 +590,8 @@
       374
     ],
     "generated_tokens": 8,
-    "rounds": 3
+    "rounds": 3,
+    "checkpoint_revision": "0172bf7e73977ae213613529f3d2d5400a33f678",
+    "identity_evidence": "Compilation build-config.json retained the source model and revision."
   }
 }

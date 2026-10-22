@@ -36,7 +36,7 @@ allocated ATOM Pod.
 | RNGD graphs | layer group 8; max unique shapes 8; B4/S256, B8/S256, B4/S512 |
 | RNGD workload | 8 prompt tokens, 8 generated tokens per lane, seeded random IDs; OMP/MKL threads 4 |
 | ATOM | RBLN-CA22, KMD 3.0.0; rebel-compiler 0.11.0, optimum-rbln 0.11.0.post1, PyTorch 2.11.0+cpu |
-| ATOM shared bundle | KONI-Llama3.1-8B-Instruct-20241024, B1/B8, context 512, shared compilation session |
+| ATOM shared bundle | KONI-Llama3.1-8B-Instruct-20241024, revision `0172bf7e73977ae213613529f3d2d5400a33f678`, B1/B8, context 512, shared compilation session |
 | ATOM prompt | IDs `[128000, 791, 6864, 315, 9822, 374]`, 8 generated tokens per lane |
 | ATOM warm-pool test | Qwen2.5-0.5B-Instruct, two independent compilations with prefill chunks 64 and 128, B1/S512 |
 
