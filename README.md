@@ -376,6 +376,15 @@ keeping on the NPU what is already there ([#17](https://github.com/ai-computing/
   - each extra variant costs under 0.25 GiB of device memory.
 - **Partial update:** 3 changed tensors (151 MB of 16 GB) took 0.84 s to the first token on the new weights,
   with tokens identical to a full load of the new checkpoint.
+- **ATOM:** the weights are compiled into the graph, and rebel 0.11 has no public call to bind a graph to weights
+  already on the card. So the variants go into one compile session (documented *bucketing*: one weight copy, one
+  runtime, the graph picked by input shape).
+  - **Swap inside a session:** 0.11–0.20 s from request to first token (the first step), against a 13.3–13.7 s full
+    reload; tokens identical.
+  - **New variant:** recompile the session with it, without a card; `HostPool` parses it on the host while the old
+    session serves; the switch then takes 0.80 s to the first token.
+  - **Weights as torch-rbln device inputs:** they stay shared across graphs, but steps are 5–7× slower and each new
+    graph compiles in-process (about 60 s), so this path is documented, not used.
 
 ## 📊 Results
 
