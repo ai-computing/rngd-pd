@@ -1,0 +1,595 @@
+{
+  "fresh": {
+    "B1-S512-g8": {
+      "prepared": true,
+      "prepare_s": 20.258688778965734,
+      "variant": "B1-S512-g8",
+      "bundle": "main",
+      "strategy": "full-load",
+      "weights_uploaded_on_swap": true,
+      "swap_s": 20.25945030199364,
+      "tokens": [
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ]
+      ],
+      "prompt_ttft_s": 0.08383219898678362,
+      "request_to_first_token_s": 20.343282500980422,
+      "request_seconds": 20.808684310060926
+    },
+    "B8-S512-g8": {
+      "prepared": true,
+      "prepare_s": 19.063844903954305,
+      "variant": "B8-S512-g8",
+      "bundle": "main",
+      "strategy": "full-load",
+      "weights_uploaded_on_swap": true,
+      "swap_s": 19.064340559998527,
+      "tokens": [
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ]
+      ],
+      "prompt_ttft_s": 0.5705197799252346,
+      "request_to_first_token_s": 19.634860339923762,
+      "request_seconds": 20.144367819069885
+    }
+  },
+  "swaps": [
+    {
+      "prepared": false,
+      "prepare_s": 0.0,
+      "variant": "B1-S512-g8",
+      "bundle": "main",
+      "strategy": "shared-session",
+      "weights_uploaded_on_swap": false,
+      "swap_s": 1.401000190526247e-05,
+      "round": 0,
+      "prompt_ttft_s": 0.08329626196064055,
+      "tokens": [
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ]
+      ],
+      "request_to_first_token_s": 0.08331027196254581,
+      "tokens_equal_fresh": true
+    },
+    {
+      "prepared": false,
+      "prepare_s": 0.0,
+      "variant": "B8-S512-g8",
+      "bundle": "main",
+      "strategy": "shared-session",
+      "weights_uploaded_on_swap": false,
+      "swap_s": 5.303998477756977e-05,
+      "round": 0,
+      "prompt_ttft_s": 0.5638565149856731,
+      "tokens": [
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ]
+      ],
+      "request_to_first_token_s": 0.5639095549704507,
+      "tokens_equal_fresh": true
+    },
+    {
+      "prepared": false,
+      "prepare_s": 0.0,
+      "variant": "B1-S512-g8",
+      "bundle": "main",
+      "strategy": "shared-session",
+      "weights_uploaded_on_swap": false,
+      "swap_s": 3.4779077395796776e-05,
+      "round": 1,
+      "prompt_ttft_s": 0.07171845401171595,
+      "tokens": [
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ]
+      ],
+      "request_to_first_token_s": 0.07175323308911175,
+      "tokens_equal_fresh": true
+    },
+    {
+      "prepared": false,
+      "prepare_s": 0.0,
+      "variant": "B8-S512-g8",
+      "bundle": "main",
+      "strategy": "shared-session",
+      "weights_uploaded_on_swap": false,
+      "swap_s": 3.741995897144079e-05,
+      "round": 1,
+      "prompt_ttft_s": 0.5570685929851606,
+      "tokens": [
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ]
+      ],
+      "request_to_first_token_s": 0.5571060129441321,
+      "tokens_equal_fresh": true
+    },
+    {
+      "prepared": false,
+      "prepare_s": 0.0,
+      "variant": "B1-S512-g8",
+      "bundle": "main",
+      "strategy": "shared-session",
+      "weights_uploaded_on_swap": false,
+      "swap_s": 2.3009954020380974e-05,
+      "round": 2,
+      "prompt_ttft_s": 0.0711873599793762,
+      "tokens": [
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ]
+      ],
+      "request_to_first_token_s": 0.07121036993339658,
+      "tokens_equal_fresh": true
+    },
+    {
+      "prepared": false,
+      "prepare_s": 0.0,
+      "variant": "B8-S512-g8",
+      "bundle": "main",
+      "strategy": "shared-session",
+      "weights_uploaded_on_swap": false,
+      "swap_s": 2.7150032110512257e-05,
+      "round": 2,
+      "prompt_ttft_s": 0.5594708579592407,
+      "tokens": [
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ],
+        [
+          12366,
+          13,
+          12366,
+          374,
+          3967,
+          439,
+          279,
+          4409
+        ]
+      ],
+      "request_to_first_token_s": 0.5594980079913512,
+      "tokens_equal_fresh": true
+    }
+  ],
+  "initial_load": {
+    "prepared": true,
+    "prepare_s": 18.53906611504499,
+    "variant": "B1-S512-g8",
+    "bundle": "main",
+    "strategy": "full-load",
+    "weights_uploaded_on_swap": true,
+    "swap_s": 18.539524402003735
+  },
+  "allocations": {
+    "main": [
+      {
+        "CBPerDevice": [
+          2097152
+        ],
+        "CmdStream": [
+          4194304
+        ],
+        "ConstBuf": [
+          4194304
+        ],
+        "DramTensor": [
+          536870912
+        ],
+        "Init": [
+          33554432
+        ],
+        "Input": [
+          2097152
+        ],
+        "Intermediate": [
+          2097152
+        ],
+        "Kernel": [
+          15011414016
+        ],
+        "Output": [
+          2097152
+        ]
+      },
+      {
+        "CBPerDevice": [
+          2097152
+        ],
+        "CmdStream": [
+          4194304
+        ],
+        "ConstBuf": [
+          2097152
+        ],
+        "Init": [
+          41943040
+        ],
+        "Input": [
+          2097152
+        ],
+        "Output": [
+          2097152
+        ]
+      },
+      {
+        "CBPerDevice": [
+          2097152
+        ],
+        "CmdStream": [
+          4194304
+        ],
+        "ConstBuf": [
+          2097152
+        ],
+        "Init": [
+          33554432
+        ],
+        "Input": [
+          2097152
+        ],
+        "Output": [
+          2097152
+        ]
+      }
+    ]
+  },
+  "source_sha256": {
+    "src/rngd_pd/swap/atom.py": "455aac7411d9b63220ef908494a824804ebcd9e5ae9d9acb46add5c445e6d452",
+    "src/rngd_pd/swap/bench_atom.py": "9b781a91c7b70b7fd74c5d0fe77f5506b076f457490617b90ab508aff7a97ebb",
+    "src/rngd_pd/swap/variants.py": "635d82d6ff442e5bc157059f11e8bd263eb69e9c4ad00b0d96c32d67055ec2bc"
+  },
+  "hardware": {
+    "role": "RNGD and ATOM node",
+    "accelerator": "Rebellions ATOM RBLN-CA22",
+    "driver": "3.0.0",
+    "rebel_compiler": "0.11.0",
+    "optimum_rbln": "0.11.0.post1",
+    "torch": "2.11.0+cpu",
+    "model": "KISTI-KONI/KONI-Llama3.1-8B-Instruct-20241024",
+    "context": 512,
+    "decoder_batches": [
+      1,
+      8
+    ],
+    "prompt_token_ids": [
+      128000,
+      791,
+      6864,
+      315,
+      9822,
+      374
+    ],
+    "generated_tokens": 8,
+    "rounds": 3
+  }
+}

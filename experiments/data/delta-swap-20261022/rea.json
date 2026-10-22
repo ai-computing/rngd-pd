@@ -1,0 +1,26 @@
+{
+  "tool": "REA 6.7.0",
+  "binary": {
+    "name": "native_torch.cpython-310-x86_64-linux-gnu.so",
+    "sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+    "bytes": 105469225
+  },
+  "runtime_execution": false,
+  "symbols": {
+    "evidence_id": "ev_5fd35351ca015085e7cb3a508a407d369e2d46c34a5de9df2614b44f516eb7b0",
+    "provider": "gnu.objdump",
+    "stdout": "SYMBOL TABLE: no symbols",
+    "artifact_changed": false
+  },
+  "deep_analysis": {
+    "provider": "ghidra",
+    "code": "provider_timeout",
+    "startup_deadline_ms": 330000,
+    "finding": "No complete native inventory or additional weight-binding API established"
+  },
+  "layout": {
+    "code": "provider_unavailable",
+    "provider": "pwntools-elf",
+    "finding": "Explicit Python provider dependencies unavailable"
+  }
+}

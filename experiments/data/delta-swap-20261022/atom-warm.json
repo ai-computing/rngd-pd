@@ -1,0 +1,294 @@
+{
+  "fresh": {
+    "B1-S512-g8": {
+      "prepared": true,
+      "prepare_s": 4.984312659944408,
+      "variant": "B1-S512-g8",
+      "bundle": "main",
+      "strategy": "full-load",
+      "weights_uploaded_on_swap": true,
+      "swap_s": 4.984902634983882,
+      "tokens": [
+        [
+          279,
+          6920,
+          11839,
+          13,
+          31943,
+          323,
+          990,
+          304
+        ]
+      ],
+      "prompt_ttft_s": 0.018917788052931428,
+      "request_to_first_token_s": 5.003820423036814,
+      "request_seconds": 5.04137006693054
+    }
+  },
+  "swaps": [
+    {
+      "prepared": false,
+      "prepare_s": 0.0,
+      "variant": "B1-S512-g8",
+      "bundle": "main",
+      "strategy": "shared-session",
+      "weights_uploaded_on_swap": false,
+      "swap_s": 3.785104490816593e-05,
+      "round": 0,
+      "prompt_ttft_s": 0.02945131401065737,
+      "tokens": [
+        [
+          279,
+          6920,
+          11839,
+          13,
+          31943,
+          323,
+          990,
+          304
+        ]
+      ],
+      "request_to_first_token_s": 0.029489165055565536,
+      "tokens_equal_fresh": true
+    },
+    {
+      "prepared": false,
+      "prepare_s": 0.0,
+      "variant": "B1-S512-g8",
+      "bundle": "main",
+      "strategy": "shared-session",
+      "weights_uploaded_on_swap": false,
+      "swap_s": 2.7130008675158024e-05,
+      "round": 1,
+      "prompt_ttft_s": 0.007909114938229322,
+      "tokens": [
+        [
+          279,
+          6920,
+          11839,
+          13,
+          31943,
+          323,
+          990,
+          304
+        ]
+      ],
+      "request_to_first_token_s": 0.00793624494690448,
+      "tokens_equal_fresh": true
+    },
+    {
+      "prepared": false,
+      "prepare_s": 0.0,
+      "variant": "B1-S512-g8",
+      "bundle": "main",
+      "strategy": "shared-session",
+      "weights_uploaded_on_swap": false,
+      "swap_s": 2.510997001081705e-05,
+      "round": 2,
+      "prompt_ttft_s": 0.007951164967380464,
+      "tokens": [
+        [
+          279,
+          6920,
+          11839,
+          13,
+          31943,
+          323,
+          990,
+          304
+        ]
+      ],
+      "request_to_first_token_s": 0.007976274937391281,
+      "tokens_equal_fresh": true
+    }
+  ],
+  "fresh_warm": {
+    "prepared": true,
+    "prepare_s": 4.939768378040753,
+    "variant": "B1-S512-g8",
+    "bundle": "main",
+    "strategy": "full-load",
+    "weights_uploaded_on_swap": true,
+    "swap_s": 4.940255341003649,
+    "tokens": [
+      [
+        279,
+        6920,
+        11839,
+        315,
+        419,
+        975,
+        13,
+        31943
+      ]
+    ],
+    "prompt_ttft_s": 0.02132569602690637,
+    "request_to_first_token_s": 4.961581037030555,
+    "request_seconds": 5.002484627999365
+  },
+  "initial_load": {
+    "prepared": true,
+    "prepare_s": 4.956852889969014,
+    "variant": "B1-S512-g8",
+    "bundle": "main",
+    "strategy": "full-load",
+    "weights_uploaded_on_swap": true,
+    "swap_s": 4.957545205019414
+  },
+  "warm": {
+    "prepared": false,
+    "prepare_s": 0.0,
+    "variant": "B1-S512-g8",
+    "bundle": "warm",
+    "strategy": "warm-pool",
+    "weights_uploaded_on_swap": false,
+    "swap_s": 2.5099958293139935e-05,
+    "tokens": [
+      [
+        279,
+        6920,
+        11839,
+        315,
+        419,
+        975,
+        13,
+        31943
+      ]
+    ],
+    "prompt_ttft_s": 0.01000692998059094,
+    "background_prepare_s": 1.4329869060311466,
+    "prepare_pending_before_serving": true,
+    "serving_during_prepare_s": 1.4773306439165026,
+    "serving_during_prepare_ttft_s": 1.4393892999505624,
+    "token_before_prepare_completed": false,
+    "during_prepare_tokens_equal_fresh": true,
+    "tokens_equal_fresh": true,
+    "request_to_first_token_s": 0.01003202993888408
+  },
+  "allocations": {
+    "main": [
+      {
+        "CBPerDevice": [
+          2097152
+        ],
+        "CmdStream": [
+          2097152
+        ],
+        "ConstBuf": [
+          4194304
+        ],
+        "DramTensor": [
+          100663296
+        ],
+        "Init": [
+          12582912
+        ],
+        "Input": [
+          2097152
+        ],
+        "Intermediate": [
+          2097152
+        ],
+        "Kernel": [
+          989855744
+        ],
+        "Output": [
+          2097152
+        ]
+      },
+      {
+        "CBPerDevice": [
+          2097152
+        ],
+        "CmdStream": [
+          2097152
+        ],
+        "ConstBuf": [
+          2097152
+        ],
+        "Init": [
+          12582912
+        ],
+        "Input": [
+          2097152
+        ],
+        "Output": [
+          2097152
+        ]
+      }
+    ],
+    "warm": [
+      {
+        "CBPerDevice": [
+          2097152
+        ],
+        "CmdStream": [
+          2097152
+        ],
+        "ConstBuf": [
+          4194304
+        ],
+        "DramTensor": [
+          100663296
+        ],
+        "Init": [
+          23068672
+        ],
+        "Input": [
+          2097152
+        ],
+        "Intermediate": [
+          2097152
+        ],
+        "Kernel": [
+          989855744
+        ],
+        "Output": [
+          2097152
+        ]
+      },
+      {
+        "CBPerDevice": [
+          2097152
+        ],
+        "CmdStream": [
+          2097152
+        ],
+        "ConstBuf": [
+          2097152
+        ],
+        "Init": [
+          12582912
+        ],
+        "Input": [
+          2097152
+        ],
+        "Output": [
+          2097152
+        ]
+      }
+    ]
+  },
+  "source_sha256": {
+    "src/rngd_pd/swap/atom.py": "44b11dc8fe0cd6069f834852a27f23fcaee16bfd6663e39b7213f37cd396c5ea",
+    "src/rngd_pd/swap/bench_atom.py": "8525e274411d1a4172e65c70c69b17c49ad531705f7e8ce86b23b9b8dc0a7480",
+    "src/rngd_pd/swap/variants.py": "635d82d6ff442e5bc157059f11e8bd263eb69e9c4ad00b0d96c32d67055ec2bc"
+  },
+  "hardware": {
+    "accelerator": "Rebellions ATOM RBLN-CA22",
+    "driver": "3.0.0",
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "context": 512,
+    "batches": [
+      1
+    ],
+    "main_prefill_chunk": 64,
+    "warm_prefill_chunk": 128,
+    "compilations": "independent",
+    "tokens": 8
+  },
+  "sdk_planned_bytes_by_bundle": {
+    "main": 1140850688,
+    "warm": 1151336448
+  }
+}

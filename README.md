@@ -397,6 +397,24 @@ first compile about 30 minutes, then seconds from the artifact cache.
 The raw runs behind the figures are in `bench/*.jsonl`, so any number can be traced to the sweep that produced it.
 </details>
 
+### Compiled variant swapping
+
+The opt-in [`rngd_pd.swap` API](docs/delta-swap.md) keeps RNGD weights resident
+and selects ATOM decoders compiled in one shared session. Measured engine
+request-to-first-token latency on the specified 8B checkpoints:
+
+| Change | Full reload | Retained/prepared path |
+|---|---:|---:|
+| RNGD B4/B8, S256/S512 | 20.6–23.5 s | 0.25–0.45 s |
+| RNGD changed 117 MB projection, precomputed ranges | 22.43 s | 0.947 s |
+| ATOM co-compiled B1/B8, S512 | 19.6–20.3 s | 0.071–0.564 s |
+
+All compared generated token IDs equal fresh destination loads. Independent
+ATOM builds need another weight copy; a 0.5B warm-pool test selected the prepared
+bundle through its first token in 10 ms, but preparation delayed a concurrent
+request by 1.44 s. See the [experiment, versions, commands and limits](experiments/2026-10-22-delta-swap.md).
+The default cluster worker and in-flight KV are not automatically migrated.
+
 ## 🏗 Architecture
 
 ```mermaid
