@@ -70,7 +70,9 @@ Embedding lookup stays on the host. Tiled normalization inputs are rebuilt when
 their weights change. Updates invalidate old KV even if the shape is unchanged.
 
 Without a range input the fallback compares checkpoint files in blocks, reading
-both full checkpoints. Its planning time and coarse extra tensor uploads must
+both full checkpoints. The integrated planner refines flagged rows by default,
+retaining the behavior merged in PR #21; `refine=False` keeps the coarse plan.
+Its planning time and any extra tensor uploads must
 be included in latency. Precomputed ranges avoid that scan. A diff with changed
 runs but without `--ranges` is rejected.
 
@@ -84,7 +86,7 @@ owner. Loading a decoder file alone is insufficient.
 ```python
 from rngd_pd.swap.atom import AtomBundle, SwappableAtom
 
-v1, v8 = Variant(1, 512), Variant(8, 512)
+v1, v8 = Variant(1, 512, group=0), Variant(8, 512, group=0)
 engine = SwappableAtom({"main": AtomBundle(compiled_bundle_dir, (v1, v8))}, device=0)
 engine.swap(v1, "main")              # initial full bundle load
 engine.swap(v8, "main")              # selects the co-compiled decoder

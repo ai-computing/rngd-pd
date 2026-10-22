@@ -35,9 +35,27 @@ def prompts(n, P, seed=0):
     return [list(map(int, rng.integers(100, 120000, P))) for _ in range(n)]
 
 
-def _engine(a, ckpt, group):
+def _engine(a, ckpt, group, wait_s=60):
+    """The engine, once the card is free.
+
+    Each bench phase is its own process, and the card is released only some
+    time after the previous one exits: opening it at once can fail with EBUSY
+    ("allocator != nullptr"). Wait for it rather than fail the run; the wait
+    happens before the timed part starts.
+    """
     from rngd_pd.swap.rngd import SwappableDecode
-    return SwappableDecode(ckpt, group=group, chip=a.chip, cache_dir=a.cache)
+    t0 = time.perf_counter()
+    while True:
+        t1 = time.perf_counter()
+        try:
+            eng = SwappableDecode(ckpt, group=group, chip=a.chip, cache_dir=a.cache)
+            eng.card_wait_s = t1 - t0          # excluded from the reload time
+            return eng
+        except RuntimeError as e:
+            if "allocator" not in str(e) or time.perf_counter() - t0 > wait_s:
+                raise
+            print(f"[bench] card not free yet ({e}); retrying", flush=True)
+            time.sleep(5)
 
 
 def _mem(a, eng):
@@ -62,8 +80,9 @@ def cmd_fresh(a):
     wall_first = wall_generate + ttft
     first_s = ttft
     out = dict(mode="fresh", variant=v.name, ckpt=ckpt,
-               launch_to_first_token_s=(wall_first - a.t_launch) if a.t_launch else None,
-               process_to_first_token_s=t_first - T_START,
+               launch_to_first_token_s=(wall_first - a.t_launch - eng.card_wait_s) if a.t_launch else None,
+               process_to_first_token_s=t_first - T_START - eng.card_wait_s,
+               card_wait_s=eng.card_wait_s,
                imports_s=t_import - T_START, weights=eng.timings,
                engine_init_s=t_w - t_import, graph=info, first_step_s=first_s,
                prompt_ttft_s=ttft, tokens=toks, resident_weight_gib=_mem(a, eng))
@@ -105,7 +124,7 @@ def cmd_delta(a):
     else:
         rng = None
         source = "local-compare"
-    plan = delta.plan_update(a.ckpt, a.delta_new, rng)
+    plan = delta.plan_update(a.ckpt, a.delta_new, rng, refine=not a.no_refine)
     t_plan = time.perf_counter() - t0
     t1 = time.perf_counter()
     res = eng.apply_delta(a.delta_new, plan, mode=a.delta_mode)
@@ -196,6 +215,8 @@ def cmd_all(a):
                  "--delta-mode", a.delta_mode]
         if a.ranges:
             extra += ["--ranges", a.ranges]
+        if a.no_refine:
+            extra += ["--no-refine"]
         res["delta"] = _child(a, "delta", f"{d}/delta.json", extra)
         res["delta"]["tokens_equal_fresh_new"] = res["delta"]["tokens"] == res["fresh_new"]["tokens"]
         res["delta"]["base_tokens_equal_fresh"] = res["delta"]["base_tokens"] == res["fresh"][name]["tokens"]
@@ -234,19 +255,24 @@ def main(argv=None):
     ap.add_argument("--variant")
     ap.add_argument("--variants", nargs="+")
     ap.add_argument("--group", type=int, default=8)
-    ap.add_argument("--chip", type=int, default=0)
+    ap.add_argument("--chip", type=int, default=-1,
+                    help="device ordinal; -1 resolves the card allocated to this Pod")
     ap.add_argument("--cache")
     ap.add_argument("--P", type=int, default=16)
     ap.add_argument("--n", type=int, default=16)
     ap.add_argument("--mem", action="store_true", help="account resident weight bytes; does not probe free HBM")
     ap.add_argument("--delta-new")
     ap.add_argument("--delta-mode", default="inplace", choices=["inplace", "group"])
+    ap.add_argument("--no-refine", action="store_true", help="keep coarse range neighbours (historical benchmark mode)")
     ap.add_argument("--ranges", help="onggi diff --ranges --json output (else compare locally)")
     ap.add_argument("--tensors", help="make-delta: comma-separated tensor names")
     ap.add_argument("--scale", type=float, default=0.05)
     ap.add_argument("--t-launch", type=float, default=0.0)
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
+    if a.chip < 0 and a.mode in ("fresh", "swap", "delta"):
+        from rngd_pd.devices import resolve_chip
+        a.chip = resolve_chip(a.chip)
     {"fresh": cmd_fresh, "swap": cmd_swap, "delta": cmd_delta, "all": cmd_all,
      "make-delta": cmd_make_delta}[a.mode](a)
 

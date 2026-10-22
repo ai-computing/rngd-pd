@@ -351,6 +351,16 @@ export한 값이 우선한다.
 | `RNGD_PD_NODE`, `RNGD_PD_HOME` | `deploy/k8s/render.py`에 필요 | 실험 Pod를 고정할 노드, Pod가 Python 트리를 마운트하는 홈 디렉터리 |
 </details>
 
+## 🔁 델타 로드
+
+`rngd_pd.swap`은 RNGD 상주 가중치 재사용·변경 텐서 업로드와 ATOM 공동 컴파일 그래프 전환을 지원합니다. 별도 ATOM 빌드는 메모리가 허용할 때 백그라운드로 준비합니다. 기본 서빙 경로와 진행 중인 요청의 KV를 자동 전환하지 않습니다. [API와 재현 명령](docs/delta-swap.md)을 참고하세요.
+
+실측에서 RNGD B4/B8·S256/S512 전환 후 첫 토큰은 0.25–0.45초(전체 재로딩 20.6–23.5초),
+ATOM 공동 컴파일 B1/B8 전환은 0.071–0.564초(재로딩 19.6–20.3초)였고 비교한 생성 토큰은 모두 일치했습니다.
+RNGD의 117MB 가중치 갱신은 미리 계산한 변경 범위를 사용할 때 첫 토큰까지 0.947초였습니다.
+독립 ATOM 빌드는 추가 가중치 메모리가 필요하며, 준비 중 요청 지연이 관측됐습니다.
+[실험 환경·재현 명령·제약](experiments/2026-10-22-delta-swap.md)을 확인하세요.
+
 ## 📊 결과
 
 **ai-rm 종단 간 실행** ([ai-rm docs/e2e.md](https://github.com/ai-computing/ai-rm/blob/master/docs/e2e.md)에서 인용):
@@ -461,13 +471,3 @@ tests/
 - [ ] 서빙 파드에서 `nixl`: 양쪽의 device 상주 KV ([aicomp#48](https://github.com/ai-computing/aicomp/issues/48))
 - [ ] continuous batching 상시 서버, Envoy ext-proc EPP
 - [ ] Optimus Prime으로 통합 ([계획](https://github.com/ai-computing/ai-rm/blob/master/docs/engine-integration.md))
-
-## Delta load와 그래프 전환
-
-`rngd_pd.swap`은 RNGD 상주 가중치 재사용·변경 텐서 업로드와 ATOM 공동 컴파일 그래프 전환을 지원합니다. 별도 ATOM 빌드는 메모리가 허용할 때 백그라운드로 준비합니다. 기본 서빙 경로와 진행 중인 요청의 KV를 자동 전환하지 않습니다. [API와 재현 명령](docs/delta-swap.md)을 참고하세요.
-
-실측에서 RNGD B4/B8·S256/S512 전환 후 첫 토큰은 0.25–0.45초(전체 재로딩 20.6–23.5초),
-ATOM 공동 컴파일 B1/B8 전환은 0.071–0.564초(재로딩 19.6–20.3초)였고 비교한 생성 토큰은 모두 일치했습니다.
-RNGD의 117MB 가중치 갱신은 미리 계산한 변경 범위를 사용할 때 첫 토큰까지 0.947초였습니다.
-독립 ATOM 빌드는 추가 가중치 메모리가 필요하며, 준비 중 요청 지연이 관측됐습니다.
-[실험 환경·재현 명령·제약](experiments/2026-10-22-delta-swap.md)을 확인하세요.

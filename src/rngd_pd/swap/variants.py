@@ -16,12 +16,13 @@ class Variant:
     group: int = 8
 
     def __post_init__(self):
-        if any(type(x) is not int or x <= 0 for x in (self.B, self.S, self.group)):
-            raise ValueError("B, S and group must be positive integers")
+        if (any(type(x) is not int for x in (self.B, self.S, self.group))
+                or self.B <= 0 or self.S <= 0 or self.group < 0):
+            raise ValueError("B and S must be positive integers; group must be nonnegative (0 for ATOM)")
 
     @property
     def name(self):
-        return f"B{self.B}-S{self.S}-g{self.group}"
+        return f"B{self.B}-S{self.S}" + (f"-g{self.group}" if self.group else "")
 
     @classmethod
     def parse(cls, text, group=8):

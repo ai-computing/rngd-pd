@@ -9,6 +9,7 @@ class VariantTest(unittest.TestCase):
         self.assertEqual(Variant.parse("B4-S256-g2"), Variant(4, 256, 2))
         self.assertEqual(Variant.parse("b16 s512", group=4), Variant(16, 512, 4))
         self.assertEqual(Variant(4, 512).name, "B4-S512-g8")
+        self.assertEqual(Variant.parse("B4-S512", group=0).name, "B4-S512")
         with self.assertRaises(ValueError):
             Variant.parse("B8")
 

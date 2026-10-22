@@ -17,7 +17,8 @@ the fresh load of the exact destination variant/checkpoint.
 
 Code lineage: main `7858013`, initial RNGD WIP `ae9f8b5`, implementation
 `4b493de`, warm-load instrumentation `08756df`. Each JSON record contains the
-SHA256 hashes of the actual runtime and harness sources used. The two source
+SHA256 hashes of the actual runtime and harness sources used. After those runs, upstream RNGD PR #21 and CI PR #20 were merged into this
+branch; row refinement and Pod device selection were preserved. The earlier source
 revisions differ in warm-load diagnostics, not the shared graph selection or
 RNGD arithmetic. The prior provider session and its running resources were
 only read; execution used an independent checkout and an independently
@@ -80,6 +81,10 @@ Both update runs' generated tokens equal a fresh changed checkpoint and differ
 from the base checkpoint. Coarse block comparison touches neighbouring tensors,
 including a host embedding and batch-shaped norms; the planned full-tensor byte
 count therefore differs from actual uploaded bytes.
+
+The historical results above used `refine=False` (the then-current planner);
+use `--no-refine` with the integrated harness to reproduce that boundary. The
+current default refines flagged rows, preserving upstream behavior.
 
 The precomputed range file was generated from this controlled fixture's
 safetensors header. It uses the real `onggi diff --ranges --json` schema,
@@ -178,7 +183,7 @@ export RNGD_MAX_SHAPES=8 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 HF_HUB_OFFLINE=1
 "$RNGD_PY" -m rngd_pd.swap.bench_rngd all --ckpt "$CHECKPOINT" \
   --delta-new checkpoint_delta --delta-mode inplace --chip 0 --group 8 \
   --variants B4,S256 B8,S256 B4,S512 --P 8 --n 8 --mem --cache "$CACHE" \
-  --ranges experiments/data/delta-swap-20261022/projection-ranges.json --out rngd.json
+  --ranges experiments/data/delta-swap-20261022/projection-ranges.json --no-refine --out rngd.json
 
 python -m rngd_pd.swap.bench_atom --bundle "$ATOM_8B_BUNDLE" \
   --variants B1,S512 B8,S512 --tokens 8 --rounds 3 --out atom.json
