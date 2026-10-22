@@ -166,6 +166,8 @@ def main():
     ap.add_argument("--max-tokens", type=int, default=64)
     ap.add_argument("--reps", type=int, default=2)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--greedy-together", action="store_true",
+                    help="--greedy: send all prompts at once instead of one at a time")
     ap.add_argument("--greedy", type=int, default=0,
                     help="instead of the sweep: N fixed prompts per P, outputs recorded")
     ap.add_argument("--tag", default="", help="free text written to every row")
@@ -196,10 +198,24 @@ def main():
                  (bos + tk.encode(t, add_special_tokens=False) for t in GREEDY_PROMPTS)]
         cases += [(P, "sweep", prompt_ids(P, fixed)) for P in ctxs for _ in range(a.greedy)]
         with open(a.out, "w") as fh:
+            results = [None] * len(cases)
+            if a.greedy_together:
+                # all at once: the batch composition a loaded server sees
+                def put(i, ids):
+                    res = []
+                    stream_once(a.url, a.model, ids, a.max_tokens, res)
+                    results[i] = res[0]
+                ths = [threading.Thread(target=put, args=(i, c[2])) for i, c in enumerate(cases)]
+                for th in ths:
+                    th.start()
+                for th in ths:
+                    th.join()
             for i, (P, kind, ids) in enumerate(cases):
-                res = []
-                stream_once(a.url, a.model, ids, a.max_tokens, res)
-                r = res[0]
+                if results[i] is None:
+                    res = []
+                    stream_once(a.url, a.model, ids, a.max_tokens, res)
+                    results[i] = res[0]
+                r = results[i]
                 row = dict(meta, P=P, idx=i, kind=kind, prompt_ids=ids, out_ids=r["ids"],
                            text=r["text"], err=r["err"])
                 fh.write(json.dumps(row) + "\n"); fh.flush()

@@ -884,6 +884,12 @@ class _ContinuousScheduler:
         # inside one step's worth and still finishes a 32-layer pass in four
         # iterations instead of sixteen.
         self.stage_groups = int(os.environ.get("PD_STAGE_GROUPS", "4"))
+        # RNGD_ADMIT=block admits every waiting prompt back to back before the
+        # next step instead of staging one prompt a few groups at a time
+        # between steps. Staging protects the TPOT of streams already running;
+        # blocking gets a burst to its first tokens several times sooner
+        # (#14: 16 prompts at once waited ~4 decode steps each).
+        self.stage_admission = os.environ.get("RNGD_ADMIT", "stage") != "block"
         threading.Thread(target=self._loop, daemon=True).start()
 
     def submit(self, item):
@@ -940,22 +946,23 @@ class _ContinuousScheduler:
         is what made iteration-level scheduling lose to the static batcher.
         Writing just the lane keeps the other streams on the card untouched.
         """
-        loaded = []
+        # One stream at a time: produce, write its lane, seat it. Seating each
+        # as soon as its cache is in lets its first token go out while the
+        # rest of the admission is still prefilling, and holds one stream's
+        # cache in flight instead of all of them.
+        ms = 0.0
         for idx, item in taking:
             K, V, first, pos, aux_ms = item.pop("_produced", None) or self.produce(item)
             item["first"], item["pos"] = first, pos
-            loaded.append((idx, item, K, V, aux_ms))
-        t0 = time.perf_counter()          # the write only, not the source
-        for idx, _item, K, V, _ in loaded:
+            t0 = time.perf_counter()          # the write only, not the source
             Kd, Vd = self.eng.write_slot_kv(Kd, Vd, idx, K, V)
-        ms = (time.perf_counter() - t0) * 1e3
+            ms += (time.perf_counter() - t0) * 1e3
+            self._seat(idx, item, aux_ms)
         self.admit_ms += ms
         self.admits += 1
         # Admission runs under the device lock, so every millisecond here is a
         # millisecond no stream advanced -- distinct from an idle lane.
         self.admit_stall_ms += ms
-        for idx, item, _K, _V, load_ms in loaded:
-            self._seat(idx, item, load_ms)
         return Kd, Vd
 
     def _seat(self, idx, item, load_ms):
@@ -1044,7 +1051,7 @@ class _ContinuousScheduler:
                             Kd, Vd = self.eng.write_slot_kv(Kd, Vd, idx, K, V)
                             self._seat(idx, item, aux)
                             self._staging = None
-                    elif (taking and self._active()
+                    elif (taking and self._active() and self.stage_admission
                           and hasattr(self.produce_owner, "begin_produce")):
                         # Stage only while there is something to protect. With
                         # an empty batch there is no decode to interrupt, and

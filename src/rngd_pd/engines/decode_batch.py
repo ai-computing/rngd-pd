@@ -155,6 +155,18 @@ def lmhead_graph_spec(B, V, NG=32):
 
 
 
+def greedy_tokens(logits, Vp, V, B):
+    """Argmax per stream of the on-card lm_head output [NG, Vp/NG, B].
+
+    It used to widen all Vp x B logits to float32 numpy and argmax column by
+    column: 3.4-4.1 ms of every B=16 step on the host (#14 phase 2). torch's
+    argmax on the bf16 tensor gives the same index -- the widening is exact
+    and both return the first maximum -- in a fraction of that.
+    """
+    lg = logits.detach().cpu().reshape(Vp, B)[:V]
+    return torch.argmax(lg, dim=0).tolist()
+
+
 class BatchDecodeEngine:
     def __init__(self, cfg, sd, B=2, S=256, group=2, chip=2, cache_dir=None):
         group = resolve_group(B, S, group, cache_dir)
@@ -399,8 +411,7 @@ class BatchDecodeEngine:
             Kd[g], Vd[g] = Kf, Vf
         out = self.lmh(x, self.norm_d, self.eps_d, self.nh_d, self.wlm_d)
         logits = out[0] if isinstance(out, (tuple, list)) else out
-        lg = logits.detach().cpu().float().numpy().reshape(self.Vp, B)[:self.V]
-        return [int(np.argmax(lg[:, b])) for b in range(B)], Kd, Vd
+        return greedy_tokens(logits, self.Vp, self.V, B), Kd, Vd
 
 
 def main():
