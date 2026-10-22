@@ -34,7 +34,7 @@ import numpy as np  # noqa: E402
 from rngd_pd.swap.variants import Variant  # noqa: E402
 
 NPU = os.environ.get("RBLN_PART", "RBLN-CA22")
-PER_LAYER = ("n1", "wq", "wk", "wv", "wo3", "n2", "wg", "wu", "wd")
+PER_LAYER = ("n1", "wq", "wk", "wv", "wo", "n2", "wg", "wu", "wd")
 
 
 def _now():
@@ -44,8 +44,10 @@ def _now():
 def host_weights(model_dir, layers=None, wdt=None):
     """Weights in the graph's input order, as host torch tensors.
 
-    Same arrangement and dtypes as vendors/rbln_decode_batch: norms float32,
-    projections fp16 (out x in), o_proj transposed and split per KV head.
+    Same dtypes as vendors/rbln_decode_batch: norms float32, projections fp16
+    (out x in). o_proj stays whole: the per-KV-head split and the eight adds
+    that sum it trip rebel 0.11's device-graph conversion once the weights are
+    device inputs ("operand does not dominate this use" past two layers).
     """
     import torch
     from safetensors import safe_open
@@ -73,8 +75,7 @@ def host_weights(model_dir, layers=None, wdt=None):
                 get(p + "self_attn.q_proj.weight").float().to(wdt),
                 get(p + "self_attn.k_proj.weight").float().to(wdt),
                 get(p + "self_attn.v_proj.weight").float().to(wdt),
-                get(p + "self_attn.o_proj.weight").float().t()
-                .reshape(NKV, G * HD, H).contiguous().to(wdt),
+                get(p + "self_attn.o_proj.weight").float().to(wdt),
                 get(p + "post_attention_layernorm.weight").float(),
                 get(p + "mlp.gate_proj.weight").float().to(wdt),
                 get(p + "mlp.up_proj.weight").float().to(wdt),
@@ -108,7 +109,7 @@ def make_step(d):
         B, S = x.shape[0], mask.shape[1]
         ks, vs = [], []
         for i in range(nl):
-            n1, wq, wk, wv, wo3, n2, wg, wu, wd = W[9 * i:9 * i + 9]
+            n1, wq, wk, wv, wo, n2, wg, wu, wd = W[9 * i:9 * i + 9]
             h = rms(x, n1)
             q = rope(mm(h, wq), NH, cos, sin)
             k = rope(mm(h, wk), NKV, cos, sin)
@@ -117,11 +118,7 @@ def make_step(d):
             Vf = Vp[i] + v.unsqueeze(-2) * oh.view(B, 1, S, 1)        # [B,NKV,S,HD]
             sc = torch.matmul(q.view(B, NKV, G, HD), Kf) * scale + mask.view(B, 1, 1, S)
             ao = torch.matmul(torch.softmax(sc, dim=-1), Vf)          # [B,NKV,G,HD]
-            y = torch.matmul(ao.reshape(B, NKV, 1, G * HD).to(wo3.dtype),
-                             wo3.unsqueeze(0)).float()
-            x2 = x
-            for j in range(NKV):
-                x2 = x2 + y[:, j, 0]
+            x2 = x + mm(ao.reshape(B, NH * HD), wo)
             h2 = rms(x2, n2)
             x = mm(torch.nn.functional.silu(mm(h2, wg)) * mm(h2, wu), wd) + x2
             ks.append(Kf)
