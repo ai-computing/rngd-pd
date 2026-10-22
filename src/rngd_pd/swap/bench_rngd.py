@@ -35,9 +35,27 @@ def prompts(n, P, seed=0):
     return [list(map(int, rng.integers(100, 120000, P))) for _ in range(n)]
 
 
-def _engine(a, ckpt, group):
+def _engine(a, ckpt, group, wait_s=60):
+    """The engine, once the card is free.
+
+    Each bench phase is its own process, and the card is released only some
+    time after the previous one exits: opening it at once can fail with EBUSY
+    ("allocator != nullptr"). Wait for it rather than fail the run; the wait
+    happens before the timed part starts.
+    """
     from rngd_pd.swap.rngd import SwappableDecode
-    return SwappableDecode(ckpt, group=group, chip=a.chip, cache_dir=a.cache)
+    t0 = time.time()
+    while True:
+        t1 = time.time()
+        try:
+            eng = SwappableDecode(ckpt, group=group, chip=a.chip, cache_dir=a.cache)
+            eng.card_wait_s = t1 - t0          # excluded from the reload time
+            return eng
+        except RuntimeError as e:
+            if "allocator" not in str(e) or time.time() - t0 > wait_s:
+                raise
+            print(f"[bench] card not free yet ({e}); retrying", flush=True)
+            time.sleep(5)
 
 
 def _mem(a, eng):
@@ -59,8 +77,10 @@ def cmd_fresh(a):
     wall_first = time.time()
     toks, ttft = eng.generate(prompts(v.B, a.P), a.n)
     out = dict(mode="fresh", variant=v.name, ckpt=ckpt,
-               launch_to_first_token_s=(wall_first - a.t_launch) if a.t_launch else None,
-               process_to_first_token_s=t_first - T_START,
+               launch_to_first_token_s=((wall_first - a.t_launch - eng.card_wait_s)
+                                        if a.t_launch else None),
+               process_to_first_token_s=t_first - T_START - eng.card_wait_s,
+               card_wait_s=eng.card_wait_s,
                imports_s=t_import - T_START, weights=eng.timings,
                engine_init_s=t_w - t_import, graph=info, first_step_s=first_s,
                prompt_ttft_s=ttft, tokens=toks, free_gib=_mem(a, eng))
