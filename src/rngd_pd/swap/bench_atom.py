@@ -35,19 +35,14 @@ def prompts(n, P, seed=0):
     return [list(map(int, rng.integers(100, 120000, P))) for _ in range(n)]
 
 
-def mem(device):
-    """Device memory used (bytes) per the documented utility, else rbln-stat's text."""
+def mem(device=0):
+    """Device memory in use, GiB, from `rbln-stat -j` (rebel 0.11 has no Python call for it)."""
     try:
-        import rebel
-        info = rebel.get_device_memory_info(device)
-        return {k: getattr(info, k) for k in dir(info)
-                if not k.startswith("_") and isinstance(getattr(info, k), (int, float))} or str(info)
-    except Exception:  # noqa: BLE001
-        pass
-    try:
-        out = subprocess.run(["rbln-stat"], capture_output=True, text=True, timeout=30).stdout
-        return [ln for ln in out.splitlines() if "RBLN-" in ln]
-    except Exception as e:  # noqa: BLE001
+        out = subprocess.run(["rbln-stat", "-j"], capture_output=True, text=True, timeout=30).stdout
+        devs = json.loads(out)["devices"]
+        d = devs[device] if device < len(devs) else devs[0]
+        return round(int(d["memory"]["used"]) / 2 ** 30, 2)
+    except Exception as e:  # noqa: BLE001 - a measurement must not stop the run
         return repr(e)
 
 
