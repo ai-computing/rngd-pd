@@ -233,7 +233,8 @@ def main(argv=None):
     ap.add_argument("--variant")
     ap.add_argument("--variants", nargs="+")
     ap.add_argument("--group", type=int, default=8)
-    ap.add_argument("--chip", type=int, default=0)
+    ap.add_argument("--chip", type=int, default=-1,
+                    help="torch device ordinal; -1: the card this pod was given (devices.resolve_chip)")
     ap.add_argument("--cache")
     ap.add_argument("--P", type=int, default=16)
     ap.add_argument("--n", type=int, default=16)
@@ -246,6 +247,9 @@ def main(argv=None):
     ap.add_argument("--t-launch", type=float, default=0.0)
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
+    if a.chip < 0 and a.mode in ("fresh", "swap", "delta"):
+        from rngd_pd.devices import resolve_chip
+        a.chip = resolve_chip(a.chip)
     {"fresh": cmd_fresh, "swap": cmd_swap, "delta": cmd_delta, "all": cmd_all,
      "make-delta": cmd_make_delta}[a.mode](a)
 

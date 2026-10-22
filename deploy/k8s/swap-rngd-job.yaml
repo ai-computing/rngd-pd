@@ -43,7 +43,7 @@ spec:
           # results belong to the owner of WORK, not to the container's root
           trap 'chown -R $(stat -c %u:%g $WORK) $WORK/out' EXIT
           cd $WORK/rngd-pd/src
-          $PY -m rngd_pd.swap.bench_rngd all --ckpt $M --chip 0 --cache /cache --mem \
+          $PY -m rngd_pd.swap.bench_rngd all --ckpt $M --chip -1 --cache /cache --mem \
             --variants $VARIANTS $DELTA $RANGES --out $WORK/out/swap_rngd.json
         env:
         - {name: WORK, value: "${RNGD_PD_HOME}/tmp/swap17"}
