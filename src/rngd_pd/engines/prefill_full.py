@@ -35,6 +35,31 @@ def _compiler_config(tactic):
     return FCConfig(tactic_hint=hint(tactic), **legacy)
 
 
+def prefill_graph_spec(C, group):
+    """The cache key and the build for one prefill width, in one place.
+
+    The engine and bench/prebake.py both derive the key here, so a width baked
+    on the host without a card is the artifact the worker loads.
+    """
+    from rngd_pd.engines.artifact_cache import cache_key
+    sample = (torch.zeros(C, H, dtype=BF),
+              torch.zeros(C, H, dtype=torch.float32), torch.zeros(C, H, dtype=torch.float32),
+              torch.zeros(group, C, H, dtype=BF),
+              torch.zeros(group, H, NH * HD, dtype=BF),
+              torch.zeros(group, H, NKV * HD, dtype=BF),
+              torch.zeros(group, H, NKV * HD, dtype=BF),
+              torch.zeros(group, NH * HD, H, dtype=BF),
+              torch.zeros(group, C, H, dtype=BF),
+              torch.zeros(group, H, M, dtype=BF), torch.zeros(group, H, M, dtype=BF),
+              torch.zeros(group, M, H, dtype=BF),
+              torch.zeros(C, HD, HD, dtype=BF), torch.zeros(1, G * C, C, dtype=BF))
+    ccfg = _compiler_config(HINT)
+    key = cache_key(kind="full-prefill", model=MODEL, C=C, nl=group, hint=HINT)
+    build = lambda: CompileModule.from_module(PrefillModel(C, group), sample,
+                                              compiler_config=ccfg)
+    return key, build
+
+
 def rot_matrices_fast(inv, C):
     """[C, HD, HD] block rotations, built with array ops rather than loops."""
     half = HD // 2
@@ -150,28 +175,11 @@ class FullPrefillEngine:
         """
         if C in self.buckets:
             return self.buckets[C]
-        import torch
-        from rngd_pd.engines.fsdk import CompileModule
-        from rngd_pd.engines.fsdk import FCConfig, TacticHintConfig
         d = self._d
-        sample = (torch.zeros(C, H, dtype=BF),
-                  torch.zeros(C, H, dtype=torch.float32), torch.zeros(C, H, dtype=torch.float32),
-                  torch.zeros(self.NG, C, H, dtype=BF),
-                  torch.zeros(self.NG, H, NH * HD, dtype=BF),
-                  torch.zeros(self.NG, H, NKV * HD, dtype=BF),
-                  torch.zeros(self.NG, H, NKV * HD, dtype=BF),
-                  torch.zeros(self.NG, NH * HD, H, dtype=BF),
-                  torch.zeros(self.NG, C, H, dtype=BF),
-                  torch.zeros(self.NG, H, M, dtype=BF), torch.zeros(self.NG, H, M, dtype=BF),
-                  torch.zeros(self.NG, M, H, dtype=BF),
-                  torch.zeros(C, HD, HD, dtype=BF), torch.zeros(1, G * C, C, dtype=BF))
-        ccfg = _compiler_config(HINT)
-        build = lambda: CompileModule.from_module(PrefillModel(C, self.NG), sample,
-                                                  compiler_config=ccfg)
+        key, build = prefill_graph_spec(C, self.NG)
         t0 = time.time()
         if self._cache_dir:
-            from rngd_pd.engines.artifact_cache import get_or_compile, cache_key
-            key = cache_key(kind="full-prefill", model=MODEL, C=C, nl=self.NG, hint=HINT)
+            from rngd_pd.engines.artifact_cache import get_or_compile
             m, mode, secs = get_or_compile(self._cache_dir, key, build, device=None)
             print(f"[full-engine] C={C} {mode} in {secs:.0f}s", flush=True)
         else:

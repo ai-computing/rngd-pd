@@ -20,4 +20,5 @@ jobs:
         run: |
           # tests/native_v4/test_serve.py needs the serving stack (httpx, fastapi)
           PYTHONPATH=src python -m pytest -q tests/test_devices.py tests/native_v4 \
+            tests/test_continuous_backlog.py tests/test_solo_openai.py \
             --ignore=tests/native_v4/test_serve.py $(ls -d tests/swap 2>/dev/null)
