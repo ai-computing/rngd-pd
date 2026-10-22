@@ -55,12 +55,18 @@ spec:
         - {name: LD_LIBRARY_PATH, value: "/host-libs"}
         - {name: PYTHONUNBUFFERED, value: "1"}
         - {name: PYTHONDONTWRITEBYTECODE, value: "1"}
+        - {name: POD_UID, valueFrom: {fieldRef: {fieldPath: metadata.uid}}}
+        - {name: CONTAINER_NAME, value: bench}
         - {name: HF_HOME, value: "${RNGD_PD_HOME}/.cache/huggingface"}
         resources:
           limits: {furiosa.ai/rngd: "1", memory: 160Gi}
           requests: {cpu: "16", memory: 96Gi, furiosa.ai/rngd: "1"}
+        # The fused 8-PE device needs npuNp2pmem, outside the device plugin's
+        # allowlist, so the pod is privileged like the chart's prefill pod. It
+        # then sees every card; --chip -1 picks the one k8s allocated from the
+        # kubelet checkpoint (src/rngd_pd/devices.py) and touches no other.
         securityContext:
-          seccompProfile: {type: Unconfined}
+          privileged: true
         volumeMounts:
         - {name: work, mountPath: "${RNGD_PD_HOME}/tmp/swap17"}
         - {name: venvs, mountPath: "${RNGD_PD_HOME}/venvs", readOnly: true}
@@ -68,6 +74,7 @@ spec:
         - {name: hf, mountPath: "${RNGD_PD_HOME}/.cache/huggingface", readOnly: true}
         - {name: cache, mountPath: /cache, readOnly: true}
         - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: device-plugins, mountPath: /var/lib/kubelet/device-plugins, readOnly: true}
       volumes:
       - {name: work, hostPath: {path: "${RNGD_PD_HOME}/tmp/swap17", type: Directory}}
       - {name: venvs, hostPath: {path: "${RNGD_PD_HOME}/venvs", type: Directory}}
@@ -75,3 +82,4 @@ spec:
       - {name: hf, hostPath: {path: "${RNGD_PD_HOME}/.cache/huggingface", type: Directory}}
       - {name: cache, hostPath: {path: "${RNGD_PD_HOME}/workspace/01_pd_disag/rngd_llmd/artifacts_cache", type: Directory}}
       - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: device-plugins, hostPath: {path: /var/lib/kubelet/device-plugins, type: Directory}}
