@@ -97,8 +97,10 @@ raw decoder runtime; `generate()` drives greedy generation with the matching
 batch width. `select()` provides the same queue-depth policy hook as RNGD.
 
 For an independently compiled bundle, register another `AtomBundle` and call
-`future = engine.prepare_async(variant, "other")`. Current requests keep running
-while one background thread loads it. After `future.result()`,
+`future = engine.prepare_async(variant, "other")`. Loading runs in a background
+thread without taking the request lock. The vendor runtime can still serialize
+native loading and execution; this does not guarantee uninterrupted latency.
+After `future.result()`,
 `engine.swap(variant, "other", require_ready=True)` selects it without loading
 weights on that call. A failed preparation leaves the active bundle usable.
 `release("main")` releases an inactive bundle; `allocations()` reports the SDK's

@@ -78,7 +78,8 @@ class SwappableAtom:
         runtimes = {v: model.model[names.index(f"decoder_batch_{v.B}")]
                     for v in self.bundles[name].variants}
         return dict(model=model, runtimes=runtimes,
-                    prepare_s=time.perf_counter() - start)
+                    prepare_s=time.perf_counter() - start,
+                    prepared_at_s=time.perf_counter())
 
     def prepare_async(self, variant, bundle=None):
         """Start a separate bundle's full load; failures stay on the Future.

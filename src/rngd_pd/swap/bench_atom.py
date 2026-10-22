@@ -87,7 +87,7 @@ def main(argv=None):
             pending = not future.done()
             active = e.active
             t_serving = time.perf_counter()
-            during_tokens = e.generate(_prompts(active.B), a.tokens)
+            during_tokens, during_ttft = e.generate(_prompts(active.B), a.tokens, timed=True)
             serving_s = time.perf_counter() - t_serving
             prepared = future.result()
             info = e.swap(vs[0], "warm", require_ready=True)
@@ -96,6 +96,9 @@ def main(argv=None):
                                   background_prepare_s=prepared["prepare_s"],
                                   prepare_pending_before_serving=pending,
                                   serving_during_prepare_s=serving_s,
+                                  serving_during_prepare_ttft_s=during_ttft,
+                                  token_before_prepare_completed=(
+                                      t_serving + during_ttft < prepared["prepared_at_s"]),
                                   during_prepare_tokens_equal_fresh=(
                                       during_tokens == result["fresh"][active.name]["tokens"]),
                                   tokens_equal_fresh=tokens == result["fresh_warm"]["tokens"],
