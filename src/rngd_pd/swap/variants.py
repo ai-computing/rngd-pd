@@ -17,7 +17,8 @@ class Variant:
 
     @property
     def name(self):
-        return f"B{self.B}-S{self.S}-g{self.group}"
+        """B4-S512-g8; ATOM variants have no layer group (group 0): B4-S512."""
+        return f"B{self.B}-S{self.S}" + (f"-g{self.group}" if self.group else "")
 
     @classmethod
     def parse(cls, text, group=8):
