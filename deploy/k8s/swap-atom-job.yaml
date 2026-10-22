@@ -1,0 +1,72 @@
+# Delta-load runs on one Rebellions ATOM (#17): any command, one card, run-and-exit.
+#
+# CMD runs in WORK/rngd-pd/src with $PY (a Python with rebel-compiler, and
+# torch-rbln for the device-input path). Compiles need no card: run them with
+# the rebellions.ai/ATOM request removed.
+#
+#   python3 deploy/k8s/render.py deploy/k8s/swap-atom-job.yaml | kubectl apply -f -
+#   kubectl -n rngd-swap logs -f job/swap-atom
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: swap-atom
+  namespace: rngd-swap
+  labels: {app: swap-atom}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 5400
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels: {app: swap-atom}
+    spec:
+      restartPolicy: Never
+      nodeSelector: {kubernetes.io/hostname: ${RNGD_PD_NODE}}
+      containers:
+      - name: run
+        image: ubuntu:22.04
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        args:
+        - |
+          set -eu; export DEBIAN_FRONTEND=noninteractive
+          apt-get update -qq; apt-get install -y -qq --no-install-recommends python3.10 libgomp1 libnuma1 ca-certificates build-essential >/dev/null   # rebel's compile needs a host toolchain
+          ln -sf python3.10 /usr/bin/python3
+          mkdir -p $WORK/out
+          trap 'chown -R $(stat -c %u:%g $WORK) $WORK/out $WORK/atom 2>/dev/null || true' EXIT
+          cd $WORK/rngd-pd/src
+          eval "$CMD"
+        env:
+        - {name: WORK, value: "${RNGD_PD_HOME}/tmp/swap17"}
+        - {name: CMD, value: "$PY ../bench/swap_atom_probe.py --out $WORK/out/atom_probe.json"}
+        - {name: PY, value: "${RNGD_PD_HOME}/tmp/swap17/venv-rbln/bin/python"}
+        - {name: PYTHONPATH, value: "${RNGD_PD_HOME}/tmp/swap17/rngd-pd/src:${RNGD_PD_HOME}/.local/lib/python3.10/site-packages"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        - {name: PYTHONDONTWRITEBYTECODE, value: "1"}
+        - {name: HF_HOME, value: "${RNGD_PD_HOME}/.cache/huggingface"}
+        - {name: HF_HUB_OFFLINE, value: "1"}
+        # the RBLN runtime libraries (librbln-thunk, ...) are installed in the host's /usr/lib
+        - {name: LD_LIBRARY_PATH, value: "/host-libs:/host-usrlib"}
+        - {name: PATH, value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-bin"}
+        resources:
+          limits: {rebellions.ai/ATOM: "1", memory: 200Gi}
+          requests: {cpu: "16", memory: 96Gi, rebellions.ai/ATOM: "1"}
+        volumeMounts:
+        - {name: work, mountPath: "${RNGD_PD_HOME}/tmp/swap17"}
+        - {name: local-pkgs, mountPath: "${RNGD_PD_HOME}/.local/lib/python3.10/site-packages", readOnly: true}
+        - {name: hf, mountPath: "${RNGD_PD_HOME}/.cache/huggingface", readOnly: true}
+        - {name: libs, mountPath: /host-libs, readOnly: true}
+        - {name: bin, mountPath: /host-bin, readOnly: true}
+        - {name: usrlib, mountPath: /host-usrlib, readOnly: true}
+        # rebel imports packages the host Python has outside ~/.local (decorator, ...)
+        - {name: dist, mountPath: /usr/lib/python3/dist-packages, readOnly: true}
+        - {name: local-dist, mountPath: /usr/local/lib/python3.10/dist-packages, readOnly: true}
+      volumes:
+      - {name: work, hostPath: {path: "${RNGD_PD_HOME}/tmp/swap17", type: Directory}}
+      - {name: local-pkgs, hostPath: {path: "${RNGD_PD_HOME}/.local/lib/python3.10/site-packages", type: Directory}}
+      - {name: hf, hostPath: {path: "${RNGD_PD_HOME}/.cache/huggingface", type: Directory}}
+      - {name: libs, hostPath: {path: /usr/lib/x86_64-linux-gnu, type: Directory}}
+      - {name: bin, hostPath: {path: /usr/bin, type: Directory}}
+      - {name: usrlib, hostPath: {path: /usr/lib, type: Directory}}
+      - {name: dist, hostPath: {path: /usr/lib/python3/dist-packages, type: Directory}}
+      - {name: local-dist, hostPath: {path: /usr/local/lib/python3.10/dist-packages, type: Directory}}
