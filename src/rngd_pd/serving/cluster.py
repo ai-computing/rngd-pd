@@ -1689,6 +1689,10 @@ def _post(url, obj, timeout=600):
 def make_handler(routes):
     class H(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
+        # A token stream is one small write per token. With Nagle on, each
+        # write after the first waits for the client's delayed ACK, which
+        # added 25-30 ms to every token over HTTP (#14, phase 2).
+        disable_nagle_algorithm = True
 
         def log_message(self, *a):
             pass

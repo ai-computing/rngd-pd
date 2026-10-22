@@ -1,0 +1,63 @@
+{
+ "S": 1024,
+ "B": 16,
+ "decode_group": 8,
+ "buckets": [
+  128,
+  256,
+  512
+ ],
+ "prefill": {
+  "128": {
+   "bucket": 128,
+   "group_calls": 16,
+   "call_ms": 1.51,
+   "calls_total_ms": 24.16,
+   "embed_upload_ms": null,
+   "finish_ms": 5.072,
+   "lane_write_ms": 2.063,
+   "total_ms": 33.914
+  },
+  "512": {
+   "bucket": 512,
+   "group_calls": 16,
+   "call_ms": 3.214,
+   "calls_total_ms": 51.42,
+   "embed_upload_ms": null,
+   "finish_ms": 5.428,
+   "lane_write_ms": 2.221,
+   "total_ms": 64.173
+  }
+ },
+ "decode": {
+  "embed_upload_ms": 0.625,
+  "tables_upload_ms": 1.324,
+  "groups_ms": 33.328,
+  "lmhead_ms": 1.575,
+  "logits_download_ms": 0.84,
+  "logits_cast_ms": 0.218,
+  "argmax_ms": 3.491,
+  "total_ms": 40.562,
+  "group_call_ms": 8.325,
+  "engine_step_ms": 42.849
+ },
+ "scheduler": {
+  "1": {
+   "ttft_ms": 913.695,
+   "tpot_ms": 39.75,
+   "scheduler_step_ms": 38.2
+  },
+  "4": {
+   "ttft_ms": 427.149,
+   "tpot_ms": 43.308,
+   "scheduler_step_ms": 42.7
+  },
+  "16": {
+   "ttft_ms": 1919.471,
+   "tpot_ms": 47.195,
+   "scheduler_step_ms": 42.55
+  }
+ },
+ "date": "2026-10-22",
+ "card": "one RNGD, furiosa-torch 2026.2.0"
+}
