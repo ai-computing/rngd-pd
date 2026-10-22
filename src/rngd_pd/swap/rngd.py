@@ -20,6 +20,8 @@ import json
 import math
 import os
 import time
+from functools import wraps
+from threading import RLock
 
 import numpy as np
 
@@ -46,6 +48,22 @@ def _now():
     return time.perf_counter()
 
 
+def _serialized(method):
+    @wraps(method)
+    def call(self, *args, **kwargs):
+        with self._lock:
+            if self._failed:
+                raise RuntimeError("resident weights are unavailable; reload the engine")
+            return method(self, *args, **kwargs)
+    return call
+
+
+class _KV(list):
+    def __init__(self, tensors, generation):
+        super().__init__(tensors)
+        self.generation = generation
+
+
 class Checkpoint:
     """Lazy per-tensor reader over a safetensors checkpoint directory."""
 
@@ -68,6 +86,9 @@ class Checkpoint:
         with open(os.path.join(path, "config.json")) as f:
             self.config = json.load(f)
 
+    def close(self):
+        self._open.clear()
+
     def get(self, name):
         """torch tensor in the checkpoint's dtype (bf16 for Llama-3.1)."""
         fn = self.where[name]
@@ -84,24 +105,6 @@ class Checkpoint:
         return ModelConfig(SimpleNamespace(**c)).inv_freq()
 
 
-def free_capacity_gib(dev, chunk_mib=256):
-    """Device capacity still free, by allocating chunks until it fails.
-
-    furiosa-smi does not show furiosa-torch allocations, so this is the only
-    public way to see what a step cost. Resolution: one chunk.
-    """
-    import torch
-    held, n = [], chunk_mib * (1 << 20) // 2
-    try:
-        while True:
-            held.append(torch.empty(n, dtype=torch.bfloat16, device=dev))
-    except Exception:
-        pass
-    got = len(held) * chunk_mib / 1024
-    del held
-    return got
-
-
 class SwappableDecode:
     """Batched decode on one RNGD card with swappable compiled variants.
 
@@ -113,18 +116,35 @@ class SwappableDecode:
     def __init__(self, checkpoint, group=8, chip=0, cache_dir=None,
                  allow_compile=False, log=print):
         import torch
-        from rngd_pd.engines.fsdk import dev_str
+        from rngd_pd.engines.fsdk import dev_str, open_device
         from rngd_pd.paths import ARTIFACT_CACHE
         torch.set_grad_enabled(False)
         self.torch = torch
+        self._lock = RLock()
+        self._failed = False
+        self._generation = 0
         self.BF = torch.bfloat16
         self.ck = checkpoint if isinstance(checkpoint, Checkpoint) else Checkpoint(checkpoint)
+        dims = self.ck.config
+        expected = dict(hidden_size=H, intermediate_size=M, num_attention_heads=NH,
+                        num_key_value_heads=NKV)
+        if any(dims.get(k) != value for k, value in expected.items()):
+            raise ValueError("these decode graphs require the Llama-3.1-8B dimensions")
+        if (dims.get("head_dim", HD) not in (None, HD)
+                or dims.get("hidden_act", "silu") != "silu"
+                or dims.get("attention_bias", False) or dims.get("mlp_bias", False)):
+            raise ValueError("unsupported head dimensions, activation or projection biases")
         self.group = group
         self.nl = self.ck.config["num_hidden_layers"]
-        assert self.nl % group == 0
+        if type(group) is not int or group < 1 or self.nl % group:
+            raise ValueError("group must divide the layer count")
         self.ngroups = self.nl // group
         self.dev = dev_str(chip)
         self.chip = chip
+        # Set fusion/mesh BEFORE the first weight upload, not only when the
+        # decode kernel is imported later by _graphs(). The default one-PE
+        # address space cannot hold the resident 8B weights.
+        open_device(8, 2)
         self.cache_dir = str(cache_dir or ARTIFACT_CACHE)
         self.allow_compile = allow_compile
         self.log = log
@@ -137,8 +157,13 @@ class SwappableDecode:
         self._load_host_side()
         t1 = _now()
         self._upload_shared()
+        self._sync()
         t2 = _now()
         self.timings.update(host_weights_s=t1 - t0, upload_weights_s=t2 - t1)
+
+    def _sync(self):
+        from rngd_pd.engines.fsdk import sync
+        sync(self.chip)
 
     # ---------------------------------------------------------------- weights
 
@@ -241,6 +266,7 @@ class SwappableDecode:
                     nh=df(np.full((B, H), -0.5, np.float32)),
                     norm=d(np.tile(self.norm * math.sqrt(H), (B, 1))))
 
+    @_serialized
     def prepare(self, v):
         """Load a variant's graphs and build its small tensors; weights untouched."""
         if v.group != self.group:
@@ -255,6 +281,7 @@ class SwappableDecode:
         lmh.to(self.dev)
         t2 = _now()
         st = dict(m=m, lmh=lmh, tab=self._tables(v.S), pb=self._per_batch(v.B))
+        self._sync()
         t3 = _now()
         self.variants[v] = st
         info = dict(prepared=True, graph_source=how, graph_read_s=t1 - t0,
@@ -262,15 +289,29 @@ class SwappableDecode:
         st["prepare"] = info
         return info
 
+    @_serialized
     def swap(self, v):
         """Make v the active variant. Returns where the time went (seconds)."""
         t0 = _now()
         info = self.prepare(v)
+        if self.active != v:
+            self._generation += 1
         self.active = v
         info["swap_s"] = _now() - t0
         info["variant"] = v.name
         return info
 
+    @_serialized
+    def select(self, selector, depth, context, variants):
+        """Load-driven hook for NEW requests after old KV has drained."""
+        batch = selector.observe(depth)
+        choices = [v for v in variants if v.B == batch and v.S >= context
+                   and v.group == self.group]
+        if not choices:
+            raise ValueError("no compiled variant fits the selector and context")
+        return self.swap(min(choices, key=lambda v: v.S))
+
+    @_serialized
     def release(self, v):
         """Drop a variant's graphs and tables; the shared weights stay."""
         if v == self.active:
@@ -279,18 +320,34 @@ class SwappableDecode:
 
     # ----------------------------------------------------------------- decode
 
+    @_serialized
     def blank_kv(self):
         v = self.active
+        if v is None:
+            raise RuntimeError("select a variant with swap() first")
         K = [self.torch.zeros(self.group, v.B, NKV, HD, v.S, dtype=self.BF).to(self.dev)
              for _ in range(self.ngroups)]
         V = [self.torch.zeros(self.group, v.B, NKV, v.S, HD, dtype=self.BF).to(self.dev)
              for _ in range(self.ngroups)]
-        return K, V
+        return _KV(K, self._generation), _KV(V, self._generation)
 
+    @_serialized
     def step(self, toks, positions, Kd, Vd):
         """One token for each of B streams on the active variant."""
         torch = self.torch
         v = self.active
+        if v is None:
+            raise RuntimeError("select a variant with swap() first")
+        if (len(toks) != v.B or len(positions) != v.B
+                or any(not isinstance(t, (int, np.integer)) or not 0 <= t < self.V for t in toks)
+                or not isinstance(Kd, _KV) or not isinstance(Vd, _KV)
+                or Kd.generation != self._generation or Vd.generation != self._generation
+                or any(type(p) not in (int, np.int32, np.int64) or not 0 <= p < v.S
+                       for p in positions)
+                or len(Kd) != self.ngroups or len(Vd) != self.ngroups
+                or any(tuple(t.shape) != (self.group, v.B, NKV, HD, v.S) for t in Kd)
+                or any(tuple(t.shape) != (self.group, v.B, NKV, v.S, HD) for t in Vd)):
+            raise ValueError("inputs/KV do not fit the active variant; start a fresh request")
         st = self.variants[v]
         tab, pb = st["tab"], st["pb"]
         d = lambda a: torch.from_numpy(np.ascontiguousarray(a)).to(self.BF).to(self.dev)
@@ -308,15 +365,19 @@ class SwappableDecode:
         lg = logits.detach().cpu().float().numpy().reshape(self.Vp, v.B)[:self.V]
         return [int(np.argmax(lg[:, b])) for b in range(v.B)], Kd, Vd
 
+    @_serialized
     def generate(self, prompts, n_new):
         """Greedy decode of B equal-length prompts, prompt fed through the decode graph.
 
         Returns (tokens per stream, seconds to the first generated token).
         """
         v = self.active
-        assert len(prompts) == v.B and len({len(p) for p in prompts}) == 1
+        if (v is None or len(prompts) != v.B or not prompts[0]
+                or len({len(p) for p in prompts}) != 1 or type(n_new) is not int or n_new < 1):
+            raise ValueError("need B nonempty, equal-length prompts and positive n_new")
         P = len(prompts[0])
-        assert P + n_new <= v.S
+        if P + n_new > v.S:
+            raise ValueError("prompt + generation exceed the selected context")
         t0 = _now()
         Kd, Vd = self.blank_kv()
         nxt = None
@@ -330,6 +391,7 @@ class SwappableDecode:
                 outs[b].append(t)
         return outs, ttft
 
+    @_serialized
     def first_step(self):
         """Request -> first token on the active variant: one step on a fresh cache."""
         v = self.active
@@ -340,60 +402,131 @@ class SwappableDecode:
 
     # ------------------------------------------------------------------ delta
 
+    @_serialized
     def apply_delta(self, new_checkpoint, plan, mode="inplace"):
-        """Switch the resident weights to new_checkpoint, uploading only plan's tensors.
+        """Update changed tensors at a drained request boundary.
 
-        plan: swap.delta.UpdatePlan for (current checkpoint -> new_checkpoint).
-        Large matrices are replaced in place, layer by layer, in the stacked
-        device tensor (mode "inplace"), or the touched [group, ...] stacks are
-        uploaded again (mode "group"); the norms and embedding are host-side
-        and rebuilt. Returns timings and bytes uploaded.
+        Validate and stage before touching device state. Inplace mode uploads
+        only changed layer tensors and restores them on an error. Group mode
+        stages replacement group tensors and commits references atomically,
+        at the cost of uploading all layers in each touched group. If device
+        rollback itself fails the engine stops serving until reloaded.
         """
-        new = new_checkpoint if isinstance(new_checkpoint, Checkpoint) \
-            else Checkpoint(new_checkpoint)
+        if mode not in ("inplace", "group"):
+            raise ValueError("delta mode must be inplace or group")
+        new = new_checkpoint if isinstance(new_checkpoint, Checkpoint) else Checkpoint(new_checkpoint)
+        old = self.ck
+        if (plan.base_dir != os.path.realpath(old.path)
+                or plan.new_dir != os.path.realpath(new.path)):
+            raise ValueError("delta plan does not describe the resident and target checkpoints")
+        # Changing graph semantics is a full reload, not a weight update.
+        keys = ("model_type", "hidden_size", "intermediate_size", "num_hidden_layers",
+                "num_attention_heads", "num_key_value_heads", "head_dim", "vocab_size",
+                "rms_norm_eps", "rope_theta", "rope_scaling", "tie_word_embeddings",
+                "hidden_act", "attention_bias", "mlp_bias")
+        if any(old.config.get(k) != new.config.get(k) for k in keys):
+            raise ValueError("checkpoint graph/rotary configuration changed; reload required")
+        if plan.removed or set(old.where) != set(new.where):
+            raise ValueError("checkpoint tensor set changed; reload required")
+        for name in plan.tensors:
+            if name.startswith("model.layers."):
+                parts = name.split(".", 3)
+                if (len(parts) != 4 or not parts[2].isdigit()
+                        or not 0 <= int(parts[2]) < self.nl or parts[3] not in _LAYER):
+                    raise ValueError(f"unsupported changed tensor: {name}")
+            elif name not in {self.lm_name, "model.embed_tokens.weight", "model.norm.weight"}:
+                raise ValueError(f"unsupported changed tensor: {name}")
+            a, b = old.get(name), new.get(name)
+            if tuple(a.shape) != tuple(b.shape) or a.dtype != b.dtype:
+                raise ValueError(f"tensor layout changed; reload required: {name}")
+
         t0 = _now()
-        old, self.ck = self.ck, new
-        uploaded, host_only, rebuilt_norms = 0, [], False
-        restack = set()
+        old_host = (self.embed, self.norm, self.n1, self.n2, self.wlm_d)
+        old_pb = {v: st["pb"] for v, st in self.variants.items()}
+        self.n1, self.n2 = list(self.n1), list(self.n2)
+        staged, restore, replacements = {}, {}, {}
+        uploaded, host_only, norms_changed = 0, [], False
+        attempted = []
         try:
+            # Host transforms can fail: do them all before the first write.
+            self.ck = new
             for name in sorted(plan.tensors):
                 if name.startswith("model.layers."):
                     i = int(name.split(".")[2])
-                    suffix = name.split(".", 3)[3]
-                    slot, tr = _LAYER[suffix]
+                    slot, tr = _LAYER[name.split(".", 3)[3]]
                     if slot in _SHARED_SLOTS:
                         g, li = divmod(i, self.group)
                         if mode == "group":
-                            restack.add((g, slot))
-                            continue
-                        t = self._host(name, tr)
-                        self.shared[g][slot][li] = t.to(self.dev)
-                        uploaded += t.numel() * 2
+                            replacements[(g, slot)] = None
+                        else:
+                            staged[(g, slot, li)] = self._host(name, tr)
                     else:
                         (self.n1 if slot == "n1" else self.n2)[i] = self._host(name, tr)
-                        rebuilt_norms = True
+                        norms_changed = True
                 elif name == self.lm_name:
                     self.wlm_d = self._lm_host().to(self.dev)
                     uploaded += self.Vp * H * 2
                     if name == "model.embed_tokens.weight":
-                        self.embed = self.ck.get(name).float().numpy()
+                        self.embed = new.get(name).float().numpy()
                 elif name == "model.embed_tokens.weight":
-                    self.embed = self.ck.get(name).float().numpy()
+                    self.embed = new.get(name).float().numpy()
                     host_only.append(name)
                 elif name == "model.norm.weight":
-                    self.norm = self.ck.get(name).float().numpy()
-                    rebuilt_norms = True
-                else:
-                    host_only.append(name)
-            for g, slot in sorted(restack):
+                    self.norm = new.get(name).float().numpy()
+                    norms_changed = True
+            for g, slot in replacements:
                 t = self._group_slot_host(g, slot)
-                self.shared[g][slot] = t.to(self.dev)
+                replacements[(g, slot)] = t.to(self.dev)
                 uploaded += t.numel() * 2
-            if rebuilt_norms:
-                for v, st in self.variants.items():
-                    st["pb"] = self._per_batch(v.B)
-        except Exception:
+            new_pb = {v: self._per_batch(v.B) for v in self.variants} if norms_changed else old_pb
+            if norms_changed:
+                for pb in new_pb.values():
+                    uploaded += sum(t.numel() * t.element_size()
+                                    for key in ("n1", "n2") for t in pb[key])
+                    uploaded += sum(pb[k].numel() * pb[k].element_size()
+                                    for k in ("eps", "nh", "norm"))
+            self._sync()
+            # Capture rollback values from the *old* checkpoint, not from a
+            # slow or unsupported device readback.
             self.ck = old
-            raise
+            for g, slot, li in staged:
+                suffix = next(k for k, value in _LAYER.items() if value[0] == slot)
+                restore[(g, slot, li)] = self._host(
+                    f"model.layers.{g * self.group + li}.{suffix}", _LAYER[suffix][1])
+            self.ck = new
+            for key, tensor in staged.items():
+                g, slot, li = key
+                attempted.append(key)  # include a write that partially fails
+                self.shared[g][slot][li].copy_(tensor.to(self.dev))
+                uploaded += tensor.numel() * tensor.element_size()
+            self._sync()
+            for (g, slot), tensor in replacements.items():
+                self.shared[g][slot] = tensor
+            for v, pb in new_pb.items():
+                self.variants[v]["pb"] = pb
+        except Exception as error:
+            self.ck = old
+            self.embed, self.norm, self.n1, self.n2, self.wlm_d = old_host
+            for v, pb in old_pb.items():
+                self.variants[v]["pb"] = pb
+            try:
+                for g, slot, li in attempted:
+                    self.shared[g][slot][li].copy_(restore[(g, slot, li)].to(self.dev))
+                self._sync()
+            except Exception as rollback_error:
+                self._failed = True
+                raise RuntimeError("delta update and rollback failed; reload required") from rollback_error
+            raise error
+        self._generation = getattr(self, "_generation", 0) + 1
         return dict(delta_s=_now() - t0, uploaded_bytes=uploaded, mode=mode,
                     tensors=len(plan.tensors), host_only=host_only)
+
+    def close(self):
+        with self._lock:
+            self._sync()
+            self.variants.clear()
+            self.shared.clear()
+            self.wlm_d = None
+            self.active = None
+            self._failed = True
+            self.ck.close()

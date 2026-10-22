@@ -461,3 +461,7 @@ tests/
 - [ ] 서빙 파드에서 `nixl`: 양쪽의 device 상주 KV ([aicomp#48](https://github.com/ai-computing/aicomp/issues/48))
 - [ ] continuous batching 상시 서버, Envoy ext-proc EPP
 - [ ] Optimus Prime으로 통합 ([계획](https://github.com/ai-computing/ai-rm/blob/master/docs/engine-integration.md))
+
+## Delta load와 그래프 전환
+
+`rngd_pd.swap`은 RNGD 상주 가중치 재사용·변경 텐서 업로드와 ATOM 공동 컴파일 그래프 전환을 지원합니다. 별도 ATOM 빌드는 메모리가 허용할 때 백그라운드로 준비합니다. 기본 서빙 경로와 진행 중인 요청의 KV를 자동 전환하지 않습니다. [API와 재현 명령](docs/delta-swap.md)을 참고하세요.

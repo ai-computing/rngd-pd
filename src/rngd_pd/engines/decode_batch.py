@@ -46,23 +46,24 @@ def decode_graph_spec(B, S, group):
     from rngd_pd.engines.artifact_cache import cache_key
     key = cache_key(kind="batch-decode", model=MODEL, B=B, S=S, nl=group,
                     hint=HINT, **MAX_SHAPES)
-    sample = (torch.zeros(B, H, dtype=BF),
-              torch.zeros(B, H, dtype=torch.float32), torch.zeros(B, H, dtype=torch.float32),
-              torch.zeros(group, B, H, dtype=BF),
-              torch.zeros(group, H, NH * HD, dtype=BF), torch.zeros(group, H, NKV * HD, dtype=BF),
-              torch.zeros(group, H, NKV * HD, dtype=BF), torch.zeros(group, NH * HD, H, dtype=BF),
-              torch.zeros(group, B, H, dtype=BF),
-              torch.zeros(group, H, M, dtype=BF), torch.zeros(group, H, M, dtype=BF),
-              torch.zeros(group, M, H, dtype=BF),
-              torch.zeros(group, B, NKV, HD, S, dtype=BF),
-              torch.zeros(group, B, NKV, S, HD, dtype=BF),
-              torch.zeros(B, HD, HD, dtype=BF),
-              torch.zeros(B, S, dtype=BF), torch.zeros(B, S, dtype=BF))
-    ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
-                    tactic_hint=_hint(HINT),
-                    **MAX_SHAPES)
-    build = lambda: CompileModule.from_module(DecodeModel(B, S, group), sample,
-                                              compiler_config=ccfg)
+    def build():
+        sample = (torch.zeros(B, H, dtype=BF),
+                  torch.zeros(B, H, dtype=torch.float32), torch.zeros(B, H, dtype=torch.float32),
+                  torch.zeros(group, B, H, dtype=BF),
+                  torch.zeros(group, H, NH * HD, dtype=BF), torch.zeros(group, H, NKV * HD, dtype=BF),
+                  torch.zeros(group, H, NKV * HD, dtype=BF), torch.zeros(group, NH * HD, H, dtype=BF),
+                  torch.zeros(group, B, H, dtype=BF),
+                  torch.zeros(group, H, M, dtype=BF), torch.zeros(group, H, M, dtype=BF),
+                  torch.zeros(group, M, H, dtype=BF),
+                  torch.zeros(group, B, NKV, HD, S, dtype=BF),
+                  torch.zeros(group, B, NKV, S, HD, dtype=BF),
+                  torch.zeros(B, HD, HD, dtype=BF),
+                  torch.zeros(B, S, dtype=BF), torch.zeros(B, S, dtype=BF))
+        ccfg = FCConfig(allow_external_operators=True, allow_unlowered_operators=True,
+                        tactic_hint=_hint(HINT),
+                        **MAX_SHAPES)
+        return CompileModule.from_module(DecodeModel(B, S, group), sample,
+                                         compiler_config=ccfg)
     return key, build
 
 
@@ -123,10 +124,6 @@ def lmhead_graph_spec(B, V, NG=32):
             h = self.rms(x, nw, eps, nh)[0]              # [B,H]
             return torch.matmul(wlm, h.t())              # [NG,Vp/NG,B]
 
-    sample = (torch.zeros(B, H, dtype=BF), torch.zeros(B, H, dtype=BF),
-              torch.zeros(B, H, dtype=torch.float32),
-              torch.zeros(B, H, dtype=torch.float32),
-              torch.zeros(NG, Vp // NG, H, dtype=BF))
     # On 2026.2.0 the hint flips sign with the batch, and there is no rule to
     # it: measured over all seven, the winner is ForLlmModelDecode at B=4
     # (1.24 ms), ForMiscModel at B=8 (1.21) and Default at B=16 (1.34), while
@@ -149,8 +146,12 @@ def lmhead_graph_spec(B, V, NG=32):
     # load each other's artifact and the fix would silently do nothing
     key = cache_key(kind="batch-lmhead", model=MODEL, B=B, V=V, groups=NG,
                     hint=hint.__class__.__name__ + str(hint))
-    build = lambda: CompileModule.from_module(LmHead(), sample,
-                                              compiler_config=ccfg)
+    def build():
+        sample = (torch.zeros(B, H, dtype=BF), torch.zeros(B, H, dtype=BF),
+                  torch.zeros(B, H, dtype=torch.float32),
+                  torch.zeros(B, H, dtype=torch.float32),
+                  torch.zeros(NG, Vp // NG, H, dtype=BF))
+        return CompileModule.from_module(LmHead(), sample, compiler_config=ccfg)
     return key, build
 
 

@@ -43,8 +43,9 @@ def _engine(a, ckpt, group):
 def _mem(a, eng):
     if not a.mem:
         return None
-    from rngd_pd.swap.rngd import free_capacity_gib
-    return free_capacity_gib(eng.dev)
+    # Account owned weights without allocating until OOM on a shared card.
+    return sum(t.numel() * t.element_size() for group in eng.shared
+               for t in group.values()) / (1 << 30) + eng.wlm_d.numel() * 2 / (1 << 30)
 
 
 def cmd_fresh(a):
@@ -54,16 +55,18 @@ def cmd_fresh(a):
     eng = _engine(a, ckpt, v.group)
     t_w = time.perf_counter()
     info = eng.swap(v)
-    first_s, _ = eng.first_step()
-    t_first = time.perf_counter()
-    wall_first = time.time()
+    t_generate = time.perf_counter()
+    wall_generate = time.time()
     toks, ttft = eng.generate(prompts(v.B, a.P), a.n)
+    t_first = t_generate + ttft
+    wall_first = wall_generate + ttft
+    first_s = ttft
     out = dict(mode="fresh", variant=v.name, ckpt=ckpt,
                launch_to_first_token_s=(wall_first - a.t_launch) if a.t_launch else None,
                process_to_first_token_s=t_first - T_START,
                imports_s=t_import - T_START, weights=eng.timings,
                engine_init_s=t_w - t_import, graph=info, first_step_s=first_s,
-               prompt_ttft_s=ttft, tokens=toks, free_gib=_mem(a, eng))
+               prompt_ttft_s=ttft, tokens=toks, resident_weight_gib=_mem(a, eng))
     _write(a, out)
 
 
@@ -74,26 +77,18 @@ def cmd_swap(a):
     free0 = _mem(a, eng)
     for rnd in range(2):
         for v in vs:
-            if rnd == 0 and v == vs[0]:
-                info = eng.swap(v)
-                first_s, _ = eng.first_step()
-                info["first_step_s"] = first_s
-                info["request_to_first_token_s"] = info["swap_s"] + first_s
-                info["initial"] = True
-            else:
-                t0 = time.perf_counter()
-                info = eng.swap(v)
-                first_s, _ = eng.first_step()
-                info["first_step_s"] = first_s
-                info["request_to_first_token_s"] = time.perf_counter() - t0
+            t0 = time.perf_counter()
+            info = eng.swap(v)
             toks, ttft = eng.generate(prompts(v.B, a.P), a.n)
+            info["request_to_first_token_s"] = info["swap_s"] + ttft
+            info["initial"] = rnd == 0 and v == vs[0]
             info.update(round=rnd, tokens=toks, prompt_ttft_s=ttft)
             if rnd == 0:
-                info["free_gib_after"] = _mem(a, eng)
+                info["resident_weight_gib_after"] = _mem(a, eng)
             rows.append(info)
             print(f"[swap] round {rnd} {v.name}: request->first token "
                   f"{info['request_to_first_token_s']*1e3:.0f} ms", flush=True)
-    _write(a, dict(mode="swap", ckpt=a.ckpt, weights=eng.timings, free_gib_start=free0,
+    _write(a, dict(mode="swap", ckpt=a.ckpt, weights=eng.timings, resident_weight_gib_start=free0,
                    rows=rows))
 
 
@@ -106,7 +101,7 @@ def cmd_delta(a):
     t0 = time.perf_counter()
     if a.ranges and os.path.exists(a.ranges):
         rng = delta.load_onggi_ranges(a.ranges)
-        source = "onggi"
+        source = "provided-ranges"
     else:
         rng = None
         source = "local-compare"
@@ -114,12 +109,13 @@ def cmd_delta(a):
     t_plan = time.perf_counter() - t0
     t1 = time.perf_counter()
     res = eng.apply_delta(a.delta_new, plan, mode=a.delta_mode)
-    first_s, _ = eng.first_step()
-    t_first = time.perf_counter() - t1
+    t_generate = time.perf_counter()
     toks, ttft = eng.generate(prompts(v.B, a.P), a.n)
+    t_first = t_generate - t1 + ttft
     _write(a, dict(mode="delta", variant=v.name, ranges_source=source, plan_s=t_plan,
                    plan=plan.summary(), apply=res,
-                   request_to_first_token_s=t_first, base_tokens=base_toks,
+                   request_to_first_token_s=t_plan + t_first, apply_to_first_token_s=t_first,
+                   prompt_ttft_s=ttft, base_tokens=base_toks,
                    tokens=toks))
 
 
@@ -206,6 +202,11 @@ def cmd_all(a):
         res["delta"]["tokens_differ_from_base"] = res["delta"]["tokens"] != res["delta"]["base_tokens"]
     _write(a, res)
     summarize(res)
+    checks = [r["tokens_equal_fresh"] for r in res["swap"]["rows"]]
+    if "delta" in res:
+        checks.extend([res["delta"]["tokens_equal_fresh_new"], res["delta"]["base_tokens_equal_fresh"]])
+    if not all(checks):
+        raise SystemExit("token parity failed; see the saved results")
 
 
 def summarize(res):
@@ -237,7 +238,7 @@ def main(argv=None):
     ap.add_argument("--cache")
     ap.add_argument("--P", type=int, default=16)
     ap.add_argument("--n", type=int, default=16)
-    ap.add_argument("--mem", action="store_true", help="probe free device capacity")
+    ap.add_argument("--mem", action="store_true", help="account resident weight bytes; does not probe free HBM")
     ap.add_argument("--delta-new")
     ap.add_argument("--delta-mode", default="inplace", choices=["inplace", "group"])
     ap.add_argument("--ranges", help="onggi diff --ranges --json output (else compare locally)")

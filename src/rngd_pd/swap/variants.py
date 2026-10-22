@@ -15,6 +15,10 @@ class Variant:
     S: int
     group: int = 8
 
+    def __post_init__(self):
+        if any(type(x) is not int or x <= 0 for x in (self.B, self.S, self.group)):
+            raise ValueError("B, S and group must be positive integers")
+
     @property
     def name(self):
         return f"B{self.B}-S{self.S}-g{self.group}"
@@ -46,6 +50,9 @@ class BatchSelector:
         self.batches = sorted(set(int(b) for b in batches))
         if not self.batches:
             raise ValueError("no batch variants")
+        if (any(b <= 0 for b in self.batches) or up_after < 1 or down_after < 1
+                or not 0 < down_ratio <= 1 or min_dwell_s < 0):
+            raise ValueError("invalid batch selector settings")
         self.current = start if start is not None else self.batches[0]
         if self.current not in self.batches:
             raise ValueError(f"start {self.current} not in {self.batches}")
@@ -63,6 +70,8 @@ class BatchSelector:
         return self.batches[-1]
 
     def observe(self, depth):
+        if type(depth) is not int or depth < 0:
+            raise ValueError("depth must be a nonnegative integer")
         want = self.fit(depth)
         if want > self.current:
             self._up += 1

@@ -41,6 +41,9 @@ It is a **migration source for the Optimus Prime engine**
 ([engine consolidation plan](https://github.com/ai-computing/ai-rm/blob/master/docs/engine-integration.md)):
 until that consolidation is validated, this repository remains the executable PD-serving path.
 
+Compiled-variant swapping: [`rngd_pd.swap`](docs/delta-swap.md) keeps RNGD weights resident
+and selects co-compiled ATOM decoders, with an optional background warm pool.
+
 ## ✨ Highlights
 
 <table>

@@ -3,5 +3,6 @@
 - variants: Variant (B, S, group) and BatchSelector (queue depth -> batch, with hysteresis)
 - delta: changed byte ranges (onggi diff --ranges) -> changed safetensors tensors
 - rngd: SwappableDecode, RNGD decode with one resident weight copy shared by every variant
+- atom: SwappableAtom, co-compiled decoders and an optional background warm pool
 """
 from rngd_pd.swap.variants import Variant, BatchSelector  # noqa: F401

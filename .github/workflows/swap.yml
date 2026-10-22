@@ -1,0 +1,20 @@
+name: Swap and serving regression tests
+
+on: [push, pull_request]
+
+jobs:
+  cpu-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install numpy pytest httpx fastapi uvicorn
+      - name: Run swap and existing serving tests without an NPU SDK
+        env:
+          PYTHONPATH: src
+        run: >-
+          python -m pytest -q tests/swap tests/native_v4
+          tests/test_devices.py tests/test_continuous_backlog.py
