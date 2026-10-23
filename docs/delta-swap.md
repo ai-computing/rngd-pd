@@ -4,7 +4,8 @@
 retaining device weights. It does not change the default cluster worker or
 transparently migrate an in-flight request. Drain requests before selecting a
 different shape or checkpoint; start new requests with fresh KV. Locks serialize
-generation and swaps. RNGD rejects KV created before a shape or weight change.
+generation and swaps. RNGD and ATOM device-input engines reject KV created
+before a shape or weight change.
 
 ## RNGD: shared device inputs
 
@@ -42,6 +43,38 @@ configuration is checked before an update; a different architecture, rotary
 configuration, tensor set, shape or dtype requires a full reload. The existing
 EDF artifact-cache path is the tested path; newer SDK cache formats require
 their own compatible loader.
+
+## onggi to NPU in one call
+
+Both `SwappableDecode` (RNGD) and `DeviceWeightDecode` (ATOM) expose the same
+checkpoint update entry point:
+
+```python
+result = engine.load_delta(
+    new_checkpoint_dir, store=onggi_store, base_ref="base", new_ref="new",
+    onggi="/path/to/onggi",
+)
+tokens, ttft = engine.generate(prompts, n_new=8)
+```
+
+This runs `onggi diff --store STORE --ranges --json base new`, maps its output
+to checkpoint tensors, refines chunk boundaries, and updates the resident NPU
+engine. The refs must describe the matching immutable safetensors checkpoint
+directories. Publish them before serving with `onggi push --store STORE --ref
+base BASE_DIR` and the corresponding `new` command. File delivery/pulling and
+the initial store upload are separate from the NPU update.
+
+`result` reports `planning_s` (including the live onggi invocation), `delta_s`,
+`total_s`, `uploaded_bytes` (weight payload), and the tensor plan. It does not
+include the following prompt's first-token latency. `timeout` bounds the onggi
+subprocess. A failed onggi command fails the update; it never silently falls
+back to a full scan. Every target safetensors file must be represented in the
+diff, so compiled-artifact diffs or incomplete manifests cannot become a
+silent no-op.
+
+For a precomputed diff, use `engine.load_delta(new_dir, ranges="ranges.json")`.
+With no ranges/store options, it compares the two checkpoint directories
+locally. Checkpoints and refs must remain immutable through the operation.
 
 ## Updating only changed RNGD weights
 
@@ -113,6 +146,44 @@ independent compilation session. Two 8B bundles may not fit a 16 GiB card.
 Same-session switching shares weights; independent-session warm preparation
 does not establish arbitrary partial ATOM weight replacement.
 
+## ATOM: partial weights through device inputs
+
+```python
+from rngd_pd.swap.atom_inputs import DeviceWeightDecode
+
+engine = DeviceWeightDecode(base_checkpoint_dir, cache_dir=graph_cache, device=0)
+engine.swap(Variant(1, 64, group=0))
+engine.generate([prompt_ids], n_new=8)  # initial compile and device preparation
+result = engine.load_delta(new_checkpoint_dir, store=onggi_store,
+                           base_ref="base", new_ref="new")
+tokens, ttft = engine.generate([prompt_ids], n_new=8)
+engine.close()
+```
+
+This is an actual partial checkpoint update on ATOM. The decode graph takes
+FP16 projections/LM head and FP32 normalization weights as device inputs.
+Changed tensors get new device allocations; unchanged allocations and the
+compiled graph remain in use. The embedding stays on the host and is replaced
+only when it changes. The update validates graph configuration, tensor sets,
+shapes, dtypes and plan provenance before changing active state.
+
+torch-rbln may defer physical allocation/layout conversion until a tensor is
+used. The update therefore runs one scratch step with the staged inputs and
+synchronizes before committing them. Failed staging/probing retains the old
+input references and checkpoint. A fatal vendor/device failure can still
+require an engine restart. The probe time is included in `delta_s` and is
+also reported as `materialize_s`. Extra device headroom is needed for the
+changed tensors and scratch KV; it does not require a second full model.
+
+This opt-in path uses rebel 0.11.0 and torch-rbln 0.2.2. Initial graphs must be
+compiled in the serving process on that stack; another process's device-input
+cache can abort execution. Weight updates of the same shapes reuse the
+already compiled graph. It retains the upstream device-input graph's slower
+decode rate; see [the measured tradeoffs](delta-load.md). Embedded-weight
+`.rbln`/optimum bundles use the session/bundle APIs above and require a reload
+for changed weights. A byte-range diff of two such opaque compiled files is
+not a device weight map.
+
 ## Reproduce latency and correctness
 
 ```bash
@@ -122,7 +193,7 @@ RNGD_MAX_SHAPES=8 python -m rngd_pd.swap.bench_rngd all \
   --ckpt "$CHECKPOINT" --group 8 --chip 0 --cache "$CACHE" \
   --variants B4,S256 B8,S256 B4,S512 --P 8 --n 8 --out rngd.json
 
-python -m rngd_pd.swap.bench_atom --bundle "$ATOM_BUNDLE" \
+python -m rngd_pd.swap.bench_atom_bundles --bundle "$ATOM_BUNDLE" \
   --variants B1,S512 B8,S512 --tokens 8 --rounds 3 --out atom.json
 ```
 
@@ -132,3 +203,17 @@ latency. ATOM uses a generation streamer to timestamp the first generated token;
 RNGD timestamps the first prompt result before continuing generation. Raw
 artifact paths and arguments belong in local run records, not public evidence.
 See the experiment record for measured hardware, versions and limitations.
+
+For an end-to-end onggi update and fresh-token comparison on either chip:
+
+```bash
+python experiments/verify_npu_delta.py --backend rngd \
+  --base "$BASE" --new "$NEW" --store "$STORE" --onggi "$ONGGI" \
+  --cache "$CACHE" --batch 4 --sequence 256 --out rngd-delta.json
+# ATOM: use --backend atom --batch 1 --sequence 64 and its own cache directory.
+```
+
+The harness checks both directions over two rounds, fresh-destination token
+parity, unchanged ATOM allocation identities, and absence of recompilation.
+It also requires the changed fixture to produce different tokens from the
+base, preventing a non-discriminating prompt from proving an update.

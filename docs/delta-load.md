@@ -250,4 +250,7 @@ serving path:
 |---|---|---|
 | Variants known in advance | one resident weight copy, `swap()` loads the variant's graph: 0.55–1.2 s | one session (bucketing): swap ≈ first step, 0.11–0.20 s |
 | A new variant | bake its graph, then `swap()` | recompile the session with it (no card, minutes), `HostPool` switch: 0.80 s |
-| New weights, partly changed | `apply_delta()` uploads only the changed tensors | full reload (weights are compiled in) |
+| New weights, partly changed | `load_delta()` / `apply_delta()` uploads changed tensors | device-input `DeviceWeightDecode.load_delta()` stages changed tensors; embedded weights require a full reload |
+
+For the integrated onggi invocation, transactional ATOM device-input updates,
+and request locking/KV invalidation, see [the current API](delta-swap.md).

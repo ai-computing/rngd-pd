@@ -135,6 +135,20 @@ def test_live_onggi_command_feeds_real_checkpoint_planner(pair, monkeypatch):
     assert run.call_args.kwargs["check"] is True
 
 
+def test_onggi_failure_does_not_fall_back_or_change_weights(pair, monkeypatch):
+    base, new, _ = pair
+    e = engine(base)
+    import rngd_pd.swap.load as load
+    failure = load.subprocess.CalledProcessError(1, ["onggi"])
+    monkeypatch.setattr(load.subprocess, "run", Mock(side_effect=failure))
+    planner = Mock()
+    monkeypatch.setattr(load, "plan_update", planner)
+    with pytest.raises(load.subprocess.CalledProcessError):
+        e.load_delta(new, store="store", base_ref="base", new_ref="new")
+    planner.assert_not_called()
+    assert e._generation == 0
+
+
 @pytest.mark.parametrize("doc", [{}, {"files": []}, {"files": [{"path": "x.rbln", "size": 3}]}])
 def test_incomplete_or_compiled_artifact_diff_is_rejected(pair, doc):
     base, new, _ = pair

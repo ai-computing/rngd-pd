@@ -26,6 +26,7 @@ class FakeEngine:
 
     def __init__(self, B):
         self.B, self.steps = B, 0
+        self.entered_step = threading.Event()
 
     def blank_kv(self):
         return ([np.zeros((2, self.B, S)) for _ in range(NGROUPS)],
@@ -40,6 +41,7 @@ class FakeEngine:
     def step(self, toks, pos, Kd, Vd):
         assert len(toks) == self.B
         self.steps += 1
+        self.entered_step.set()
         time.sleep(0.003)                  # long enough for the batch to fill
         out = []
         for b in range(self.B):
@@ -67,6 +69,13 @@ def serve(engine, B, plan):
     for i, (seed, n) in enumerate(plan):
         th = threading.Thread(target=one, args=(seed, n), daemon=True)
         th.start(); ths.append(th)
+        if i == 0:
+            # Admit the burst only after the first narrow step has started.
+            # Thread scheduling otherwise decides whether width 2 is used at
+            # all, making this assertion race on fast CI hosts.
+            first = engine.tiers[0] if isinstance(engine, TieredDecode) else engine
+            if not first.entered_step.wait(5):
+                raise AssertionError("first decode step did not start")
         if i == 9:
             ths[0].join(10)                # a second wave after the batch shrank
     for th in ths:

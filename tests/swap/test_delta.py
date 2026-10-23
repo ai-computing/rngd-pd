@@ -131,6 +131,9 @@ class DeltaTest(unittest.TestCase):
                           "size": 16, "same": 8, "new": 8, "changed_runs": 1}]}
         with self.assertRaisesRegex(ValueError, "--ranges"):
             delta.load_onggi_ranges(doc)
+        doc["files"][0]["changed"] = []
+        with self.assertRaisesRegex(ValueError, "--ranges"):
+            delta.load_onggi_ranges(doc)
 
 
 if __name__ == "__main__":

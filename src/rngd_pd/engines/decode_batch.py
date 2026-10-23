@@ -129,11 +129,24 @@ def lmhead_graph_spec(B, V, NG=32):
             h = self.rms(x, nw, eps, nh)[0]              # [B,H]
             return torch.matmul(wlm, h.t())              # [NG,Vp/NG,B]
 
+    # On 2026.2.0 the hint flips sign with the batch, and there is no rule to
+    # it: measured over all seven, the winner is ForLlmModelDecode at B=4
+    # (1.24 ms), ForMiscModel at B=8 (1.21) and Default at B=16 (1.34), while
+    # the losers sit at ~45 ms -- a 37x cliff, and the whole of "batched decode
+    # collapses past four", since the decode graph itself only goes 4.87 ->
+    # 5.96 ms a call. LMHEAD_VECTOR_B picks its way across that by hand.
+    #
+    # 2026.3.0 flattens it: every one of its seven hints lands in 1.08-1.37 ms
+    # at B=4, 8 and 16, so there is nothing to pick around and the width no
+    # longer enters. ComputeIOBalanced is the best of them at B=4 and B=16 and
+    # within 0.01 ms of the best at B=8.
     if _NEW:
         hint = TacticHintConfig.ForLlmModelComputeIOBalanced
     else:
         hint = (TacticHintConfig.ForLlmModelDecode if B <= LMHEAD_VECTOR_B
                 else TacticHintConfig.NoConstraint)
+    # the hint belongs in the key: two widths that share one would otherwise
+    # load each other's artifact and the fix would silently do nothing
     key = cache_key(kind="batch-lmhead", model=MODEL, B=B, V=V, groups=NG,
                     hint=hint.__class__.__name__ + str(hint))
     def build():
