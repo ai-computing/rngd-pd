@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "scope": "Focused compiler-emission-gate follow-up; static active source plus one CPU-only SDK getter; no device allocation or compilation by this investigator.",
+  "active_source": {
+    "logical_path": "tvm/relay/frontend/pytorch.py",
+    "sha256": "9c1d22465259916177c7f827898ddeb58c28921ae843e38d8f59399f7be1cb8b",
+    "status": "Active installed cleartext source, distinct from readable core_ori backup."
+  },
+  "confirmed_facts": [
+    {
+      "id": "G1",
+      "claim": "The active frontend creates weight-free meta constants only when UnitInfo.weight_free_mode differs from off and use_weight_sharing is true. Scalar tensors are excluded from this branch.",
+      "function": "_get_tensor_and_var",
+      "lines": [
+        5072,
+        5082,
+        5083,
+        5084
+      ]
+    },
+    {
+      "id": "G2",
+      "claim": "That branch creates a TVM meta array from the original tensor data pointer, records its pointer-to-name mapping with rebel.set_meta_key_name, and retains the tensor in a contiguous-weight cache.",
+      "function": "_get_tensor_and_var",
+      "lines": [
+        5085,
+        5087,
+        5090,
+        5105,
+        5106
+      ]
+    },
+    {
+      "id": "G3",
+      "claim": "Parameter conversion discovers prim::GetAttr graph nodes and obtains their tensors from state_dict before invoking the meta-constant branch.",
+      "function": "convert_params",
+      "lines": [
+        5559,
+        5603,
+        5604
+      ]
+    },
+    {
+      "id": "G4",
+      "claim": "The frontend from_pytorch API defaults use_weight_sharing to false and passes that value to convert_params.",
+      "function": "from_pytorch",
+      "lines": [
+        5649,
+        5750,
+        5751
+      ]
+    },
+    {
+      "id": "G5",
+      "claim": "With RBLN_WEIGHT_FREE absent, a normal active host SDK import reports rebel-compiler 0.11.0 and rebel.get_weight_free_mode() returns off. No runtime or model was allocated.",
+      "observation": "CPU-only getter performed by this investigator."
+    }
+  ],
+  "independent_active_confirmation": {
+    "claim": "The companion investigator observed the same active SDK getter returning on when RBLN_WEIGHT_FREE=1 was supplied before import.",
+    "evidence_roles": [
+      "atom-weight-mode-getter.json",
+      "atom-weight-mode-getter-on.json"
+    ],
+    "source": "Companion active API investigation; not a device result."
+  },
+  "inferences": [
+    {
+      "id": "GI1",
+      "claim": "Dynamo/AOT lifting of parameters into graph inputs can explain empty meta-load names and transform groups, because such inputs do not traverse the attribute-constant conversion branch. The captured FX graph was not inspected here, so this is not a proven explanation for every backend graph.",
+      "based_on": [
+        "G1",
+        "G3"
+      ]
+    },
+    {
+      "id": "GI2",
+      "claim": "An original nn.Module traced with attribute constants, weight sharing enabled, and weight-free mode on is the supported candidate compilation shape for emitting these metadata.",
+      "based_on": [
+        "G1",
+        "G2",
+        "G3",
+        "G4"
+      ]
+    }
+  ],
+  "backup_only_context": {
+    "logical_path": "rebel/core_ori/compilation/_impl.py",
+    "lines": [
+      958,
+      967,
+      968
+    ],
+    "claim": "Readable backup selects intmd_mode separately from weight_mode; _intmd_mode=gen alone is not evidence that the active frontend weight-free gate is enabled.",
+    "active_equivalence_assumed": false
+  },
+  "configuration_conclusion": "Enable RBLN_WEIGHT_FREE=1 before active SDK configuration and retain original module attribute weights with use_weight_sharing enabled. Check actual metadata and transform groups after compilation; is_eager_mode or _intmd_mode=gen alone does not establish metadata emission.",
+  "remaining_unknowns": [
+    "Exact captured graph structure for the earlier zero-metadata Dynamo probes was not inspected.",
+    "All device compilation, output correctness, performance and allocation outcomes belong to the separate hardware report."
+  ],
+  "references": [
+    "rea.json",
+    "rea-weight-free-flag.json"
+  ]
+}
