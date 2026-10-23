@@ -1,0 +1,465 @@
+{
+  "schema": 1,
+  "scope": "Native original-parent consumption plus full-parent/neighbor readback. native_consume_s includes host checking, not decoder kernel latency. compile_s is one-time probe setup.",
+  "probes": {
+    "group8probe": {
+      "torch": "2.11.0+cpu",
+      "sdk": "2026.2.0",
+      "assigned": "rngd:0",
+      "load": [
+        66.88037109375,
+        77.6962890625,
+        81.46044921875
+      ],
+      "samples": [
+        {
+          "route": "device_layer",
+          "rep": 0,
+          "view_s": 5.2663031965494156e-05,
+          "to_temp_s": 0.02609931502956897,
+          "copy_s": 0.011361317010596395,
+          "native_consume_s": 0.07654217991512269,
+          "total_s": 0.11405547498725355,
+          "checksum": 10097948672.0,
+          "src_bytes": 117440512,
+          "shape": [
+            14336,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "device_layer",
+          "rep": 1,
+          "view_s": 5.1063019782304764e-05,
+          "to_temp_s": 0.022010459913872182,
+          "copy_s": 0.008877412998117507,
+          "native_consume_s": 0.06359178002458066,
+          "total_s": 0.09453071595635265,
+          "checksum": 10332829696.0,
+          "src_bytes": 117440512,
+          "shape": [
+            14336,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "device_layer",
+          "rep": 2,
+          "view_s": 4.9783033318817616e-05,
+          "to_temp_s": 0.018828716943971813,
+          "copy_s": 0.005237446050159633,
+          "native_consume_s": 0.06817685102578253,
+          "total_s": 0.09229279705323279,
+          "checksum": 10567710720.0,
+          "src_bytes": 117440512,
+          "shape": [
+            14336,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "host_layer",
+          "rep": 0,
+          "view_s": 5.0853006541728973e-05,
+          "to_temp_s": 1.519918441772461e-06,
+          "copy_s": 0.020001820055767894,
+          "native_consume_s": 0.09524077002424747,
+          "total_s": 0.11529496300499886,
+          "checksum": 10097948672.0,
+          "src_bytes": 117440512,
+          "shape": [
+            14336,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "host_layer",
+          "rep": 1,
+          "view_s": 4.682305734604597e-05,
+          "to_temp_s": 2.3399479687213898e-06,
+          "copy_s": 0.02186221198644489,
+          "native_consume_s": 0.10366877203341573,
+          "total_s": 0.1255801470251754,
+          "checksum": 10332829696.0,
+          "src_bytes": 117440512,
+          "shape": [
+            14336,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "host_layer",
+          "rep": 2,
+          "view_s": 5.452393088489771e-05,
+          "to_temp_s": 2.020038664340973e-06,
+          "copy_s": 0.019554628990590572,
+          "native_consume_s": 0.07602440402843058,
+          "total_s": 0.09563557698857039,
+          "checksum": 10567710720.0,
+          "src_bytes": 117440512,
+          "shape": [
+            14336,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "device_columns",
+          "rep": 0,
+          "view_s": 8.763500954955816e-05,
+          "to_temp_s": 0.0028506299713626504,
+          "copy_s": 0.0006866180337965488,
+          "native_consume_s": 0.06991304096300155,
+          "total_s": 0.0735379239777103,
+          "checksum": 11270901760.0,
+          "src_bytes": 229376,
+          "shape": [
+            14336,
+            8
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "device_columns",
+          "rep": 1,
+          "view_s": 9.245506953448057e-05,
+          "to_temp_s": 0.0032086599385365844,
+          "copy_s": 0.0009078610455617309,
+          "native_consume_s": 0.10488250700291246,
+          "total_s": 0.10909148305654526,
+          "checksum": 11271385088.0,
+          "src_bytes": 229376,
+          "shape": [
+            14336,
+            8
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "device_columns",
+          "rep": 2,
+          "view_s": 8.938496466726065e-05,
+          "to_temp_s": 0.0027392030460759997,
+          "copy_s": 0.0005896929651498795,
+          "native_consume_s": 0.06680981803219765,
+          "total_s": 0.0702280990080908,
+          "checksum": 11271869440.0,
+          "src_bytes": 229376,
+          "shape": [
+            14336,
+            8
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "host_columns",
+          "rep": 0,
+          "view_s": 0.0001267170300707221,
+          "to_temp_s": 2.1900050342082977e-06,
+          "copy_s": 0.026566718937829137,
+          "native_consume_s": 0.07553051505237818,
+          "total_s": 0.10222614102531224,
+          "checksum": 11270901760.0,
+          "src_bytes": 229376,
+          "shape": [
+            14336,
+            8
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "host_columns",
+          "rep": 1,
+          "view_s": 9.150500409305096e-05,
+          "to_temp_s": 1.6799895092844963e-06,
+          "copy_s": 0.022878751042298973,
+          "native_consume_s": 0.06337419000919908,
+          "total_s": 0.08634612604510039,
+          "checksum": 11271385088.0,
+          "src_bytes": 229376,
+          "shape": [
+            14336,
+            8
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "host_columns",
+          "rep": 2,
+          "view_s": 8.790497668087482e-05,
+          "to_temp_s": 2.0399456843733788e-06,
+          "copy_s": 0.024388753110542893,
+          "native_consume_s": 0.10841925896238536,
+          "total_s": 0.1328979569952935,
+          "checksum": 11271869440.0,
+          "src_bytes": 229376,
+          "shape": [
+            14336,
+            8
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "host_rows",
+          "rep": 0,
+          "view_s": 8.796504698693752e-05,
+          "to_temp_s": 1.569977030158043e-06,
+          "copy_s": 0.0022458049934357405,
+          "native_consume_s": 0.1075120089808479,
+          "total_s": 0.10984734899830073,
+          "checksum": 11271698432.0,
+          "src_bytes": 65536,
+          "shape": [
+            8,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "host_rows",
+          "rep": 1,
+          "view_s": 8.598493877798319e-05,
+          "to_temp_s": 1.5300465747714043e-06,
+          "copy_s": 0.003067779936827719,
+          "native_consume_s": 0.13289237604476511,
+          "total_s": 0.1360476709669456,
+          "checksum": 11271829504.0,
+          "src_bytes": 65536,
+          "shape": [
+            8,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "host_rows",
+          "rep": 2,
+          "view_s": 8.468504529446363e-05,
+          "to_temp_s": 1.5900004655122757e-06,
+          "copy_s": 0.0005645609926432371,
+          "native_consume_s": 0.07823729899246246,
+          "total_s": 0.07888813503086567,
+          "checksum": 11271960576.0,
+          "src_bytes": 65536,
+          "shape": [
+            8,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        }
+      ],
+      "errors": [],
+      "cpu_fallback": false,
+      "compile_s": 38.92886769399047,
+      "complete": true
+    },
+    "onecolumn-selectprobe": {
+      "torch": "2.11.0+cpu",
+      "sdk": "2026.2.0",
+      "assigned": "rngd:0",
+      "load": [
+        107.0087890625,
+        74.7373046875,
+        70.87060546875
+      ],
+      "samples": [
+        {
+          "route": "device_columns",
+          "rep": 0,
+          "view_s": 0.00010118202771991491,
+          "to_temp_s": 0.0005463249981403351,
+          "copy_s": 0.0006112270057201385,
+          "native_consume_s": 0.06453258590772748,
+          "total_s": 0.06579131993930787,
+          "checksum": 2465848.0,
+          "src_storage_offset": 243712,
+          "dst_storage_offset": 58720273,
+          "src_bytes": 28672,
+          "shape": [
+            14336,
+            1
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "device_columns",
+          "rep": 1,
+          "view_s": 9.584298823028803e-05,
+          "to_temp_s": 0.001926711993291974,
+          "copy_s": 0.0006128270179033279,
+          "native_consume_s": 0.07523262302856892,
+          "total_s": 0.07786800502799451,
+          "checksum": 2523192.0,
+          "src_storage_offset": 243712,
+          "dst_storage_offset": 58720273,
+          "src_bytes": 28672,
+          "shape": [
+            14336,
+            1
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "device_columns",
+          "rep": 2,
+          "view_s": 9.651307482272387e-05,
+          "to_temp_s": 0.0030303020030260086,
+          "copy_s": 0.0006471069063991308,
+          "native_consume_s": 0.08104208903387189,
+          "total_s": 0.08481601101811975,
+          "checksum": 2580536.0,
+          "src_storage_offset": 243712,
+          "dst_storage_offset": 58720273,
+          "src_bytes": 28672,
+          "shape": [
+            14336,
+            1
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        }
+      ],
+      "errors": [],
+      "cpu_fallback": false,
+      "compile_s": 65.5293181319721,
+      "complete": true
+    },
+    "lmoffsetprobe": {
+      "torch": "2.11.0+cpu",
+      "sdk": "2026.2.0",
+      "assigned": "rngd:0",
+      "load": [
+        40.86083984375,
+        44.26220703125,
+        63.056640625
+      ],
+      "samples": [
+        {
+          "route": "host_rows",
+          "rep": 0,
+          "view_s": 9.608292020857334e-05,
+          "to_temp_s": 1.2899981811642647e-06,
+          "copy_s": 0.000402132049202919,
+          "native_consume_s": 0.049582591047510505,
+          "total_s": 0.05008209601510316,
+          "checksum": 12604951552.0,
+          "src_storage_offset": 20480,
+          "dst_storage_offset": 49319936,
+          "src_bytes": 65536,
+          "shape": [
+            8,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "host_rows",
+          "rep": 1,
+          "view_s": 9.4942981377244e-05,
+          "to_temp_s": 1.9000144675374031e-06,
+          "copy_s": 0.003918610978871584,
+          "native_consume_s": 0.09150967304594815,
+          "total_s": 0.09552512702066451,
+          "checksum": 12605082624.0,
+          "src_storage_offset": 20480,
+          "dst_storage_offset": 49319936,
+          "src_bytes": 65536,
+          "shape": [
+            8,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        },
+        {
+          "route": "host_rows",
+          "rep": 2,
+          "view_s": 9.832310024648905e-05,
+          "to_temp_s": 2.3799948394298553e-06,
+          "copy_s": 0.00048572500236332417,
+          "native_consume_s": 0.11526358698029071,
+          "total_s": 0.11585001507773995,
+          "checksum": 12605213696.0,
+          "src_storage_offset": 20480,
+          "dst_storage_offset": 49319936,
+          "src_bytes": 65536,
+          "shape": [
+            8,
+            4096
+          ],
+          "stride": [
+            4096,
+            1
+          ]
+        }
+      ],
+      "errors": [],
+      "cpu_fallback": false,
+      "compile_s": 57.41919759102166,
+      "complete": true
+    }
+  }
+}

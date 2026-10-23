@@ -373,6 +373,11 @@ it runs onggi, refines checkpoint ranges, and transfers only changed tensors.
 - **RNGD:** one resident weight copy shared by variants; transactional partial
   weight updates with rollback. Prepared B4/B8, S256/S512 switches measured
   0.25–0.45 s through the first token, versus 20.6–23.5 s for a full load.
+  Checkpoint refresh now stages only changed projection/LM rows and retains
+  their allocations. In a real 8B test, 64 projection rows reduced logical
+  upload 117 MB → 1.84 MB; eight LM rows reduced 1.05 GB → 64 KiB. All 768
+  compared tokens matched fresh loads. See [row-update measurements and limits](experiments/2026-10-23-rngd-row-update.md),
+  including complete update/first-token timing and the full-tensor control.
 - **ATOM embedded weights:** native bucketing (`AtomSession`), host-prepared
   session reload (`HostPool`), and optimum bundles (`SwappableAtom`). Co-compiled
   selection retains the weights; a changed embedded model requires a reload.

@@ -49,7 +49,7 @@ transaction safe under interruption. Reuse the existing planner and API.
   - Add exact phase/payload reporting needed to assess the optimization. Improve
     planner duplication/bounded refinement only if measured and independently
     covered by tests in test_delta.py/test_load.py.
-- [ ] Task 3: Validate the frozen change and publish.
+- [x] Task 3: Validate the frozen change and publish.
   - Matching full/sparse native workload, fresh references, both directions,
     retained weights/programs and every actual sample/source hash.
   - Full relevant CPU suite, fresh independent review and one RED→GREEN fix pass.
@@ -108,3 +108,17 @@ transaction safe under interruption. Reuse the existing planner and API.
 - Review fix verification: 45 focused RNGD tests passed; full local suite
   296 passed, 6 skipped, 4 subtests passed in 23.29 s. Run the full-engine
   comparison only on the frozen post-review source.
+- Native validation gap closed: nonzero-source-offset single-column projection
+  and packed LM chunk-3 probes passed original-parent execution and complete
+  readback/neighbor checks, three repetitions each without fallback.
+- Frozen 719c09b hardware comparison: all 24 updates/768 tokens equal independent
+  fresh references. Sparse projection payload 64x smaller, LM 16032x smaller;
+  all optimized allocations/compiled objects retained. Full-tensor run showed
+  no speedup under host-load drift; retain every sample and state that limit.
+- Independent publication audit verified 86 original file SHA256/length pairs,
+  canonical Git source snapshots, live Onggi ranges, actual payloads, all token
+  comparisons and UID-checked cleanup. No owned processes/device handles remain.
+- Local 296 passed/6 skipped/4 subtests; frozen Linux CI 300 passed/2 skipped/
+  4 subtests. README/API and experiment evidence published on the isolated
+  feature branch. Draft PR #29 stacks on pending prepared-serving PR #27;
+  production deployment/merge is outside this change.
