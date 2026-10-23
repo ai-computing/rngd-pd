@@ -1,0 +1,185 @@
+{
+  "revision": "ecfc6c3daa79fc76b9b077e53718dd7ee9e2defb",
+  "source_sha256": {
+    "src/rngd_pd/swap/atom_constants.py": "b43fc9257fe6defba63a2642dbf7ab4f3435c3b32dc3da21e55c2684329647cc",
+    "experiments/verify_npu_delta.py": "ef21aa6528fe2b306adb0ac06282697da494d309c1b43fb95695166d6a5418b1"
+  },
+  "fixture": {
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "model_revision": "0e9e39f249a16976918f6564b8830bc894c89659",
+    "base_manifest": "sha256:4c05a2859cefa43bf3f2195663a354a659e2f0827f96660ad585af725462ad59",
+    "new_manifest": "sha256:2cf3442675435bd362a6fabe7950b472a97ba020e6cd02b75dae862e767dc98f",
+    "changed_tensor": "model.layers.0.mlp.down_proj.weight",
+    "checkpoint_dtype": "BF16",
+    "shape": [
+      4096,
+      14336
+    ],
+    "delta_seed": 1,
+    "delta_scale": 0.1,
+    "runtime_input_dtype": "FP16",
+    "read_only_hardlink_views": true
+  },
+  "onggi": {
+    "revision": "05c97605b07882f9ceaaeb90b94878f8923f81cf",
+    "binary_sha256": "72267cec4503b002c846c74969d2c3a900082b2cce38f177bcbc6d512a9085c5"
+  },
+  "environment": {
+    "torch": "2.11.0+cpu",
+    "torch_rbln": "0.2.2",
+    "rebel_compiler": "0.11.0",
+    "python": "3.10.12",
+    "image_digest": "sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+    "compiler": "g++ 11.4.0",
+    "driver_KMD": "3.0.0",
+    "firmware": "not captured for current assigned card",
+    "device": "RBLN-CA22",
+    "scheduler_allocated_device_count": 1,
+    "logical_device": 0,
+    "cpu_limit": 16,
+    "memory_limit_GiB": 128,
+    "OMP_NUM_THREADS": 4,
+    "MKL_NUM_THREADS": 4,
+    "MemTotal_kB": 1585002868,
+    "filesystem": "same local ext4 LVM; nonrotating backing devices; NVMe unconfirmed",
+    "host_loadavg_start": [
+      97.1533203125,
+      92.296875,
+      92.31494140625
+    ],
+    "host_loadavg_end": [
+      101.32958984375,
+      98.40576171875,
+      95.43359375
+    ],
+    "host_loadavg_after_cleanup": [
+      98.123046875,
+      96.29833984375,
+      96.7109375
+    ],
+    "runtime_binaries": [
+      {
+        "name": "_C.cpython-310-x86_64-linux-gnu.so",
+        "logical_component": "rebel/_C.cpython-310-x86_64-linux-gnu.so",
+        "bytes": 782808,
+        "sha256": "ef3f87485aabc37bcc1f6ae23072b4e22e94522d7f47619d43168ba89b92e299"
+      },
+      {
+        "name": "librbln_runtime.so",
+        "logical_component": "tvm/librbln_runtime.so",
+        "bytes": 34146089,
+        "sha256": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba"
+      },
+      {
+        "name": "librbln.so",
+        "logical_component": "tvm/librbln.so",
+        "bytes": 405631113,
+        "sha256": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581"
+      },
+      {
+        "name": "_C.cpython-310-x86_64-linux-gnu.so",
+        "logical_component": "torch_rbln/_C.cpython-310-x86_64-linux-gnu.so",
+        "bytes": 579224,
+        "sha256": "6249967ae2e787f5e42ddef03f05bd79eb28d1f11ec1a75b44f2171f0dcc432b"
+      },
+      {
+        "name": "libtorch_rbln.so",
+        "logical_component": "torch_rbln/lib/libtorch_rbln.so",
+        "bytes": 856640,
+        "sha256": "501b9f9054dcb826fddf6d0385e0605252370035fcee0b8d1d211bfbd45e50e5"
+      },
+      {
+        "name": "libc10_rbln.so",
+        "logical_component": "torch_rbln/lib/libc10_rbln.so",
+        "bytes": 668800,
+        "sha256": "deaf384454ed2ef510fed45b55084e8f3c5d9d5a3c62e0ddebbbc4297e2ac6c9"
+      },
+      {
+        "name": "librbln-thunk.so.3.0.0",
+        "logical_component": "librbln-thunk.so.3.0.0",
+        "bytes": 608112,
+        "sha256": "5cc0575543d1f10babc6a16c8fd1d54b373132c1f0f49dd53dd291809d298b09"
+      }
+    ]
+  },
+  "protocol": {
+    "batch": 1,
+    "sequence": 64,
+    "prompt_length": 8,
+    "generation_tokens": 8,
+    "prompt_seed": 0,
+    "rounds": 2,
+    "resident_updates": 4,
+    "strict_fallback": "all"
+  },
+  "owned_device_context_peak_labels": {
+    "atom-constants-full-v2": {
+      "rounded_driver_label": "14.2GiB",
+      "matched_samples": 131,
+      "ownership": "same sample context PID joined to own Pod cgroup"
+    },
+    "device-input-matched-v1": {
+      "rounded_driver_label": "14.9GiB",
+      "matched_samples": 100,
+      "ownership": "same sample context PID joined to own Pod cgroup"
+    }
+  },
+  "result_original_sha256": {
+    "constants": "3350ae0acc94dbec34287e546985f73d32e8cb8701b390555fb83c2e74563702",
+    "device_inputs": "974d150b5b8d3e38599819b438ee73e37691702092051dcd460b2b13816f2d56"
+  },
+  "exact_raw_export_file_count": 23,
+  "raw_export_sha256": {
+    "data/atom-constants-full-v2.json": "3350ae0acc94dbec34287e546985f73d32e8cb8701b390555fb83c2e74563702",
+    "data/atom-constants-full-v2.json.fresh2.json": "cc77b255a6705cf246d5b1b0ada6b25f4357fad392f14c095956a0fa5031c575",
+    "data/atom-constants-full-v2.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "data/atom-constants-full-v2.json.resident3.json": "b4f56e12afc0ce05b6d5192de03097acf4f7362d1bb862b6c7f1526ae41b8199",
+    "data/atom-constants-full-v2.log": "ae6f109147766efac24eec7074d175b2f8a9153b058c8109fd3786f29adcb04e",
+    "data/atom-constants-full-v2.json.reference.json": "755353cd7bf94fda37785ebc3eb2a3d83873d8b080ca34f44509c912f3df5a22",
+    "data/atom-constants-full-v2-end-metadata.json": "0f424123734675e7417a32dfe11575b2724c912494a86f3b1c74512aecc693f9",
+    "data/atom-constants-full-v2-start-metadata.json": "5b68837489acc85888dcb4139bf3728ed5207ca778d065f03c43906dbe148645",
+    "data/atom-constants-full-v2-device-samples.log": "cb6274e86b0e1c93043f9b6d31e0e714dafe7a1b594d30f59cd51362b8a93aab",
+    "data/atom-constants-full-v2.json.fresh1.json": "bdf402ab02d70206ed8ec0059e9e5ea4c6b4ffb9ac4aaabf4ab8d1ad430b8474",
+    "data/device-input-matched-v1-start.txt": "6ae2e5e6f84164820f0100699a24d50a485e0c9a1b4233ef2299121882363f36",
+    "data/device-input-matched-v1.json": "974d150b5b8d3e38599819b438ee73e37691702092051dcd460b2b13816f2d56",
+    "data/device-input-matched-v1-start-metadata.json": "13456fc16f7468a19fec2580d7bf54b2ebf8f330c81e823465f3a179e844aa12",
+    "data/device-input-matched-v1.log": "b9df0b82595d47dcfc47627b4f45a17f6c0e6bf0d8f894f5c82b1262ef4501dd",
+    "data/device-input-matched-v1-end.txt": "34bf41149c52279d2bf24a9c8410007b014f3468fbe9dadb1c005966e2f3ff1a",
+    "data/device-input-matched-v1.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "data/device-input-matched-v1-device-samples.log": "456726b48e238f0592f2ab5f0f3d86097962efc4a03f15d9a719cec7c10c77b4",
+    "data/device-input-matched-v1.py": "c76f465cae9230b53f25268ed920c6de4e89705f3e8a8835f6b29b0db863521d",
+    "data/resident-final-owner-audit.json": "75fe9026159883a846cac3a4b402e1600c51c733bcf7624726c00a45ea8f5f53",
+    "data/run-constant-matrix.sh": "9765cd51a60264fa27229937112cefe48682e939b19b3ff68496133ac24868a5",
+    "data/monitor-device-input-matched-v1.sh": "544829541cc8f56dda52962d213ba977266da12fe32e9fc3402311228e7c9af0",
+    "data/constant-engine-environment.json": "9adadfb31235f4d181ef7d0f8ceddaaa0a539c0859569af978fc2eb349163ad2",
+    "data/constant-engine-ecfc-source-manifest.json": "dafed4ce9d035eefa940a2bc5288db59f2b2063fd842f010792dbacca683fa6d"
+  },
+  "cleanup": {
+    "pod_uid": "0d39d94e-18aa-4802-9f0f-9cc09c8ea443",
+    "namespace_uid": "6090c42f-f2da-4775-b1cc-50adafd653ed",
+    "natural_pod_exit_code": 0,
+    "natural_pod_exit_utc": "2026-10-23T06:15:44Z",
+    "uid_precondition_delete": true,
+    "namespace_absent_confirmed_utc": "2026-10-23T06:16:48Z",
+    "postcleanup_own_processes": [],
+    "postcleanup_driver_contexts_empty": true,
+    "cleanup_evidence_sha256": "ffc26eb697b0376164b689826d7d113d7e47bf7c8c3f37494aff68da2963ea43",
+    "local_cleanup_log_sha256": "ffc26eb697b0376164b689826d7d113d7e47bf7c8c3f37494aff68da2963ea43"
+  },
+  "retained_allocated_bytes": {
+    "cache": 1761751040,
+    "cache/atom-constants-full-v2": 485060608,
+    "cache/device-input-matched-v1": 178978816,
+    "store": 31869169664,
+    "constant-engine-git": 1409024,
+    "data": 3608576
+  },
+  "retained_storage_scope": "Cache/store totals include earlier common file-materialization experiments. Fixture hardlinks add no physical checkpoint copy; full-matrix and control cache subdirectories are listed separately.",
+  "limits": [
+    "Logical transform input bytes are not measured DMA or network traffic.",
+    "Matched comparison includes host KV versus device KV and graph/fusion changes; both LM heads run on NPU.",
+    "Small sample counts and shared host load; no p95 or universal speed claim.",
+    "Current assigned-card firmware version was not captured.",
+    "Retained fixture views use hardlinks and are not new physical checkpoint copies."
+  ]
+}
