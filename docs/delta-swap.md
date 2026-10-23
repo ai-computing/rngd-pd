@@ -3,8 +3,9 @@
 `rngd_pd.swap` adds an opt-in engine API for selecting a compiled shape while
 retaining device weights. It does not change the default cluster worker or
 transparently migrate an in-flight request. Drain requests before selecting a
-different shape or checkpoint; start new requests with fresh KV. Locks serialize
-generation and swaps. RNGD and ATOM device-input engines reject KV created
+different shape or checkpoint; start new requests with fresh KV. The RNGD,
+ATOM device-input and optimum-bundle wrappers lock generation and swaps.
+RNGD and ATOM device-input engines reject KV created
 before a shape or weight change.
 
 ## RNGD: shared device inputs

@@ -3,6 +3,12 @@
 Date: 2026-10-22. Issue: [#17](https://github.com/ai-computing/rngd-pd/issues/17).
 Implementation and review: [#22](https://github.com/ai-computing/rngd-pd/pull/22).
 
+The optimum bundle implementation was subsequently moved to
+`swap/atom_bundles.py` (with compatible imports), and its harness to
+`swap/bench_atom_bundles.py`. Reproduction commands below use the current module
+name. For real onggi execution and ATOM partial checkpoint updates, see the
+[2026-10-23 follow-up](2026-10-23-npu-delta-load.md).
+
 ## Question and method
 
 Can a running engine select another compiled shape without loading the model
@@ -205,10 +211,10 @@ export RNGD_MAX_SHAPES=8 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 HF_HUB_OFFLINE=1
   --variants B4,S256 B8,S256 B4,S512 --P 8 --n 8 --mem --cache "$CACHE" \
   --ranges experiments/data/delta-swap-20261022/projection-ranges.json --no-refine --out rngd.json
 
-python -m rngd_pd.swap.bench_atom --bundle "$ATOM_8B_BUNDLE" \
+python -m rngd_pd.swap.bench_atom_bundles --bundle "$ATOM_8B_BUNDLE" \
   --variants B1,S512 B8,S512 --tokens 8 --rounds 3 --out atom.json
 
-python -m rngd_pd.swap.bench_atom --bundle "$ATOM_05B_C64" \
+python -m rngd_pd.swap.bench_atom_bundles --bundle "$ATOM_05B_C64" \
   --warm-bundle "$ATOM_05B_C128" --variants B1,S512 --tokens 8 --rounds 3 --out warm.json
 
 PYTHONPATH=src python -m pytest -q tests/swap tests/native_v4 \

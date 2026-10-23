@@ -382,6 +382,12 @@ it runs onggi, refines checkpoint ranges, and transfers only changed tensors.
   retains rebel 0.11's slower device-input decode rate and initial in-process
   compilation requirement.
 
+A real onggi → NPU test changed one 117 MB tensor of a 16.1 GB checkpoint:
+RNGD updated in 1.12–2.00 s (first token 1.50–2.57 s), ATOM in 1.25–1.34 s
+(first token 5.32–5.40 s for an 8-token prompt). All 160 compared generated
+tokens match fresh destination loads. See the [protocol and raw results](experiments/2026-10-23-npu-delta-load.md),
+including ATOM's initial compilation cost and slower device-input decode.
+
 The default cluster worker is unchanged. Updates drain requests and invalidate
 old KV. See [API and reproduction](docs/delta-swap.md), [upstream measurements](docs/delta-load.md),
 and [the earlier swap experiment](experiments/2026-10-22-delta-swap.md).

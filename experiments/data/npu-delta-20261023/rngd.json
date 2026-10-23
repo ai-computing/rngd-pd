@@ -1,0 +1,438 @@
+{
+  "backend": "rngd",
+  "fresh": {
+    "base": {
+      "ttft_s": 0.20152657793369144,
+      "engine_load_s": 27.22526226507034,
+      "load_through_first_token_s": 27.426788843004033,
+      "tokens": [
+        [
+          198,
+          791,
+          1176,
+          1403,
+          5238,
+          315,
+          279,
+          33894
+        ],
+        [
+          29,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946
+        ],
+        [
+          9831,
+          19954,
+          13094,
+          66965,
+          29726,
+          13094,
+          33390,
+          33353
+        ],
+        [
+          198,
+          220,
+          482,
+          220,
+          16,
+          13,
+          15,
+          13
+        ]
+      ],
+      "unique_graphs": 0
+    },
+    "new": {
+      "ttft_s": 0.3230517599731684,
+      "engine_load_s": 35.420738424989395,
+      "load_through_first_token_s": 35.74379018496256,
+      "tokens": [
+        [
+          198,
+          791,
+          1176,
+          3094,
+          304,
+          279,
+          1920,
+          315
+        ],
+        [
+          29,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946
+        ],
+        [
+          9831,
+          16969,
+          13094,
+          1847,
+          13094,
+          1847,
+          13094,
+          1847
+        ],
+        [
+          198,
+          220,
+          482,
+          320,
+          1019,
+          8,
+          23432,
+          2095
+        ]
+      ],
+      "unique_graphs": 0
+    }
+  },
+  "resident": {
+    "initial": {
+      "ttft_s": 0.3967081221053377,
+      "engine_load_s": 35.90693504107185,
+      "load_through_first_token_s": 36.303643163177185,
+      "tokens": [
+        [
+          198,
+          791,
+          1176,
+          1403,
+          5238,
+          315,
+          279,
+          33894
+        ],
+        [
+          29,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946,
+          946
+        ],
+        [
+          9831,
+          19954,
+          13094,
+          66965,
+          29726,
+          13094,
+          33390,
+          33353
+        ],
+        [
+          198,
+          220,
+          482,
+          220,
+          16,
+          13,
+          15,
+          13
+        ]
+      ],
+      "unique_graphs": 0
+    },
+    "rows": [
+      {
+        "delta_s": 0.34601755102630705,
+        "uploaded_bytes": 117440512,
+        "mode": "inplace",
+        "tensors": 1,
+        "host_only": [],
+        "plan": {
+          "tensors": 1,
+          "upload_bytes": 117440512,
+          "changed_bytes": 117595127,
+          "total_bytes": 16060522496,
+          "header_changes": [],
+          "removed": [],
+          "names": [
+            "model.layers.0.mlp.down_proj.weight"
+          ]
+        },
+        "source": "onggi",
+        "planning_s": 0.7894340889761224,
+        "total_s": 1.9975311909802258,
+        "round": 0,
+        "target": "new",
+        "prompt_ttft_s": 0.5699804900214076,
+        "tokens": [
+          [
+            198,
+            791,
+            1176,
+            3094,
+            304,
+            279,
+            1920,
+            315
+          ],
+          [
+            29,
+            946,
+            946,
+            946,
+            946,
+            946,
+            946,
+            946
+          ],
+          [
+            9831,
+            16969,
+            13094,
+            1847,
+            13094,
+            1847,
+            13094,
+            1847
+          ],
+          [
+            198,
+            220,
+            482,
+            320,
+            1019,
+            8,
+            23432,
+            2095
+          ]
+        ],
+        "request_to_first_token_s": 2.5675116810016334,
+        "request_through_generation_s": 2.899159496068023,
+        "tokens_equal_fresh": true,
+        "unique_graphs_before": 0,
+        "unique_graphs_after": 0
+      },
+      {
+        "delta_s": 0.3372565599856898,
+        "uploaded_bytes": 117440512,
+        "mode": "inplace",
+        "tensors": 1,
+        "host_only": [],
+        "plan": {
+          "tensors": 1,
+          "upload_bytes": 117440512,
+          "changed_bytes": 117595127,
+          "total_bytes": 16060522496,
+          "header_changes": [],
+          "removed": [],
+          "names": [
+            "model.layers.0.mlp.down_proj.weight"
+          ]
+        },
+        "source": "onggi",
+        "planning_s": 0.8230880129849538,
+        "total_s": 1.2092401230474934,
+        "round": 0,
+        "target": "base",
+        "prompt_ttft_s": 0.42115828208625317,
+        "tokens": [
+          [
+            198,
+            791,
+            1176,
+            1403,
+            5238,
+            315,
+            279,
+            33894
+          ],
+          [
+            29,
+            946,
+            946,
+            946,
+            946,
+            946,
+            946,
+            946
+          ],
+          [
+            9831,
+            19954,
+            13094,
+            66965,
+            29726,
+            13094,
+            33390,
+            33353
+          ],
+          [
+            198,
+            220,
+            482,
+            220,
+            16,
+            13,
+            15,
+            13
+          ]
+        ],
+        "request_to_first_token_s": 1.6303984051337466,
+        "request_through_generation_s": 1.902299532899633,
+        "tokens_equal_fresh": true,
+        "unique_graphs_before": 0,
+        "unique_graphs_after": 0
+      },
+      {
+        "delta_s": 0.34134091599844396,
+        "uploaded_bytes": 117440512,
+        "mode": "inplace",
+        "tensors": 1,
+        "host_only": [],
+        "plan": {
+          "tensors": 1,
+          "upload_bytes": 117440512,
+          "changed_bytes": 117595127,
+          "total_bytes": 16060522496,
+          "header_changes": [],
+          "removed": [],
+          "names": [
+            "model.layers.0.mlp.down_proj.weight"
+          ]
+        },
+        "source": "onggi",
+        "planning_s": 0.7449161550030112,
+        "total_s": 1.1170047429623082,
+        "round": 1,
+        "target": "new",
+        "prompt_ttft_s": 0.3855548519641161,
+        "tokens": [
+          [
+            198,
+            791,
+            1176,
+            3094,
+            304,
+            279,
+            1920,
+            315
+          ],
+          [
+            29,
+            946,
+            946,
+            946,
+            946,
+            946,
+            946,
+            946
+          ],
+          [
+            9831,
+            16969,
+            13094,
+            1847,
+            13094,
+            1847,
+            13094,
+            1847
+          ],
+          [
+            198,
+            220,
+            482,
+            320,
+            1019,
+            8,
+            23432,
+            2095
+          ]
+        ],
+        "request_to_first_token_s": 1.5025595949264243,
+        "request_through_generation_s": 1.6739905109861866,
+        "tokens_equal_fresh": true,
+        "unique_graphs_before": 0,
+        "unique_graphs_after": 0
+      },
+      {
+        "delta_s": 0.34107687103096396,
+        "uploaded_bytes": 117440512,
+        "mode": "inplace",
+        "tensors": 1,
+        "host_only": [],
+        "plan": {
+          "tensors": 1,
+          "upload_bytes": 117440512,
+          "changed_bytes": 117595127,
+          "total_bytes": 16060522496,
+          "header_changes": [],
+          "removed": [],
+          "names": [
+            "model.layers.0.mlp.down_proj.weight"
+          ]
+        },
+        "source": "onggi",
+        "planning_s": 0.7866585119627416,
+        "total_s": 1.1639798899414018,
+        "round": 1,
+        "target": "base",
+        "prompt_ttft_s": 0.3350081420503557,
+        "tokens": [
+          [
+            198,
+            791,
+            1176,
+            1403,
+            5238,
+            315,
+            279,
+            33894
+          ],
+          [
+            29,
+            946,
+            946,
+            946,
+            946,
+            946,
+            946,
+            946
+          ],
+          [
+            9831,
+            19954,
+            13094,
+            66965,
+            29726,
+            13094,
+            33390,
+            33353
+          ],
+          [
+            198,
+            220,
+            482,
+            220,
+            16,
+            13,
+            15,
+            13
+          ]
+        ],
+        "request_to_first_token_s": 1.4989880319917575,
+        "request_through_generation_s": 1.7269989269552752,
+        "tokens_equal_fresh": true,
+        "unique_graphs_before": 0,
+        "unique_graphs_after": 0
+      }
+    ],
+    "destination_differs_base": true
+  }
+}

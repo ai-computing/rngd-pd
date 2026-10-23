@@ -1,0 +1,33 @@
+{
+  "runtime_revision": "0bc274132fddfd8e2891dfef85eca9f9427eb6d6",
+  "source_sha256": {
+    "src/rngd_pd/swap/rngd.py": "2b6156feaf5a829456c94d32483468844729fe1172befdf4808f82111f4b9b73",
+    "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+    "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1",
+    "src/rngd_pd/swap/atom_inputs.py": "2517543aa5e13fd20695c80506fff096de2d6938605e7e76f332a48d0d820443",
+    "experiments/verify_npu_delta.py": "3ebaecac8b4273c1c218942a27790ce28765c23eecc57076375f83312c5e5e5a"
+  },
+  "onggi_revision": "b63d5022ae1586916d92fae37dcf9cdf51e58f77",
+  "onggi_binary_sha256": "b84298f720389fab65c83735eb2c627430911d24cdcd4147a198cd9843a3ef28",
+  "go": "go version go1.27.3 linux/amd64",
+  "python": "3.10.12",
+  "versions": {
+    "torch": "2.11.0+cpu",
+    "torch-rbln": "0.2.2",
+    "rebel-compiler": "0.11.0",
+    "numpy": "2.2.6",
+    "furiosa-torch": "2026.2.0"
+  },
+  "fixture": {
+    "tensor": "model.layers.0.mlp.down_proj.weight",
+    "dtype": "BF16",
+    "shape": [
+      4096,
+      14336
+    ],
+    "seed": 1,
+    "scale": 0.1,
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "revision": "0e9e39f249a16976918f6564b8830bc894c89659"
+  }
+}
