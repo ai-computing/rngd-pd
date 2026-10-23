@@ -375,12 +375,19 @@ it runs onggi, refines checkpoint ranges, and transfers only changed tensors.
   0.25–0.45 s through the first token, versus 20.6–23.5 s for a full load.
 - **ATOM embedded weights:** native bucketing (`AtomSession`), host-prepared
   session reload (`HostPool`), and optimum bundles (`SwappableAtom`). Co-compiled
-  selection retains the weights; a changed embedded model requires a reload.
+  selection retains the weights; changed ordinary embedded bundles require a reload.
 - **ATOM device-input weights:** `DeviceWeightDecode` now stages only changed
   tensors, probes them on the card, and commits their input references without
   rebuilding the graph. This uses extra memory for the changed tensors and
   retains rebel 0.11's slower device-input decode rate and initial in-process
   compilation requirement.
+- **ATOM weight-free constants (experimental):** `ConstantWeightDecode` retains
+  fast compiled constant graphs and refreshes only affected weight-transform
+  groups in their existing runtime. A real B1/B4 toy changed one 32 MiB group
+  within 512 MiB of resident weights and reproduced the original NPU outputs
+  exactly after a reverse update. This requires a new weight-free compilation,
+  a dedicated worker process and the validated internal SDK ABI; it is an SDK
+  opt-in, separate from the deployed HTTP worker. See [evidence and limits](experiments/2026-10-23-resident-constant-update.md).
 
 A real onggi → NPU test changed one 117 MB tensor of a 16.1 GB checkpoint:
 RNGD updated in 1.12–2.00 s (first token 1.50–2.57 s), ATOM in 1.25–1.34 s

@@ -32,4 +32,52 @@ The static evidence supports testing this sequence: retain a weight-free compile
 
 The active SDK's protected `core/weight_free.py` and readable `core_ori/weight_free.py` are different files. Their respective SHA-256 values are `19d0e17d95ac3a3c62019082d497fc3d7f57bb5f37455d77c20440dad35dffe8` and `71e3f2741c5000c831e43ddf4c7e8324115295a493ca5f6d1667845491812b48`. Their equivalence was not assumed: the companion API investigation confirmed methods on the active class, while REA established native implementations and skip/reset behavior.
 
-Reusing one runtime while preserving unrelated resident constants remains an inference until a device test demonstrates changed outputs, stable runtime identity and allocation behavior. Static assembly does not measure upload volume or speed, establish concurrent update safety, or prove full-model weight-free compilation succeeds. These REA observations establish no new RNGD binding or hardware-performance result.
+Static assembly alone does not measure upload volume or speed, establish concurrent update safety, or prove full-model weight-free compilation succeeds. These REA observations establish no new RNGD binding or hardware-performance result.
+
+## Metadata emission gate
+
+The active SDK defaults to weight-free mode `off`. `RBLN_WEIGHT_FREE=1` at
+process launch normalizes to `on`. Active frontend source additionally requires
+weight sharing and nonscalar attribute constants. Direct compilation of the
+original module supplies those constants; `_intmd_mode="gen"` alone does not
+enable the feature. [Gate evidence](data/resident-update-20261023/rea-emission-gate.json)
+and [flag evidence](data/resident-update-20261023/rea-weight-free-flag.json)
+preserve the exact source and native observations.
+
+## Bounded real-device proof
+
+An allocated RBLN-CA22 ran a stack of sixteen 4096×4096 FP16 matrices: 512 MiB
+of logical weights. The B1 program owned sixteen singleton transform groups;
+the B4 program reused their constants and introduced no new weight-transform
+groups. One changed 32 MiB group was applied through the native runtime.
+Both B1 and B4 produced changed outputs matching the CPU destination reference.
+
+Across two recorded runs, forward native apply-call time was 0.228/0.419 s,
+and steady B1/B4 execution medians were 2.38–2.60 ms. The production updater
+also performed the reverse change: both programs then matched their original
+NPU output arrays exactly (`rtol=0`, `atol=0`). The reverse updater staged
+33,554,432 bytes and one transform group. These are logical transform-input
+bytes, not measured bus traffic. [All samples and source/result hashes](data/resident-update-20261023/toy.json)
+are retained.
+
+The first device-input layout experiment encountered compiler errors and CPU
+fallback, so its apparent success and timings were rejected. Subsequent probes
+disabled fallback. Fast embedded controls with weight-free mode off ran on the
+NPU but exposed no update metadata; their partial-update assertions failed.
+Neither negative control is reported as a partial-update success.
+
+## Implementation validation
+
+The opt-in `ConstantWeightDecode` uses direct gen-mode compilation and the
+existing fast batched Llama graph, with host KV. `ConstantWeightUpdater` expands
+changed keys to full transform dependencies, counts every native eligible
+group, retains host-parameter pointer owners, stages independent replacements,
+and rolls back failed/interrupted updates. A failed rollback or interruption
+between device application and engine-state commit disables further inference.
+
+Independent review's two Important findings (overlapping groups and interrupted
+transactions) were reproduced RED and fixed GREEN. Additional regression tests
+cover aliased replacements, host pointer lifetime, explicit compile examples,
+packed `o_proj`, checkpoint parity and KV invalidation. The full local suite
+passed 279 tests, skipped 6 environment-dependent tests, and passed 4 subtests.
+Full 8B hardware results are pending and must be recorded separately from the toy.
