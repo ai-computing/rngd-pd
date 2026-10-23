@@ -48,6 +48,27 @@ def _now():
     return time.perf_counter()
 
 
+def _rows(info, count):
+    """Validate/coalesce checkpoint row ranges; old manual plans mean all rows."""
+    if "rows" not in info:
+        return [(0, count)]
+    rows = info["rows"]
+    if not isinstance(rows, (list, tuple)) or not rows:
+        raise ValueError("changed row ranges must be a nonempty sequence")
+    for span in rows:
+        if (not isinstance(span, (list, tuple)) or len(span) != 2
+                or any(type(n) is not int for n in span)
+                or not 0 <= span[0] < span[1] <= count):
+            raise ValueError("changed row range is outside the checkpoint tensor")
+    merged = []
+    for a, b in sorted(rows):
+        if merged and a <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], b))
+        else:
+            merged.append((a, b))
+    return merged
+
+
 def _serialized(method):
     @wraps(method)
     def call(self, *args, **kwargs):
@@ -169,10 +190,12 @@ class SwappableDecode:
 
     # ---------------------------------------------------------------- weights
 
-    def _host(self, name, transform):
+    def _host(self, name, transform, rows=None):
         """One checkpoint tensor in the layout the graph takes, on the host (bf16)."""
         torch = self.torch
         t = self.ck.get(name)
+        if rows is not None:
+            t = t[rows[0]:rows[1]]
         if transform == "q":
             return (t.float() * (1.0 / math.sqrt(HD))).t().contiguous().to(self.BF)
         if transform == "t":
@@ -406,6 +429,24 @@ class SwappableDecode:
 
     # ------------------------------------------------------------------ delta
 
+    def _copy_rows(self, name, start, end, tensor):
+        """Copy a prepared patch into its original resident allocation."""
+        if name == self.lm_name:
+            chunk_size = self.Vp // NG_LM
+            chunk, row = divmod(start, chunk_size)
+            dst = self.wlm_d[chunk][row:row + end - start]
+            direct = True
+        else:
+            i = int(name.split(".")[2])
+            slot = _LAYER[name.split(".", 3)[3]][0]
+            group, layer = divmod(i, self.group)
+            dst = self.shared[group][slot][layer]
+            direct = start == 0 and end == dst.shape[1]
+            if not direct:
+                dst = dst[:, start:end]
+        # Native probes favor direct contiguous H2D, but small staged strided D2D.
+        dst.copy_(tensor if direct else tensor.to(self.dev))
+
     def load_delta(self, new_checkpoint, **options):
         """Plan and apply changed weights (ranges JSON, live onggi, or local diff)."""
         from .load import load_delta
@@ -416,11 +457,12 @@ class SwappableDecode:
         """Update changed tensors at a drained request boundary.
 
         Validate and stage before touching device state. Inplace mode uploads
-        only changed layer tensors and restores them on an error. Group mode
+        changed projection/LM rows and restores them on an error. Group mode
         stages replacement group tensors and commits references atomically,
         at the cost of uploading all layers in each touched group. If device
         rollback itself fails the engine stops serving until reloaded.
         """
+        t0 = _now()
         if mode not in ("inplace", "group"):
             raise ValueError("delta mode must be inplace or group")
         new = new_checkpoint if isinstance(new_checkpoint, Checkpoint) else Checkpoint(new_checkpoint)
@@ -434,6 +476,7 @@ class SwappableDecode:
             raise ValueError("checkpoint graph/rotary configuration changed; reload required")
         if plan.removed or set(old.where) != set(new.where):
             raise ValueError("checkpoint tensor set changed; reload required")
+        row_ranges = {}
         for name in plan.tensors:
             if name.startswith("model.layers."):
                 parts = name.split(".", 3)
@@ -445,8 +488,12 @@ class SwappableDecode:
             a, b = old.get(name), new.get(name)
             if tuple(a.shape) != tuple(b.shape) or a.dtype != b.dtype:
                 raise ValueError(f"tensor layout changed; reload required: {name}")
+            if a.ndim == 2:
+                row_ranges[name] = _rows(plan.tensors[name], a.shape[0])
+                if name in plan.header_changes:
+                    row_ranges[name] = [(0, a.shape[0])]
 
-        t0 = _now()
+        validated = _now()
         old_host = (self.embed, self.norm, self.n1, self.n2, self.wlm_d)
         old_pb = {v: st["pb"] for v, st in self.variants.items()}
         old_shared = [dict(slots) for slots in self.shared]
@@ -468,13 +515,22 @@ class SwappableDecode:
                         if mode == "group":
                             replacements[(g, slot)] = None
                         else:
-                            staged[(g, slot, li)] = self._host(name, tr)
+                            for a, b in row_ranges[name]:
+                                staged[(name, a, b)] = self._host(name, tr, (a, b))
                     else:
                         (self.n1 if slot == "n1" else self.n2)[i] = self._host(name, tr)
                         norms_changed = True
                 elif name == self.lm_name:
-                    self.wlm_d = self._lm_host().to(self.dev)
-                    uploaded += self.Vp * H * 2
+                    if mode == "group":
+                        self.wlm_d = self._lm_host().to(self.dev)
+                        uploaded += self.Vp * H * 2
+                    else:
+                        chunk_size = self.Vp // NG_LM
+                        for a, b in row_ranges[name]:
+                            while a < b:
+                                end = min(b, (a // chunk_size + 1) * chunk_size)
+                                staged[(name, a, end)] = new.get(name)[a:end].to(self.BF).contiguous()
+                                a = end
                     if name == "model.embed_tokens.weight":
                         self.embed = new.get(name).float().numpy()
                 elif name == "model.embed_tokens.weight":
@@ -495,20 +551,24 @@ class SwappableDecode:
                     uploaded += sum(pb[k].numel() * pb[k].element_size()
                                     for k in ("eps", "nh", "norm"))
             self._sync()
+            staged_at = _now()
             # Capture rollback values from the *old* checkpoint, not from a
             # slow or unsupported device readback.
             self.ck = old
-            for g, slot, li in staged:
-                suffix = next(k for k, value in _LAYER.items() if value[0] == slot)
-                restore[(g, slot, li)] = self._host(
-                    f"model.layers.{g * self.group + li}.{suffix}", _LAYER[suffix][1])
+            for name, a, b in staged:
+                if name == self.lm_name:
+                    restore[(name, a, b)] = old.get(name)[a:b].to(self.BF).contiguous()
+                else:
+                    tr = _LAYER[name.split(".", 3)[3]][1]
+                    restore[(name, a, b)] = self._host(name, tr, (a, b))
             self.ck = new
+            rollback_at = _now()
             for key, tensor in staged.items():
-                g, slot, li = key
                 attempted.append(key)  # include a write that partially fails
-                self.shared[g][slot][li].copy_(tensor.to(self.dev))
+                self._copy_rows(*key, tensor)
                 uploaded += tensor.numel() * tensor.element_size()
             self._sync()
+            copied_at = _now()
             for (g, slot), tensor in replacements.items():
                 self.shared[g][slot] = tensor
             for v, pb in new_pb.items():
@@ -520,15 +580,17 @@ class SwappableDecode:
                 self.shared = old_shared
                 for v, pb in old_pb.items():
                     self.variants[v]["pb"] = pb
-                for g, slot, li in attempted:
-                    self.shared[g][slot][li].copy_(restore[(g, slot, li)].to(self.dev))
+                for key in attempted:
+                    self._copy_rows(*key, restore[key])
                 self._sync()
             except BaseException as rollback_error:
                 self._failed = True
                 raise RuntimeError("delta update and rollback failed; reload required") from rollback_error
             raise
         return dict(delta_s=_now() - t0, uploaded_bytes=uploaded, mode=mode,
-                    tensors=len(plan.tensors), host_only=host_only)
+                    tensors=len(plan.tensors), host_only=host_only,
+                    validation_s=validated - t0, stage_s=staged_at - validated,
+                    rollback_stage_s=rollback_at - staged_at, copy_s=copied_at - rollback_at)
 
     def close(self):
         with self._lock:

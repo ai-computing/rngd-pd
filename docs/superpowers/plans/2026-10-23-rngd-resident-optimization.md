@@ -39,7 +39,7 @@ transaction safe under interruption. Reuse the existing planner and API.
     interrupted rollback, partial group/reference commit, and stale KV.
   - Observe RED, then modify rngd.py rollback boundaries/state restoration and
     generation handling. Run the focused suite GREEN and commit.
-- [ ] Task 2: Implement the smallest hardware-proven transfer optimization.
+- [x] Task 2: Implement the smallest hardware-proven transfer optimization.
   - Probe CPU→resident versus temporary-device copies and sparse column/LM row
     transfers; record SDK layout/lifetime/completion evidence.
   - Tests: real fresh-transform parity, non-square q scaling, disjoint/edge rows,
@@ -76,3 +76,19 @@ transaction safe under interruption. Reuse the existing planner and API.
   GREEN: catch BaseException, restore original group/per-batch/host references,
   poison any failed/interrupted rollback and invalidate KV before mutation.
   Focused RNGD suite: 13 passed in 1.44 s.
+- Native group-8 [8,14336,4096] probe passed original-parent compiled consumption
+  and neighbor checks. Full-layer direct CPU copy measured 19.6–21.9 ms versus
+  temporary upload 18.8–26.1 ms plus copy 5.2–11.4 ms. Sparse eight-column staged
+  upload/copy measured about 3.3–4.1 ms versus direct host sequencing 22.9–26.6 ms.
+  Ruling: direct copies for contiguous full projections/LM rows; small temporary
+  device patches for sparse projection columns. Avoid a new HAL dependency.
+- Task 2 RED: 23 sparse-projection/LM/bounds cases failed on the old updater.
+  GREEN: slice before conversion, stage matching old patches, retain allocations,
+  coalesce/validate rows, split LM runs at chunk boundaries, preserve padding,
+  and report validation/staging/rollback-staging/copy phases. Missing row metadata
+  still updates whole tensors; header changes conservatively update all rows.
+- Added partial-write interruption/rollback, real safetensors planner-to-updater,
+  dtype/q rounding and overlapping/header-change coverage. Full local suite:
+  294 passed, 6 skipped, 4 subtests passed in 22.33 s.
+- Ruling: do not change planner header/refinement code without evidence of a
+  material remaining bottleneck. This keeps the production diff in rngd.py.
