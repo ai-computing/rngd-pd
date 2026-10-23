@@ -147,6 +147,10 @@ independent compilation session. Two 8B bundles may not fit a 16 GiB card.
 Same-session switching shares weights; independent-session warm preparation
 does not establish arbitrary partial ATOM weight replacement.
 
+The deployed cluster worker can now use the native `AtomSession` or RNGD engines
+directly through [prepared serving](prepared-serving.md). It selects prepared
+B/S shapes only between drained batches and checks prefill checkpoint identity.
+
 ## ATOM: partial weights through device inputs
 
 ```python

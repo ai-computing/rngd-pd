@@ -1,5 +1,11 @@
 # RNGD × llm-d 배포 (Phase 5)
 
+> 아래 내용은 소스가 `src/rngd_pd`로 옮겨지기 전의 역사적 blueprint입니다.
+> 현재 배포 경로는 [Helm chart](helm/rngd-pd)와
+> `python -m rngd_pd.serving.cluster`입니다. 아래 Dockerfile·compose·이미지 빌드
+> 예제의 옛 진입점은 현재 소스와 호환되지 않습니다.
+> 새 기능의 설정과 검증 범위는 [준비된 변형 서빙](../docs/prepared-serving.md)을 참고하세요.
+
 PoC → 프로덕션 배포 하드닝의 산출물. **정직 고지**: 이 저장소에는 실제 K8s 클러스터가 없어 매니페스트는
 **구조 유효성(yaml lint)까지 검증**했고 클러스터 실배포는 미실행. 로직/서빙 경로는 `serving_app.py
 --role all --mock`로 실제 HTTP 검증됨. 컨테이너 빌드는 Furiosa wheel 인덱스 접근이 있는 환경에서 수행.

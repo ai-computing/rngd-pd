@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from threading import Event
 from types import SimpleNamespace
 import pytest
@@ -78,6 +79,39 @@ def test_failed_prepare_leaves_active_model_usable():
         with pytest.raises(MemoryError):
             e.swap(V1, "b")
         assert e.run() == ("aB1", ())
+
+
+@pytest.mark.parametrize("action", ["release", "close"])
+def test_swap_revalidates_bundle_after_preparing(monkeypatch, action):
+    prepared, activate = Event(), Event()
+    with SwappableAtom({n: AtomBundle(n, (V1,)) for n in ("a", "b")}, loader=model) as e:
+        e.swap(V1, "a")
+        prepare = e.prepare
+
+        def pause_after_prepare(variant, bundle=None):
+            info = prepare(variant, bundle)
+            prepared.set()
+            assert activate.wait(5)
+            return info
+
+        monkeypatch.setattr(e, "prepare", pause_after_prepare)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            swap = pool.submit(e.swap, V1, "b")
+            try:
+                assert prepared.wait(2)
+                if action == "release":
+                    e.release("b")
+                else:
+                    e.close()
+            finally:
+                activate.set()
+            with pytest.raises(RuntimeError, match="released|closed"):
+                swap.result(5)
+        if action == "release":
+            assert e.active_bundle == "a" and e.active == V1
+            assert e.run() == ("aB1", ())
+        else:
+            assert e.active_bundle is None and e.active is None
 
 
 def test_wrong_compiled_shape_is_rejected_before_activation():

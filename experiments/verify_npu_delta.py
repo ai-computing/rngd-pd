@@ -126,6 +126,9 @@ def main():
         assert all(r["tokens_equal_fresh"] for r in resident["rows"]), "delta token parity failed"
         assert all(r["unique_graphs_before"] == r["unique_graphs_after"]
                    for r in resident["rows"]), "delta triggered recompilation"
+        if a.backend == "atom":
+            assert all(r["unchanged_allocations_retained"] for r in resident["rows"]), \
+                "delta replaced unchanged weight allocations"
         assert resident["destination_differs_base"], "fixture did not change generated tokens"
 
 

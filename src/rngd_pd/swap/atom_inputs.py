@@ -64,6 +64,7 @@ class _KV:
     tensor: object
     generation: int
     variant: Variant
+    owner: object
 
 
 def _now():
@@ -197,6 +198,7 @@ class DeviceWeightDecode:
         from .rngd import Checkpoint
         self.ck = Checkpoint(model_dir)
         self._lock, self._closed, self._generation = RLock(), False, 0
+        self._kv_owner = object()
         self.dev = f"rbln:{device}"
         self.cache_dir = cache_dir
         t0 = _now()
@@ -235,14 +237,15 @@ class DeviceWeightDecode:
         if v is None:
             raise ValueError("select a variant first")
         z = lambda *s: self.torch.zeros(*s).to(self.dev)
-        return tuple(_KV(t, self._generation, v) for t in (
+        return tuple(_KV(t, self._generation, v, self._kv_owner) for t in (
             z(d["nl"], v.B, d["NKV"], d["HD"], v.S),
             z(d["nl"], v.B, d["NKV"], v.S, d["HD"])))
 
     @_serialized
     def step(self, toks, pos, K, V):
         torch, v = self.torch, self.active
-        if any(not isinstance(t, _KV) or t.generation != self._generation or t.variant != v
+        if any(not isinstance(t, _KV) or t.owner is not self._kv_owner
+               or t.generation != self._generation or t.variant != v
                for t in (K, V)):
             raise ValueError("weights or variant changed; start a fresh request")
         if (len(toks) != v.B or len(pos) != v.B
@@ -253,7 +256,8 @@ class DeviceWeightDecode:
         logits, K, V = self.graphs[v](x, K.tensor, V.tensor, cos, sin, mask, oh, *self.W)
         lg = logits.cpu().float().numpy()
         return ([int(t) for t in np.argmax(lg, axis=-1)],
-                _KV(K, self._generation, v), _KV(V, self._generation, v))
+                _KV(K, self._generation, v, self._kv_owner),
+                _KV(V, self._generation, v, self._kv_owner))
 
     @_serialized
     def first_step(self):

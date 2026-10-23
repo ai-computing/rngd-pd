@@ -8,7 +8,6 @@ import numpy as np
 
 from rngd_pd.swap.delta import UpdatePlan
 from rngd_pd.swap.rngd import Checkpoint, SwappableDecode
-from rngd_pd.swap.rngd import _KV
 from rngd_pd.swap.variants import Variant
 
 
@@ -30,7 +29,8 @@ def checkpoint(path, value):
 @pytest.fixture
 def engine(tmp_path):
     e = SwappableDecode.__new__(SwappableDecode)
-    e._lock, e._failed = RLock(), False
+    e._lock, e._failed, e._generation = RLock(), False, 0
+    e._kv_owner = object()
     e.torch, e.BF, e.dev = torch, torch.bfloat16, "cpu"
     e.group, e.nl, e.ngroups = 2, 2, 1
     e.ck = checkpoint(tmp_path / "old", 1.0)
@@ -105,7 +105,7 @@ def test_kv_from_before_weight_update_is_rejected(engine, tmp_path):
     e, ck = engine, checkpoint(tmp_path / "new", 7.0)
     e._generation, e.V = 0, 128
     e.active = Variant(1, 32, 2)
-    old_keys, old_values = _KV([], 0), _KV([], 0)
+    old_keys, old_values = e.blank_kv()
     e.apply_delta(ck, plan(e, ck))
     with pytest.raises(ValueError, match="fresh request"):
         e.step([7], [0], old_keys, old_values)

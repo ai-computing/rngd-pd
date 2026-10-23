@@ -19,28 +19,71 @@ as a pluggable backend with the same contract; the handshake hooks (handshake_me
 set_remote_handshake) mirror vLLM's NIXL agent exchange so the connector code is future-proof.
 """
 from abc import ABC, abstractmethod
-import os, time, threading, pickle
+import io
+import os, time, threading
+import struct
 import numpy as np
 
 # Wire format: fp16 (default, 2B/elem) or bf16 (2B/elem, BIT-EXACT for bf16-valued
 # KV — fp16 collapses subnormals <6e-5 and can flip argmax on long prompts).
 WIRE = "fp16"
+_MAX_HEADER_BYTES = 4096
+
+
+def _wire_limit():
+    return int(os.environ.get("AIRM_KV_TCP_MAX_BLOB_BYTES", str(256 << 20)))
+
+
+def _check_shape(shape, limit):
+    if len(shape) > 8 or any(type(d) is not int or d < 0 or d > limit // 2 for d in shape):
+        raise ValueError("KV shape exceeds limits")
+    size = 1
+    for dim in shape:
+        size *= dim
+        if size * 2 > limit:
+            raise ValueError("KV array exceeds byte limit")
+    return size
 
 def ser(arr, wire=None):
-    a = np.ascontiguousarray(arr)
-    if (wire or WIRE) == "bf16":
+    """Numeric .npy v1: float16, or uint16 containing the high float32 bits (bf16).
+
+    Pickled KV from older workers is deliberately unsupported; upgrade both peers together.
+    """
+    a = np.asarray(arr)
+    wire = wire or WIRE
+    if a.dtype.kind not in "biuf" or wire not in ("fp16", "bf16"):
+        raise ValueError("KV requires a real numeric array and fp16 or bf16 wire")
+    _check_shape(a.shape, _wire_limit() - _MAX_HEADER_BYTES)
+    a = np.ascontiguousarray(a)
+    if wire == "bf16":
         # astype always copies, and the caller already hands us float32 — that
         # was a full extra pass over every layer's cache, 67 MB per request.
         f = a if a.dtype == np.float32 else a.astype(np.float32)
-        u = (f.view(np.uint32) >> 16).astype(np.uint16)
-        return pickle.dumps({"bf16": u, "shape": a.shape}, protocol=4)
-    return pickle.dumps(a.astype(np.float16), protocol=4)
+        payload = (f.view(np.uint32) >> 16).astype("<u2")
+    else:
+        payload = a.astype("<f2")
+    out = io.BytesIO()
+    np.lib.format.write_array(out, payload, version=(1, 0), allow_pickle=False)
+    return out.getvalue()
 
 def deser(buf):
-    o = pickle.loads(buf)
-    if isinstance(o, dict) and "bf16" in o:
-        return (o["bf16"].astype(np.uint32) << 16).view(np.float32).reshape(o["shape"])
-    return o.astype(np.float32)
+    """Validate dtype, dimensions and exact byte count before allocating decoded arrays."""
+    if len(buf) > _wire_limit() or len(buf) < 10 or bytes(buf[:8]) != b"\x93NUMPY\x01\x00":
+        raise ValueError("unsupported or oversized KV wire format")
+    header_size = struct.unpack("<H", buf[8:10])[0]
+    if header_size > _MAX_HEADER_BYTES or len(buf) < 10 + header_size:
+        raise ValueError("invalid KV array header")
+    header = io.BytesIO(bytes(buf[8:10 + header_size]))
+    shape, fortran, dtype = np.lib.format.read_array_header_1_0(header, max_header_size=_MAX_HEADER_BYTES)
+    if fortran or dtype not in (np.dtype("<f2"), np.dtype("<u2")):
+        raise ValueError("unsupported KV array dtype or layout")
+    count = _check_shape(shape, _wire_limit() - _MAX_HEADER_BYTES)
+    if len(buf) != 10 + header_size + count * 2:
+        raise ValueError("KV array byte count does not match shape")
+    a = np.frombuffer(buf, dtype=dtype, count=count, offset=10 + header_size).reshape(shape)
+    if dtype == np.dtype("<u2"):
+        return (a.astype(np.uint32) << 16).view(np.float32)
+    return a.astype(np.float32)
 
 
 class Transport(ABC):
@@ -82,8 +125,10 @@ class ShmTransport(Transport):
 
     Genuinely shm-equivalent (tmpfs), so prefill and decode worker PROCESSES on one node share KV
     without a network hop. Atomic publish via write-tmp + rename so pull never sees a partial file.
+    Opaque blobs share TCP's AIRM_KV_TCP_MAX_BLOB_BYTES limit before deserialization.
     """
-    def __init__(self, root="/dev/shm/rngd_kv"):
+    def __init__(self, root=None):
+        root = root or os.environ.get("PD_SHM_ROOT", "/dev/shm/rngd_kv_cluster")
         self.root = root
         os.makedirs(root, exist_ok=True)
     def _path(self, key): return os.path.join(self.root, key.replace("/", "__"))
@@ -97,7 +142,14 @@ class ShmTransport(Transport):
         while not os.path.exists(p):
             if time.time() - t0 > timeout: raise TimeoutError(f"pull timeout: {key}")
             time.sleep(0.001)
-        with open(p, "rb") as f: return f.read()
+        limit = _wire_limit()
+        with open(p, "rb") as f:
+            if os.fstat(f.fileno()).st_size > limit:
+                raise ValueError("shared-memory KV exceeds byte limit")
+            buf = f.read(limit + 1)  # Bound allocation even if the file grows after fstat.
+        if len(buf) > limit:
+            raise ValueError("shared-memory KV exceeds byte limit")
+        return buf
     def close(self): pass                                   # files persist for the peer; caller purges
 
 
@@ -315,7 +367,7 @@ def _resolve(name, kw):
         if name != "shm":
             raise KeyError(f"AIRM_KV_TRANSPORT={name!r} needs rm-core installed")
         _CLASSES[name] = cls = ShmTransport
-        return cls(**dict({"root": os.environ.get("PD_SHM_ROOT", "/dev/shm/rngd_kv_cluster")}, **kw))
+        return cls(**kw)
     try:
         impl = registry.load("airm.kv_transports", name, **kw)
     except KeyError:

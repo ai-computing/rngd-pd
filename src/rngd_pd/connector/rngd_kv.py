@@ -1,11 +1,7 @@
-"""RNGD KV connector — a REAL vllm.distributed...KVConnectorBase_V1 subclass (Phase 1).
+"""Whole-request RNGD KV connector, subclassing vLLM's KVConnectorBase_V1.
 
-Was: a stand-alone class MIRRORING the contract. Now: actually subclasses vLLM 0.18.0's
-KVConnectorBase_V1, so `isinstance(conn, KVConnectorBase_V1)` is True and llm-d's connector
-machinery can load it. The 7 abstract methods (get_num_new_matched_tokens, update_state_after_alloc,
-build_connector_meta, save_kv_layer, start_load_kv, wait_for_layer_load, wait_for_save) are
-implemented; transport is injected (kv_transport.Transport) so shm/TCP today, NIXL later — connector
-logic never changes.
+The custom cluster constructs one connector per request and transfers whole layer arrays.
+Paged vLLM scheduler/block mappings require a separate layout adapter and are rejected.
 
 Dual construction:
   • real vLLM :  RngdKVConnector(vllm_config, role, kv_cache_config)      # positional, vLLM calls this
@@ -74,6 +70,8 @@ class RngdKVConnector(KVConnectorBase_V1):
         self._kv_caches = None
         self._saved = {}
         self._loading = []
+        self._pending_alloc = None
+        self._loading_req_id = req_id
 
     @property
     def role(self): return self._role
@@ -87,18 +85,47 @@ class RngdKVConnector(KVConnectorBase_V1):
         return (extra if extra > 0 else None, extra > 0)
 
     def update_state_after_alloc(self, request, blocks, num_external_tokens):
-        self._pending_alloc = (getattr(request, "request_id", self.req_id), num_external_tokens)
+        if blocks is not None:
+            raise NotImplementedError("rngd connector: paged block mappings require a layout adapter")
+        req_id = getattr(request, "request_id", None)
+        if not isinstance(req_id, str) or not req_id:
+            raise ValueError("rngd connector: request_id must be a nonempty string")
+        if type(num_external_tokens) is not int or num_external_tokens < 0:
+            raise ValueError("rngd connector: num_external_tokens must be a nonnegative integer")
+        if self._pending_alloc is not None:
+            raise NotImplementedError("rngd connector: only one request per metadata step is supported")
+        self._pending_alloc = (req_id, num_external_tokens)
 
     def build_connector_meta(self, scheduler_output):
+        if scheduler_output is not None:
+            raise NotImplementedError("rngd connector: vLLM paged scheduler output requires a layout adapter")
         layers = [f"layer.{i}" for i in range(self.n_layers)]
-        is_worker = self._role == KVConnectorRole.WORKER
+        if self._pending_alloc is not None:
+            req_id, num_external_tokens = self._pending_alloc
+            self._pending_alloc = None
+            load_layers = layers if num_external_tokens else []
+            save_layers = [] if num_external_tokens else layers
+        elif self._role == KVConnectorRole.WORKER:
+            req_id, num_external_tokens = self.req_id, 0
+            load_layers = save_layers = layers
+        else:
+            req_id, num_external_tokens = "", 0
+            load_layers, save_layers = [], []
         return RngdKVConnectorMetadata(
-            req_id=self.req_id,
-            save_layers=layers if is_worker else [],
-            load_layers=layers,
-            num_external_tokens=self.n_layers)
+            req_id=req_id, save_layers=save_layers, load_layers=load_layers,
+            num_external_tokens=num_external_tokens)
 
     # ================= worker-side =================
+    def bind_connector_metadata(self, metadata):
+        if not isinstance(metadata, RngdKVConnectorMetadata):
+            raise TypeError("rngd connector: expected whole-request RngdKVConnectorMetadata")
+        if (not isinstance(metadata.req_id, str) or
+                (not metadata.req_id and (metadata.load_layers or metadata.save_layers))):
+            raise ValueError("rngd connector: metadata requires a single request_id")
+        if type(metadata.num_external_tokens) is not int or metadata.num_external_tokens < 0:
+            raise ValueError("rngd connector: num_external_tokens must be a nonnegative integer")
+        super().bind_connector_metadata(metadata)
+
     def register_kv_caches(self, kv_caches):
         """Bind the local KV buffer. vLLM passes dict[layer_name→tensor]; our runtime passes (K, V)
         lists indexed by layer (each [NKV,S,hd]). Both stored; wait_for_layer_load writes into them."""
@@ -121,9 +148,15 @@ class RngdKVConnector(KVConnectorBase_V1):
 
     def save_kv_layer(self, layer_name, kv_layer, attn_metadata=None, **kwargs):
         """PREFILL/offload: push one layer's KV to transport (overlaps with next-layer compute)."""
+        if attn_metadata is not None:
+            raise NotImplementedError("rngd connector: paged attention metadata requires a layout adapter")
+        meta = self._connector_metadata
+        if meta is not None and layer_name not in meta.save_layers:
+            return
+        req_id = meta.req_id if meta is not None else self.req_id
         k, v = self._split_kv(kv_layer)
-        self.t.push(f"{self.req_id}/{layer_name}/k", ser(k))
-        self.t.push(f"{self.req_id}/{layer_name}/v", ser(v))
+        self.t.push(f"{req_id}/{layer_name}/k", ser(k))
+        self.t.push(f"{req_id}/{layer_name}/v", ser(v))
         self._saved[layer_name] = True
 
     def wait_for_save(self):
@@ -132,7 +165,10 @@ class RngdKVConnector(KVConnectorBase_V1):
 
     def start_load_kv(self, forward_context=None, **kwargs):
         """DECODE/onload: begin loading all layers named in bound metadata."""
+        if forward_context is not None:
+            raise NotImplementedError("rngd connector: paged forward context requires a layout adapter")
         meta = self._connector_metadata
+        self._loading_req_id = meta.req_id if meta is not None else self.req_id
         self._loading = list(getattr(meta, "load_layers", [])) if meta else \
             [f"layer.{i}" for i in range(self.n_layers)]
 
@@ -147,9 +183,11 @@ class RngdKVConnector(KVConnectorBase_V1):
         scales with the batch the deployment asks for, so it is configuration,
         not a constant.
         """
+        if self._connector_metadata is not None and layer_name not in self._loading:
+            return
         t = float(os.environ.get("PD_KV_PULL_TIMEOUT", "5"))
-        k = deser(self.t.pull(f"{self.req_id}/{layer_name}/k", timeout=t))
-        v = deser(self.t.pull(f"{self.req_id}/{layer_name}/v", timeout=t))
+        k = deser(self.t.pull(f"{self._loading_req_id}/{layer_name}/k", timeout=t))
+        v = deser(self.t.pull(f"{self._loading_req_id}/{layer_name}/v", timeout=t))
         if self._kv_caches is not None:
             li = int(layer_name.split(".")[-1])
             # The producer may send only the columns the prompt filled --

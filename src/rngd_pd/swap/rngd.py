@@ -59,9 +59,10 @@ def _serialized(method):
 
 
 class _KV(list):
-    def __init__(self, tensors, generation):
+    def __init__(self, tensors, generation, owner):
         super().__init__(tensors)
         self.generation = generation
+        self.owner = owner
 
 
 class Checkpoint:
@@ -123,6 +124,7 @@ class SwappableDecode:
         self._lock = RLock()
         self._failed = False
         self._generation = 0
+        self._kv_owner = object()
         self.BF = torch.bfloat16
         self.ck = checkpoint if isinstance(checkpoint, Checkpoint) else Checkpoint(checkpoint)
         dims = self.ck.config
@@ -329,7 +331,8 @@ class SwappableDecode:
              for _ in range(self.ngroups)]
         V = [self.torch.zeros(self.group, v.B, NKV, v.S, HD, dtype=self.BF).to(self.dev)
              for _ in range(self.ngroups)]
-        return _KV(K, self._generation), _KV(V, self._generation)
+        return (_KV(K, self._generation, self._kv_owner),
+                _KV(V, self._generation, self._kv_owner))
 
     @_serialized
     def step(self, toks, positions, Kd, Vd):
@@ -341,6 +344,7 @@ class SwappableDecode:
         if (len(toks) != v.B or len(positions) != v.B
                 or any(not isinstance(t, (int, np.integer)) or not 0 <= t < self.V for t in toks)
                 or not isinstance(Kd, _KV) or not isinstance(Vd, _KV)
+                or Kd.owner is not self._kv_owner or Vd.owner is not self._kv_owner
                 or Kd.generation != self._generation or Vd.generation != self._generation
                 or any(type(p) not in (int, np.int32, np.int64) or not 0 <= p < v.S
                        for p in positions)
