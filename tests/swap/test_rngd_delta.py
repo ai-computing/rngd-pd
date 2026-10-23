@@ -78,6 +78,51 @@ def test_failed_rollback_stops_serving(engine, tmp_path):
         e.swap(None)
 
 
+@pytest.mark.parametrize("interrupt", [KeyboardInterrupt, SystemExit])
+def test_interrupted_write_restores_weights_checkpoint_and_invalidates_kv(engine, tmp_path, interrupt):
+    e, ck = engine, checkpoint(tmp_path / "new", 7.0)
+    old, before = e.ck, e.shared[0]["wk"].clone()
+    e.V, e.active = 128, Variant(1, 32, 2)
+    old_keys, old_values = e.blank_kv()
+    e._sync.side_effect = [None, interrupt("cancel after write"), None]
+    with pytest.raises(interrupt, match="cancel after write"):
+        e.apply_delta(ck, plan(e, ck))
+    torch.testing.assert_close(e.shared[0]["wk"], before, rtol=0, atol=0)
+    assert e.ck is old and not e._failed
+    with pytest.raises(ValueError, match="fresh request"):
+        e.step([7], [0], old_keys, old_values)
+
+
+def test_interrupted_rollback_disables_serving(engine, tmp_path):
+    e, ck = engine, checkpoint(tmp_path / "new", 7.0)
+    e._sync.side_effect = [None, RuntimeError("write"), KeyboardInterrupt("rollback")]
+    with pytest.raises(RuntimeError, match="reload required"):
+        e.apply_delta(ck, plan(e, ck))
+    assert e._failed
+    with pytest.raises(RuntimeError, match="reload"):
+        e.swap(None)
+
+
+def test_interrupted_group_commit_restores_original_allocations(engine, tmp_path):
+    class InterruptOnce(dict):
+        def __setitem__(self, key, value):
+            if self.armed:
+                self.armed = False
+                raise KeyboardInterrupt("commit")
+            super().__setitem__(key, value)
+
+    e, ck = engine, checkpoint(tmp_path / "new", 7.0)
+    old, allocation = e.ck, e.shared[0]["wk"]
+    state = InterruptOnce(pb=object())
+    state.armed = True
+    old_pb = state["pb"]
+    e.variants = {Variant(1, 32, 2): state}
+    with pytest.raises(KeyboardInterrupt, match="commit"):
+        e.apply_delta(ck, plan(e, ck), mode="group")
+    assert e.ck is old and e.shared[0]["wk"] is allocation and not e._failed
+    assert state["pb"] is old_pb
+
+
 def test_reject_wrong_plan_and_config_without_device_write(engine, tmp_path):
     e, ck = engine, checkpoint(tmp_path / "new", 7.0)
     p = plan(e, ck)

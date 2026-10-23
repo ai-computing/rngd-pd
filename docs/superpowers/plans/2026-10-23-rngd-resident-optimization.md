@@ -34,7 +34,7 @@ transaction safe under interruption. Reuse the existing planner and API.
 ## Tasks
 
 - [x] Inspect connected code/evidence and run clean baseline swap suite.
-- [ ] Task 1: Harden the touched update transaction.
+- [x] Task 1: Harden the touched update transaction.
   - Tests in tests/swap/test_rngd_delta.py: KeyboardInterrupt during copy/sync,
     interrupted rollback, partial group/reference commit, and stale KV.
   - Observe RED, then modify rngd.py rollback boundaries/state restoration and
@@ -70,3 +70,9 @@ transaction safe under interruption. Reuse the existing planner and API.
 - Environment ruling: old allocation/deletion ran on dell_0 control plane; data
   and SDK live on rebellion. Newly inherited rebellion kubeconfig was invalid;
   use existing authorized dell_0 configuration without credential changes.
+- Task 1 RED: interrupted writes left new weights/old KV usable; interrupted
+  rollback escaped without poisoning; interrupted group commit retained new
+  references. Four new regression cases reproduced the missing behavior.
+  GREEN: catch BaseException, restore original group/per-batch/host references,
+  poison any failed/interrupted rollback and invalidate KV before mutation.
+  Focused RNGD suite: 13 passed in 1.44 s.

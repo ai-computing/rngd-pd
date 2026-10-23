@@ -449,11 +449,14 @@ class SwappableDecode:
         t0 = _now()
         old_host = (self.embed, self.norm, self.n1, self.n2, self.wlm_d)
         old_pb = {v: st["pb"] for v, st in self.variants.items()}
-        self.n1, self.n2 = list(self.n1), list(self.n2)
+        old_shared = [dict(slots) for slots in self.shared]
         staged, restore, replacements = {}, {}, {}
         uploaded, host_only, norms_changed = 0, [], False
         attempted = []
         try:
+            # Invalidate before mutation: cancellation must not leave old KV usable.
+            self._generation = getattr(self, "_generation", 0) + 1
+            self.n1, self.n2 = list(self.n1), list(self.n2)
             # Host transforms can fail: do them all before the first write.
             self.ck = new
             for name in sorted(plan.tensors):
@@ -510,20 +513,20 @@ class SwappableDecode:
                 self.shared[g][slot] = tensor
             for v, pb in new_pb.items():
                 self.variants[v]["pb"] = pb
-        except Exception as error:
-            self.ck = old
-            self.embed, self.norm, self.n1, self.n2, self.wlm_d = old_host
-            for v, pb in old_pb.items():
-                self.variants[v]["pb"] = pb
+        except BaseException:
             try:
+                self.ck = old
+                self.embed, self.norm, self.n1, self.n2, self.wlm_d = old_host
+                self.shared = old_shared
+                for v, pb in old_pb.items():
+                    self.variants[v]["pb"] = pb
                 for g, slot, li in attempted:
                     self.shared[g][slot][li].copy_(restore[(g, slot, li)].to(self.dev))
                 self._sync()
-            except Exception as rollback_error:
+            except BaseException as rollback_error:
                 self._failed = True
                 raise RuntimeError("delta update and rollback failed; reload required") from rollback_error
-            raise error
-        self._generation = getattr(self, "_generation", 0) + 1
+            raise
         return dict(delta_s=_now() - t0, uploaded_bytes=uploaded, mode=mode,
                     tensors=len(plan.tensors), host_only=host_only)
 
