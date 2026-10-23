@@ -1,0 +1,3346 @@
+{
+  "schema": 1,
+  "scope": "B4/S256 group8 Llama-3.1-8B-Instruct; all accepted samples including first updates. Logical BF16 payload, not DMA counters. Shared host conditions differ.",
+  "update_count": 24,
+  "exact_fresh_token_comparisons": 768,
+  "cases": {
+    "full": {
+      "fresh": {
+        "base": {
+          "mode": "base",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792739945.02705,
+          "load": [
+            73.99072265625,
+            79.38720703125,
+            81.51171875
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "dd8ddc4726c71efd7c9f7bc6d0de7872822a339b4dc2e744888cdda14a8afa67",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [],
+          "load_s": 20.536452058004215,
+          "init_timings": {
+            "host_weights_s": 0.31000835192389786,
+            "upload_weights_s": 20.17990287009161
+          },
+          "initial": {
+            "tokens": [
+              [
+                198,
+                791,
+                1176,
+                1403,
+                5238,
+                315,
+                279,
+                33894
+              ],
+              [
+                29,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946
+              ],
+              [
+                9831,
+                19954,
+                13094,
+                66965,
+                29726,
+                13094,
+                33390,
+                33353
+              ],
+              [
+                198,
+                220,
+                482,
+                220,
+                16,
+                13,
+                15,
+                13
+              ]
+            ],
+            "ttft_s": 0.23395676200743765
+          },
+          "steady_decode_step_s": [
+            0.021756993955932558,
+            0.022469397052191198,
+            0.022365401964634657,
+            0.022319670068100095,
+            0.022898586932569742,
+            0.022883945959620178,
+            0.022343580960296094,
+            0.021883899113163352,
+            0.02004660409875214,
+            0.018820506986230612,
+            0.018704312038607895,
+            0.019822692964226007,
+            0.019626485067419708,
+            0.019713357905857265,
+            0.019940808997489512,
+            0.018407937022857368
+          ],
+          "complete": true
+        },
+        "new": {
+          "mode": "new",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792739969.688676,
+          "load": [
+            63.4638671875,
+            76.73583984375,
+            80.5927734375
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "dd8ddc4726c71efd7c9f7bc6d0de7872822a339b4dc2e744888cdda14a8afa67",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [],
+          "load_s": 20.910624135052785,
+          "init_timings": {
+            "host_weights_s": 0.48438054195139557,
+            "upload_weights_s": 20.386472001089714
+          },
+          "initial": {
+            "tokens": [
+              [
+                198,
+                791,
+                1176,
+                3094,
+                304,
+                279,
+                1920,
+                315
+              ],
+              [
+                29,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946
+              ],
+              [
+                9831,
+                16969,
+                13094,
+                1847,
+                13094,
+                1847,
+                13094,
+                1847
+              ],
+              [
+                198,
+                220,
+                482,
+                320,
+                1019,
+                8,
+                23432,
+                2095
+              ]
+            ],
+            "ttft_s": 0.1818587320158258
+          },
+          "steady_decode_step_s": [
+            0.020616476074792445,
+            0.01956225698813796,
+            0.018914549029432237,
+            0.019171930034644902,
+            0.01886414596810937,
+            0.018490590038709342,
+            0.018544410937465727,
+            0.018576113041490316,
+            0.018648927100002766,
+            0.018575072987005115,
+            0.018614585045725107,
+            0.019065965083427727,
+            0.02033408300485462,
+            0.019904652959667146,
+            0.018791303038597107,
+            0.02036301395855844
+          ],
+          "complete": true
+        }
+      },
+      "resident": {
+        "baseline": {
+          "mode": "resident",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792740138.6991036,
+          "load": [
+            31.037109375,
+            58.2529296875,
+            72.9951171875
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "dd8ddc4726c71efd7c9f7bc6d0de7872822a339b4dc2e744888cdda14a8afa67",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [
+            {
+              "delta_s": 0.2334928959608078,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 117595127,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.45799432892818004,
+              "total_s": 1.1772510400041938,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.10736547503620386,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.09663780103437603,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.2987032529199496,
+                "plan_s": 0.15919317200314254
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  3094,
+                  304,
+                  279,
+                  1920,
+                  315
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  16969,
+                  13094,
+                  1847,
+                  13094,
+                  1847,
+                  13094,
+                  1847
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  320,
+                  1019,
+                  8,
+                  23432,
+                  2095
+                ]
+              ],
+              "ttft_s": 0.2231180149829015,
+              "through_first_s": 1.4003690549870953,
+              "exact_fresh": true,
+              "resident_allocations_retained": true
+            },
+            {
+              "delta_s": 0.22455456294119358,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 117595127,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.4161104519153014,
+              "total_s": 0.6690361989894882,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.09779312205500901,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.0960169150494039,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.2628716609906405,
+                "plan_s": 0.1531472880160436
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.23881944210734218,
+              "through_first_s": 0.9078556410968304,
+              "exact_fresh": true,
+              "resident_allocations_retained": true
+            },
+            {
+              "delta_s": 0.2225869499379769,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 117595127,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.4373625779990107,
+              "total_s": 0.6823983120266348,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.1038858339888975,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.08781154407188296,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.2766264829551801,
+                "plan_s": 0.16064115206245333
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  3094,
+                  304,
+                  279,
+                  1920,
+                  315
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  16969,
+                  13094,
+                  1847,
+                  13094,
+                  1847,
+                  13094,
+                  1847
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  320,
+                  1019,
+                  8,
+                  23432,
+                  2095
+                ]
+              ],
+              "ttft_s": 0.2214785150717944,
+              "through_first_s": 0.9038768270984292,
+              "exact_fresh": true,
+              "resident_allocations_retained": true
+            },
+            {
+              "delta_s": 0.22642140905372798,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 117595127,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.4367794410791248,
+              "total_s": 0.6915306909941137,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.09626069699879736,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.09467427607160062,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.2741396069759503,
+                "plan_s": 0.16255139000713825
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.23599419405218214,
+              "through_first_s": 0.9275248850462958,
+              "exact_fresh": true,
+              "resident_allocations_retained": true
+            }
+          ],
+          "load_s": 19.780514091951773,
+          "init_timings": {
+            "host_weights_s": 0.2604116100119427,
+            "upload_weights_s": 19.471671885927208
+          },
+          "initial": {
+            "tokens": [
+              [
+                198,
+                791,
+                1176,
+                1403,
+                5238,
+                315,
+                279,
+                33894
+              ],
+              [
+                29,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946
+              ],
+              [
+                9831,
+                19954,
+                13094,
+                66965,
+                29726,
+                13094,
+                33390,
+                33353
+              ],
+              [
+                198,
+                220,
+                482,
+                220,
+                16,
+                13,
+                15,
+                13
+              ]
+            ],
+            "ttft_s": 0.21313569392077625
+          },
+          "steady_decode_step_s": [
+            0.01914685999508947,
+            0.019148470018990338,
+            0.01924786390736699,
+            0.019119628937914968,
+            0.018979443004354835,
+            0.01885361794847995,
+            0.01917074096854776,
+            0.019296665908768773,
+            0.019449680927209556,
+            0.019241284113377333,
+            0.01902918505948037,
+            0.01910410902928561,
+            0.019152230001054704,
+            0.01936129806563258,
+            0.019263625028543174,
+            0.019118358963169158
+          ],
+          "initial_equal_fresh": true,
+          "destination_differs_base": true,
+          "complete": true
+        },
+        "optimized": {
+          "mode": "resident",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792740939.3063343,
+          "load": [
+            101.15966796875,
+            92.58935546875,
+            79.72509765625
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "4285024cb532f2433cff71f81f92bf97ff43be347e0027cccc11bf0f57dc8605",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [
+            {
+              "delta_s": 0.3839255040511489,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.0015734490007162094,
+              "stage_s": 0.18286504701245576,
+              "rollback_stage_s": 0.16279869806021452,
+              "copy_s": 0.036662510014139116,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 117595127,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.7982534059556201,
+              "total_s": 2.0999805559404194,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.18272590299602598,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.16275443695485592,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.5299700290197507,
+                "plan_s": 0.2681625240948051
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  3094,
+                  304,
+                  279,
+                  1920,
+                  315
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  16969,
+                  13094,
+                  1847,
+                  13094,
+                  1847,
+                  13094,
+                  1847
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  320,
+                  1019,
+                  8,
+                  23432,
+                  2095
+                ]
+              ],
+              "ttft_s": 0.4060615299968049,
+              "through_first_s": 2.5060420859372243,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.3717831269605085,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.0015355779323726892,
+              "stage_s": 0.17442550405394286,
+              "rollback_stage_s": 0.16470630397088826,
+              "copy_s": 0.03109055000822991,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 117595127,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.7403018550248817,
+              "total_s": 1.1569404340116307,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.17431076208595186,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.16466274193953723,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.4839465899858624,
+                "plan_s": 0.2562152009923011
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.3693357140291482,
+              "through_first_s": 1.526276148040779,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.3346422319300473,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.0012996819568797946,
+              "stage_s": 0.15449425799306482,
+              "rollback_stage_s": 0.148145841085352,
+              "copy_s": 0.030687269987538457,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 117595127,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.72699786699377,
+              "total_s": 1.0989610529504716,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.15438919595908374,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.14810512901749462,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.48080561705864966,
+                "plan_s": 0.24608652805909514
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  3094,
+                  304,
+                  279,
+                  1920,
+                  315
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  16969,
+                  13094,
+                  1847,
+                  13094,
+                  1847,
+                  13094,
+                  1847
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  320,
+                  1019,
+                  8,
+                  23432,
+                  2095
+                ]
+              ],
+              "ttft_s": 0.32328318094369024,
+              "through_first_s": 1.4222442338941619,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.32019760995171964,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.001162249012850225,
+              "stage_s": 0.15305949095636606,
+              "rollback_stage_s": 0.13979381206445396,
+              "copy_s": 0.02616772789042443,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 117595127,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.7832682420266792,
+              "total_s": 1.1413622800027952,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.15296464902348816,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.13975103106349707,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.5604482929920778,
+                "plan_s": 0.2227183369686827
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.28193387191277,
+              "through_first_s": 1.4232961519155651,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            }
+          ],
+          "load_s": 35.905624545994215,
+          "init_timings": {
+            "host_weights_s": 0.4723467080621049,
+            "upload_weights_s": 35.33559586200863
+          },
+          "initial": {
+            "tokens": [
+              [
+                198,
+                791,
+                1176,
+                1403,
+                5238,
+                315,
+                279,
+                33894
+              ],
+              [
+                29,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946
+              ],
+              [
+                9831,
+                19954,
+                13094,
+                66965,
+                29726,
+                13094,
+                33390,
+                33353
+              ],
+              [
+                198,
+                220,
+                482,
+                220,
+                16,
+                13,
+                15,
+                13
+              ]
+            ],
+            "ttft_s": 0.38918589195236564
+          },
+          "steady_decode_step_s": [
+            0.02652838791254908,
+            0.0243918759515509,
+            0.027021380024962127,
+            0.02431076404172927,
+            0.024678532034158707,
+            0.024466507951729,
+            0.031348008080385625,
+            0.0469982260838151,
+            0.0449735060101375,
+            0.04201071197167039,
+            0.040968677029013634,
+            0.02491796889808029,
+            0.024213440949097276,
+            0.02428122202400118,
+            0.025846792035736144,
+            0.02420746104326099
+          ],
+          "initial_equal_fresh": true,
+          "destination_differs_base": true,
+          "complete": true
+        }
+      }
+    },
+    "sparse": {
+      "fresh": {
+        "base": {
+          "mode": "base",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792739945.02705,
+          "load": [
+            73.99072265625,
+            79.38720703125,
+            81.51171875
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "dd8ddc4726c71efd7c9f7bc6d0de7872822a339b4dc2e744888cdda14a8afa67",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [],
+          "load_s": 20.536452058004215,
+          "init_timings": {
+            "host_weights_s": 0.31000835192389786,
+            "upload_weights_s": 20.17990287009161
+          },
+          "initial": {
+            "tokens": [
+              [
+                198,
+                791,
+                1176,
+                1403,
+                5238,
+                315,
+                279,
+                33894
+              ],
+              [
+                29,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946
+              ],
+              [
+                9831,
+                19954,
+                13094,
+                66965,
+                29726,
+                13094,
+                33390,
+                33353
+              ],
+              [
+                198,
+                220,
+                482,
+                220,
+                16,
+                13,
+                15,
+                13
+              ]
+            ],
+            "ttft_s": 0.23395676200743765
+          },
+          "steady_decode_step_s": [
+            0.021756993955932558,
+            0.022469397052191198,
+            0.022365401964634657,
+            0.022319670068100095,
+            0.022898586932569742,
+            0.022883945959620178,
+            0.022343580960296094,
+            0.021883899113163352,
+            0.02004660409875214,
+            0.018820506986230612,
+            0.018704312038607895,
+            0.019822692964226007,
+            0.019626485067419708,
+            0.019713357905857265,
+            0.019940808997489512,
+            0.018407937022857368
+          ],
+          "complete": true,
+          "reused_reference_from": "baseline-base.json"
+        },
+        "new": {
+          "mode": "new",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792740859.55031,
+          "load": [
+            103.23828125,
+            90.1435546875,
+            77.845703125
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "dd8ddc4726c71efd7c9f7bc6d0de7872822a339b4dc2e744888cdda14a8afa67",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [],
+          "load_s": 29.291540427017026,
+          "init_timings": {
+            "host_weights_s": 0.41385497304145247,
+            "upload_weights_s": 28.806981739937328
+          },
+          "initial": {
+            "tokens": [
+              [
+                374,
+                285,
+                285,
+                285,
+                374,
+                374,
+                374,
+                374
+              ],
+              [
+                678,
+                4076,
+                4076,
+                4076,
+                4076,
+                4076,
+                4076,
+                4076
+              ],
+              [
+                374,
+                374,
+                374,
+                374,
+                374,
+                374,
+                374,
+                374
+              ],
+              [
+                374,
+                374,
+                374,
+                374,
+                374,
+                374,
+                374,
+                374
+              ]
+            ],
+            "ttft_s": 0.32635112199932337
+          },
+          "steady_decode_step_s": [
+            0.03441610699519515,
+            0.040474790963344276,
+            0.04572087398264557,
+            0.0380081880139187,
+            0.023722284007817507,
+            0.030460415058769286,
+            0.03263937099836767,
+            0.02687133406288922,
+            0.025921260006725788,
+            0.023938469006679952,
+            0.026538305915892124,
+            0.0316701460396871,
+            0.031513483030721545,
+            0.0243200589902699,
+            0.024158334941603243,
+            0.026154806022532284
+          ],
+          "complete": true
+        }
+      },
+      "resident": {
+        "baseline": {
+          "mode": "resident",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792740895.8339226,
+          "load": [
+            102.02392578125,
+            91.4755859375,
+            78.81396484375
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "dd8ddc4726c71efd7c9f7bc6d0de7872822a339b4dc2e744888cdda14a8afa67",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [
+            {
+              "delta_s": 0.32488560501951724,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 2018387,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.48012666206341237,
+              "total_s": 1.6597847529919818,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.15100119996350259,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.13769288500770926,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.47309260501060635,
+                "plan_s": 0.006928824004717171
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  374,
+                  285,
+                  285,
+                  285,
+                  374,
+                  374,
+                  374,
+                  374
+                ],
+                [
+                  678,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076
+                ],
+                [
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374
+                ],
+                [
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374
+                ]
+              ],
+              "ttft_s": 0.37123109796084464,
+              "through_first_s": 2.0310158509528264,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.2705659649800509,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 2018387,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.4705785939004272,
+              "total_s": 0.7771117629017681,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.1333806439070031,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.10648640803992748,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.46364097006153315,
+                "plan_s": 0.00684771197848022
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.3506764470366761,
+              "through_first_s": 1.1277882099384442,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.3268269639229402,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 2018387,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.535165005014278,
+              "total_s": 0.8937401269795373,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.15510040801018476,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.13904813502449542,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.5282152099534869,
+                "plan_s": 0.006859221961349249
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  374,
+                  285,
+                  285,
+                  285,
+                  374,
+                  374,
+                  374,
+                  374
+                ],
+                [
+                  678,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076
+                ],
+                [
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374
+                ],
+                [
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374
+                ]
+              ],
+              "ttft_s": 0.34109492297284305,
+              "through_first_s": 1.2348350499523804,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.31559047009795904,
+              "uploaded_bytes": 117440512,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 2018387,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.5078239699359983,
+              "total_s": 0.8547224159119651,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.14969965093769133,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.13396477606147528,
+                    "shape": [
+                      14336,
+                      4096
+                    ],
+                    "bytes": 117440512
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.5010081089567393,
+                "plan_s": 0.006724369013682008
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.3749783399980515,
+              "through_first_s": 1.2297007559100166,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            }
+          ],
+          "load_s": 30.26377158903051,
+          "init_timings": {
+            "host_weights_s": 0.4785919130081311,
+            "upload_weights_s": 29.711983931949362
+          },
+          "initial": {
+            "tokens": [
+              [
+                198,
+                791,
+                1176,
+                1403,
+                5238,
+                315,
+                279,
+                33894
+              ],
+              [
+                29,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946
+              ],
+              [
+                9831,
+                19954,
+                13094,
+                66965,
+                29726,
+                13094,
+                33390,
+                33353
+              ],
+              [
+                198,
+                220,
+                482,
+                220,
+                16,
+                13,
+                15,
+                13
+              ]
+            ],
+            "ttft_s": 0.37548168504144996
+          },
+          "steady_decode_step_s": [
+            0.035497894044965506,
+            0.023350468021817505,
+            0.023845039890147746,
+            0.02501353994011879,
+            0.03835403500124812,
+            0.02459089900366962,
+            0.039101114962249994,
+            0.0451636859215796,
+            0.03793561505153775,
+            0.029974584933370352,
+            0.041347690974362195,
+            0.03694810997694731,
+            0.04090078896842897,
+            0.03411832789424807,
+            0.03466940298676491,
+            0.038086418993771076
+          ],
+          "initial_equal_fresh": true,
+          "destination_differs_base": true,
+          "complete": true
+        },
+        "optimized": {
+          "mode": "resident",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792740990.2124183,
+          "load": [
+            100.84423828125,
+            93.80126953125,
+            80.81201171875
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "4285024cb532f2433cff71f81f92bf97ff43be347e0027cccc11bf0f57dc8605",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [
+            {
+              "delta_s": 0.010346652939915657,
+              "uploaded_bytes": 1835008,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.0014797559706494212,
+              "stage_s": 0.002187023055739701,
+              "rollback_stage_s": 0.001508246990852058,
+              "copy_s": 0.005156276980414987,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 2018387,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.4978690380230546,
+              "total_s": 1.372721218969673,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.0021222620271146297,
+                    "shape": [
+                      14336,
+                      64
+                    ],
+                    "bytes": 1835008
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.001494357013143599,
+                    "shape": [
+                      14336,
+                      64
+                    ],
+                    "bytes": 1835008
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.4879421249497682,
+                "plan_s": 0.009802990010939538
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  374,
+                  285,
+                  285,
+                  285,
+                  374,
+                  374,
+                  374,
+                  374
+                ],
+                [
+                  678,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076
+                ],
+                [
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374
+                ],
+                [
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374
+                ]
+              ],
+              "ttft_s": 0.24963983392808586,
+              "through_first_s": 1.6223610528977588,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.00706543296109885,
+              "uploaded_bytes": 1835008,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.0014437049394473433,
+              "stage_s": 0.0020422700326889753,
+              "rollback_stage_s": 0.0015877189580351114,
+              "copy_s": 0.0019741490250453353,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 2018387,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.5197626500157639,
+              "total_s": 0.527247552992776,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.0019856489961966872,
+                    "shape": [
+                      14336,
+                      64
+                    ],
+                    "bytes": 1835008
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.001572857960127294,
+                    "shape": [
+                      14336,
+                      64
+                    ],
+                    "bytes": 1835008
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.5084265419282019,
+                "plan_s": 0.011216394952498376
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.3756140270270407,
+              "through_first_s": 0.9028615800198168,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.007598156109452248,
+              "uploaded_bytes": 1835008,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.0011892491020262241,
+              "stage_s": 0.0016370509983971715,
+              "rollback_stage_s": 0.0013582229148596525,
+              "copy_s": 0.003398183034732938,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 2018387,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.47417681897059083,
+              "total_s": 0.4820848429808393,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.0015690989093855023,
+                    "shape": [
+                      14336,
+                      64
+                    ],
+                    "bytes": 1835008
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.001342663075774908,
+                    "shape": [
+                      14336,
+                      64
+                    ],
+                    "bytes": 1835008
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.46726952004246414,
+                "plan_s": 0.006810036953538656
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  374,
+                  285,
+                  285,
+                  285,
+                  374,
+                  374,
+                  374,
+                  374
+                ],
+                [
+                  678,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076,
+                  4076
+                ],
+                [
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374
+                ],
+                [
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374,
+                  374
+                ]
+              ],
+              "ttft_s": 0.26295319700147957,
+              "through_first_s": 0.7450380399823189,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.007104813936166465,
+              "uploaded_bytes": 1835008,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.0011341579956933856,
+              "stage_s": 0.0022471349220722914,
+              "rollback_stage_s": 0.0019217670196667314,
+              "copy_s": 0.001789023051969707,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 117440512,
+                "changed_bytes": 2018387,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "model.layers.0.mlp.down_proj.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.5114385889610276,
+              "total_s": 0.5189466420561075,
+              "breakdown": {
+                "host": [
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "base",
+                    "s": 0.0021431819768622518,
+                    "shape": [
+                      14336,
+                      64
+                    ],
+                    "bytes": 1835008
+                  },
+                  {
+                    "name": "model.layers.0.mlp.down_proj.weight",
+                    "checkpoint": "new",
+                    "s": 0.001892186002805829,
+                    "shape": [
+                      14336,
+                      64
+                    ],
+                    "bytes": 1835008
+                  }
+                ],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.5013500219210982,
+                "plan_s": 0.009985903976485133
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.24178975797258317,
+              "through_first_s": 0.7607364000286907,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            }
+          ],
+          "load_s": 33.05176919698715,
+          "init_timings": {
+            "host_weights_s": 0.49944572802633047,
+            "upload_weights_s": 32.47186581604183
+          },
+          "initial": {
+            "tokens": [
+              [
+                198,
+                791,
+                1176,
+                1403,
+                5238,
+                315,
+                279,
+                33894
+              ],
+              [
+                29,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946
+              ],
+              [
+                9831,
+                19954,
+                13094,
+                66965,
+                29726,
+                13094,
+                33390,
+                33353
+              ],
+              [
+                198,
+                220,
+                482,
+                220,
+                16,
+                13,
+                15,
+                13
+              ]
+            ],
+            "ttft_s": 0.24566922197118402
+          },
+          "steady_decode_step_s": [
+            0.0250569439958781,
+            0.024054058943875134,
+            0.02412349102087319,
+            0.024115710984915495,
+            0.024014919064939022,
+            0.023894135025329888,
+            0.023727342020720243,
+            0.023814863990992308,
+            0.025860502966679633,
+            0.023575648083351552,
+            0.027551005012355745,
+            0.023745891987346113,
+            0.025816102977842093,
+            0.026140170986764133,
+            0.027036511921323836,
+            0.03044994594529271
+          ],
+          "initial_equal_fresh": true,
+          "destination_differs_base": true,
+          "complete": true
+        }
+      }
+    },
+    "lm": {
+      "fresh": {
+        "base": {
+          "mode": "base",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792739945.02705,
+          "load": [
+            73.99072265625,
+            79.38720703125,
+            81.51171875
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "dd8ddc4726c71efd7c9f7bc6d0de7872822a339b4dc2e744888cdda14a8afa67",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [],
+          "load_s": 20.536452058004215,
+          "init_timings": {
+            "host_weights_s": 0.31000835192389786,
+            "upload_weights_s": 20.17990287009161
+          },
+          "initial": {
+            "tokens": [
+              [
+                198,
+                791,
+                1176,
+                1403,
+                5238,
+                315,
+                279,
+                33894
+              ],
+              [
+                29,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946
+              ],
+              [
+                9831,
+                19954,
+                13094,
+                66965,
+                29726,
+                13094,
+                33390,
+                33353
+              ],
+              [
+                198,
+                220,
+                482,
+                220,
+                16,
+                13,
+                15,
+                13
+              ]
+            ],
+            "ttft_s": 0.23395676200743765
+          },
+          "steady_decode_step_s": [
+            0.021756993955932558,
+            0.022469397052191198,
+            0.022365401964634657,
+            0.022319670068100095,
+            0.022898586932569742,
+            0.022883945959620178,
+            0.022343580960296094,
+            0.021883899113163352,
+            0.02004660409875214,
+            0.018820506986230612,
+            0.018704312038607895,
+            0.019822692964226007,
+            0.019626485067419708,
+            0.019713357905857265,
+            0.019940808997489512,
+            0.018407937022857368
+          ],
+          "complete": true,
+          "reused_reference_from": "baseline-base.json"
+        },
+        "new": {
+          "mode": "new",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792741034.6123996,
+          "load": [
+            104.19775390625,
+            95.60400390625,
+            82.0341796875
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "4285024cb532f2433cff71f81f92bf97ff43be347e0027cccc11bf0f57dc8605",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [],
+          "load_s": 34.2932997350581,
+          "init_timings": {
+            "host_weights_s": 0.47999079094734043,
+            "upload_weights_s": 33.72472940699663
+          },
+          "initial": {
+            "tokens": [
+              [
+                12043,
+                12043,
+                12043,
+                12043,
+                12046,
+                12043,
+                12043,
+                12046
+              ],
+              [
+                12043,
+                12043,
+                12046,
+                12043,
+                12046,
+                12046,
+                12046,
+                12046
+              ],
+              [
+                12043,
+                12043,
+                12046,
+                12043,
+                12043,
+                12043,
+                12043,
+                12043
+              ],
+              [
+                12043,
+                12043,
+                12043,
+                12043,
+                12043,
+                12043,
+                12043,
+                12043
+              ]
+            ],
+            "ttft_s": 0.4128370661055669
+          },
+          "steady_decode_step_s": [
+            0.0367547309724614,
+            0.028449609060771763,
+            0.032371225068345666,
+            0.026185463997535408,
+            0.02821336407214403,
+            0.025047276983968914,
+            0.02750174596440047,
+            0.026346408994868398,
+            0.024215516983531415,
+            0.025065666995942593,
+            0.02931264997459948,
+            0.028067281004041433,
+            0.0414492740528658,
+            0.03902074496727437,
+            0.051989718922413886,
+            0.04200443800073117
+          ],
+          "complete": true
+        }
+      },
+      "resident": {
+        "baseline": {
+          "mode": "resident",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792741076.4669049,
+          "load": [
+            108.43115234375,
+            97.81884765625,
+            83.42041015625
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "dd8ddc4726c71efd7c9f7bc6d0de7872822a339b4dc2e744888cdda14a8afa67",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [
+            {
+              "delta_s": 0.6181651490041986,
+              "uploaded_bytes": 1050673152,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 1050673152,
+                "changed_bytes": 255619,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "lm_head.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.40239519404713064,
+              "total_s": 1.7592315870570019,
+              "breakdown": {
+                "host": [],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.39664703607559204,
+                "plan_s": 0.0056432560086250305
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12043,
+                  12046
+                ],
+                [
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12046,
+                  12046,
+                  12046,
+                  12046
+                ],
+                [
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043
+                ],
+                [
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043
+                ]
+              ],
+              "ttft_s": 0.4539652490057051,
+              "through_first_s": 2.213196836062707,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": false
+            },
+            {
+              "delta_s": 0.5431009080493823,
+              "uploaded_bytes": 1050673152,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 1050673152,
+                "changed_bytes": 255619,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "lm_head.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.43129935406614095,
+              "total_s": 1.028116011992097,
+              "breakdown": {
+                "host": [],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.4231739690294489,
+                "plan_s": 0.008011683006770909
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.2129453270463273,
+              "through_first_s": 1.2410613390384242,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": false
+            },
+            {
+              "delta_s": 0.4759245120221749,
+              "uploaded_bytes": 1050673152,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 1050673152,
+                "changed_bytes": 255619,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "lm_head.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.37401490402407944,
+              "total_s": 0.8812686780001968,
+              "breakdown": {
+                "host": [],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.37112728494685143,
+                "plan_s": 0.002815907937474549
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12043,
+                  12046
+                ],
+                [
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12046,
+                  12046,
+                  12046,
+                  12046
+                ],
+                [
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043
+                ],
+                [
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043
+                ]
+              ],
+              "ttft_s": 0.19626527302898467,
+              "through_first_s": 1.0775339510291815,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": false
+            },
+            {
+              "delta_s": 0.5914618719834834,
+              "uploaded_bytes": 1050673152,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 1050673152,
+                "changed_bytes": 255619,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "lm_head.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.36463300697505474,
+              "total_s": 1.0079335429472849,
+              "breakdown": {
+                "host": [],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.3571742679923773,
+                "plan_s": 0.007371156942099333
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.3811998430173844,
+              "through_first_s": 1.3891333859646693,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": false
+            }
+          ],
+          "load_s": 26.22909332998097,
+          "init_timings": {
+            "host_weights_s": 0.4899063720367849,
+            "upload_weights_s": 25.66267600702122
+          },
+          "initial": {
+            "tokens": [
+              [
+                198,
+                791,
+                1176,
+                1403,
+                5238,
+                315,
+                279,
+                33894
+              ],
+              [
+                29,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946
+              ],
+              [
+                9831,
+                19954,
+                13094,
+                66965,
+                29726,
+                13094,
+                33390,
+                33353
+              ],
+              [
+                198,
+                220,
+                482,
+                220,
+                16,
+                13,
+                15,
+                13
+              ]
+            ],
+            "ttft_s": 0.3605122090084478
+          },
+          "steady_decode_step_s": [
+            0.026983477990143,
+            0.034166052006185055,
+            0.0249845510115847,
+            0.04656228004023433,
+            0.023475473979488015,
+            0.027797579066827893,
+            0.023046743939630687,
+            0.02464460302144289,
+            0.022022699005901814,
+            0.03096365393139422,
+            0.039137530955486,
+            0.03688439598772675,
+            0.034976531052961946,
+            0.028436103952117264,
+            0.02412319998256862,
+            0.025897493003867567
+          ],
+          "initial_equal_fresh": true,
+          "destination_differs_base": true,
+          "complete": true
+        },
+        "optimized": {
+          "mode": "resident",
+          "torch": "2.11.0+cpu",
+          "sdk": "2026.2.0",
+          "assigned": 0,
+          "utc": 1792741114.3822412,
+          "load": [
+            100.86181640625,
+            97.0546875,
+            83.6962890625
+          ],
+          "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+          "source_sha256": {
+            "src/rngd_pd/swap/rngd.py": "4285024cb532f2433cff71f81f92bf97ff43be347e0027cccc11bf0f57dc8605",
+            "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+            "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+          },
+          "rows": [
+            {
+              "delta_s": 0.0014157339464873075,
+              "uploaded_bytes": 65536,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.000817029969766736,
+              "stage_s": 0.00013754295650869608,
+              "rollback_stage_s": 2.029107417911291e-05,
+              "copy_s": 0.0004385699285194278,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 1050673152,
+                "changed_bytes": 255619,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "lm_head.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.35198197001591325,
+              "total_s": 0.9019769949372858,
+              "breakdown": {
+                "host": [],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.34442345006391406,
+                "plan_s": 0.007461598026566207
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12043,
+                  12046
+                ],
+                [
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12046,
+                  12046,
+                  12046,
+                  12046
+                ],
+                [
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043
+                ],
+                [
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043
+                ]
+              ],
+              "ttft_s": 0.2573189400136471,
+              "through_first_s": 1.1592959349509329,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.0017732619307935238,
+              "uploaded_bytes": 65536,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.0010198239469900727,
+              "stage_s": 9.214202873408794e-05,
+              "rollback_stage_s": 5.021202377974987e-05,
+              "copy_s": 0.000606594025157392,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 1050673152,
+                "changed_bytes": 255619,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "lm_head.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.3071161180268973,
+              "total_s": 0.30900550296064466,
+              "breakdown": {
+                "host": [],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.3015460449969396,
+                "plan_s": 0.0054732009302824736
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.3290476300753653,
+              "through_first_s": 0.63805313303601,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.0011976190144196153,
+              "uploaded_bytes": 65536,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.0006822560681030154,
+              "stage_s": 6.602192297577858e-05,
+              "rollback_stage_s": 1.750001683831215e-05,
+              "copy_s": 0.0004295610124245286,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 1050673152,
+                "changed_bytes": 255619,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "lm_head.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.2879843299742788,
+              "total_s": 0.28925630007870495,
+              "breakdown": {
+                "host": [],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.2835087430430576,
+                "plan_s": 0.004375944961793721
+              },
+              "target": "new",
+              "tokens": [
+                [
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12043,
+                  12046
+                ],
+                [
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12046,
+                  12046,
+                  12046,
+                  12046
+                ],
+                [
+                  12043,
+                  12043,
+                  12046,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043
+                ],
+                [
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043,
+                  12043
+                ]
+              ],
+              "ttft_s": 0.24665706395171583,
+              "through_first_s": 0.5359133640304208,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            },
+            {
+              "delta_s": 0.0016696900129318237,
+              "uploaded_bytes": 65536,
+              "mode": "inplace",
+              "tensors": 1,
+              "host_only": [],
+              "validation_s": 0.0010069640120491385,
+              "stage_s": 9.375193621963263e-05,
+              "rollback_stage_s": 3.2471027225255966e-05,
+              "copy_s": 0.0005319829797372222,
+              "plan": {
+                "tensors": 1,
+                "upload_bytes": 1050673152,
+                "changed_bytes": 255619,
+                "total_bytes": 16060522496,
+                "header_changes": [],
+                "removed": [],
+                "names": [
+                  "lm_head.weight"
+                ]
+              },
+              "source": "onggi",
+              "planning_s": 0.2866259570000693,
+              "total_s": 0.2884088089922443,
+              "breakdown": {
+                "host": [],
+                "to": [],
+                "copy": [],
+                "onggi_s": 0.28026856400538236,
+                "plan_s": 0.006265760050155222
+              },
+              "target": "base",
+              "tokens": [
+                [
+                  198,
+                  791,
+                  1176,
+                  1403,
+                  5238,
+                  315,
+                  279,
+                  33894
+                ],
+                [
+                  29,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946,
+                  946
+                ],
+                [
+                  9831,
+                  19954,
+                  13094,
+                  66965,
+                  29726,
+                  13094,
+                  33390,
+                  33353
+                ],
+                [
+                  198,
+                  220,
+                  482,
+                  220,
+                  16,
+                  13,
+                  15,
+                  13
+                ]
+              ],
+              "ttft_s": 0.2205574900144711,
+              "through_first_s": 0.5089662990067154,
+              "exact_fresh": true,
+              "resident_allocations_retained": true,
+              "graph_preparation_calls": 0,
+              "compiled_objects_retained": true,
+              "lm_allocation_retained": true
+            }
+          ],
+          "load_s": 22.876308879000135,
+          "init_timings": {
+            "host_weights_s": 0.314324400969781,
+            "upload_weights_s": 22.491288140998222
+          },
+          "initial": {
+            "tokens": [
+              [
+                198,
+                791,
+                1176,
+                1403,
+                5238,
+                315,
+                279,
+                33894
+              ],
+              [
+                29,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946,
+                946
+              ],
+              [
+                9831,
+                19954,
+                13094,
+                66965,
+                29726,
+                13094,
+                33390,
+                33353
+              ],
+              [
+                198,
+                220,
+                482,
+                220,
+                16,
+                13,
+                15,
+                13
+              ]
+            ],
+            "ttft_s": 0.2423856050008908
+          },
+          "steady_decode_step_s": [
+            0.020567841012962162,
+            0.02020921208895743,
+            0.019870934076607227,
+            0.019937716075219214,
+            0.02010069997049868,
+            0.019428404048085213,
+            0.0198385629337281,
+            0.02021086192689836,
+            0.019985066959634423,
+            0.019764201948419213,
+            0.01955068705137819,
+            0.01978404202964157,
+            0.020769165945239365,
+            0.019946616026572883,
+            0.01987535401713103,
+            0.019895824952982366
+          ],
+          "initial_equal_fresh": true,
+          "destination_differs_base": true,
+          "complete": true
+        }
+      }
+    }
+  }
+}

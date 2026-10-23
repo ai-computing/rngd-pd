@@ -1,0 +1,74 @@
+{
+  "tool": "REA 6.7.0",
+  "method": "Feature tracing and narrow function-address inspection using the requested REAP prompts; no whole-library Ghidra import.",
+  "native_binary": "furiosa/native_torch.cpython-310-x86_64-linux-gnu.so",
+  "native_sha256": "7449350b1a5d4f42b04a2e1416a26954a5bd9630bf78a6edc82af2398e873fda",
+  "active_environment": {
+    "torch": "2.11.0+cpu",
+    "furiosa_torch": "2026.2.0"
+  },
+  "sdk_source_sha256": {
+    "native_torch/memory.pyi": "3d184017fc34297eab3111b954f1d18d9be545f37f7cf97dff078883d2449ea0",
+    "native_torch/device.pyi": "c4ff8b1fcb1c9431f30cabb05ade93211baee95fb9f477bd03ef303293932ee6",
+    "torch/custom_ops/copy_from.py": "35fc2938235f59bda9b42861ff1622c70f63484700f6a0310bebf5fb93832c93",
+    "torch/__init__.py": "f4de011637430ec9b97837683ce5ccbfd7d711041657c749a42e1ac8238348fa",
+    "torch/_ext/device_module.py": "c913200de318d20e999f31a9b58fd332409520c9a4f5061c23ccd65a4925ccc3",
+    "native_torch/__init__.pyi": "a5ddda7bc2bcbdfa42bb6c8c2e23a74e77ecd327377450d41e004489e8c4e233",
+    "torch/custom_ops/furiosa_internals.py": "e6a6676459f0f85d1a7ca68b7338ba26d95b9da7137610d91080d0533d302dca"
+  },
+  "observations": [
+    {
+      "name": "memory-copy-binding",
+      "evidence_id": "ev_b80e9b4713039c355bf1c83d879ad8235470119e9d93380ba95e4e17f5702a96",
+      "selected_elf_address_window": [
+        "0x17ebc20",
+        "0x17ebc90"
+      ],
+      "original_rea_result_sha256": "fc4a67124c20770c4e8fe618173fb043e251fc65c2a6b0e12e1202a35721cd9b",
+      "objdump_wrapper_sha256": "409ffc8922fb3fcd12f071d75987d8b28aa398f7b3739f4ebdd0e7915fcf6ef3",
+      "exit_code": 0,
+      "tool_output_truncated": false,
+      "artifact_changed": false
+    },
+    {
+      "name": "memory-copy-body",
+      "evidence_id": "ev_fc375ca3cc7de26fa6b48dd272a6ec14dd86c9ccc1d28f1eda3e6ad2edabf182",
+      "selected_elf_address_window": [
+        "0x17e9a40",
+        "0x17ea200"
+      ],
+      "original_rea_result_sha256": "65c660db3c6b08895c0ae21cb16cefbde986f1a7231bf03139915aedd400b718",
+      "objdump_wrapper_sha256": "0a6ae510fa0123c3ff435be081237b038fc58f87c82c1159e0b98296719841d4",
+      "exit_code": 0,
+      "tool_output_truncated": false,
+      "artifact_changed": false
+    },
+    {
+      "name": "hal-copy-binding",
+      "evidence_id": "ev_a35201ad80067d508c311c92395835b1d208db9f16d3b151cf29c0978f05baaf",
+      "selected_elf_address_window": [
+        "0x16b8620",
+        "0x16b86b0"
+      ],
+      "original_rea_result_sha256": "635cd29116ce6da05c5fe7dd2aa3f6cdcbc821142b1a2e1aa6295c9d476b9263",
+      "objdump_wrapper_sha256": "3c2f754ceb8a9e03442556b9df6b1c8bf10ec71a14f9956c6a5af6b99069a7e9",
+      "exit_code": 0,
+      "tool_output_truncated": false,
+      "artifact_changed": false
+    }
+  ],
+  "wrapper_rule": "GNU objdump receives explicit --start-address and --stop-address bounds. Windows are selected excerpts, not complete function decompilation.",
+  "confirmed_source_facts": [
+    "Same-dtype CPU-to-resident copy is accepted by custom_ops/copy_from.py and delegated to native memory.copy.",
+    "The standard copy wrapper invokes run_blocking on the returned native program.",
+    "The SDK distinguishes host sequencing copies from host-bridged dtype or device-copy cases.",
+    "HAL copy and Sequencer expose rectangular host/DRAM access; lower TP composition requires explicit chip/layout handling.",
+    "The production change uses standard copy_ rather than a new HAL or raw-pointer implementation."
+  ],
+  "limitations": [
+    "Selected native bindings establish entry-point identity, not full internal copy semantics.",
+    "Native strided-copy efficiency and source-offset behavior require actual device probes.",
+    "No physical DMA byte count, raw byte-offset update API, pinned staging, or new SDK2026.3 guarantee is established.",
+    "The REA wrapper windows may end inside an instruction; no complete-function semantic proof is claimed."
+  ]
+}
