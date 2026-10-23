@@ -297,6 +297,19 @@ class DeviceWeightDecode:
     def _upload_weight(self, tensor):
         return tensor.to(self.dev)
 
+    def _probe_weights(self, weights):
+        """Force lazy device uploads/layout conversion before committing inputs."""
+        v = self.active
+        if v is None:
+            raise ValueError("select and run a variant before applying a delta")
+        K, V = self.blank_kv()
+        host = self.tables.step_inputs([1] * v.B, [0] * v.B, v.S)
+        inputs = [self.torch.from_numpy(a).to(self.dev) for a in host]
+        x, cos, sin, mask, oh = inputs
+        outputs = self.graphs[v](x, K.tensor, V.tensor, cos, sin, mask, oh, *weights)
+        outputs[0].cpu()  # complete the compiled step, including deferred uploads
+        self.torch.rbln.synchronize(self.dev)
+
     @_serialized
     def apply_delta(self, new_checkpoint, plan):
         """Stage changed tensors, then atomically replace their graph inputs.
@@ -339,10 +352,14 @@ class DeviceWeightDecode:
                 host = tensor.to(dtype=self.W[i].dtype)
                 weights[i] = self._upload_weight(host)
                 uploaded += host.numel() * host.element_size()
+        probe_start = _now()
+        if uploaded:
+            self._probe_weights(weights)
         # The request lock covers planning, staging and the pointer commit.
         self.W, self.tables.embed, self.ck = weights, embed, new
         self._generation += 1
         return dict(delta_s=_now() - t0, uploaded_bytes=uploaded,
+                    materialize_s=_now() - probe_start,
                     tensors=len(plan.tensors), mode="replace",
                     host_only=[embed_name] if embed_name in staged else [])
 

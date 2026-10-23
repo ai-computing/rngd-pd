@@ -24,7 +24,11 @@ def engine(a, checkpoint):
 
 
 def generated(e, a):
-    p = [a.prompt] * a.batch
+    if a.prompt:
+        p = [a.prompt] * a.batch
+    else:
+        from rngd_pd.swap.bench_rngd import prompts
+        p = prompts(a.batch, a.prompt_length)
     tokens, ttft = e.generate(p, a.tokens)
     return ttft, tokens
 
@@ -42,7 +46,8 @@ def worker(a):
         e.swap(Variant(a.batch, a.sequence, 8 if a.backend == "rngd" else 0))
         ready = time.perf_counter()
         ttft, tokens = generated(e, a)
-        initial = dict(ttft_s=ttft, load_through_first_token_s=ready - started + ttft,
+        initial = dict(ttft_s=ttft, engine_load_s=ready - started,
+                       load_through_first_token_s=ready - started + ttft,
                        tokens=tokens, unique_graphs=graph_count())
         if a.mode == "fresh":
             return initial
@@ -76,9 +81,6 @@ def worker(a):
                 rows.append(result)
                 print(json.dumps({k: v for k, v in result.items() if k not in ("tokens", "plan")}),
                       flush=True)
-        assert all(r["tokens_equal_fresh"] for r in rows), "delta token parity failed"
-        assert all(r["unique_graphs_before"] == r["unique_graphs_after"] for r in rows), \
-            "delta triggered recompilation"
         return dict(initial=initial, rows=rows,
                     destination_differs_base=references["new"]["tokens"] != references["base"]["tokens"])
     finally:
@@ -99,7 +101,8 @@ def main():
     ap.add_argument("--sequence", type=int, default=64)
     ap.add_argument("--tokens", type=int, default=8)
     ap.add_argument("--rounds", type=int, default=2)
-    ap.add_argument("--prompt", nargs="+", type=int, default=[128000, 791, 6864, 315, 9822, 374])
+    ap.add_argument("--prompt", nargs="+", type=int)
+    ap.add_argument("--prompt-length", type=int, default=8, help="seed-0 random IDs if --prompt is absent")
     a = ap.parse_args()
     if a.mode != "all":
         result = worker(a)
@@ -118,6 +121,12 @@ def main():
         resident = child("resident", ["--reference", reference])
         result = dict(backend=a.backend, fresh=fresh, resident=resident)
     Path(a.out).write_text(json.dumps(result, indent=2))
+    resident = result.get("resident", result) if a.mode != "fresh" else None
+    if resident is not None:
+        assert all(r["tokens_equal_fresh"] for r in resident["rows"]), "delta token parity failed"
+        assert all(r["unique_graphs_before"] == r["unique_graphs_after"]
+                   for r in resident["rows"]), "delta triggered recompilation"
+        assert resident["destination_differs_base"], "fixture did not change generated tokens"
 
 
 if __name__ == "__main__":

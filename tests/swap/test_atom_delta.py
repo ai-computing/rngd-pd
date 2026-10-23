@@ -48,6 +48,7 @@ def engine(base):
     e.active = Variant(1, 16, 0)
     e.g = Mock()
     e.graphs = {e.active: e.g}
+    e._probe_weights = Mock()
     return e
 
 
@@ -79,6 +80,18 @@ def test_failed_second_upload_preserves_active_checkpoint_and_all_inputs(pair):
         e.apply_delta(new, p)
     assert all(a is b for a, b in zip(before, e.W))
     assert e.ck is ck and e.tables.embed is embed and e._generation == 0
+
+
+def test_failed_device_materialization_keeps_the_previous_checkpoint(pair):
+    base, new, _ = pair
+    p = change(pair, ["model.layers.0.mlp.down_proj.weight"])
+    e = engine(base)
+    old = list(e.W)
+    e._probe_weights.side_effect = RuntimeError("deferred upload failed")
+    with pytest.raises(RuntimeError, match="deferred upload"):
+        e.apply_delta(new, p)
+    assert all(a is b for a, b in zip(old, e.W))
+    assert os.fspath(e.ck.path) == os.fspath(base) and e._generation == 0
 
 
 def test_rejects_wrong_base_and_graph_change_before_transfer(pair):
