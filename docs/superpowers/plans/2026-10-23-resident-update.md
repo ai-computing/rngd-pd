@@ -34,9 +34,9 @@ furiosa-torch 2026.2.0, REA CLI.
 - [x] Trace constant binding and device layout with REA; record narrow evidence.
 - [x] Run bounded layout/binding probes and choose an evidenced route.
 - [x] Add regression tests for that route, observe RED, then implement GREEN.
-- [ ] Run all CPU tests and independent code review; address material findings.
-- [ ] Validate partial updates and steady decode on actual ATOM/RNGD as relevant.
-- [ ] Publish sanitized evidence, update usage/limits, and create a reviewable PR.
+- [x] Run all CPU tests and independent code review; address material findings.
+- [x] Validate partial updates and steady decode on actual ATOM/RNGD as relevant.
+- [x] Publish sanitized evidence, update usage/limits, and create a reviewable PR.
 
 ## Execution ledger
 
@@ -68,3 +68,28 @@ furiosa-torch 2026.2.0, REA CLI.
   this is an experimental SDK engine, not a default production-serving rollout.
 - Delta-call time alone does not independently prove native transfer completion;
   the benchmark also measures synchronous prompt-through-first-token latency.
+- Final fix suite: Windows Python 3.11, 279 passed / 6 skipped / 4 subtests.
+  Linux Python 3.10 GitHub run 39908041073: 283 passed / 2 skipped / 4 subtests.
+- The fixed engine passed a real two-layer Llama smoke (one native program,
+  23.96 ms median decode step); the full 8B matrix uses frozen ecfc6c3.
+- Full ATOM 8B hardware matrix passed: four alternating updates, all 32
+  generated tokens equal to discriminating fresh references, one unchanged
+  native runtime/program, and one 117,440,512-byte transform group per update.
+  Live onggi planning through the first updated token measured 2.66–2.74 s;
+  steady steps measured 68.71–68.75 ms. Three initial compile/load observations
+  were 151–168 s. No new RNGD behavior is claimed by this ATOM optimization.
+- Root independently validated all result assertions, the original Linux result
+  SHA-256 and all 74 canonical Git source hashes before publishing the data.
+- Matched existing-path control passed three steady requests: median decode
+  510.49 ms versus 68.71 ms for the constant path (7.43× ratio). This compares
+  graph/KV execution paths, not an isolated weight-packing or update-call change.
+- All 23 exported result/log/config files match their remote byte hashes. Root
+  joined native context PIDs to same-sample owned Pod cgroups: three constant
+  worker contexts and one control context were observed, with rounded maximum
+  allocations of 14.2/14.9 GiB respectively.
+- Owned Pod exited normally, exit 0. UID-precondition deletion removed the Pod
+  and namespace; no own processes or device contexts remained. Evidence, source
+  and caches were retained. Current-card firmware version was not captured.
+- Publication: PR #28, stacked on prepared-serving PR #27. Keep it draft while
+  its draft base is unresolved; the SDK implementation, hardware gate, review
+  fixes and evidence are complete. No production rollout or new RNGD behavior.

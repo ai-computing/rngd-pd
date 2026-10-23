@@ -383,14 +383,17 @@ it runs onggi, refines checkpoint ranges, and transfers only changed tensors.
   compilation requirement.
 - **ATOM weight-free constants (experimental):** `ConstantWeightDecode` retains
   fast compiled constant graphs and refreshes only affected weight-transform
-  groups in their existing runtime. A real B1/B4 toy changed one 32 MiB group
-  within 512 MiB of resident weights and reproduced the original NPU outputs
-  exactly after a reverse update. This requires a new weight-free compilation,
+  groups in their existing runtime. On Llama-3.1-8B, four alternating updates
+  changed one 117 MB group without replacing the runtime or recompiling; all
+  generated tokens matched fresh loads. Decode steps measured 68.7 ms versus
+  509–515 ms for the existing device-input control; onggi analysis through the
+  first updated token took 2.66–2.74 s. Initial
+  compilation/loading took 151–168 s. This requires a new weight-free compilation,
   a dedicated worker process and the validated internal SDK ABI; it is an SDK
   opt-in, separate from the deployed HTTP worker. See [evidence and limits](experiments/2026-10-23-resident-constant-update.md).
 
-A real onggi → NPU test changed one 117 MB tensor of a 16.1 GB checkpoint:
-RNGD updated in 1.12–2.00 s (first token 1.50–2.57 s), ATOM in 1.25–1.34 s
+An earlier onggi → NPU test changed one 117 MB tensor of a 16.1 GB checkpoint:
+RNGD updated in 1.12–2.00 s (first token 1.50–2.57 s), device-input ATOM in 1.25–1.34 s
 (first token 5.32–5.40 s for an 8-token prompt). All 160 compared generated
 tokens match fresh destination loads. See the [protocol and raw results](experiments/2026-10-23-npu-delta-load.md),
 including ATOM's initial compilation cost and slower device-input decode.

@@ -202,9 +202,8 @@ existing ordinary `.rbln` bundles lack the required meta-load mapping.
 from rngd_pd.swap.atom_constants import ConstantWeightDecode
 
 engine = ConstantWeightDecode(base_checkpoint_dir, cache_dir=private_cache, device=0)
-small, wide = Variant(1, 64, 0), Variant(4, 64, 0)
+small = Variant(1, 64, 0)
 engine.prepare(small)                 # compilation/materialization before admission
-engine.prepare(wide)
 engine.swap(small)
 tokens, ttft = engine.generate([prompt_ids], n_new=8)
 result = engine.load_delta(new_checkpoint_dir, store=onggi_store,
@@ -233,6 +232,13 @@ KV is host-resident. Initial compilation has substantial host-memory and time
 costs. There is no `atom-constants` HTTP/prepared-config factory yet. See the
 [REA and device evidence](../experiments/2026-10-23-resident-constant-update.md)
 for the exact tested scope; this is not arbitrary byte patching of compiled files.
+
+The full Llama-3.1-8B B1/S64 test changed one 117 MB group four times, with all
+generated tokens equal to fresh checkpoint loads and the same native runtime
+and program retained. Decode steps measured 68.7 ms; live onggi analysis through
+the first updated token took 2.66–2.74 s. Initial compilation/loading took
+151–168 s. B1/B4 constant sharing was additionally checked on a bounded matrix
+stack; the full 8B update test used B1 only.
 
 ```bash
 RBLN_WEIGHT_FREE=1 PYTHONPATH=src python experiments/verify_npu_delta.py \

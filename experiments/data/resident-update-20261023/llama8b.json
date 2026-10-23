@@ -1,0 +1,462 @@
+{
+  "original_result_sha256": "3350ae0acc94dbec34287e546985f73d32e8cb8701b390555fb83c2e74563702",
+  "exit_code": 0,
+  "revision": "ecfc6c3daa79fc76b9b077e53718dd7ee9e2defb",
+  "source_sha256": {
+    "src/rngd_pd/airm.py": "f842d208627e3d7a77cba36da43fa37effd9040d136131f79f319cfb6033b03d",
+    "src/rngd_pd/_tv_patch.py": "50cfd85acc9e9ed678efd3b76ac05ce66d0d709d0dbf238a42b0cb65a12dfdf7",
+    "src/rngd_pd/kv_nixl.py": "35595fb0bc3adeb37422ab26bcfb58267980162cec9ccbc6950fb3c415c81fd9",
+    "src/rngd_pd/paths.py": "11c1261fc8e5bd18ce5aca57968ae173d781175485d06d4beabe3f0bf5a3306f",
+    "src/rngd_pd/devices.py": "4bb8873dc27eaa15dad903b334b1337303d7df49691c96b547eab1db965ab4af",
+    "src/rngd_pd/__init__.py": "c75dc2ea438ba2f931728325e28fdfe882e8b71dd6b4ec68c2ad01d2613319e4",
+    "src/rngd_pd/vendors/rbln_decode_batch.py": "eee03b4e1f48a0b7dffe315fd5dd693f77d59d1de132d1fcad9412914bbb3656",
+    "src/rngd_pd/vendors/rbln_prefill.py": "fece715c246a1833762c7d0ae68fd4f45d7790d88c0dd7ecb9240598c350ddfd",
+    "src/rngd_pd/vendors/__init__.py": "c6820db86ce65d0935153410d800d51e4ea4835b81377a377bd79aec9f9207e9",
+    "src/rngd_pd/vendors/rbln_decode.py": "447cf791ab3c2c89032b2836837ebe5b6c7f8e7f3f32b172d12ad20c6cbc0405",
+    "src/rngd_pd/swap/atom_inputs.py": "1bcd895bffaaf4f0c57ca3b13ef34dd997793d9492cc36267886de80c1698995",
+    "src/rngd_pd/swap/bench_atom_bundles.py": "05091e57e43fe6121babef2e53ebf23f7838741da7e2b27db220c762ff3d316c",
+    "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+    "src/rngd_pd/swap/atom_bundles.py": "7e5216625f33470dfbddcbd41cb8b154488a7573a5661ca757037cb30c70aabb",
+    "src/rngd_pd/swap/atom.py": "19b2f4256f0f04f68729628a975ed2c46039321b8524a7a459dfb913259d2c23",
+    "src/rngd_pd/swap/atom_constants.py": "b43fc9257fe6defba63a2642dbf7ab4f3435c3b32dc3da21e55c2684329647cc",
+    "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1",
+    "src/rngd_pd/swap/bench_rngd.py": "a18035bc56bbbeb4bc8e00cdc167005dda5697ddade499e65497f0905096c0a6",
+    "src/rngd_pd/swap/bench_atom.py": "326b9ee18839db53be70b19c0bbae4dab2f454d7e31fcc4805777033dc92ad0f",
+    "src/rngd_pd/swap/__init__.py": "f2a74d6cd155c265a81369a73ce750b0991979ab43ab08c7c353bbd143814597",
+    "src/rngd_pd/swap/rngd.py": "dd8ddc4726c71efd7c9f7bc6d0de7872822a339b4dc2e744888cdda14a8afa67",
+    "src/rngd_pd/swap/variants.py": "a1e772221226b042b97ea1b046e067a72709f94886db5610a5b2a9732ce6e744",
+    "src/rngd_pd/engines/decode_resident.py": "7d84159439edcb2e2c7c8b3c5468db936185dcba38532bc312de1dc679251f4a",
+    "src/rngd_pd/engines/fsdk.py": "2cf093e93fbc2a98c1ce242563e65d7feaaabff468a91654392412c74df98bb6",
+    "src/rngd_pd/engines/artifact_cache.py": "81c30ddfa1d5d50ea8cb86b821cefe5deb00933586aa77418560d572b4e668ed",
+    "src/rngd_pd/engines/model.py": "e9f89d5bde73015d6f630a14cf498a34cab9c753367d7afe2d0ec93e81fdc547",
+    "src/rngd_pd/engines/decode_batch.py": "ed04766be268b0ba1a03f6b08d5b12f74252c99022447cd3034113bdaab53070",
+    "src/rngd_pd/engines/prefill_chunk.py": "1f3eaf7a31da7225c0d18e3b656c9d056437ea99be4b33d891376c749c7c1e9e",
+    "src/rngd_pd/engines/tiers.py": "b9ff8a4df0aef7ac452092b78a52705e248cc7be0efc22a02de3037dd4afddaa",
+    "src/rngd_pd/engines/prefill_full.py": "3786daf83209a917a42b58a07a2714ef1ffd5ddc3b3f577421eda057674a2ae4",
+    "src/rngd_pd/engines/__init__.py": "e3ba109f5a41f8d38ed636803dce1e72ca96a842721498b48a6458e1de887854",
+    "src/rngd_pd/engines/model_wired.py": "843062ae87928cb70ee7d5c046c22c0e222b01c3148d649f442685dbd35384a9",
+    "src/rngd_pd/connector/ucxkv.py": "d8b1c72fcbe62d14a79a3623a61d3790e58121f03ff07c25be1c8a279c221f69",
+    "src/rngd_pd/connector/base.py": "c08fe8a1a08710e24801fc2b0998bc1e155dadf894957658b99255e9cd9f3fcd",
+    "src/rngd_pd/connector/transport.py": "40cdf6bf635916ec0460d0f44b8a6a77e987c80d09595fe3a6c52f8746d7490f",
+    "src/rngd_pd/connector/rngd_kv.py": "e9c5ffac50f97c27f5bd3bb14f89732bfd71f3b1c70ddd7f89d89b4e2e0d8280",
+    "src/rngd_pd/connector/__init__.py": "4594e03bd4d3e5626f277440ecc5bfe8c878b224b31d57dd68a683854f52f7c4",
+    "src/rngd_pd/connector/tcpkv.py": "b8137487ea843017270f1a1f6c3ab04a13b5bca820e809c84ecf70f6569f82aa",
+    "src/rngd_pd/kernels/dsl_batch.py": "9234cf3a0a738d3f8b0e1c44efed1cbbd3954325e5714a85e3c2b9bf1ce995ca",
+    "src/rngd_pd/kernels/decode_resident.py": "49361e31a26e6926ef0c45f86edeb5ecc75f5328d3fa92930981755488c10042",
+    "src/rngd_pd/kernels/dsl_b1.py": "34555fd3f80f7fa6eff5ef508280000ef37de690e03fa95271b7d76c55fee695",
+    "src/rngd_pd/kernels/decode_batch.py": "3dd12946056f787dd4545bf52cfbd8fc4d8bfe68e6bd37beb24f2636c1300b2f",
+    "src/rngd_pd/kernels/prefill_chunk.py": "51cd5cd927efaa3cdaccb5a1e7971dc3b8944f02d0ef7c9c01d000f76a5cdd24",
+    "src/rngd_pd/kernels/prefill_full.py": "4fb91421d5501e6f103fd6f8cf9bd26f481a275ecfd60516f8e9b4d9bf569807",
+    "src/rngd_pd/kernels/__init__.py": "7c8e099136e584d383257fb4a2b34b9eef6a42ba846117b4a52f312c0510bb46",
+    "src/rngd_pd/kernels/prefill_full_chained.py": "89ad6cd2a1b080e5a2ffbdf27d80a49aabbf5b2351a0c7bcbce34684202fe30f",
+    "src/rngd_pd/serving/proxy.py": "073b63f66927ebc0f764f96c75b66ec2b9ea62e07dafc6b2a1fd6e6501ef3857",
+    "src/rngd_pd/serving/cluster.py": "89698dfa5a54e09b2e8e5bc9c42b09cc6e5a493c1cc0c9a60f68ff9c12b7b1fb",
+    "src/rngd_pd/serving/prepared.py": "dc33a9bc4dcd1db7415d2954f85a98cf21dfe324fc7f1531c247c31d534ac97f",
+    "src/rngd_pd/serving/__init__.py": "ab24adf0d3c570b33871cd8ed89e8d836f35ee3894dcb7a2bb1a7f954e631e71",
+    "src/rngd_pd/native_v4/packed_kv.py": "6fdfbdf754c24e4488b87322ec13acdafe7078385ae2f8d2cdf7e836f286010a",
+    "src/rngd_pd/native_v4/build_resident.py": "dd8ccbcee7c218be1ff893ad0fab226fe69cd4e5d28eda2b329fe1b7c04aacd8",
+    "src/rngd_pd/native_v4/replica_lease.py": "80d0910fc66f82e39ebe93ec84845f0bb86cba0e49e4c959d41230f0c06405a1",
+    "src/rngd_pd/native_v4/serve.py": "096f5fbc792e1a44a553dc7c0d4219f7541b24e3dbd46fccc79b1e0b8cea2b4e",
+    "src/rngd_pd/native_v4/affinity.py": "3633a50efd2191d2fd0fa18f3fd377b1a287701d5ce338d1b5a1b916404516c1",
+    "src/rngd_pd/native_v4/service_engine.py": "ab187ed529be1def3d413a5bfa761ae16c9f05f7b745418ab8929c6da402ad4d",
+    "src/rngd_pd/native_v4/rngd_payload.py": "ef1e57c5897eff8d63f4f70aec23951911294f567f10f0fbdff2fb989f89ff9f",
+    "src/rngd_pd/native_v4/host_memory.py": "c3f80a538f0c9137be6f68bbfdde3cbeb3bca725b379d1c5aef0945192b27f1a",
+    "src/rngd_pd/native_v4/atom.py": "35e5dfaf4b82f3a73de6e981af1456c676e17d0e92d8c2a23d1f3ce06d5b9e89",
+    "src/rngd_pd/native_v4/atom_resident.py": "0c9d113138d363f1b24123919ab6a415a7996f6812a28fd1cbbb00d395445c3e",
+    "src/rngd_pd/native_v4/kv.py": "078796e4204931b62926e77973972037e5ea8c7c6436ca0ea0e80824ecafa5d4",
+    "src/rngd_pd/native_v4/dlfloat.py": "9636a1ed210411f7c21448404fa840e31c9ff4b16576a19e8cbb29459563eb09",
+    "src/rngd_pd/native_v4/scheduling.py": "408f9fc7dc634c6cbd8c90919c8a99704f1702718d10934ed077db7d8fdf5e57",
+    "src/rngd_pd/native_v4/kpi.py": "131df1e618b1bb2c4ec1fa1bc3569cc55eb3bbf16bffc958d24335cdc29acb14",
+    "src/rngd_pd/native_v4/run.py": "8552b2fc1011e6a6cb89d9122b93bec4e9c38315abf40ba419a53b255fe252c2",
+    "src/rngd_pd/native_v4/wire.py": "1d7a7cd3b68814397a3b6e0051811f8a5f1fd6ea1e8f2c8b02f88c7c57173f78",
+    "src/rngd_pd/native_v4/power.py": "7011b2b8111adf660d01ec02cc367f0581451c480dc7e3a8dac2d7e9b0031604",
+    "src/rngd_pd/native_v4/coordinator.py": "fc40faa221c96262413dd76319ed5df972b709d19a6c243cb8e5827bd9c189cc",
+    "src/rngd_pd/native_v4/native_conversion.py": "58307b5af2fa6c1d88ec3993ae1ae6505aab806081e030dd5df0c02e97f762a0",
+    "src/rngd_pd/native_v4/atom_external.py": "e2934e203b66da23a05e2fa002b71fd3ed0e889887071187383b12668eef2ece",
+    "src/rngd_pd/native_v4/continuous.py": "83a26110872d2ed6e289628cb7a8efe0f9007951b415fab6c656790fd257c269",
+    "src/rngd_pd/native_v4/__init__.py": "2497c0ecf20d5f4778fa5663eececfe943ea7d0e0fd6a7a2930e469f8d70e735",
+    "src/rngd_pd/native_v4/native_worker.py": "419653fce8ef05fecdd41a1d0d209149d18cb3c29afb811f929d957db3759d27",
+    "experiments/verify_npu_delta.py": "ef21aa6528fe2b306adb0ac06282697da494d309c1b43fb95695166d6a5418b1"
+  },
+  "start_utc": "2026-10-23T05:52:30.991470+00:00",
+  "end_utc": "2026-10-23T06:00:52.248285+00:00",
+  "model": {
+    "name": "Llama-3.1-8B-Instruct",
+    "revision": "0e9e39f249a16976918f6564b8830bc894c89659",
+    "changed_tensor": "model.layers.0.mlp.down_proj.weight",
+    "shape": [
+      4096,
+      14336
+    ],
+    "checkpoint_dtype": "bfloat16",
+    "compiled_weight_dtype": "float16",
+    "change": {
+      "seed": 1,
+      "scale": 0.1
+    }
+  },
+  "configuration": {
+    "flags": {
+      "RBLN_WEIGHT_FREE": "1",
+      "TORCH_RBLN_DISABLE_FALLBACK": "all",
+      "OMP_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "RBLN_NUM_THREADS": "4"
+    },
+    "cpu_limit": 16,
+    "memory_limit_GiB": 128,
+    "batch": 1,
+    "sequence": 64,
+    "prompt_length": 8,
+    "new_tokens": 8,
+    "rounds": 2
+  },
+  "prompt_source": "rngd_pd.swap.bench_rngd.prompts: seed 0 random IDs",
+  "environment": {
+    "device": "RBLN-CA22",
+    "python": "3.10.12",
+    "torch": "2.11.0+cpu",
+    "versions": {
+      "torch-rbln": "0.2.2",
+      "rebel-compiler": "0.11.0",
+      "optimum-rbln": "0.11.0.post1",
+      "transformers": "5.8.1"
+    },
+    "logical_device": 0,
+    "allocated_device_node": {
+      "major": 505,
+      "minor": 2
+    },
+    "runtime_binaries": [
+      {
+        "name": "_C.cpython-310-x86_64-linux-gnu.so",
+        "logical_component": "rebel/_C.cpython-310-x86_64-linux-gnu.so",
+        "bytes": 782808,
+        "sha256": "ef3f87485aabc37bcc1f6ae23072b4e22e94522d7f47619d43168ba89b92e299"
+      },
+      {
+        "name": "librbln_runtime.so",
+        "logical_component": "tvm/librbln_runtime.so",
+        "bytes": 34146089,
+        "sha256": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba"
+      },
+      {
+        "name": "librbln.so",
+        "logical_component": "tvm/librbln.so",
+        "bytes": 405631113,
+        "sha256": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581"
+      },
+      {
+        "name": "_C.cpython-310-x86_64-linux-gnu.so",
+        "logical_component": "torch_rbln/_C.cpython-310-x86_64-linux-gnu.so",
+        "bytes": 579224,
+        "sha256": "6249967ae2e787f5e42ddef03f05bd79eb28d1f11ec1a75b44f2171f0dcc432b"
+      },
+      {
+        "name": "libtorch_rbln.so",
+        "logical_component": "torch_rbln/lib/libtorch_rbln.so",
+        "bytes": 856640,
+        "sha256": "501b9f9054dcb826fddf6d0385e0605252370035fcee0b8d1d211bfbd45e50e5"
+      },
+      {
+        "name": "libc10_rbln.so",
+        "logical_component": "torch_rbln/lib/libc10_rbln.so",
+        "bytes": 668800,
+        "sha256": "deaf384454ed2ef510fed45b55084e8f3c5d9d5a3c62e0ddebbbc4297e2ac6c9"
+      },
+      {
+        "name": "librbln-thunk.so.3.0.0",
+        "logical_component": "librbln-thunk.so.3.0.0",
+        "bytes": 608112,
+        "sha256": "5cc0575543d1f10babc6a16c8fd1d54b373132c1f0f49dd53dd291809d298b09"
+      }
+    ],
+    "host_loadavg_start": [
+      97.1533203125,
+      92.296875,
+      92.31494140625
+    ],
+    "host_loadavg_end": [
+      101.32958984375,
+      98.40576171875,
+      95.43359375
+    ]
+  },
+  "results": {
+    "backend": "atom-constants",
+    "fresh": {
+      "base": {
+        "ttft_s": 0.5590168810449541,
+        "engine_load_s": 168.41201614309102,
+        "load_through_first_token_s": 168.97103302413598,
+        "tokens": [
+          [
+            198,
+            791,
+            1176,
+            3245,
+            430,
+            23170,
+            279,
+            8071
+          ]
+        ],
+        "unique_graphs": 0,
+        "median_decode_step_s": 0.068549899966456
+      },
+      "new": {
+        "ttft_s": 0.6326813510386273,
+        "engine_load_s": 154.64184698893223,
+        "load_through_first_token_s": 155.27452833997086,
+        "tokens": [
+          [
+            198,
+            791,
+            1176,
+            3094,
+            304,
+            279,
+            1920,
+            315
+          ]
+        ],
+        "unique_graphs": 0,
+        "median_decode_step_s": 0.06862085196189582
+      }
+    },
+    "resident": {
+      "initial": {
+        "ttft_s": 0.5965645200340077,
+        "engine_load_s": 151.1687593869865,
+        "load_through_first_token_s": 151.7653239070205,
+        "tokens": [
+          [
+            198,
+            791,
+            1176,
+            3245,
+            430,
+            23170,
+            279,
+            8071
+          ]
+        ],
+        "unique_graphs": 0,
+        "median_decode_step_s": 0.06866374507080764
+      },
+      "rows": [
+        {
+          "changed_weight_bytes": 117440512,
+          "transform_input_bytes": 117440512,
+          "transform_groups": 1,
+          "host_parameters": 0,
+          "delta_s": 1.278267132001929,
+          "uploaded_bytes": 117440512,
+          "mode": "constant-transforms",
+          "tensors": 1,
+          "plan": {
+            "tensors": 1,
+            "upload_bytes": 117440512,
+            "changed_bytes": 117595127,
+            "total_bytes": 16060522496,
+            "header_changes": [],
+            "removed": [],
+            "names": [
+              "model.layers.0.mlp.down_proj.weight"
+            ]
+          },
+          "source": "onggi",
+          "planning_s": 0.805162477074191,
+          "total_s": 2.104127334081568,
+          "round": 0,
+          "target": "new",
+          "prompt_ttft_s": 0.5545996800065041,
+          "tokens": [
+            [
+              198,
+              791,
+              1176,
+              3094,
+              304,
+              279,
+              1920,
+              315
+            ]
+          ],
+          "request_to_first_token_s": 2.658727014088072,
+          "request_through_generation_s": 3.1450813489500433,
+          "tokens_equal_fresh": true,
+          "median_decode_step_s": 0.06874689599499106,
+          "unique_graphs_before": 0,
+          "unique_graphs_after": 0,
+          "constant_runtimes_retained": true,
+          "compiled_programs_before": 1,
+          "compiled_programs_after": 1
+        },
+        {
+          "changed_weight_bytes": 117440512,
+          "transform_input_bytes": 117440512,
+          "transform_groups": 1,
+          "host_parameters": 0,
+          "delta_s": 1.3147892819251865,
+          "uploaded_bytes": 117440512,
+          "mode": "constant-transforms",
+          "tensors": 1,
+          "plan": {
+            "tensors": 1,
+            "upload_bytes": 117440512,
+            "changed_bytes": 117595127,
+            "total_bytes": 16060522496,
+            "header_changes": [],
+            "removed": [],
+            "names": [
+              "model.layers.0.mlp.down_proj.weight"
+            ]
+          },
+          "source": "onggi",
+          "planning_s": 0.7974588529905304,
+          "total_s": 2.1472485449630767,
+          "round": 0,
+          "target": "base",
+          "prompt_ttft_s": 0.5524920379975811,
+          "tokens": [
+            [
+              198,
+              791,
+              1176,
+              3245,
+              430,
+              23170,
+              279,
+              8071
+            ]
+          ],
+          "request_to_first_token_s": 2.6997405829606578,
+          "request_through_generation_s": 3.1813500850694254,
+          "tokens_equal_fresh": true,
+          "median_decode_step_s": 0.06871516595128924,
+          "unique_graphs_before": 0,
+          "unique_graphs_after": 0,
+          "constant_runtimes_retained": true,
+          "compiled_programs_before": 1,
+          "compiled_programs_after": 1
+        },
+        {
+          "changed_weight_bytes": 117440512,
+          "transform_input_bytes": 117440512,
+          "transform_groups": 1,
+          "host_parameters": 0,
+          "delta_s": 1.3251746610039845,
+          "uploaded_bytes": 117440512,
+          "mode": "constant-transforms",
+          "tensors": 1,
+          "plan": {
+            "tensors": 1,
+            "upload_bytes": 117440512,
+            "changed_bytes": 117595127,
+            "total_bytes": 16060522496,
+            "header_changes": [],
+            "removed": [],
+            "names": [
+              "model.layers.0.mlp.down_proj.weight"
+            ]
+          },
+          "source": "onggi",
+          "planning_s": 0.8111896809423342,
+          "total_s": 2.1626896529924124,
+          "round": 1,
+          "target": "new",
+          "prompt_ttft_s": 0.5747254840098321,
+          "tokens": [
+            [
+              198,
+              791,
+              1176,
+              3094,
+              304,
+              279,
+              1920,
+              315
+            ]
+          ],
+          "request_to_first_token_s": 2.7374151370022446,
+          "request_through_generation_s": 3.219072164967656,
+          "tokens_equal_fresh": true,
+          "median_decode_step_s": 0.06871209701057523,
+          "unique_graphs_before": 0,
+          "unique_graphs_after": 0,
+          "constant_runtimes_retained": true,
+          "compiled_programs_before": 1,
+          "compiled_programs_after": 1
+        },
+        {
+          "changed_weight_bytes": 117440512,
+          "transform_input_bytes": 117440512,
+          "transform_groups": 1,
+          "host_parameters": 0,
+          "delta_s": 1.3111434740712866,
+          "uploaded_bytes": 117440512,
+          "mode": "constant-transforms",
+          "tensors": 1,
+          "plan": {
+            "tensors": 1,
+            "upload_bytes": 117440512,
+            "changed_bytes": 117595127,
+            "total_bytes": 16060522496,
+            "header_changes": [],
+            "removed": [],
+            "names": [
+              "model.layers.0.mlp.down_proj.weight"
+            ]
+          },
+          "source": "onggi",
+          "planning_s": 0.7959392500342801,
+          "total_s": 2.1425783530576155,
+          "round": 1,
+          "target": "base",
+          "prompt_ttft_s": 0.5544364330125973,
+          "tokens": [
+            [
+              198,
+              791,
+              1176,
+              3245,
+              430,
+              23170,
+              279,
+              8071
+            ]
+          ],
+          "request_to_first_token_s": 2.6970147860702127,
+          "request_through_generation_s": 3.178573371958919,
+          "tokens_equal_fresh": true,
+          "median_decode_step_s": 0.06870654900558293,
+          "unique_graphs_before": 0,
+          "unique_graphs_after": 0,
+          "constant_runtimes_retained": true,
+          "compiled_programs_before": 1,
+          "compiled_programs_after": 1
+        }
+      ],
+      "destination_differs_base": true
+    }
+  },
+  "limitations": [
+    "Single allocated card and short greedy prompt: B1, S64, prompt 8, output 8, two update rounds.",
+    "Transform-input bytes are logical weight payload, not measured PCIe or DMA traffic.",
+    "The whole changed tensor is transformed; arbitrary byte-offset edits are not implemented.",
+    "Initial compilation/loading is included in engine_load_s, not in resident delta rows.",
+    "unique_graphs counts Dynamo only; this backend compiles directly and validates nonzero native runtime counts instead.",
+    "Other allocated workloads shared the host; measurements are observations, not an SLO.",
+    "KV is host-resident. The LM head is part of the compiled NPU graph.",
+    "Initial immutable checkpoint/store publication and file delivery are outside update timing.",
+    "A version-sensitive internal SDK ABI and new weight-free compilation are required; no HTTP factory is provided."
+  ],
+  "native_device_observation": {
+    "sampler_original_sha256": "cb6274e86b0e1c93043f9b6d31e0e714dafe7a1b594d30f59cd51362b8a93aab",
+    "ownership_filter": "Native context PID must occur in same-sample OWN_PROCESS list and match the allocated Pod cgroup UID.",
+    "distinct_owned_native_context_processes": 3,
+    "maximum_reported_owned_context_memalloc": "14.2GiB",
+    "limitation": "Vendor rbln-stat reports rounded allocation sizes; not a byte-exact peak, physical allocation identity, or DMA counter."
+  }
+}

@@ -1,6 +1,8 @@
 # Resident compiled-constant updates
 
-Date: 2026-10-23. The REA sections below record static ATOM binding evidence. Device results are recorded separately when available.
+Date: 2026-10-23. Static REA evidence led to an opt-in ATOM constant refresh
+engine. The full 8B device test below passed four alternating checkpoint updates
+without replacing the native runtime or recompiling its program.
 
 ## REA investigation method
 
@@ -66,6 +68,101 @@ disabled fallback. Fast embedded controls with weight-free mode off ran on the
 NPU but exposed no update metadata; their partial-update assertions failed.
 Neither negative control is reported as a partial-update success.
 
+## Full Llama-3.1-8B update
+
+Frozen implementation `ecfc6c3daa79fc76b9b077e53718dd7ee9e2defb` ran on an
+allocated RBLN-CA22 with rebel 0.11.0, torch-rbln 0.2.2 and Torch 2.11.0+cpu.
+The worker used `RBLN_WEIGHT_FREE=1`, `TORCH_RBLN_DISABLE_FALLBACK=all`, four
+OMP/MKL threads, a 16-CPU limit and a 128 GiB RAM limit. Checkpoints/store were
+immutable read-only inputs. The harness used B1/S64, a seed-0 random eight-token
+prompt and eight greedy output tokens. One BF16 `down_proj` tensor of shape
+`[4096, 14336]` differed; initial compilation and updates both convert it to FP16.
+
+Fresh base and destination references ran in separate processes. A third
+process retained its native runtime for `new → base → new → base` updates through
+the real `onggi diff --ranges --json` and tensor planner. Each update changed
+exactly one transform group with 117,440,512 logical input bytes (112 MiB),
+about 0.73% of the checkpoint tensor payload. It did not rebuild the complete
+checkpoint or replace the compiled program. All 32 compared generated tokens
+matched their corresponding fresh reference exactly; the two references
+produced different tokens, so a no-op update could not pass.
+
+| Round / target | onggi + planning (s) | Device-update call (s) | Complete delta call (s) | Delta through first token (s) | Decode step (ms) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 0 / new | 0.805 | 1.278 | 2.104 | 2.659 | 68.747 |
+| 0 / base | 0.797 | 1.315 | 2.147 | 2.700 | 68.715 |
+| 1 / new | 0.811 | 1.325 | 2.163 | 2.737 | 68.712 |
+| 1 / base | 0.796 | 1.311 | 2.143 | 2.697 | 68.707 |
+
+Initial compilation/loading took 168.412 s for the fresh base, 154.642 s for
+the fresh destination, and 151.169 s for the resident worker. Those costs are
+outside the update rows. The delta-through-first-token column adds the measured
+synchronous prompt TTFT (0.552–0.575 s) to the complete delta call; it excludes
+generation of the remaining seven tokens. It includes planning, conversion,
+native application and any deferred work observed by that first response.
+It is not an HTTP/gateway measurement or a comparison against a precompiled
+ordinary bundle's cold load.
+
+All four rows retained the identical native runtime object and one compiled
+program. Dynamo graph counters stayed zero because this backend uses direct
+compilation; nonzero native program counts, actual device allocation and the
+fallback-disabled execution establish the NPU path. The LM head is compiled
+on the NPU; KV is host-resident. The unit of update is a complete affected
+tensor/transform group, not individual changed bytes inside that tensor.
+
+[All original timing samples, token IDs, exact implementation/native-library
+hashes and configuration](data/resident-update-20261023/llama8b.json) are retained
+with the original result SHA-256. Logical transform-input bytes are not measured
+PCIe/DMA traffic. Four updates on one short prompt are a correctness and latency
+observation, not a concurrency, long-context or production-serving claim.
+
+## Comparison with the existing device-input path
+
+After the constant engine exited, the same allocated card and Pod ran the
+existing `DeviceWeightDecode` from the same frozen revision. SDK, checkpoint,
+B1/S64, prompt, output length, OMP/MKL thread counts and resource limits matched.
+Its process used the normal `RBLN_WEIGHT_FREE=0` mode, verified by the active
+SDK getter, and `TORCH_RBLN_DISABLE_FALLBACK=all`. One warmup compiled its graph;
+three subsequent generations retained one nonzero Dynamo graph and identical
+tokens. Warmup is recorded separately and excluded from steady timings.
+
+| Execution path | Measured steady decode-step medians (ms) | Prompt through first token (s) |
+| --- | ---: | ---: |
+| Existing device-input path, three repeated requests | 510.488 / 509.024 / 515.454 | 4.106 / 4.087 / 4.096 |
+| Constant path, four requests after updates | 68.747 / 68.715 / 68.712 / 68.707 | 0.555 / 0.552 / 0.575 / 0.554 |
+
+The ratio of the two median decode-step measurements is about 7.4×. This is
+an execution-path comparison: graph implementation/fusion and host versus device
+KV handling differ, so the ratio cannot be attributed solely to weight storage
+or packing. Both compile their LM head on the NPU. This control measures
+generation, not an old-path delta operation; it does not establish a 7.4×
+improvement in native update-call time. The constant path's update call itself
+still took 1.278–1.325 s, plus the separately reported planning/first-response
+costs. Shared-host background load and the short, single-prompt sample limit
+generalization. [Control samples and source provenance](data/resident-update-20261023/device-input-control.json)
+preserve the warmup and every measured repeat.
+
+## Provenance and resource cleanup
+
+[Provenance](data/resident-update-20261023/provenance.json) records immutable
+fixture manifest IDs, Onggi revision/binary hash, the container image, SDK/native
+library hashes, CPU/RAM limits, background load and exact raw-export hashes.
+The 23 exported worker, configuration and sampler files match their remote
+byte hashes. KMD 3.0.0 was captured; the assigned card's firmware version was
+not captured and is left unrecorded.
+
+Joining native-context PIDs to the same sample's owned Pod cgroup observed all
+three constant-path worker contexts and the control's context. Their maximum
+rounded driver allocation labels were 14.2 GiB and 14.9 GiB respectively;
+these are not byte-exact physical peaks. Foreign process contexts were excluded.
+
+The owned Pod exited normally with code zero. Pod and namespace deletion used
+UID preconditions; absence was confirmed at 06:16:48 UTC, followed by an audit
+with no owned processes or device contexts. Source, checkpoint views, caches and
+raw evidence remain for reproduction. The 485,060,608-byte full-matrix cache
+and 178,978,816-byte control cache are separate from earlier benchmark stores;
+the read-only fixture hardlinks did not create another physical checkpoint copy.
+
 ## Implementation validation
 
 The opt-in `ConstantWeightDecode` uses direct gen-mode compilation and the
@@ -80,4 +177,7 @@ transactions) were reproduced RED and fixed GREEN. Additional regression tests
 cover aliased replacements, host pointer lifetime, explicit compile examples,
 packed `o_proj`, checkpoint parity and KV invalidation. The full local suite
 passed 279 tests, skipped 6 environment-dependent tests, and passed 4 subtests.
-Full 8B hardware results are pending and must be recorded separately from the toy.
+[Fresh Linux CI](https://github.com/ai-computing/rngd-pd/actions/runs/39908041073)
+passed 283 tests, skipped 2, and passed 4 subtests. The fixed two-layer Llama
+smoke used one native program and measured a 23.96 ms decode step; the full 8B
+test above then passed on the same frozen implementation.
