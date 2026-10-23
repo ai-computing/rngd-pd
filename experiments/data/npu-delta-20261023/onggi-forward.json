@@ -1,0 +1,84 @@
+{
+  "files": [
+    {
+      "path": "config.json",
+      "base": "config.json",
+      "size": 855,
+      "same": 855,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 855,
+      "changed_runs": 0,
+      "largest_run": 0
+    },
+    {
+      "path": "model-00001-of-00004.safetensors",
+      "base": "model-00001-of-00004.safetensors",
+      "size": 4976698672,
+      "same": 4859103545,
+      "moved": 0,
+      "new": 117595127,
+      "same_blocks": 4859098416,
+      "changed_runs": 1,
+      "largest_run": 117595127,
+      "changed": [
+        [
+          1050641786,
+          117595127
+        ]
+      ]
+    },
+    {
+      "path": "model-00002-of-00004.safetensors",
+      "base": "model-00002-of-00004.safetensors",
+      "size": 4999802720,
+      "same": 4999802720,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 4999802720,
+      "changed_runs": 0,
+      "largest_run": 0
+    },
+    {
+      "path": "model-00003-of-00004.safetensors",
+      "base": "model-00003-of-00004.safetensors",
+      "size": 4915916176,
+      "same": 4915916176,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 4915916176,
+      "changed_runs": 0,
+      "largest_run": 0
+    },
+    {
+      "path": "model-00004-of-00004.safetensors",
+      "base": "model-00004-of-00004.safetensors",
+      "size": 1168138808,
+      "same": 1168138808,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 1168138808,
+      "changed_runs": 0,
+      "largest_run": 0
+    },
+    {
+      "path": "model.safetensors.index.json",
+      "base": "model.safetensors.index.json",
+      "size": 23950,
+      "same": 23950,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 23950,
+      "changed_runs": 0,
+      "largest_run": 0
+    }
+  ],
+  "size": 16060581181,
+  "same": 15942986054,
+  "moved": 0,
+  "new": 117595127,
+  "new_stored": 78681918,
+  "same_blocks": 15942980925,
+  "changed_runs": 1,
+  "largest_run": 117595127
+}

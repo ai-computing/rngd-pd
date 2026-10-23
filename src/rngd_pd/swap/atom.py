@@ -284,3 +284,6 @@ class HostPool:
         t3 = _now()
         return sess, dict(wait_prepare_s=waited, close_s=t2 - t1, create_s=t3 - t2,
                           parse_in_background_s=r["parse_s"])
+
+# Optimum-rbln bundle API retained alongside native rebel sessions.
+from .atom_bundles import AtomBundle, SwappableAtom  # noqa: F401,E402

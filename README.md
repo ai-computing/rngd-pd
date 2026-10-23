@@ -41,6 +41,9 @@ It is a **migration source for the Optimus Prime engine**
 ([engine consolidation plan](https://github.com/ai-computing/ai-rm/blob/master/docs/engine-integration.md)):
 until that consolidation is validated, this repository remains the executable PD-serving path.
 
+Compiled-variant swapping: [`rngd_pd.swap`](docs/delta-swap.md) keeps RNGD weights resident
+and selects co-compiled ATOM decoders, with an optional background warm pool.
+
 ## ✨ Highlights
 
 <table>
@@ -362,29 +365,32 @@ Variables already exported in the shell take precedence.
 
 ## 🔁 Delta load
 
-A running engine can switch to another compiled variant of Llama-3.1-8B, a batch width or a sequence bucket,
-keeping on the NPU what is already there ([#17](https://github.com/ai-computing/rngd-pd/issues/17),
-[`src/rngd_pd/swap/`](src/rngd_pd/swap), details in [docs/delta-load.md](docs/delta-load.md)).
+The opt-in [`rngd_pd.swap` API](docs/delta-swap.md) keeps weights on the NPU
+between compiled-shape changes and checkpoint updates. Both chips support
+`engine.load_delta(new_dir, store=store, base_ref="base", new_ref="new")`:
+it runs onggi, refines checkpoint ranges, and transfers only changed tensors.
 
-- **RNGD:** one device copy of the weights is shared by every decode variant, because the graphs take the weights
-  as inputs. `swap(variant)` loads only that variant's graph (1–6 MB). With a new checkpoint that differs in part,
-  `apply_delta()` uploads only the tensors whose bytes changed, planned from `onggi diff --ranges`.
-- **Measured on one RNGD card** (B4/B8/B16 at S512 and B4 at S256):
-  - swap: 0.55–1.2 s from request to first token, 0.06–0.54 s back to a prepared variant;
-  - full reload: 21–23 s;
-  - greedy tokens identical to a full reload in every case;
-  - each extra variant costs under 0.25 GiB of device memory.
-- **Partial update:** 3 changed tensors (151 MB of 16 GB) took 0.84 s to the first token on the new weights,
-  with tokens identical to a full load of the new checkpoint.
-- **ATOM:** the weights are compiled into the graph, and rebel 0.11 has no public call to bind a graph to weights
-  already on the card. So the variants go into one compile session (documented *bucketing*: one weight copy, one
-  runtime, the graph picked by input shape).
-  - **Swap inside a session:** 0.11–0.20 s from request to first token (the first step), against a 13.3–13.7 s full
-    reload; tokens identical.
-  - **New variant:** recompile the session with it, without a card; `HostPool` parses it on the host while the old
-    session serves; the switch then takes 0.80 s to the first token.
-  - **Weights as torch-rbln device inputs:** they stay shared across graphs, but steps are 5–7× slower and each new
-    graph compiles in-process (about 60 s), so this path is documented, not used.
+- **RNGD:** one resident weight copy shared by variants; transactional partial
+  weight updates with rollback. Prepared B4/B8, S256/S512 switches measured
+  0.25–0.45 s through the first token, versus 20.6–23.5 s for a full load.
+- **ATOM embedded weights:** native bucketing (`AtomSession`), host-prepared
+  session reload (`HostPool`), and optimum bundles (`SwappableAtom`). Co-compiled
+  selection retains the weights; a changed embedded model requires a reload.
+- **ATOM device-input weights:** `DeviceWeightDecode` now stages only changed
+  tensors, probes them on the card, and commits their input references without
+  rebuilding the graph. This uses extra memory for the changed tensors and
+  retains rebel 0.11's slower device-input decode rate and initial in-process
+  compilation requirement.
+
+A real onggi → NPU test changed one 117 MB tensor of a 16.1 GB checkpoint:
+RNGD updated in 1.12–2.00 s (first token 1.50–2.57 s), ATOM in 1.25–1.34 s
+(first token 5.32–5.40 s for an 8-token prompt). All 160 compared generated
+tokens match fresh destination loads. See the [protocol and raw results](experiments/2026-10-23-npu-delta-load.md),
+including ATOM's initial compilation cost and slower device-input decode.
+
+The default cluster worker is unchanged. Updates drain requests and invalidate
+old KV. See [API and reproduction](docs/delta-swap.md), [upstream measurements](docs/delta-load.md),
+and [the earlier swap experiment](experiments/2026-10-22-delta-swap.md).
 
 ## 📊 Results
 

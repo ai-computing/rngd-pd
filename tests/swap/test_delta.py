@@ -3,6 +3,7 @@ import os
 import struct
 import tempfile
 import unittest
+import shutil
 
 from rngd_pd.swap import delta
 
@@ -22,6 +23,7 @@ def write_st(path, tensors):
 class DeltaTest(unittest.TestCase):
     def setUp(self):
         self.d = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.d)
         self.base, self.new = os.path.join(self.d, "base"), os.path.join(self.d, "new")
         os.makedirs(self.base)
         os.makedirs(self.new)
@@ -94,8 +96,44 @@ class DeltaTest(unittest.TestCase):
         t["c.weight"] = ("F32", [4, 2], bytes(32))
         write_st(os.path.join(self.new, "m.safetensors"), t)
         p = delta.plan_update(self.base, self.new, {})
-        self.assertEqual(p.header_changes, {"c.weight"})
+        # Enlarging the JSON header moves every absolute data offset. An
+        # incomplete range mapping must not let moved tensors remain stale.
+        self.assertEqual(p.header_changes, set(t))
         self.assertIn("c.weight", p.tensors)
+
+    def test_resharding_and_removed_names(self):
+        write_st(os.path.join(self.new, "renamed.safetensors"), {"a.weight": self.t["a.weight"]})
+        p = delta.plan_update(self.base, self.new, {})
+        self.assertEqual(set(p.tensors), {"a.weight"})
+        self.assertEqual(p.removed, {"b.weight", "c.weight"})
+
+    def test_reject_bad_ranges_and_truncated_files(self):
+        for ranges in [[(-1, 4)], [(0, -1)], [(0.5, 2)]]:
+            with self.assertRaises(ValueError):
+                delta.tensors_touched({}, ranges)
+        with self.assertRaises(ValueError):
+            delta.load_onggi_ranges({"files": [{"path": "../x", "size": 1}]})
+        with self.assertRaises(ValueError):
+            delta.diff_ranges_local("unused", "unused", block=0)
+        path = os.path.join(self.new, "truncated.safetensors")
+        with open(path, "wb") as f:
+            f.write(struct.pack("<Q", 999999999))
+        with self.assertRaises(ValueError):
+            delta.read_header(path)
+
+    def test_overlapping_ranges_count_once(self):
+        doc = {"files": [{"path": "m.safetensors", "base": "m.safetensors",
+                          "changed": [[10, 10], [15, 10], [25, 0]]}]}
+        self.assertEqual(delta.load_onggi_ranges(doc), {"m.safetensors": [(10, 15)]})
+
+    def test_diff_without_ranges_cannot_be_used_for_delta(self):
+        doc = {"files": [{"path": "m.safetensors", "base": "m.safetensors",
+                          "size": 16, "same": 8, "new": 8, "changed_runs": 1}]}
+        with self.assertRaisesRegex(ValueError, "--ranges"):
+            delta.load_onggi_ranges(doc)
+        doc["files"][0]["changed"] = []
+        with self.assertRaisesRegex(ValueError, "--ranges"):
+            delta.load_onggi_ranges(doc)
 
 
 if __name__ == "__main__":

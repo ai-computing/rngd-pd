@@ -1,0 +1,15 @@
+{
+  "files": [
+    {
+      "path": "model-00001-of-00004.safetensors",
+      "base": "model-00001-of-00004.safetensors",
+      "size": 4976698672,
+      "changed": [
+        [
+          1050690864,
+          117440512
+        ]
+      ]
+    }
+  ]
+}

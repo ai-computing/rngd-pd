@@ -15,11 +15,12 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install test dependencies
-        run: python -m pip install numpy pytest pyzmq
+        run: |
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install numpy pytest pyzmq httpx fastapi uvicorn transformers safetensors
       - name: NPU-free tests
         run: |
-          # tests/native_v4/test_serve.py needs the serving stack (httpx, fastapi)
           PYTHONPATH=src python -m pytest -q tests/test_devices.py tests/native_v4 \
             tests/test_continuous_backlog.py tests/test_solo_openai.py tests/test_admission.py \
             tests/test_decode_tiers.py \
-            --ignore=tests/native_v4/test_serve.py $(ls -d tests/swap 2>/dev/null)
+            tests/swap

@@ -6,6 +6,9 @@ A compiled variant is one shape of the same Llama-3.1-8B graph: a batch width `B
 Switching variants used to mean a full model load. Delta load keeps on the card what is already there and
 loads only what differs.
 
+For the current ATOM API, transactional RNGD updates and full-prompt measurements,
+see [delta-swap.md](delta-swap.md) and the [independent hardware record](../experiments/2026-10-22-delta-swap.md).
+
 ## RNGD
 
 rngd-pd's batched decode graph ([`engines/decode_batch.py`](../src/rngd_pd/engines/decode_batch.py)) takes every
@@ -59,7 +62,12 @@ plan = delta.plan_update(base_dir, new_dir, delta.load_onggi_ranges("ranges.json
 eng.apply_delta(new_dir, plan)          # mode="inplace" (per layer) or "group" (re-stack)
 ```
 
-### Measured
+### Historical RNGD measurements from PR #21
+
+These are the original measurements from PR #21. The historical harness timed
+a one-token probe with fresh KV, then separately checked greedy generation on
+16-token prompts. The current harness times the actual prompt through its first
+generated token, so the latency boundaries differ.
 
 Measured on one RNGD card (furiosa-torch 2026.2.0) in a Kubernetes Job. The bench is
 `python -m rngd_pd.swap.bench_rngd all`, from [`deploy/k8s/swap-rngd-job.yaml`](../deploy/k8s/swap-rngd-job.yaml).
@@ -72,8 +80,8 @@ Setup:
 
 Definitions:
 - **Full reload:** a fresh process, from launch to the first token: read the checkpoint, upload the weights,
-  load the graphs, first step.
-- **Swap:** in the running engine, from `swap()` to the first token on the new variant.
+  load the graphs, first step on the one-token probe (not the complete prompt).
+- **Swap:** in the running engine, from `swap()` through a one-token probe on the new variant.
 
 | Variant | Full reload (s) | Swap, first time (ms) | Swap back, already prepared (ms) | Greedy tokens = full reload |
 |---|--:|--:|--:|:-:|
@@ -105,7 +113,7 @@ Partial weight update:
 | Tensors uploaded | 8 (5 flagged only by chunk boundaries, `lm_head` among them) | 3 |
 | Bytes uploaded | 1.24 GB | 151 MB |
 | Planning / upload (s) | 0.002 / 0.61 | 0.17 / 0.24 |
-| Request → first token after the update (s) | 1.21 | 0.84 |
+| Apply → first one-token probe, excluding planning (s) | 1.21 | 0.84 |
 | Full reload of the new checkpoint (s) | 19.8 | 22.1 |
 | Greedy tokens = full reload of the new checkpoint | yes | yes (and different from the base's) |
 
@@ -116,6 +124,10 @@ Partial weight update:
 - `swap()` happens between requests. A request's KV cache is not carried into a variant of another shape.
 - The weights live in the process that owns the device tensors. Another process cannot attach to them; furiosa-torch
   has no public API to share device tensors across processes.
+
+ATOM co-compiled decoder selection and independent-bundle preparation are implemented
+in [`swap/atom.py`](../src/rngd_pd/swap/atom.py). See [usage and limits](delta-swap.md)
+and [measured token parity and memory costs](../experiments/2026-10-22-delta-swap.md).
 
 ## ATOM
 
@@ -238,4 +250,7 @@ serving path:
 |---|---|---|
 | Variants known in advance | one resident weight copy, `swap()` loads the variant's graph: 0.55–1.2 s | one session (bucketing): swap ≈ first step, 0.11–0.20 s |
 | A new variant | bake its graph, then `swap()` | recompile the session with it (no card, minutes), `HostPool` switch: 0.80 s |
-| New weights, partly changed | `apply_delta()` uploads only the changed tensors | full reload (weights are compiled in) |
+| New weights, partly changed | `load_delta()` / `apply_delta()` uploads changed tensors | device-input `DeviceWeightDecode.load_delta()` stages changed tensors; embedded weights require a full reload |
+
+For the integrated onggi invocation, transactional ATOM device-input updates,
+and request locking/KV invalidation, see [the current API](delta-swap.md).

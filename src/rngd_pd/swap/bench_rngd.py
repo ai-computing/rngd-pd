@@ -44,15 +44,15 @@ def _engine(a, ckpt, group, wait_s=60):
     happens before the timed part starts.
     """
     from rngd_pd.swap.rngd import SwappableDecode
-    t0 = time.time()
+    t0 = time.perf_counter()
     while True:
-        t1 = time.time()
+        t1 = time.perf_counter()
         try:
             eng = SwappableDecode(ckpt, group=group, chip=a.chip, cache_dir=a.cache)
             eng.card_wait_s = t1 - t0          # excluded from the reload time
             return eng
         except RuntimeError as e:
-            if "allocator" not in str(e) or time.time() - t0 > wait_s:
+            if "allocator" not in str(e) or time.perf_counter() - t0 > wait_s:
                 raise
             print(f"[bench] card not free yet ({e}); retrying", flush=True)
             time.sleep(5)
@@ -61,8 +61,9 @@ def _engine(a, ckpt, group, wait_s=60):
 def _mem(a, eng):
     if not a.mem:
         return None
-    from rngd_pd.swap.rngd import free_capacity_gib
-    return free_capacity_gib(eng.dev)
+    # Account owned weights without allocating until OOM on a shared card.
+    return sum(t.numel() * t.element_size() for group in eng.shared
+               for t in group.values()) / (1 << 30) + eng.wlm_d.numel() * 2 / (1 << 30)
 
 
 def cmd_fresh(a):
@@ -72,18 +73,19 @@ def cmd_fresh(a):
     eng = _engine(a, ckpt, v.group)
     t_w = time.perf_counter()
     info = eng.swap(v)
-    first_s, _ = eng.first_step()
-    t_first = time.perf_counter()
-    wall_first = time.time()
+    t_generate = time.perf_counter()
+    wall_generate = time.time()
     toks, ttft = eng.generate(prompts(v.B, a.P), a.n)
+    t_first = t_generate + ttft
+    wall_first = wall_generate + ttft
+    first_s = ttft
     out = dict(mode="fresh", variant=v.name, ckpt=ckpt,
-               launch_to_first_token_s=((wall_first - a.t_launch - eng.card_wait_s)
-                                        if a.t_launch else None),
+               launch_to_first_token_s=(wall_first - a.t_launch - eng.card_wait_s) if a.t_launch else None,
                process_to_first_token_s=t_first - T_START - eng.card_wait_s,
                card_wait_s=eng.card_wait_s,
                imports_s=t_import - T_START, weights=eng.timings,
                engine_init_s=t_w - t_import, graph=info, first_step_s=first_s,
-               prompt_ttft_s=ttft, tokens=toks, free_gib=_mem(a, eng))
+               prompt_ttft_s=ttft, tokens=toks, resident_weight_gib=_mem(a, eng))
     _write(a, out)
 
 
@@ -94,26 +96,18 @@ def cmd_swap(a):
     free0 = _mem(a, eng)
     for rnd in range(2):
         for v in vs:
-            if rnd == 0 and v == vs[0]:
-                info = eng.swap(v)
-                first_s, _ = eng.first_step()
-                info["first_step_s"] = first_s
-                info["request_to_first_token_s"] = info["swap_s"] + first_s
-                info["initial"] = True
-            else:
-                t0 = time.perf_counter()
-                info = eng.swap(v)
-                first_s, _ = eng.first_step()
-                info["first_step_s"] = first_s
-                info["request_to_first_token_s"] = time.perf_counter() - t0
+            t0 = time.perf_counter()
+            info = eng.swap(v)
             toks, ttft = eng.generate(prompts(v.B, a.P), a.n)
+            info["request_to_first_token_s"] = info["swap_s"] + ttft
+            info["initial"] = rnd == 0 and v == vs[0]
             info.update(round=rnd, tokens=toks, prompt_ttft_s=ttft)
             if rnd == 0:
-                info["free_gib_after"] = _mem(a, eng)
+                info["resident_weight_gib_after"] = _mem(a, eng)
             rows.append(info)
             print(f"[swap] round {rnd} {v.name}: request->first token "
                   f"{info['request_to_first_token_s']*1e3:.0f} ms", flush=True)
-    _write(a, dict(mode="swap", ckpt=a.ckpt, weights=eng.timings, free_gib_start=free0,
+    _write(a, dict(mode="swap", ckpt=a.ckpt, weights=eng.timings, resident_weight_gib_start=free0,
                    rows=rows))
 
 
@@ -126,20 +120,21 @@ def cmd_delta(a):
     t0 = time.perf_counter()
     if a.ranges and os.path.exists(a.ranges):
         rng = delta.load_onggi_ranges(a.ranges)
-        source = "onggi"
+        source = "provided-ranges"
     else:
         rng = None
         source = "local-compare"
-    plan = delta.plan_update(a.ckpt, a.delta_new, rng)
+    plan = delta.plan_update(a.ckpt, a.delta_new, rng, refine=not a.no_refine)
     t_plan = time.perf_counter() - t0
     t1 = time.perf_counter()
     res = eng.apply_delta(a.delta_new, plan, mode=a.delta_mode)
-    first_s, _ = eng.first_step()
-    t_first = time.perf_counter() - t1
+    t_generate = time.perf_counter()
     toks, ttft = eng.generate(prompts(v.B, a.P), a.n)
+    t_first = t_generate - t1 + ttft
     _write(a, dict(mode="delta", variant=v.name, ranges_source=source, plan_s=t_plan,
                    plan=plan.summary(), apply=res,
-                   request_to_first_token_s=t_first, base_tokens=base_toks,
+                   request_to_first_token_s=t_plan + t_first, apply_to_first_token_s=t_first,
+                   prompt_ttft_s=ttft, base_tokens=base_toks,
                    tokens=toks))
 
 
@@ -220,12 +215,19 @@ def cmd_all(a):
                  "--delta-mode", a.delta_mode]
         if a.ranges:
             extra += ["--ranges", a.ranges]
+        if a.no_refine:
+            extra += ["--no-refine"]
         res["delta"] = _child(a, "delta", f"{d}/delta.json", extra)
         res["delta"]["tokens_equal_fresh_new"] = res["delta"]["tokens"] == res["fresh_new"]["tokens"]
         res["delta"]["base_tokens_equal_fresh"] = res["delta"]["base_tokens"] == res["fresh"][name]["tokens"]
         res["delta"]["tokens_differ_from_base"] = res["delta"]["tokens"] != res["delta"]["base_tokens"]
     _write(a, res)
     summarize(res)
+    checks = [r["tokens_equal_fresh"] for r in res["swap"]["rows"]]
+    if "delta" in res:
+        checks.extend([res["delta"]["tokens_equal_fresh_new"], res["delta"]["base_tokens_equal_fresh"]])
+    if not all(checks):
+        raise SystemExit("token parity failed; see the saved results")
 
 
 def summarize(res):
@@ -254,13 +256,14 @@ def main(argv=None):
     ap.add_argument("--variants", nargs="+")
     ap.add_argument("--group", type=int, default=8)
     ap.add_argument("--chip", type=int, default=-1,
-                    help="torch device ordinal; -1: the card this pod was given (devices.resolve_chip)")
+                    help="device ordinal; -1 resolves the card allocated to this Pod")
     ap.add_argument("--cache")
     ap.add_argument("--P", type=int, default=16)
     ap.add_argument("--n", type=int, default=16)
-    ap.add_argument("--mem", action="store_true", help="probe free device capacity")
+    ap.add_argument("--mem", action="store_true", help="account resident weight bytes; does not probe free HBM")
     ap.add_argument("--delta-new")
     ap.add_argument("--delta-mode", default="inplace", choices=["inplace", "group"])
+    ap.add_argument("--no-refine", action="store_true", help="keep coarse range neighbours (historical benchmark mode)")
     ap.add_argument("--ranges", help="onggi diff --ranges --json output (else compare locally)")
     ap.add_argument("--tensors", help="make-delta: comma-separated tensor names")
     ap.add_argument("--scale", type=float, default=0.05)

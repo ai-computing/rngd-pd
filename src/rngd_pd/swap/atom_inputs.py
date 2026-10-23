@@ -26,6 +26,9 @@ import os
 import subprocess
 import sys
 import time
+from dataclasses import dataclass
+from functools import wraps
+from threading import RLock
 
 T_START = time.perf_counter()
 
@@ -35,6 +38,32 @@ from rngd_pd.swap.variants import Variant  # noqa: E402
 
 NPU = os.environ.get("RBLN_PART", "RBLN-CA22")
 PER_LAYER = ("n1", "wq", "wk", "wv", "wo", "n2", "wg", "wu", "wd")
+SUFFIXES = ("input_layernorm.weight", "self_attn.q_proj.weight",
+            "self_attn.k_proj.weight", "self_attn.v_proj.weight",
+            "self_attn.o_proj.weight", "post_attention_layernorm.weight",
+            "mlp.gate_proj.weight", "mlp.up_proj.weight", "mlp.down_proj.weight")
+
+
+def weight_names(layers):
+    return [f"model.layers.{i}.{suffix}" for i in range(layers) for suffix in SUFFIXES] + [
+        "model.norm.weight", "lm_head.weight"]
+
+
+def _serialized(method):
+    @wraps(method)
+    def call(self, *args, **kwargs):
+        with self._lock:
+            if self._closed:
+                raise RuntimeError("engine is closed")
+            return method(self, *args, **kwargs)
+    return call
+
+
+@dataclass
+class _KV:
+    tensor: object
+    generation: int
+    variant: Variant
 
 
 def _now():
@@ -165,6 +194,9 @@ class DeviceWeightDecode:
         from rngd_pd.swap.atom import Tables
         torch.set_grad_enabled(False)
         self.torch = torch
+        from .rngd import Checkpoint
+        self.ck = Checkpoint(model_dir)
+        self._lock, self._closed, self._generation = RLock(), False, 0
         self.dev = f"rbln:{device}"
         self.cache_dir = cache_dir
         t0 = _now()
@@ -185,28 +217,45 @@ class DeviceWeightDecode:
         self.active = None
         self.timings = dict(host_weights_s=t1 - t0, upload_weights_s=t2 - t1)
 
+    @_serialized
     def swap(self, v):
         """Make v active: its compiled graph (from the cache) on the resident weights."""
         t0 = _now()
         prepared = v not in self.graphs
         if prepared:
             self.graphs[v] = self.g
+        if self.active != v:
+            self._generation += 1
         self.active = v
         return dict(variant=v.name, prepared=prepared, swap_s=_now() - t0)
 
+    @_serialized
     def blank_kv(self):
         d, v = self.d, self.active
+        if v is None:
+            raise ValueError("select a variant first")
         z = lambda *s: self.torch.zeros(*s).to(self.dev)
-        return (z(d["nl"], v.B, d["NKV"], d["HD"], v.S), z(d["nl"], v.B, d["NKV"], v.S, d["HD"]))
+        return tuple(_KV(t, self._generation, v) for t in (
+            z(d["nl"], v.B, d["NKV"], d["HD"], v.S),
+            z(d["nl"], v.B, d["NKV"], v.S, d["HD"])))
 
+    @_serialized
     def step(self, toks, pos, K, V):
         torch, v = self.torch, self.active
+        if any(not isinstance(t, _KV) or t.generation != self._generation or t.variant != v
+               for t in (K, V)):
+            raise ValueError("weights or variant changed; start a fresh request")
+        if (len(toks) != v.B or len(pos) != v.B
+                or any(p < 0 or p >= v.S for p in pos)):
+            raise ValueError("tokens/positions do not fit the active variant")
         host = self.tables.step_inputs(toks, pos, v.S)
         x, cos, sin, mask, oh = (torch.from_numpy(a).to(self.dev) for a in host)
-        logits, K, V = self.graphs[v](x, K, V, cos, sin, mask, oh, *self.W)
+        logits, K, V = self.graphs[v](x, K.tensor, V.tensor, cos, sin, mask, oh, *self.W)
         lg = logits.cpu().float().numpy()
-        return [int(t) for t in np.argmax(lg, axis=-1)], K, V
+        return ([int(t) for t in np.argmax(lg, axis=-1)],
+                _KV(K, self._generation, v), _KV(V, self._generation, v))
 
+    @_serialized
     def first_step(self):
         v = self.active
         t0 = _now()
@@ -214,8 +263,13 @@ class DeviceWeightDecode:
         self.step([1] * v.B, [0] * v.B, K, V)
         return _now() - t0
 
+    @_serialized
     def generate(self, prompts, n_new):
         v = self.active
+        if (v is None or len(prompts) != v.B or not prompts[0] or n_new < 1
+                or len({len(p) for p in prompts}) != 1
+                or len(prompts[0]) + n_new - 1 > v.S):
+            raise ValueError("prompts/generation do not fit the active variant")
         P = len(prompts[0])
         t0 = _now()
         K, V = self.blank_kv()
@@ -234,6 +288,89 @@ class DeviceWeightDecode:
         ts.sort()
         self.last_step_s = ts[len(ts) // 2] if ts else None
         return outs, ttft
+
+    def load_delta(self, new_checkpoint, **options):
+        """Update only changed weights, optionally querying onggi for the ranges."""
+        from .load import load_delta
+        return load_delta(self, new_checkpoint, **options)
+
+    def _upload_weight(self, tensor):
+        return tensor.to(self.dev)
+
+    def _probe_weights(self, weights):
+        """Force lazy device uploads/layout conversion before committing inputs."""
+        v = self.active
+        if v is None:
+            raise ValueError("select and run a variant before applying a delta")
+        K, V = self.blank_kv()
+        host = self.tables.step_inputs([1] * v.B, [0] * v.B, v.S)
+        inputs = [self.torch.from_numpy(a).to(self.dev) for a in host]
+        x, cos, sin, mask, oh = inputs
+        outputs = self.graphs[v](x, K.tensor, V.tensor, cos, sin, mask, oh, *weights)
+        outputs[0].cpu()  # complete the compiled step, including deferred uploads
+        self.torch.rbln.synchronize(self.dev)
+
+    @_serialized
+    def apply_delta(self, new_checkpoint, plan):
+        """Stage changed tensors, then atomically replace their graph inputs.
+
+        Unchanged device allocations and compiled graphs stay alive. A failed
+        staging allocation leaves the active checkpoint untouched. Staging
+        needs device headroom for the changed tensors, not a second model.
+        This applies to device-input graphs, not embedded-weight .rbln files.
+        """
+        from .rngd import Checkpoint
+        from .delta import CHECKPOINT_GRAPH_KEYS
+        new = new_checkpoint if isinstance(new_checkpoint, Checkpoint) else Checkpoint(new_checkpoint)
+        old = self.ck
+        if (plan.base_dir != os.path.realpath(old.path)
+                or plan.new_dir != os.path.realpath(new.path)):
+            raise ValueError("delta plan does not describe the resident and target checkpoints")
+        if any(old.config.get(k) != new.config.get(k) for k in CHECKPOINT_GRAPH_KEYS):
+            raise ValueError("checkpoint graph/rotary configuration changed; reload required")
+        if plan.removed or set(old.where) != set(new.where):
+            raise ValueError("checkpoint tensor set changed; reload required")
+        slots = {name: i for i, name in enumerate(weight_names(self.d["nl"]))}
+        embed_name = "model.embed_tokens.weight"
+        staged = {}
+        for name in plan.tensors:
+            if name not in slots and name != embed_name:
+                raise ValueError(f"unsupported changed tensor: {name}")
+            a, b = old.get(name), new.get(name)
+            if a.shape != b.shape or a.dtype != b.dtype:
+                raise ValueError(f"tensor layout changed; reload required: {name}")
+            staged[name] = b
+        t0 = _now()
+        weights = list(self.W)
+        embed = self.tables.embed
+        uploaded = 0
+        for name, tensor in staged.items():
+            if name == embed_name:
+                embed = tensor.float().numpy()
+            else:
+                i = slots[name]
+                host = tensor.to(dtype=self.W[i].dtype)
+                weights[i] = self._upload_weight(host)
+                uploaded += host.numel() * host.element_size()
+        probe_start = _now()
+        if uploaded:
+            self._probe_weights(weights)
+        # The request lock covers planning, staging and the pointer commit.
+        self.W, self.tables.embed, self.ck = weights, embed, new
+        self._generation += 1
+        return dict(delta_s=_now() - t0, uploaded_bytes=uploaded,
+                    materialize_s=_now() - probe_start,
+                    tensors=len(plan.tensors), mode="replace",
+                    host_only=[embed_name] if embed_name in staged else [])
+
+    def close(self):
+        with self._lock:
+            self.graphs.clear()
+            self.g = self.step_fn = None
+            self.W.clear()
+            self.ck.close()
+            self.active = None
+            self._closed = True
 
 
 # --------------------------------------------------------------------- bench
