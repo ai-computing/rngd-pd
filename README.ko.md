@@ -374,7 +374,10 @@ RNGD 갱신은 1.12–2.00초(첫 토큰 1.50–2.57초), ATOM 갱신은 1.25–
 새 전체 로딩과 모두 일치했습니다. [실험 조건과 원본 결과](experiments/2026-10-23-npu-delta-load.md)에
 ATOM 초기 컴파일 비용과 디바이스 입력 디코드 제약을 함께 기록했습니다.
 
-기본 클러스터 워커는 바뀌지 않습니다. 갱신은 요청 사이에 실행하고 이전 KV를 무효화합니다.
+클러스터 워커의 `--prepared-config FILE`로 상주 RNGD·ATOM 엔진을 연결하고,
+배치가 끝나는 경계에서 준비된 B/S를 선택할 수 있습니다. 부분 갱신은 Python 제어 메서드로
+실행하며 프리필과 체크포인트 ID를 맞춰야 합니다. 자동 HTTP 갱신은 제공하지 않습니다.
+[서빙 설정·운영 제한·하드웨어 검증 항목](docs/prepared-serving.md),
 [사용법·재현 명령](docs/delta-swap.md), [기존 실측](docs/delta-load.md),
 [이전 스와핑 실험](experiments/2026-10-22-delta-swap.md)을 참고하세요.
 

@@ -18,6 +18,7 @@ from rm_core.reference import LoopbackTransport                            # noq
 
 from rngd_pd import airm                                                    # noqa: E402
 from rngd_pd.connector import transport as kv                               # noqa: E402
+from connector_support import connector_module
 
 NL, NKV, S, HD = 4, 8, 16, 128
 
@@ -30,7 +31,12 @@ def _kv(seed):
 
 def _handoff(prefill_transport, decode_transport, req_id="r1"):
     """prefill save -> transport -> decode load through the real connector, bf16 wire as in serving."""
-    from rngd_pd.connector.rngd_kv import RngdKVConnector, KVConnectorRole
+    with connector_module() as module:
+        return _handoff_with(module, prefill_transport, decode_transport, req_id)
+
+
+def _handoff_with(module, prefill_transport, decode_transport, req_id):
+    RngdKVConnector, KVConnectorRole = module.RngdKVConnector, module.KVConnectorRole
     ck, cv = _kv(0)
     pf = RngdKVConnector(KVConnectorRole.WORKER, req_id=req_id, transport=prefill_transport, n_layers=NL)
     for i in range(NL):
@@ -92,8 +98,8 @@ class SelectionTests(_Env, unittest.TestCase):
 
     def test_config_alone_selects_another_name(self):
         os.environ["AIRM_KV_TRANSPORT"] = "loopback"        # rm-core's reference transport
-        from rngd_pd.connector.rngd_kv import RngdKVConnector, KVConnectorRole
-        conn = RngdKVConnector(KVConnectorRole.WORKER, req_id="r", n_layers=NL)
+        with connector_module() as module:
+            conn = module.RngdKVConnector(module.KVConnectorRole.WORKER, req_id="r", n_layers=NL)
         self.assertIsInstance(conn.t, kv.FencedTransport)
         self.assertIsInstance(conn.t.impl, LoopbackTransport)
         dk, dv = _handoff(None, None, req_id="r3")
@@ -155,6 +161,7 @@ class SelectionTests(_Env, unittest.TestCase):
             t.pull("req/layer.0/k", timeout=1)
 
 
+@unittest.skipUnless(hasattr(os, "getuid"), "POSIX shm conformance requires os.getuid")
 class ShmTransportTests(_Env, unittest.TestCase):
     def test_conformance(self):
         t = airm.ShmTransport()

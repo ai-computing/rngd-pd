@@ -38,7 +38,7 @@ kvRelay:
 
 model: meta-llama/Llama-3.1-8B-Instruct
 seqLen: 256              # S the graphs were compiled for
-env: {}                  # extra env for every pod (name: value)
+env: {}                  # extra env for every pod; PD_MAX_REQUESTS / PD_KV_LOAD_AHEAD bound load
 
 # KV over shm needs prefill and decode to share the node's /dev/shm.
 shm:
@@ -78,7 +78,8 @@ decode:
   resources:
     limits: {rebellions.ai/ATOM: "1"}
     requests: {cpu: "8", memory: 96Gi, rebellions.ai/ATOM: "1"}
-  env: {}                # e.g. RBLN_ARTIFACT, RBLN_TABLES from the cluster override
+  env: {}                # PD_PREPARED_CONFIG=/mounted/prepared.json enables resident B/S switching
+                         # prefill.env.PD_CHECKPOINT_ID must match; see docs/prepared-serving.md
 
 gateway:
   replicas: 1

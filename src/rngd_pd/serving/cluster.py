@@ -31,13 +31,16 @@ import sys
 import threading
 import time
 import types
+import urllib.error
 import urllib.request
+from uuid import uuid4
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
 from rngd_pd.devices import resolve_chip
 from rngd_pd.paths import ARTIFACT_CACHE
+from rngd_pd.native_v4.coordinator import AdmissionError
 
 
 
@@ -52,6 +55,51 @@ STATE = {"ready": False, "detail": "starting"}
 METRICS = {"requests": 0, "prefill_ms": 0.0, "decode_ms": 0.0, "kv_bytes": 0,
            "save_ms": 0.0, "load_ms": 0.0, "tokens": 0}
 LOCK = threading.Lock()
+
+
+def _budget(value):
+    if type(value) is not int or value < 1:
+        raise ValueError("max_tokens must be a positive integer")
+    return value
+
+
+def _check_context(pos, max_new, S):
+    _budget(max_new)
+    if type(pos) is not int or pos < 1 or pos + max_new > S:
+        raise ValueError(f"prompt {pos} + max_tokens {max_new} does not fit S={S}")
+
+
+def _init_request(item):
+    _budget(item["max_new"])
+    item["ev"] = threading.Event()
+    item["out"] = item["err"] = None
+    item.setdefault("cancel", threading.Event())
+    item["_deadline"] = time.monotonic() + float(os.environ.get("PD_REQUEST_TIMEOUT", "600"))
+
+
+def _cancelled(item):
+    cancel = item.get("cancel")
+    return ((cancel is not None and cancel.is_set())
+            or time.monotonic() >= item.get("_deadline", float("inf")))
+
+
+def _wait_request(item, wake):
+    while not item["ev"].wait(0.05):
+        if _cancelled(item):
+            item["cancel"].set()
+            wake()
+    if item["err"] is not None:
+        raise item["err"]
+    return item["out"]
+
+
+def _batch_live(cur, pos, outs, budgets, items):
+    live = [i for i, limit in enumerate(budgets)
+            if len(outs[i]) < limit and not _cancelled(items[i])]
+    for i in range(len(cur)):
+        if i not in live:
+            cur[i] = pos[i] = 0       # fixed-width dummy lanes must stay inside S
+    return live
 
 
 class _CfgFromNpz:
@@ -368,7 +416,7 @@ class DecodeWorkerBase:
 
     _prefetch = None
     _prefetch_lock = threading.Lock()
-    # A prefetch holds two S-wide float32 buffers (~134 MB at S=256), so an
+    # A prefetch holds two S-wide float32 buffers (64 MiB at S=256), so an
     # entry nobody ever collects is not a small leak. Requests that die between
     # prefetch and decode leave exactly that, so the map is bounded. A live
     # entry must never be dropped, though: its job has already taken the
@@ -387,10 +435,12 @@ class DecodeWorkerBase:
                 return {"prefetch": "already running"}
             now = time.perf_counter()
             for old in [k for k, (_p, _f, t) in self._prefetch.items()
-                        if now - t > self._prefetch_ttl_s]:
+                        if now - t > self._prefetch_ttl_s and _f.done()]:
                 pool, _fut, _t0 = self._prefetch.pop(old)
                 pool.shutdown(wait=False)
-            if len(self._prefetch) >= self._prefetch_cap:
+            cap = min(self._prefetch_cap, int(os.environ.get("PD_KV_LOAD_AHEAD", "2")),
+                      int(os.environ.get("PD_MAX_REQUESTS", "32")))
+            if len(self._prefetch) >= cap:
                 return {"prefetch": "skipped (full)", "req_id": req_id}
             pool = ThreadPoolExecutor(max_workers=1)
             t0 = time.perf_counter()
@@ -434,6 +484,15 @@ class DecodeWorkerBase:
             return K, V, ms, (time.perf_counter() - t0) * 1e3, staged
         finally:
             pool.shutdown(wait=False)
+
+    def _load_batch_kv(self, items):
+        loaded = [None if _cancelled(it) else self._load_kv(it["req_id"]) for it in items]
+        if all(_cancelled(it) for it in items):
+            return None
+        source = next(entry for entry in loaded if entry is not None)
+        # Dummy lanes borrow an input buffer; stacking/importing isolates their writes.
+        return [entry if entry is not None else (source[0], source[1], 0., -1., None)
+                for entry in loaded]
 
     def _load_kv_now(self, req_id):
         RngdKVConnector, KVConnectorRole, kv_path = _conn(self.nl)
@@ -528,6 +587,7 @@ class DecodeATOM(DecodeWorkerBase):
         print(f"[decode] {STATE['detail']}", flush=True)
 
     def run(self, req_id, first, pos, max_new):
+        _check_context(pos, max_new, self.S)
         K, V, load_ms, lead_ms, _staged = self._load_kv(req_id)
         outs, ts = [first], []
         cur, p = first, pos
@@ -570,17 +630,25 @@ class _Batcher:
     def __init__(self, B, wait_ms, runner):
         self.B, self.wait, self.runner = B, wait_ms / 1e3, runner
         self.q, self.cv = [], threading.Condition()
+        self.capacity = threading.BoundedSemaphore(int(os.environ.get("PD_MAX_REQUESTS", "32")))
         threading.Thread(target=self._loop, daemon=True).start()
 
     def submit(self, item):
-        slot = {"in": item, "out": None, "err": None, "ev": threading.Event()}
+        if not self.capacity.acquire(blocking=False):
+            raise AdmissionError(429, "admission queue full")
+        try:
+            _init_request(item)
+            slot = {"in": item, "out": None, "err": None, "ev": item["ev"]}
+            with self.cv:
+                self.q.append(slot)
+                self.cv.notify()
+            return _wait_request(item, self._wake)
+        finally:
+            self.capacity.release()
+
+    def _wake(self):
         with self.cv:
-            self.q.append(slot)
             self.cv.notify()
-        slot["ev"].wait()
-        if slot["err"]:
-            raise slot["err"]
-        return slot["out"]
 
     def _loop(self):
         while True:
@@ -592,12 +660,25 @@ class _Batcher:
                     self.cv.wait(timeout=max(end - time.time(), 1e-3))
                 batch = self.q[:self.B]
                 del self.q[:len(batch)]
+            live = []
+            for slot in batch:
+                if _cancelled(slot["in"]):
+                    slot["in"]["err"] = AdmissionError(408, "request expired or cancelled")
+                    slot["ev"].set()
+                else:
+                    live.append(slot)
+            batch = live
+            if not batch:
+                continue
             try:
                 for slot, out in zip(batch, self.runner([s["in"] for s in batch])):
-                    slot["out"] = out
+                    if _cancelled(slot["in"]):
+                        slot["in"]["err"] = AdmissionError(408, "request expired or cancelled")
+                    else:
+                        slot["in"]["out"] = out
             except Exception as e:                     # one bad request fails its batch
                 for slot in batch:
-                    slot["err"] = e
+                    slot["in"]["err"] = e
             for slot in batch:
                 slot["ev"].set()
 
@@ -610,8 +691,13 @@ class _SoloBatchMixin:
         Ks, Vs, firsts = [], [], []
         t0 = time.perf_counter()
         with DEVICE:
-            for it in items:                       # prefills serialise on the card
-                Kp, Vp, nxt = self.pre.prefill_device(it["tokens"])
+            produced = [None if _cancelled(it) else self.pre.prefill_device(it["tokens"])
+                        for it in items]
+            if all(_cancelled(it) for it in items):
+                return [{} for _ in items]
+            source = next(p for p in produced if p is not None)
+            for result in produced:
+                Kp, Vp, nxt = result or source
                 Ks.append(Kp); Vs.append(Vp); firsts.append(nxt)
             prefill_ms = (time.perf_counter() - t0) * 1e3
             pos = [len(it["tokens"]) for it in items]
@@ -620,13 +706,17 @@ class _SoloBatchMixin:
             cur += [cur[-1]] * (B - n)
             Kd, Vd = self.dec.adopt_kv_device(list(Ks), list(Vs))
             outs = [[c] for c in cur]
+            budgets = [it["max_new"] for it in items] + [0] * (B - n)
             ts = []
             t1 = time.perf_counter()
             for _ in range(max(it["max_new"] for it in items) - 1):
+                live = _batch_live(cur, pos, outs, budgets, items)
+                if not live:
+                    break
                 t2 = time.perf_counter()
                 cur, Kd, Vd = self.dec.step(cur, pos, Kd, Vd)
                 ts.append((time.perf_counter() - t2) * 1e3)
-                for b in range(B):
+                for b in _batch_live(cur, pos, outs, budgets, items):
                     outs[b].append(cur[b])
                     pos[b] += 1
             decode_ms = (time.perf_counter() - t1) * 1e3
@@ -775,12 +865,18 @@ class SoloWorker(_SoloBatchMixin):
                         (time.perf_counter() - t0) * 1e3)
         return _S()
 
-    def run(self, tokens, max_new, on_token=None):
+    def run(self, tokens, max_new, on_token=None, cancel=None):
         """Generate max_new tokens; on_token(t), if given, sees each one as it
         is produced (the continuous scheduler and the B=1 path stream; the
         static batcher hands them all over when its batch ends)."""
+        if hasattr(self, "S"):
+            _check_context(len(tokens), max_new, self.S)
+        else:
+            _budget(max_new)
         if self.batcher:
             item = {"tokens": tokens, "max_new": max_new}
+            if cancel is not None:
+                item["cancel"] = cancel
             if isinstance(self.batcher, _ContinuousScheduler):
                 item["on_token"] = on_token
             out = self.batcher.submit(item)
@@ -798,6 +894,8 @@ class SoloWorker(_SoloBatchMixin):
             cur, p = nxt, len(tokens)
             t1 = time.perf_counter()
             for _ in range(max_new - 1):
+                if cancel is not None and cancel.is_set():
+                    raise AdmissionError(408, "request cancelled")
                 t2 = time.perf_counter()
                 cur, Kp, Vp = self.sess.step(cur, p, Kp, Vp)
                 ts.append((time.perf_counter() - t2) * 1e3)
@@ -863,6 +961,10 @@ class _ContinuousScheduler:
         self.produce_on_device = produce_on_device
         self._loader = None if produce_on_device else ThreadPoolExecutor(
             max_workers=int(os.environ.get("PD_KV_LOADERS", "2")))
+        self.load_ahead = int(os.environ.get("PD_KV_LOAD_AHEAD", "2"))
+        if self.load_ahead < 1:
+            raise ValueError("PD_KV_LOAD_AHEAD must be positive")
+        self.capacity = threading.BoundedSemaphore(int(os.environ.get("PD_MAX_REQUESTS", "32")))
         # The object that owns `produce`; if it can stage a prefill a group at
         # a time it exposes begin_produce, and the loop uses that instead.
         self.produce_owner = produce_owner
@@ -907,19 +1009,16 @@ class _ContinuousScheduler:
         threading.Thread(target=self._loop, daemon=True).start()
 
     def submit(self, item):
-        item["ev"] = threading.Event()
-        item["out"] = item["err"] = None
-        if self._loader is not None:
-            item["_fut"] = self._loader.submit(self.produce, item)
-            # wake the loop when the cache is in, not only when the request is
-            item["_fut"].add_done_callback(lambda _f: self._wake())
-        with self.cv:
-            self.pending.append(item)
-            self.cv.notify()
-        item["ev"].wait()
-        if item["err"]:
-            raise item["err"]
-        return item["out"]
+        if not self.capacity.acquire(blocking=False):
+            raise AdmissionError(429, "admission queue full")
+        try:
+            _init_request(item)
+            with self.cv:
+                self.pending.append(item)
+                self.cv.notify()
+            return _wait_request(item, self._wake)
+        finally:
+            self.capacity.release()
 
     def _active(self):
         return [s for s in self.slots if s]
@@ -934,21 +1033,41 @@ class _ContinuousScheduler:
         Called with self.cv held. On-device producers are always ready; a
         background load is ready once its future is done.
         """
-        if self._loader is None:
-            return len(self.pending)
         keep = collections.deque()
         ready = []
         for item in self.pending:
-            fut = item["_fut"]
-            if not fut.done():
+            fut = item.get("_fut")
+            if _cancelled(item):
+                # A running loader still owns its buffers until it returns.
+                if fut is not None and not fut.done() and not fut.cancel():
+                    keep.append(item)
+                    continue
+                item.pop("_fut", None)
+                item.pop("_produced", None)
+                item["err"] = AdmissionError(408, "request expired or cancelled")
+                item["ev"].set()
+            elif self._loader is None or "_produced" in item:
+                ready.append(item)
+            elif fut is None or not fut.done():
                 keep.append(item)
             elif fut.exception() is not None:
                 item["err"] = fut.exception()      # this request only
+                item.pop("_fut")
                 item["ev"].set()
             else:
                 item["_produced"] = fut.result()
+                item.pop("_fut")
                 ready.append(item)
         self.pending = collections.deque(ready + list(keep))
+        if self._loader is not None:
+            loaded = sum("_fut" in it or "_produced" in it for it in self.pending)
+            for item in self.pending:
+                if loaded >= self.load_ahead:
+                    break
+                if "_fut" not in item and "_produced" not in item and not _cancelled(item):
+                    item["_fut"] = self._loader.submit(self.produce, item)
+                    item["_fut"].add_done_callback(lambda _f: self._wake())
+                    loaded += 1
         return len(ready)
 
     def _admit(self, taking, Kd, Vd):
@@ -966,6 +1085,11 @@ class _ContinuousScheduler:
         # cache in flight instead of all of them.
         ms = 0.0
         for idx, item in taking:
+            if _cancelled(item):
+                item["err"] = AdmissionError(408, "request expired or cancelled")
+                item["ev"].set()
+                item.pop("_produced", None)
+                continue
             K, V, first, pos, aux_ms = item.pop("_produced", None) or self.produce(item)
             item["first"], item["pos"] = first, pos
             t0 = time.perf_counter()          # the write only, not the source
@@ -981,6 +1105,10 @@ class _ContinuousScheduler:
 
     def _seat(self, idx, item, load_ms):
         """Put an admitted stream into its lane."""
+        if _cancelled(item):
+            item["err"] = AdmissionError(408, "request expired or cancelled")
+            item["ev"].set()
+            return
         self.slots[idx] = {"item": item, "cur": item["first"], "pos": item["pos"],
                            "pos0": item["pos"],
                            # Counters are cumulative since the pod started,
@@ -996,6 +1124,9 @@ class _ContinuousScheduler:
                            "outs": [item["first"]], "load_ms": load_ms,
                            "steps": [], "t0": time.perf_counter()}
         _emit(item, item["first"])
+        if item["max_new"] == 1:
+            s, self.slots[idx] = self.slots[idx], None
+            self._finish(s)
 
     def _finish(self, s):
         st = sorted(s["steps"])
@@ -1055,6 +1186,11 @@ class _ContinuousScheduler:
                     Kd, Vd = self.eng.blank_kv()
                 tell = getattr(self.eng, "set_live", None)    # TieredDecode
                 with DEVICE:
+                    for idx, s in enumerate(self.slots):
+                        if s is not None and _cancelled(s["item"]):
+                            s["item"]["err"] = AdmissionError(408, "request expired or cancelled")
+                            s["item"]["ev"].set()
+                            self.slots[idx] = None
                     if tell:
                         tell([i for i, s in enumerate(self.slots) if s])
                     if self._staging is not None:
@@ -1097,6 +1233,11 @@ class _ContinuousScheduler:
                 done = []
                 for i in live:
                     s = self.slots[i]
+                    if _cancelled(s["item"]):
+                        s["item"]["err"] = AdmissionError(408, "request expired or cancelled")
+                        s["item"]["ev"].set()
+                        self.slots[i] = None
+                        continue
                     s["steps"].append(dt)
                     s["outs"].append(nxt[i])
                     _emit(s["item"], nxt[i])
@@ -1226,14 +1367,17 @@ class DecodeATOMBatch(DecodeWorkerBase):
         return K, V, item["first"], item["pos"], load_ms
 
     def run(self, req_id, first, pos, max_new):
+        _check_context(pos, max_new, self.S)
         return self.batcher.submit({"req_id": req_id, "first": first,
                                     "pos": pos, "max_new": max_new})
 
     def _run_batch(self, items):
         B, S, n = self.B, self.S, len(items)
         Ks, Vs, loads = [], [], []
-        for it in items:
-            K, V, load_ms, _lead, _staged = self._load_kv(it["req_id"])
+        loaded = self._load_batch_kv(items)
+        if loaded is None:
+            return [{} for _ in items]
+        for K, V, load_ms, _lead, _staged in loaded:
             Ks.append(K); Vs.append(V); loads.append(load_ms)
         while len(Ks) < B:                              # pad the unused lanes
             Ks.append(Ks[-1]); Vs.append(Vs[-1])
@@ -1245,10 +1389,14 @@ class DecodeATOMBatch(DecodeWorkerBase):
         cur += [cur[-1]] * (B - n)
         max_new = max(it["max_new"] for it in items)
         outs = [[c] for c in cur]
+        budgets = [it["max_new"] for it in items] + [0] * (B - n)
         ts = []
         t0 = time.perf_counter()
         with DEVICE:
             for _ in range(max_new - 1):
+                live = _batch_live(cur, pos, outs, budgets, items)
+                if not live:
+                    break
                 pa = np.asarray(pos)
                 t1 = time.perf_counter()
                 out = self.rt.run(self.embed[cur], Kb, Vb, self._cos[pa],
@@ -1256,7 +1404,7 @@ class DecodeATOMBatch(DecodeWorkerBase):
                 ts.append((time.perf_counter() - t1) * 1e3)
                 k, v = np.asarray(out[1]), np.asarray(out[2])   # [nl,B,NKV,HD]
                 lg = np.asarray(out[0])                         # [B,V] on-card
-                for b in range(B):
+                for b in _batch_live(cur, pos, outs, budgets, items):
                     Kb[:, b, :, :, pos[b]] = k[:, b]      # [nl,B,NKV,HD,S]
                     Vb[:, b, :, pos[b], :] = v[:, b]      # [nl,B,NKV,S,HD]
                     cur[b] = int(np.argmax(lg[b]))
@@ -1334,6 +1482,7 @@ class DecodeRNGDBatch(DecodeWorkerBase):
         return K, V, item["first"], item["pos"], load_ms
 
     def run(self, req_id, first, pos, max_new):
+        _check_context(pos, max_new, self.S)
         return self.batcher.submit({"req_id": req_id, "first": first,
                                     "pos": pos, "max_new": max_new})
 
@@ -1346,8 +1495,10 @@ class DecodeRNGDBatch(DecodeWorkerBase):
         # only way to see what the handoff actually costs on the critical path.
         t_wait = time.perf_counter()
         staged_n = 0
-        for it in items:
-            K, V, load_ms, lead, staged = self._load_kv(it["req_id"])
+        loaded = self._load_batch_kv(items)
+        if loaded is None:
+            return [{} for _ in items]
+        for K, V, load_ms, lead, staged in loaded:
             if staged is not None:
                 K, V = staged                      # already bf16 host tensors
                 staged_n += 1
@@ -1359,6 +1510,7 @@ class DecodeRNGDBatch(DecodeWorkerBase):
         cur += [cur[-1]] * (B - n)
         max_new = max(it["max_new"] for it in items)
         outs = [[c] for c in cur]
+        budgets = [it["max_new"] for it in items] + [0] * (B - n)
         ts = []
         # Stack and cast before taking the lock. Both are host work and both
         # are bigger than the transfer they feed, so holding the card through
@@ -1372,10 +1524,13 @@ class DecodeRNGDBatch(DecodeWorkerBase):
             Kd, Vd = self.eng.upload_prepared_kv(prepared)
             upload_ms = (time.perf_counter() - t_up) * 1e3
             for _ in range(max_new - 1):
+                live = _batch_live(cur, pos, outs, budgets, items)
+                if not live:
+                    break
                 t1 = time.perf_counter()
                 cur, Kd, Vd = self.eng.step(cur, pos, Kd, Vd)
                 ts.append((time.perf_counter() - t1) * 1e3)
-                for b in range(B):
+                for b in _batch_live(cur, pos, outs, budgets, items):
                     outs[b].append(cur[b])
                     pos[b] += 1
         wall = time.perf_counter() - t0
@@ -1426,6 +1581,7 @@ class DecodeRNGD(DecodeWorkerBase):
             return self.sess.import_kv(K, V)
 
     def run(self, req_id, first, pos, max_new):
+        _check_context(pos, max_new, self.S)
         K, V, load_ms, lead_ms, staged = self._load_kv(req_id)
         # The upload was never counted anywhere: not in load_ms, which stops
         # when the host arrays are ready, and invisible inside decode_ms. It is
@@ -1454,6 +1610,111 @@ class DecodeRNGD(DecodeWorkerBase):
 # --------------------------------------------------------------------------
 # gateway
 # --------------------------------------------------------------------------
+class PreparedDecodeWorker(DecodeWorkerBase):
+    """Batch-boundary B/S selection over one resident checkpoint."""
+
+    def __init__(self, prepared, S, wait_ms=60):
+        if prepared.max_S > S:
+            raise ValueError("prepared context exceeds the wire context")
+        self.prepared = prepared
+        self.S, self.B, self.nl = S, prepared.B, prepared.nl
+        self.NKV, self.HD = prepared.nkv, prepared.hd
+        self._control = threading.RLock()
+        self._requests = 0
+        self.batcher = _Batcher(self.B, wait_ms, self._run_batch)
+        STATE.update(ready=True, detail=f"prepared {prepared.kind} "
+                     f"{[v.name for v in prepared.variants]} checkpoint={prepared.checkpoint_id}")
+
+    def prefetch(self, req_id):
+        return {"prefetch": "skipped (load on admission)", "req_id": req_id}
+
+    def run(self, req_id, first, pos, max_new, checkpoint_id=None, cancel=None):
+        _check_context(pos, max_new, self.prepared.max_S)
+        if type(first) is not int or first < 0:
+            raise ValueError("first token must be a nonnegative integer")
+        with self._control:
+            if checkpoint_id != self.prepared.checkpoint_id:
+                raise AdmissionError(409, "prefill checkpoint does not match resident decode weights")
+            self._requests += 1
+        try:
+            item = dict(req_id=req_id, first=first, pos=pos, max_new=max_new)
+            if cancel is not None:
+                item["cancel"] = cancel
+            return self.batcher.submit(item)
+        finally:
+            with self._control:
+                self._requests -= 1
+
+    def load_delta(self, new_checkpoint, checkpoint_id, **options):
+        """Control-plane call after draining BOTH producers and consumers.
+
+        No HTTP mutation endpoint: the caller must publish matching prefill
+        weights and supply a new immutable checkpoint ID before new traffic.
+        """
+        if not isinstance(checkpoint_id, str) or not checkpoint_id.strip():
+            raise ValueError("a new immutable checkpoint_id is required")
+        with self._control:
+            if self._requests:
+                raise AdmissionError(409, "drain admitted and queued requests before updating weights")
+            if checkpoint_id == self.prepared.checkpoint_id:
+                raise ValueError("a weight update requires a new checkpoint_id")
+            update = getattr(self.prepared.engine, "load_delta", None)
+            if update is None:
+                raise ValueError("embedded ATOM weights require a newly prepared session")
+            with DEVICE:
+                try:
+                    result = update(new_checkpoint, **options)
+                except Exception:
+                    if getattr(self.prepared.engine, "_failed", False):
+                        STATE.update(ready=False, detail="delta rollback failed; restart required")
+                    raise
+                finally:
+                    self.prepared.discard_kv()
+                self.prepared.checkpoint_id = checkpoint_id
+            return result
+
+    def _run_batch(self, items):
+        v = self.prepared.choose(items)
+        caches = self._load_batch_kv(items)
+        if caches is None:
+            return [{} for _ in items]
+        n = len(items)
+        cur = [it["first"] for it in items] + [0] * (v.B - n)
+        pos = [it["pos"] for it in items] + [0] * (v.B - n)
+        outs = [[t] for t in cur]
+        budgets = [it["max_new"] for it in items] + [0] * (v.B - n)
+        times = []
+        start = time.perf_counter()
+        with DEVICE:
+            try:
+                swap = self.prepared.activate(v)
+                for i, (K, V, _load, _lead, _staged) in enumerate(caches):
+                    self.prepared.write_slot(i, K, V)
+                for _ in range(max(budgets) - 1):
+                    live = _batch_live(cur, pos, outs, budgets, items)
+                    if not live:
+                        break
+                    t0 = time.perf_counter()
+                    cur = self.prepared.step(cur, pos)
+                    times.append((time.perf_counter() - t0) * 1e3)
+                    for i in _batch_live(cur, pos, outs, budgets, items):
+                        outs[i].append(cur[i])
+                        pos[i] += 1
+            finally:
+                self.prepared.discard_kv()
+        wall = (time.perf_counter() - start) * 1e3
+        tpot = sorted(times)[len(times) // 2] if times else 0.
+        with LOCK:
+            METRICS["decode_ms"] += wall
+            METRICS["tokens"] += sum(len(o) for o in outs[:n])
+        return [dict(tokens=outs[i], load_ms=round(caches[i][2], 1),
+                     lead_ms=round(caches[i][3], 1), tpot_ms=round(tpot, 1),
+                     decode_ms=round(wall, 1), batch=n, batch_width=v.B,
+                     variant=v.name, swap_ms=round(swap.get("swap_s", 0.) * 1e3, 3),
+                     checkpoint_id=self.prepared.checkpoint_id, sched="prepared")
+                for i in range(n)]
+
+
 class Gateway:
     """Fronts every prefill/decode pairing behind one llm-d route.
 
@@ -1512,15 +1773,13 @@ class Gateway:
         prompt = body.get("prompt", "")
         if not prompt and body.get("messages"):          # chat-style callers
             prompt = "\n".join(m.get("content", "") for m in body["messages"])
-        max_new = int(body.get("max_tokens", 8))
-        toks = self.tk.encode(prompt, add_special_tokens=False)[:self.S - max_new - 1]
+        max_new = _budget(body.get("max_tokens", 8))
+        toks = self.tk.encode(prompt, add_special_tokens=False)
         if not toks:
             raise ValueError(f"empty prompt (body keys: {sorted(body)})")
+        _check_context(len(toks), max_new, self.S)
         prefill, decode, cfg_name = self._route(body)
-        with self.seq_lock:                              # concurrent callers
-            self.seq += 1
-            seq = self.seq
-        req_id = f"pd-{int(time.time()*1000)}-{seq}"
+        req_id = f"pd-{uuid4().hex}"
         t0 = time.perf_counter()
         if prefill is None:                              # one card, one call
             sl = _post(f"{decode}/solo", {"tokens": toks, "max_new": max_new})
@@ -1562,7 +1821,8 @@ class Gateway:
         pf = _post(f"{prefill}/prefill", {"req_id": req_id, "tokens": toks})
         ttft_ms = (time.perf_counter() - t0) * 1e3
         dc = _post(f"{decode}/decode", {"req_id": req_id, "first": pf["next"],
-                                        "pos": pf["pos"], "max_new": max_new})
+                                        "pos": pf["pos"], "max_new": max_new,
+                                        "checkpoint_id": pf.get("checkpoint_id")})
         wall_ms = (time.perf_counter() - t0) * 1e3
         with LOCK:
             METRICS["requests"] += 1
@@ -1593,6 +1853,8 @@ class Gateway:
                        "batch": dc.get("batch", 1),
                        "batch_width": dc.get("batch_width", 1),
                        "sched": dc.get("sched", "static"),
+                       "variant": dc.get("variant"), "swap_ms": dc.get("swap_ms"),
+                       "checkpoint_id": dc.get("checkpoint_id"),
                        "admit_ms": dc.get("admit_ms"),
                        "occupancy": dc.get("occupancy"),
                        "wall_ms": round(wall_ms, 1)}}
@@ -1632,14 +1894,12 @@ class SoloOpenAI:
         if body.get("temperature", 0) not in (0, 0.0) or body.get("n", 1) != 1:
             raise ValueError("only greedy decoding with n=1 is supported")
         toks = self._prompt(body)
-        max_new = int(body.get("max_tokens") or 16)
+        max_new = _budget(body.get("max_tokens", 16))
         widest = max(self.w.pre.buckets)
         if max_new < 1 or len(toks) > widest or len(toks) + max_new > self.S:
             raise ValueError(f"prompt {len(toks)} + max_tokens {max_new} does not fit "
                              f"(widest prefill bucket {widest}, context S={self.S})")
-        with self.lock:
-            self.seq += 1
-            rid = f"cmpl-solo-{int(time.time() * 1000)}-{self.seq}"
+        rid = f"cmpl-solo-{uuid4().hex}"
         created = int(time.time())
         usage = {"prompt_tokens": len(toks), "completion_tokens": max_new,
                  "total_tokens": len(toks) + max_new}
@@ -1658,14 +1918,18 @@ class SoloOpenAI:
         import queue
         q = queue.Queue()
         done = object()
+        cancel = threading.Event()
 
         def work():
             try:
-                self.w.run(toks, max_new, on_token=q.put_nowait)
+                self.w.run(toks, max_new, on_token=q.put_nowait, cancel=cancel)
                 q.put_nowait(done)
             except Exception as e:                 # surfaces in the stream
                 q.put_nowait(e)
         threading.Thread(target=work, daemon=True).start()
+        first = q.get()             # admission failures must precede SSE's HTTP 200
+        if isinstance(first, Exception):
+            raise first
 
         def chunk(text, finish, tok=None):
             c = {"id": rid, "object": "text_completion", "created": created,
@@ -1676,12 +1940,10 @@ class SoloOpenAI:
                 c["token_ids"] = [tok]
             return "data: " + json.dumps(c) + "\n\n"
 
-        def gen():
+        def events():
             ids, sent = [], ""
-            while True:
-                v = q.get()
-                if v is done:
-                    break
+            v = first
+            while v is not done:
                 if isinstance(v, Exception):
                     yield "data: " + json.dumps({"error": {"message": repr(v)}}) + "\n\n"
                     return
@@ -1692,6 +1954,7 @@ class SoloOpenAI:
                 if text.startswith(sent):
                     delta, sent = text[len(sent):], text
                 yield chunk(delta, None, int(v))
+                v = q.get()
             text = self.tk.decode(ids, skip_special_tokens=True)
             yield chunk(text[len(sent):] if text.startswith(sent) else "", "length")
             if include_usage:
@@ -1699,22 +1962,37 @@ class SoloOpenAI:
                      "model": self.model, "choices": [], "usage": usage}
                 yield "data: " + json.dumps(u) + "\n\n"
             yield "data: [DONE]\n\n"
+        def gen():
+            try:
+                yield from events()
+            finally:
+                cancel.set()
         return gen()
 
 
 def _post(url, obj, timeout=600):
     req = urllib.request.Request(url, data=json.dumps(obj).encode(),
                                  headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read())
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode("utf-8", errors="replace")
+        raise AdmissionError(e.code, f"worker refused request: {detail}") from e
 
 
 # --------------------------------------------------------------------------
 # HTTP plumbing
 # --------------------------------------------------------------------------
 def make_handler(routes):
+    admission = threading.BoundedSemaphore(int(os.environ.get("PD_MAX_REQUESTS", "32")))
+    max_body = int(os.environ.get("PD_HTTP_MAX_BODY_BYTES", str(1 << 20)))
+    body_timeout = float(os.environ.get("PD_HTTP_BODY_TIMEOUT", "15"))
+    if max_body < 1 or not 0 < body_timeout < float("inf"):
+        raise ValueError("HTTP body limits must be positive and finite")
     class H(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
+        timeout = body_timeout
         # A token stream is one small write per token. With Nagle on, each
         # write after the first waits for the client's delayed ACK, which
         # added 25-30 ms to every token over HTTP (#14, phase 2).
@@ -1733,18 +2011,24 @@ def make_handler(routes):
 
         def _stream(self, chunks):
             """Server-sent events, one write per chunk, closed at the end."""
-            self.send_response(200)
-            self.send_header("Content-Type", "text/event-stream")
-            self.send_header("Cache-Control", "no-cache")
-            self.send_header("Connection", "close")
-            self.end_headers()
-            self.close_connection = True
             try:
+                first = next(chunks, None)
+                self.send_response(200)
+                self.send_header("Content-Type", "text/event-stream")
+                self.send_header("Cache-Control", "no-cache")
+                self.send_header("Connection", "close")
+                self.end_headers()
+                self.close_connection = True
+                if first is not None:
+                    self.wfile.write(first.encode())
+                    self.wfile.flush()
                 for c in chunks:
                     self.wfile.write(c.encode())
                     self.wfile.flush()
-            except (BrokenPipeError, ConnectionResetError):
+            except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
                 pass                               # the client went away
+            finally:
+                chunks.close()
 
         def do_GET(self):
             if self.path.rstrip("/") in ("/health", "/healthz"):
@@ -1758,22 +2042,92 @@ def make_handler(routes):
 
         def _read_body(self):
             """Envoy forwards chunked, so Content-Length alone loses the body."""
-            if self.headers.get("Transfer-Encoding", "").lower() == "chunked":
-                out = []
-                while True:
-                    size = int(self.rfile.readline().split(b";")[0].strip() or b"0", 16)
-                    if size == 0:
-                        self.rfile.readline()
-                        break
-                    out.append(self.rfile.read(size))
-                    self.rfile.readline()
-                return b"".join(out)
-            return self.rfile.read(int(self.headers.get("Content-Length", 0)))
+            deadline = time.monotonic() + body_timeout
+            previous_timeout = self.connection.gettimeout()
+
+            def exact(size):
+                parts, remaining = [], size
+                while remaining:
+                    left = deadline - time.monotonic()
+                    if left <= 0:
+                        raise AdmissionError(408, "HTTP body deadline exceeded")
+                    self.connection.settimeout(left)
+                    try:
+                        part = self.rfile.read1(remaining)
+                    except TimeoutError as e:
+                        raise AdmissionError(408, "HTTP body deadline exceeded") from e
+                    if not part:
+                        raise ValueError("incomplete HTTP body")
+                    parts.append(part)
+                    remaining -= len(part)
+                return b"".join(parts)
+
+            def line():
+                value = bytearray()
+                while len(value) < 8192:
+                    value += exact(1)
+                    if value.endswith(b"\r\n"):
+                        return bytes(value[:-2])
+                raise ValueError("HTTP chunk header is too long")
+
+            try:
+                lengths = self.headers.get_all("Content-Length", [])
+                encoding = self.headers.get("Transfer-Encoding", "").strip().lower()
+                if len(lengths) > 1 or (encoding and lengths):
+                    raise ValueError("ambiguous HTTP body length")
+                if encoding:
+                    if encoding != "chunked":
+                        raise ValueError("unsupported transfer encoding")
+                    out, total = [], 0
+                    while True:
+                        raw = line().split(b";", 1)[0].strip()
+                        if not raw or any(c not in b"0123456789abcdefABCDEF" for c in raw):
+                            raise ValueError("invalid HTTP chunk size")
+                        size = int(raw, 16)
+                        if total + size > max_body:
+                            raise AdmissionError(413, "HTTP body exceeds size limit")
+                        if size == 0:
+                            trailer_bytes = 0
+                            while True:
+                                trailer = line()
+                                trailer_bytes += len(trailer) + 2
+                                if trailer_bytes > 8192:
+                                    raise ValueError("HTTP trailers exceed size limit")
+                                if not trailer:
+                                    return b"".join(out)
+                        out.append(exact(size))
+                        total += size
+                        if exact(2) != b"\r\n":
+                            raise ValueError("invalid HTTP chunk terminator")
+                raw = lengths[0].strip() if lengths else "0"
+                if not raw.isascii() or not raw.isdigit():
+                    raise ValueError("invalid Content-Length")
+                size = int(raw)
+                if size > max_body:
+                    raise AdmissionError(413, "HTTP body exceeds size limit")
+                return exact(size)
+            finally:
+                self.connection.settimeout(previous_timeout)
 
         def do_POST(self):
+            if not admission.acquire(blocking=False):
+                self.close_connection = True   # unread body cannot become another request
+                return self._send(429, {"error": {"message": "admission queue full",
+                                                  "type": "admission_error"}})
+            try:
+                return self._handle_post()
+            finally:
+                admission.release()
+
+        def _handle_post(self):
             try:
                 body = json.loads(self._read_body() or b"{}")
+            except AdmissionError as e:
+                self.close_connection = True
+                return self._send(e.status, {"error": {"message": str(e),
+                                                       "type": "invalid_request_error"}})
             except Exception as e:
+                self.close_connection = True
                 return self._send(400, {"error": str(e)})
             path = self.path.rstrip("/")
             fn = routes.get(path)
@@ -1786,6 +2140,9 @@ def make_handler(routes):
                 if isinstance(out, types.GeneratorType):
                     return self._stream(out)
                 return self._send(200, out)
+            except AdmissionError as e:
+                return self._send(e.status, {"error": {"message": str(e),
+                                                       "type": "admission_error"}})
             except ValueError as e:                # a request the server refuses
                 return self._send(400, {"error": {"message": str(e),
                                                   "type": "invalid_request_error"}})
@@ -1824,6 +2181,8 @@ def main():
     ap.add_argument("--decode", default="http://127.0.0.1:8102")
     ap.add_argument("--targets-file", default="",
                     help="JSON map: model name -> {prefill, decode|{B: url}}")
+    ap.add_argument("--prepared-config", default=os.environ.get("PD_PREPARED_CONFIG", ""),
+                    help="decode: resident checkpoint and precompiled B/S variants JSON")
     a = ap.parse_args()
 
     routes = {}
@@ -1849,9 +2208,26 @@ def main():
             w = PrefillATOM(a.S, a.C)
         else:
             w = PrefillWorker(a.chip, a.S)
-        routes["/prefill"] = lambda b: w.run(b["req_id"], b["tokens"])
+        def prefill(body):
+            tokens = body["tokens"]
+            if (not isinstance(tokens, list) or not tokens or len(tokens) > a.S
+                    or any(type(t) is not int or t < 0 for t in tokens)):
+                raise ValueError("invalid prompt tokens or context exceeded")
+            out = w.run(body["req_id"], tokens)
+            out["checkpoint_id"] = os.environ.get("PD_CHECKPOINT_ID", MODEL)
+            return out
+        routes["/prefill"] = prefill
     elif a.role == "decode":
-        if a.backend == "atom":
+        if a.prepared_config:
+            if a.sched != "static":
+                raise ValueError("prepared B/S switching requires static request boundaries")
+            from rngd_pd.serving.prepared import build_prepared
+            prepared = build_prepared(a.prepared_config, a.S,
+                                       resolve_chip(a.chip) if a.backend != "atom" else 0)
+            if (a.backend == "atom") != (prepared.kind != "rngd"):
+                raise ValueError("prepared engine does not match --backend")
+            w = PreparedDecodeWorker(prepared, a.S, a.batch_wait)
+        elif a.backend == "atom":
             # the batch artifact is what decides: with one present every width
             # (including B=1) goes through the same batched graph, so the sweep
             # compares like with like.
@@ -1863,8 +2239,15 @@ def main():
                                 a.sched, a.admit_min)
         else:
             w = DecodeRNGD(a.chip, a.S)
-        routes["/decode"] = lambda b: w.run(b["req_id"], b["first"], b["pos"],
-                                            b.get("max_new", 8))
+        def decode(body):
+            args = (body["req_id"], body["first"], body["pos"], body.get("max_new", 8))
+            if isinstance(w, PreparedDecodeWorker):
+                return w.run(*args, checkpoint_id=body.get("checkpoint_id"))
+            expected = os.environ.get("PD_CHECKPOINT_ID")
+            if expected is not None and body.get("checkpoint_id") != expected:
+                raise AdmissionError(409, "prefill checkpoint does not match decode")
+            return w.run(*args)
+        routes["/decode"] = decode
         routes["/prefetch"] = lambda b: w.prefetch(b["req_id"])
     elif a.role == "solo":
         w = SoloWorker(a.chip, a.S, a.C, a.group, a.B, a.batch_wait,

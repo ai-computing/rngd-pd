@@ -40,6 +40,7 @@ def change(pair, names):
 def engine(base):
     e = DeviceWeightDecode.__new__(DeviceWeightDecode)
     e._lock, e._closed, e._generation = RLock(), False, 0
+    e._kv_owner = object()
     e.ck = Checkpoint(base)
     e.torch, e.dev, e.d = torch, "cpu", {"nl": 1}
     e.W = [e.ck.get(n).to(torch.float32 if "norm" in n else torch.float16)
@@ -113,7 +114,7 @@ def test_local_load_delta_and_stale_kv_rejection(pair):
     base, new, _ = pair
     change(pair, ["model.norm.weight"])
     e = engine(base)
-    old = _KV(torch.zeros(1), e._generation, e.active)
+    old = _KV(torch.zeros(1), e._generation, e.active, e._kv_owner)
     result = e.load_delta(new)
     assert result["source"] == "local" and result["plan"]["tensors"] == 1
     with pytest.raises(ValueError, match="fresh request"):

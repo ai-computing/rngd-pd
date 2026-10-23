@@ -1,6 +1,6 @@
 # NPU-free tests on every push to main and every pull request.
-# The NPU stacks (furiosa, rebellions, vllm) cannot be installed here; tests that
-# need them run on the NPU node (README, Quick start).
+# Vendor SDK integration runs separately on NPU nodes. Connector unit tests
+# isolate only the vLLM import boundary when vLLM is absent.
 name: ci
 on:
   push:
@@ -18,9 +18,7 @@ jobs:
         run: |
           python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
           python -m pip install numpy pytest pyzmq httpx fastapi uvicorn transformers safetensors
+          python -m pip install -e .
       - name: NPU-free tests
         run: |
-          PYTHONPATH=src python -m pytest -q tests/test_devices.py tests/native_v4 \
-            tests/test_continuous_backlog.py tests/test_solo_openai.py tests/test_admission.py \
-            tests/test_decode_tiers.py \
-            tests/swap
+          python -m pytest -q tests

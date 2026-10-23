@@ -124,6 +124,9 @@ class SwappableAtom:
                 self._loaded[name] = future.result()  # propagate a failed warm load; do not retry
         info = self.prepare(variant, name)
         with self._lock:
+            self._resolve(variant, name)
+            if name not in self._loaded:
+                raise RuntimeError(f"bundle {name!r} was released before activation")
             same = name == self.active_bundle
             strategy = "shared-session" if same else (
                 "warm-pool" if ready or background_ready else "full-load")

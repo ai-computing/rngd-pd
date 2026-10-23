@@ -13,9 +13,11 @@ and switching to RDMA changes no code. Each side owns one pinned arena registere
              its own arena (one-sided: RDMA READ on verbs), copy them out, check the CRC; the READ's
              notification tells prefill to free its slot
 
-Only descriptors (a few KB) cross the TCP store; the KV itself moves over UCX. A slot nobody reads
-within AIRM_KV_TCP_TTL_S (900 s) is freed; a READ after that fails its CRC instead of returning
-stale bytes. Nothing falls back to another path: no NIXL, no UCX, or a failed READ raises.
+Only descriptors (a few KB) cross the TCP store; the KV itself moves over UCX. An advertised TX
+slot is held until its READ completion notification, even after the descriptor store's TTL or a
+lost publication ACK. Wall time cannot prove a remote READ stopped. Abandoned slots consume the
+finite arena and prevent graceful close; recovery requires process teardown until an SDK-proven
+drain/cancel path exists. Nothing falls back: no NIXL, no UCX, or a failed READ raises.
 
 Environment: AIRM_KV_UCX_POOL_MB (arena per side, 1024), AIRM_KV_UCX_XFER_TIMEOUT_S (60),
 AIRM_KV_TCP_CRC (1), AIRM_KV_TCP_ADDR (the descriptor store), UCX_* (UCX's own, e.g. UCX_TLS,
@@ -140,6 +142,7 @@ class UcxKVStore:
         self.pool_bytes = int(pool_bytes or int(os.environ.get("AIRM_KV_UCX_POOL_MB", "1024")) << 20)
         self.xfer_timeout_s = float(xfer_timeout_s or os.environ.get("AIRM_KV_UCX_XFER_TIMEOUT_S", "60"))
         self.ttl_s = float(ttl_s if ttl_s is not None else os.environ.get("AIRM_KV_TCP_TTL_S", "900"))
+        # ttl_s remains accepted for compatibility; it cannot reclaim advertised TX memory.
         self.poll_s = poll_s
         self._agent = agent
         self._lock = threading.RLock()            # NIXL calls and the tables below
@@ -148,6 +151,9 @@ class UcxKVStore:
         self._metadata = None
         self._remotes = {}                        # agent name -> metadata loaded
         self._slots = {}                          # key -> (offset, n, t_published)
+        self._publishing = set()                  # includes pushes waiting for arena space
+        self._quarantined = []                    # (handle, arena, offset, span), still DMA-owned
+        self._active_reads = 0
         self._stop = threading.Event()
         self._reaper = None
         self.stats = {"pushed": 0, "pulled": 0, "freed": 0, "expired": 0, "bytes_out": 0, "bytes_in": 0}
@@ -165,6 +171,8 @@ class UcxKVStore:
     def _arena(self, side):
         """The tx (prefill) or rx (decode) arena, allocated and registered on first use."""
         with self._lock:
+            if self._stop.is_set():
+                raise RuntimeError("ucxkv: store is closed")
             a = self._tx if side == "tx" else self._rx
             if a is not None:
                 return a
@@ -175,10 +183,11 @@ class UcxKVStore:
             if side == "tx":
                 self._tx = a
                 self._metadata = agent.get_agent_metadata()   # carries the tx registration
-                self._reaper = threading.Thread(target=self._reap, daemon=True, name="ucxkv-reaper")
-                self._reaper.start()
             else:
                 self._rx = a
+            if self._reaper is None:
+                self._reaper = threading.Thread(target=self._reap, daemon=True, name="ucxkv-reaper")
+                self._reaper.start()
             return a
 
     # -- prefill side -------------------------------------------------------------
@@ -186,55 +195,77 @@ class UcxKVStore:
         """Stage `buf` in the registered arena and publish its descriptor under `key`."""
         mv = memoryview(buf).cast("B")
         n = mv.nbytes
-        arena = self._arena("tx")
-        off, span = arena.alloc(n, timeout=self.xfer_timeout_s)
+        with self._lock:
+            if key in self._slots or key in self._publishing:
+                raise ValueError(f"ucxkv: outstanding key {key!r}")
+            self._publishing.add(key)
+        off, advertised = None, False
         try:
+            arena = self._arena("tx")
+            off, span = arena.alloc(n, timeout=self.xfer_timeout_s)
             arena.buf[off:off + n] = mv
             crc = zlib.crc32(mv) if _crc_on() else 0
+            desc = pack_desc(self.name, self._metadata, arena.address + off, n, crc)
             with self._lock:
                 self._slots[key] = (off, span, time.monotonic())
-            self.control.push(key, pack_desc(self.name, self._metadata, arena.address + off, n, crc))
+                advertised = True
+            self.control.push(key, desc)
         except BaseException:
-            with self._lock:
-                self._slots.pop(key, None)
-            arena.free(off, span)
+            # Once push was attempted, an exception may mean only its acknowledgement was lost.
+            if off is not None and not advertised:
+                arena.free(off, span)
             raise
+        finally:
+            with self._lock:
+                self._publishing.discard(key)
         self.stats["pushed"] += 1
         self.stats["bytes_out"] += n
 
-    def _release(self, key, expired=False):
+    def _release(self, key):
         with self._lock:
             slot = self._slots.pop(key, None)
         if slot is not None:
             self._tx.free(slot[0], slot[1])
-            self.stats["expired" if expired else "freed"] += 1
+            self.stats["freed"] += 1
 
     def _reap(self):
-        """Free a slot once its reader's READ completed (NIXL notification), or after the TTL."""
-        agent = self._get_agent()
+        """Free TX only on READ completion notifications, and poll quarantined RX handles."""
         while not self._stop.is_set():
             try:
                 with self._lock:
-                    notifs = agent.get_new_notifs()
+                    self._drain_quarantined()
+                    got = self._drain_notifications()
             except Exception:
-                notifs = {}
-            got = False
-            for msgs in notifs.values():
-                for m in msgs:
-                    m = bytes(m)
-                    if m.startswith(FREE_TAG):
-                        self._release(m[len(FREE_TAG):].decode())
-                        got = True
-            now = time.monotonic()
-            with self._lock:
-                old = [k for k, (_o, _n, t) in self._slots.items() if now - t > self.ttl_s]
-            for k in old:
-                self._release(k, expired=True)
+                got = False
             if not got:
                 self._stop.wait(0.002)
 
+    def _drain_notifications(self):
+        """Called under _lock, including during close so confirmed READs can release TX."""
+        got = False
+        for msgs in self._get_agent().get_new_notifs().values():
+            for m in msgs:
+                m = bytes(m)
+                if m.startswith(FREE_TAG):
+                    self._release(m[len(FREE_TAG):].decode())
+                    got = True
+        return got
+
+    def _drain_quarantined(self):
+        """Called under _lock: only DONE proves every READ has completed on the SDK boundary."""
+        for entry in list(self._quarantined):
+            h, arena, off, span = entry
+            try:
+                if self._agent.check_xfer_state(h) != "DONE":
+                    continue
+                h.release()
+            except Exception:
+                continue
+            arena.free(off, span)
+            self._quarantined.remove(entry)
+
     def pending(self):
-        """Keys pushed here and not yet read (their slots still held)."""
+        """Possibly advertised keys without a confirmed READ completion (their slots still held)."""
         with self._lock:
             return sorted(self._slots)
 
@@ -245,8 +276,13 @@ class UcxKVStore:
         arena = self._arena("rx")
         agent = self._get_agent()
         off, span = arena.alloc(n, timeout=self.xfer_timeout_s)
+        h, state, active = None, None, False
         try:
             with self._lock:
+                if self._stop.is_set():
+                    raise RuntimeError("ucxkv: store is closed")
+                self._active_reads += 1
+                active = True
                 if name not in self._remotes and name != self.name:   # own agent: UCX loopback
                     self._remotes[name] = agent.add_remote_agent(md)
                 local = agent.get_xfer_descs([(arena.address + off, n, 0)], "DRAM")
@@ -259,14 +295,26 @@ class UcxKVStore:
                     time.sleep(self.poll_s)
                 with self._lock:
                     state = agent.check_xfer_state(h)
-            with self._lock:
-                h.release()
             if state != "DONE":
                 why = "timed out" if state == "PROC" else f"state {state}"
                 raise IOError(f"ucxkv pull {key}: NIXL READ from {name} {why}")
             data = bytearray(arena.buf[off:off + n])
         finally:
-            arena.free(off, span)
+            with self._lock:
+                if active:
+                    self._active_reads -= 1
+                if h is None:
+                    arena.free(off, span)
+                elif state == "DONE":
+                    try:
+                        h.release()
+                    except BaseException:
+                        self._quarantined.append((h, arena, off, span))
+                        raise
+                    arena.free(off, span)
+                else:
+                    # Neither ERR nor release() proves outstanding DMA has drained on every SDK.
+                    self._quarantined.append((h, arena, off, span))
         if crc and _crc_on() and zlib.crc32(data) != crc:
             raise IOError(f"ucxkv pull {key}: crc mismatch (slot freed or overwritten at the source)")
         self.stats["pulled"] += 1
@@ -280,7 +328,22 @@ class UcxKVStore:
                 "ucx_net_devices": os.environ.get("UCX_NET_DEVICES", "(UCX default)")}
 
     def close(self):
-        self._stop.set()
+        with self._lock:
+            if self._active_reads or self._publishing:
+                raise RuntimeError("ucxkv: cannot close with active in-flight operations")
+            self._drain_quarantined()
+            if self._quarantined:
+                # Leave the reaper and its owning references alive until DMA completes.
+                raise RuntimeError("ucxkv: cannot close with quarantined in-flight READs; retry after completion")
+            if self._slots:
+                try:
+                    self._drain_notifications()
+                except Exception:
+                    pass
+            if self._slots:
+                raise RuntimeError("ucxkv: cannot close with outstanding advertised TX slots; "
+                                   "READ completion notifications are required")
+            self._stop.set()
         if self._reaper is not None:
             self._reaper.join(1.0)
         agent = self._agent

@@ -44,6 +44,7 @@ class FakeFabric:
 class FakeHandle:
     def __init__(self, run, polls):
         self.run, self.polls, self.released = run, polls, False
+        self.completed = False
 
     def release(self):
         self.released = True
@@ -104,8 +105,9 @@ class FakeAgent:
         h.polls -= 1
         if h.polls > 0:
             return "PROC"
-        if self.final == "DONE":
+        if self.final == "DONE" and not h.completed:
             h.run()
+            h.completed = True
         return self.final
 
     def get_new_notifs(self):
@@ -166,6 +168,7 @@ class StoreTests(unittest.TestCase):
                                   pool_bytes=8 << 20, name="decode")
 
     def tearDown(self):
+        self.assertTrue(_wait(lambda: not self.p.pending()))
         self.p.close(); self.d.close()
         self.srv.stop()
 
@@ -224,7 +227,129 @@ class StoreTests(unittest.TestCase):
         self.p.push("bad", b"x" * 1000)
         with self.assertRaises(IOError):
             self.d.pull("bad", timeout=1)
-        self.assertEqual(self.d._rx.free_bytes(), 8 << 20)    # the reader's slot is back
+        self.assertEqual(self.d._rx.free_bytes(), (8 << 20) - 1024)
+        self.assertFalse(self.fab.agents["decode"].handles[-1].released)
+        self.fab.agents["decode"].final = "DONE"
+        self.assertTrue(_wait(lambda: self.d._rx.free_bytes() == 8 << 20))
+
+    def test_duplicate_key_keeps_original_bytes_and_reclaims_all_memory(self):
+        self.p.push("same", b"original" * 100)
+        before = self.p._tx.free_bytes()
+        with self.assertRaisesRegex(ValueError, "outstanding"):
+            self.p.push("same", b"replacement" * 100)
+        self.assertEqual(self.p._tx.free_bytes(), before)
+        self.assertEqual(bytes(self.d.pull("same")), b"original" * 100)
+        self.assertTrue(_wait(lambda: not self.p.pending()))
+        self.assertEqual(self.p._tx.free_bytes(), 8 << 20)
+
+    def test_duplicate_during_publication_does_not_allocate_or_replace(self):
+        entered, resume = threading.Event(), threading.Event()
+        errors = []
+        push = self.p.control.push
+
+        def paused_push(*args):
+            entered.set()
+            if not resume.wait(2):
+                raise TimeoutError("test publication gate")
+            return push(*args)
+
+        def publish():
+            try:
+                self.p.push("same", b"original")
+            except Exception as e:
+                errors.append(e)
+
+        with mock.patch.object(self.p.control, "push", paused_push):
+            thread = threading.Thread(target=publish)
+            thread.start()
+            try:
+                self.assertTrue(entered.wait(2))
+                with self.assertRaisesRegex(ValueError, "outstanding"):
+                    self.p.push("same", b"replacement")
+            finally:
+                resume.set()
+                thread.join(3)
+        self.assertEqual(errors, [])
+        self.assertEqual(bytes(self.d.pull("same")), b"original")
+        self.assertTrue(_wait(lambda: not self.p.pending()))
+        self.assertEqual(self.p._tx.free_bytes(), 8 << 20)
+
+    def test_uncertain_read_retains_memory_until_actual_completion(self):
+        for failure in ("transfer", "check_xfer_state", "timeout", "error_state"):
+            with self.subTest(failure=failure):
+                agent = self.fab.agents["decode"]
+                self.d.xfer_timeout_s = 0.01
+                agent.final = "ERR" if failure == "error_state" else "PROC"
+                key = "uncertain-" + failure
+                self.p.push(key, b"late DMA" * 128)
+                method = "transfer" if failure == "transfer" else "check_xfer_state"
+                original = getattr(agent, method)
+                try:
+                    if failure in ("timeout", "error_state"):
+                        with self.assertRaisesRegex(IOError, "timed out|state ERR"):
+                            self.d.pull(key)
+                    else:
+                        with mock.patch.object(agent, method, side_effect=RuntimeError("SDK failure")):
+                            with self.assertRaisesRegex(RuntimeError, "SDK failure"):
+                                self.d.pull(key)
+                    handle = agent.handles[-1]
+                    self.assertFalse(handle.released)
+                    self.assertEqual(self.d._rx.free_bytes(), (8 << 20) - 1024)
+                    with self.assertRaisesRegex(RuntimeError, "in.flight|quarantin"):
+                        self.d.close()
+                    self.assertTrue(agent.regions, "close deregistered an in-flight DMA target")
+                    # A later allocation must not receive late DMA from the failed pull.
+                    off, span = self.d._rx.alloc(1024)
+                    self.d._rx.buf[off:off + span] = 0x5A
+                    agent.final = "DONE"
+                    original_check = agent.check_xfer_state
+                    original_check(handle)  # performs the real memmove, even after pull failed
+                    np.testing.assert_array_equal(self.d._rx.buf[off:off + span], 0x5A)
+                    self.d._rx.free(off, span)
+                    self.assertTrue(_wait(lambda: handle.released))
+                    self.assertEqual(self.d._rx.free_bytes(), 8 << 20)
+                    self.assertTrue(_wait(lambda: key not in self.p.pending()))
+                finally:
+                    setattr(agent, method, original)
+                    agent.final = "DONE"
+
+    def test_close_cannot_deregister_a_running_read(self):
+        agent = self.fab.agents["decode"]
+        entered, resume = threading.Event(), threading.Event()
+        errors = []
+        self.p.push("running", b"live DMA")
+        transfer = agent.transfer
+
+        def paused_transfer(handle):
+            entered.set()
+            if not resume.wait(2):
+                raise TimeoutError("test transfer gate")
+            return transfer(handle)
+
+        def pull():
+            try:
+                self.assertEqual(bytes(self.d.pull("running")), b"live DMA")
+            except Exception as e:
+                errors.append(e)
+
+        # Polling sleeps outside the agent lock, allowing close to race a live READ.
+        self.d.poll_s = 0.05
+        agent.polls = 3
+        with mock.patch.object(agent, "transfer", paused_transfer):
+            thread = threading.Thread(target=pull)
+            thread.start()
+            try:
+                self.assertTrue(entered.wait(2))
+                resume.set()
+                with self.assertRaisesRegex(RuntimeError, "in.flight|active"):
+                    self.d.close()
+                self.assertTrue(agent.regions)
+            finally:
+                resume.set()
+                thread.join(3)
+        self.assertEqual(errors, [])
+        self.d.close()
+        self.assertEqual(agent.regions, [])
 
     def test_corrupt_source_fails_crc(self):
         self.p.push("c", b"y" * 4096)
@@ -233,15 +358,95 @@ class StoreTests(unittest.TestCase):
         with self.assertRaises(IOError):
             self.d.pull("c", timeout=1)
 
-    def test_ttl_frees_unread_slots(self):
-        self.p.ttl_s = 0.0
-        self.p.push("old", b"z" * 4096)
-        self.assertTrue(_wait(lambda: self.p.stats["expired"] == 1))
-        self.assertEqual(self.p._tx.free_bytes(), 8 << 20)
+    def test_ttl_cannot_recycle_a_source_during_a_delayed_read(self):
+        self.p.pool_bytes = 4096
+        self.p.ttl_s = 0.005
+        self.p.xfer_timeout_s = 0.05
+        self.p.push("old", b"a" * 4096)
+        entered, complete = threading.Event(), threading.Event()
+        outputs, errors = [], []
+        agent = self.fab.agents["decode"]
+        check = agent.check_xfer_state
+
+        def delayed_check(handle):
+            entered.set()
+            return check(handle) if complete.is_set() else "PROC"
+
+        def pull():
+            try:
+                outputs.append(bytes(self.d.pull("old")))
+            except Exception as e:
+                errors.append(e)
+
+        with mock.patch.object(agent, "check_xfer_state", delayed_check):
+            thread = threading.Thread(target=pull)
+            thread.start()
+            try:
+                self.assertTrue(entered.wait(2))
+                try:
+                    self.p.push("replacement", b"b" * 4096)
+                    replaced = True
+                except TimeoutError:
+                    replaced = False
+            finally:
+                complete.set()
+                thread.join(3)
+        self.assertEqual(errors, [], "late READ observed a recycled source span")
+        self.assertEqual(outputs, [b"a" * 4096])
+        self.assertFalse(replaced)
+        self.assertTrue(_wait(lambda: not self.p.pending()))
+        self.p.push("after-completion", b"c" * 4096)
+        self.assertEqual(bytes(self.d.pull("after-completion")), b"c" * 4096)
+        self.assertTrue(_wait(lambda: not self.p.pending()))
+        self.assertEqual(self.p._tx.free_bytes(), 4096)
+
+    def test_lost_publication_ack_retains_advertised_source(self):
+        self.p.pool_bytes = 4096
+        push = self.p.control.push
+
+        def published_without_ack(*args):
+            push(*args)
+            raise TimeoutError("publication ACK lost")
+
+        with mock.patch.object(self.p.control, "push", published_without_ack):
+            with self.assertRaisesRegex(TimeoutError, "ACK lost"):
+                self.p.push("ambiguous", b"a" * 4096)
+        try:
+            self.assertEqual(self.p.pending(), ["ambiguous"])
+            self.assertEqual(self.p._tx.free_bytes(), 0)
+            with self.assertRaisesRegex(ValueError, "outstanding"):
+                self.p.push("ambiguous", b"b" * 4096)
+        finally:
+            self.assertEqual(bytes(self.d.pull("ambiguous")), b"a" * 4096)
+        self.assertTrue(_wait(lambda: not self.p.pending()))
+        self.assertEqual(self.p._tx.free_bytes(), 4096)
+
+    def test_failure_before_descriptor_publication_reclaims_source(self):
+        self.p.pool_bytes = 4096
+        with mock.patch.object(ucxkv, "pack_desc", side_effect=ValueError("bad descriptor")):
+            with self.assertRaisesRegex(ValueError, "bad descriptor"):
+                self.p.push("unpublished", b"a" * 4096)
+        self.assertEqual(self.p.pending(), [])
+        self.assertEqual(self.p._tx.free_bytes(), 4096)
+        self.p.push("unpublished", b"a" * 4096)
+        self.assertEqual(bytes(self.d.pull("unpublished")), b"a" * 4096)
+
+    def test_close_retains_advertised_sources_until_notification(self):
+        self.p.push("advertised", b"a" * 4096)
+        try:
+            with self.assertRaisesRegex(RuntimeError, "advertised|outstanding"):
+                self.p.close()
+            self.assertTrue(self.fab.agents["prefill"].regions)
+        finally:
+            self.assertEqual(bytes(self.d.pull("advertised")), b"a" * 4096)
+        self.assertTrue(_wait(lambda: not self.p.pending()))
+        self.p.close()
+        self.assertEqual(self.fab.agents["prefill"].regions, [])
 
     def test_close_deregisters(self):
         self.p.push("k", b"a" * 128)
         self.d.pull("k", timeout=1)
+        self.assertTrue(_wait(lambda: not self.p.pending()))
         self.p.close(); self.d.close()
         self.assertEqual(self.fab.agents["prefill"].regions, [])
         self.assertEqual(self.fab.agents["decode"].regions, [])
@@ -303,8 +508,10 @@ class SelectionTests(_Env, unittest.TestCase):
     def test_connector_handoff_bit_exact(self):
         """prefill save -> NIXL READ -> decode load through the real connector, bf16 wire as in serving."""
         from test_airm import _handoff, _kv
+        from test_connector_metadata import connector_module
         pf, dc = self.pair(kv.NixlUcxTransport)
-        dk, dv = _handoff(pf, dc)
+        with connector_module():
+            dk, dv = _handoff(pf, dc)
         ck, cv = _kv(0)
         ref = lambda a: (a.view(np.uint32) >> 16 << 16).view(np.float32)   # noqa: E731 - bf16 wire
         np.testing.assert_array_equal(dk, ref(np.stack(ck)))
@@ -340,6 +547,8 @@ class AdapterTests(_Env, unittest.TestCase):
         res = dc.wait(h, timeout_s=5)
         self.assertFalse(res.ok)
         self.assertIn("NIXL READ", res.error)
+        self.fab.agents["decode"].final = "DONE"
+        self.assertTrue(_wait(lambda: all(h.released for h in self.fab.agents["decode"].handles)))
         pf.close(); dc.close()
 
 
