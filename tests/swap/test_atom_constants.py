@@ -212,3 +212,94 @@ def test_checkpoint_update_rolls_back_or_disables_engine(checkpoint_pair):
         if failures == 2:
             with pytest.raises(RuntimeError, match='closed'):
                 e.generate([[1]], 1)
+
+
+def test_overlapping_subset_groups_count_all_native_eligible_transforms():
+    params, (q, k, v), handle, updater = setup()
+    handle.groups = [[q, k], [k], [v]]
+    result = updater.apply({'q': torch.full((2, 3), 7.)})
+    assert result['transform_groups'] == 2
+    assert not updater.failed and torch.equal(handle.device[q], torch.full((2, 3), 7.))
+
+
+def test_aliasing_replacements_are_staged_before_any_parameter_commit():
+    params, (q, k, v), handle, updater = setup()
+    updater.apply({'q': params['k'], 'k': params['q']})
+    assert torch.equal(params['q'], torch.full((2, 3), 2.))
+    assert torch.equal(params['k'], torch.ones(2, 3))
+    assert torch.equal(handle.device[q], params['q'])
+    assert torch.equal(handle.device[k], params['k'])
+
+
+@pytest.mark.parametrize('interrupt_rollback', [False, True])
+def test_interrupted_native_write_rolls_back_or_poisoned(interrupt_rollback):
+    params, (q, k, v), handle, updater = setup()
+    native = handle.apply_extern_transforms
+    calls = 0
+    def interrupted(values):
+        nonlocal calls
+        calls += 1
+        result = native(values)
+        if calls == 1 or interrupt_rollback:
+            raise KeyboardInterrupt()
+        return result
+    handle.apply_extern_transforms = interrupted
+    if interrupt_rollback:
+        with pytest.raises(RuntimeError, match='reload required'):
+            updater.apply({'q': torch.full((2, 3), 7.)})
+        assert updater.failed
+    else:
+        with pytest.raises(KeyboardInterrupt):
+            updater.apply({'q': torch.full((2, 3), 7.)})
+        assert not updater.failed
+        assert torch.equal(handle.device[q], torch.ones(2, 3))
+        assert torch.equal(params['q'], torch.ones(2, 3))
+
+
+def test_interruption_after_updater_commit_disables_engine(checkpoint_pair):
+    from rngd_pd.swap.delta import plan_update
+    base, new = checkpoint_pair
+    e, _ = constant_engine(base)
+    apply = e.updater.apply
+    def interrupted(values):
+        apply(values)
+        raise KeyboardInterrupt()
+    e.updater.apply = interrupted
+    with pytest.raises(KeyboardInterrupt):
+        e.apply_delta(new, plan_update(base, new))
+    assert e._closed
+
+
+def test_host_parameter_pointer_owner_survives_refresh_return():
+    import gc
+    import weakref
+    params, (q, k, v), handle, updater = setup()
+    handle.groups = [[v]]
+    handle.get_host_op_keys = lambda: [q]
+    pointers = []
+    handle.apply_host_params = lambda values: pointers.append(weakref.ref(values[q]))
+    updater.apply({'q': torch.full((2, 3), 7.)})
+    gc.collect()
+    assert pointers[-1]() is not None
+    torch.testing.assert_close(pointers[-1](), torch.full((2, 3), 7.))
+
+
+def test_gen_preparation_supplies_explicit_tensor_examples(checkpoint_pair, tmp_path, monkeypatch):
+    import sys
+    from rngd_pd.swap.variants import Variant
+    e, handle = constant_engine(checkpoint_pair[0])
+    e.torch, e.device, e.context, e.cache_dir = torch, 0, object(), tmp_path
+    e.module = object()
+    e.tables.cfg = SimpleNamespace(hidden=4, n_kv=1, head_dim=2)
+    def compile_model(module, **kwargs):
+        examples = kwargs['example_inputs']
+        assert [tuple(t.shape) for t in examples] == [
+            (2, 4), (1, 2, 1, 2, 16), (1, 2, 1, 16, 2), (2, 1), (2, 1), (2, 16), (2, 16)]
+        assert all(t.device.type == 'cpu' and t.dtype == torch.float32 for t in examples)
+        return SimpleNamespace(create_runtime=lambda **opts: SimpleNamespace(_runtime_handle=handle),
+                               save=lambda path: None)
+    e.rebel = SimpleNamespace(compile_from_torch=compile_model)
+    monkeypatch.setitem(sys.modules, 'rebel.core.weight_free',
+                        SimpleNamespace(apply_weight_free_weights=lambda runtime, module: None))
+    e.prepare(Variant(2, 16, 0))
+    assert len(e.graphs) == 2

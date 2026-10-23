@@ -19,9 +19,9 @@ class ConstantWeightUpdater:
     def __init__(self, parameters, runtimes):
         self.parameters, self.runtimes = dict(parameters), runtimes
         self.failed = False
+        self.host_owners, self._host_owner_history = {}, []
 
-    @staticmethod
-    def _write(handle, keys, host_keys, groups, values):
+    def _write(self, handle, keys, host_keys, groups, values):
         if keys:
             # The native API otherwise skips transform graphs already applied.
             handle.reset_applied_transform_graphs()
@@ -29,7 +29,10 @@ class ConstantWeightUpdater:
             if applied != groups:
                 raise RuntimeError(f"constant refresh applied {applied}/{groups} transforms")
         if host_keys:
-            handle.apply_host_params({k: values[k] for k in host_keys})
+            host = {k: values[k] for k in host_keys}
+            self._host_owner_history.extend(self.host_owners[k] for k in host if k in self.host_owners)
+            self.host_owners.update(host)
+            handle.apply_host_params(host)
 
     def apply(self, replacements):
         import torch
@@ -50,7 +53,7 @@ class ConstantWeightUpdater:
                 raise ValueError(f"constant layout mismatch: {name}")
             key = param.data_ptr()
             backup[key] = param.detach().clone()
-            after[key] = value.detach().contiguous()
+            after[key] = value.detach().clone(memory_format=torch.contiguous_format)
         changed = set(backup)
         old_values = dict(before)
         old_values.update(backup)
@@ -60,17 +63,23 @@ class ConstantWeightUpdater:
             if id(handle) in seen:
                 continue
             seen.add(id(handle))
-            groups = [set(g) for g in handle.extern_transform_key_groups()
-                      if changed.intersection(g)]
+            all_groups = [set(g) for g in handle.extern_transform_key_groups()]
+            groups = [g for g in all_groups if changed.intersection(g)]
             keys = set().union(*groups) if groups else set()
             host = changed.intersection(handle.get_host_op_keys())
             if not keys <= before.keys():
                 raise ValueError("unmapped constant transform dependency")
             covered.update(changed.intersection(keys | host))
             if keys or host:
-                jobs.append((handle, keys, host, len(groups)))
+                eligible = sum(g <= keys for g in all_groups) if keys else 0
+                jobs.append((handle, keys, host, eligible))
         if covered != changed:
             raise ValueError("changed constant is not bound to a loaded runtime")
+        result = dict(changed_weight_bytes=sum(t.numel() * t.element_size() for t in backup.values()),
+                      transform_input_bytes=sum(after[k].numel() * after[k].element_size()
+                                                for _, keys, _, _ in jobs for k in keys),
+                      transform_groups=sum(n for _, _, _, n in jobs),
+                      host_parameters=sum(len(keys) for _, _, keys, _ in jobs))
         attempted = []
         try:
             for job in jobs:
@@ -79,22 +88,20 @@ class ConstantWeightUpdater:
             with torch.no_grad():
                 for key in changed:
                     before[key].copy_(after[key])
-        except Exception:
+            self._host_owner_history.clear()
+            return result
+        except BaseException:
             try:
                 for job in reversed(attempted):
                     self._write(*job, old_values)
                 with torch.no_grad():
                     for key in changed:
                         before[key].copy_(backup[key])
-            except Exception as rollback_error:
+                self._host_owner_history.clear()
+            except BaseException as rollback_error:
                 self.failed = True
                 raise RuntimeError("constant update and rollback failed; reload required") from rollback_error
             raise
-        return dict(changed_weight_bytes=sum(t.numel() * t.element_size() for t in backup.values()),
-                    transform_input_bytes=sum(after[k].numel() * after[k].element_size()
-                                              for _, keys, _, _ in jobs for k in keys),
-                    transform_groups=sum(n for _, _, _, n in jobs),
-                    host_parameters=sum(len(keys) for _, _, keys, _ in jobs))
 
 
 class ConstantWeightDecode(DeviceWeightDecode):
@@ -159,8 +166,10 @@ class ConstantWeightDecode(DeviceWeightDecode):
         from rebel.core.weight_free import apply_weight_free_weights
         from .atom import input_info
 
+        profiles = input_info(self.tables.cfg, self.d['nl'], variant.B, variant.S)
+        examples = [self.torch.zeros(shape, dtype=self.torch.float32) for _, shape, _ in profiles]
         cm = self.rebel.compile_from_torch(
-            self.module, input_info=input_info(self.tables.cfg, self.d['nl'], variant.B, variant.S),
+            self.module, example_inputs=examples,
             compile_context=self.context, npu='RBLN-CA22', _intmd_mode='gen')
         rt = cm.create_runtime(device=self.device, tensor_type='np')
         handle = rt._runtime_handle
@@ -237,18 +246,20 @@ class ConstantWeightDecode(DeviceWeightDecode):
                     staged[name] = b.to(self.weights[name].dtype).contiguous()
                 else:
                     raise ValueError(f'unsupported changed tensor: {name}')
+            device_applied = False
             try:
                 result = self.updater.apply(staged)
-            except Exception:
-                if self.updater.failed:
+                device_applied = True
+                self.tables.embed, self.ck = embed, new
+                self._generation += 1
+                old.close()
+                return dict(result, delta_s=time.perf_counter() - started,
+                            uploaded_bytes=result['transform_input_bytes'],
+                            mode='constant-transforms', tensors=len(plan.tensors))
+            except BaseException as error:
+                if self.updater.failed or device_applied or not isinstance(error, Exception):
                     self._closed = True
                 raise
-            self.tables.embed, self.ck = embed, new
-            self._generation += 1
-            old.close()
-            return dict(result, delta_s=time.perf_counter() - started,
-                        uploaded_bytes=result['transform_input_bytes'],
-                        mode='constant-transforms', tensors=len(plan.tensors))
         finally:
             if self.ck is not new:
                 new.close()
@@ -259,6 +270,8 @@ class ConstantWeightDecode(DeviceWeightDecode):
             self.compiled.clear()
             self.runtimes.clear()
             self.updater.parameters.clear()
+            self.updater.host_owners.clear()
+            self.updater._host_owner_history.clear()
             self.weights.clear()
             self.W.clear()
             self.module = self.context = None
