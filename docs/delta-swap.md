@@ -95,13 +95,34 @@ layouts are treated conservatively. Removed tensors and incompatible graph
 configuration are rejected. Keep both checkpoint directories immutable while a
 plan is in use.
 
-`inplace` uploads complete changed projection tensors into their packed layer
-slots. It validates and stages updates before writing and restores old tensor
-values if a device write fails. Serving is disabled if rollback fails. `group`
+`inplace` uses the plan's changed checkpoint rows for projections and the LM
+head. Projection rows become columns of the transposed resident layer; only
+those rows are converted and staged, including the old values needed for
+rollback. Contiguous full-layer and LM-row writes copy directly from the CPU;
+sparse projection columns use a small temporary device patch, the faster route
+in the validated native probes. The original projection/LM allocations remain
+in use. LM runs split at chunk boundaries and leave vocabulary padding alone.
+
+Missing row metadata in a manually constructed plan retains whole-tensor
+behavior; changed header placement conservatively updates the complete tensor.
+After coalescing, more than four separate runs or at least half the tensor's
+rows also selects a whole-tensor update, bounding native dispatch overhead.
+The engine validates row bounds, layouts and graph configuration before writing.
+Failed or interrupted updates restore prior values and references. Serving is
+disabled if rollback fails or is interrupted. `group`
 stages replacement group stacks and commits their references together; it uses
 more temporary HBM and uploads unchanged neighbours in each affected group.
 Embedding lookup stays on the host. Tiled normalization inputs are rebuilt when
-their weights change. Updates invalidate old KV even if the shape is unchanged.
+their weights change. Old KV is invalidated before a potentially mutating
+transaction, including one whose writes are subsequently restored.
+
+`uploaded_bytes` is the logical prepared weight payload, not a hardware PCIe
+counter. The legacy `plan.upload_bytes`/summary field still counts full changed
+checkpoint tensors, so it differs from sparse row payloads. Update results also
+report `validation_s`, `stage_s`, `rollback_stage_s` and `copy_s`; staging can
+include replacement allocations in `group` mode. `total_s` from `load_delta`
+includes live onggi/planning and the complete update. Measure the next prompt's
+first token separately to include any deferred device work.
 
 Without a range input the fallback compares checkpoint files in blocks, reading
 both full checkpoints. The integrated planner refines flagged rows by default,

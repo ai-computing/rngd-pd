@@ -196,6 +196,9 @@ def test_sparse_lm_rows_preserve_chunks_padding_and_rollback(engine, tmp_path, m
 @pytest.mark.parametrize("fail_after", [1, 2])
 def test_partial_projection_copy_failure_restores_every_attempt(engine, tmp_path, interrupt, fail_after):
     e, ck = engine, checkpoint(tmp_path / "new", 7.0)
+    e.ck.get = lambda n: torch.full((8, 4), 1.0 if n == NAME else 3.0, dtype=torch.bfloat16)
+    ck.get = lambda n: torch.full((8, 4), 7.0 if n == NAME else 3.0, dtype=torch.bfloat16)
+    e.shared = [{"wk": e._group_slot_host(0, "wk")}]
     old, before = e.ck, e.shared[0]["wk"].clone()
     copy, calls = e._copy_rows, 0
     def interrupted(*args):
@@ -265,6 +268,29 @@ def test_overlapping_rows_are_coalesced_and_header_changes_update_whole(engine, 
     p.header_changes.add(NAME)
     result = e.apply_delta(newer, p)
     assert result["uploaded_bytes"] == 32
+    torch.testing.assert_close(e.shared[0]["wk"], e._group_slot_host(0, "wk"), rtol=0, atol=0)
+
+
+@pytest.mark.parametrize("rows", [[(a, a + 8) for a in range(0, 4096, 16)], [(0, 3000)]])
+def test_fragmented_or_dense_rows_use_one_complete_transfer(engine, tmp_path, rows):
+    e, ck = engine, checkpoint(tmp_path / "new", 7.0)
+    old = torch.ones(4096, 5, dtype=torch.bfloat16)
+    new = old.clone()
+    for a, b in rows:
+        new[a:b] = 7
+    e.ck.get = lambda n: old if n == NAME else old + 3
+    ck.get = lambda n: new if n == NAME else old + 3
+    e.shared = [{"wk": e._group_slot_host(0, "wk")}]
+    calls, copy = [], e._copy_rows
+    def counted(*args):
+        calls.append(args[:3])
+        copy(*args)
+    e._copy_rows = counted
+    p = plan(e, ck)
+    p.tensors[NAME] = {"rows": rows}
+    result = e.apply_delta(ck, p)
+    assert calls == [(NAME, 0, 4096)]
+    assert result["uploaded_bytes"] == old.numel() * 2
     torch.testing.assert_close(e.shared[0]["wk"], e._group_slot_host(0, "wk"), rtol=0, atol=0)
 
 

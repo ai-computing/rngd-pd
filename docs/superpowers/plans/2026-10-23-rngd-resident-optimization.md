@@ -92,3 +92,19 @@ transaction safe under interruption. Reuse the existing planner and API.
   294 passed, 6 skipped, 4 subtests passed in 22.33 s.
 - Ruling: do not change planner header/refinement code without evidence of a
   material remaining bottleneck. This keeps the production diff in rngd.py.
+- Fresh independent review: 89 swap tests and eight extra tied-embedding CPU
+  cases passed. Important finding 1 reproduced RED: alternating row runs caused
+  256 native copies. GREEN: after coalescing, more than four runs or at least
+  half the tensor rows falls back to one complete effective range. New/rollback
+  staging and byte accounting consume the same selected ranges. The threshold
+  is conservative for this validated SDK, not a universal optimum.
+- Important finding 2 is a native-validation gap, not a demonstrated CPU bug:
+  nonzero-offset LM sources and one-row projection sources need native parent
+  consumption/readback checks. Hardware investigator is completing those checks.
+- Review scope rulings: immutable checkpoint and complete manual-plan contracts
+  remain caller requirements; 2026.3 SDK behavior is unclaimed. Full 8B speed and
+  token parity and ownership cleanup remain required hardware/publication gates,
+  not silently deferred work. No Minor findings were reported.
+- Review fix verification: 45 focused RNGD tests passed; full local suite
+  296 passed, 6 skipped, 4 subtests passed in 23.29 s. Run the full-engine
+  comparison only on the frozen post-review source.

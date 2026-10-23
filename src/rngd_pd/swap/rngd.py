@@ -42,6 +42,7 @@ _LAYER = {
     "post_attention_layernorm.weight": ("n2", "norm"),
 }
 _SHARED_SLOTS = ("wq", "wk", "wv", "wo", "wg", "wu", "wd")
+_MAX_ROW_RUNS = 4
 
 
 def _now():
@@ -49,7 +50,7 @@ def _now():
 
 
 def _rows(info, count):
-    """Validate/coalesce checkpoint row ranges; old manual plans mean all rows."""
+    """Validate and bound row work; old manual plans mean all rows."""
     if "rows" not in info:
         return [(0, count)]
     rows = info["rows"]
@@ -66,6 +67,9 @@ def _rows(info, count):
             merged[-1] = (merged[-1][0], max(merged[-1][1], b))
         else:
             merged.append((a, b))
+    # Native sparse copies have fixed dispatch cost; bound fragmented/dense work.
+    if len(merged) > _MAX_ROW_RUNS or sum(b - a for a, b in merged) * 2 >= count:
+        return [(0, count)]
     return merged
 
 
