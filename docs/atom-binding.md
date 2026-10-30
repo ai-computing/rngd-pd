@@ -135,5 +135,57 @@ artifacts alone are not native ATOM graphs. A conformance-load hook must
 attach or load an actual precompiled native graph in that worker.
 
 The implementation's physical line counts (including comments and blanks)
-are reported with the validation results.
-It adds no dependency, SDK patch, binary decoder or simulated device mirror.
+are reproducible in the [exact source snapshot](atom-binding-loc.json).
+Run `python experiments/analyze_atom_binding_loc.py --out docs/atom-binding-loc.json`
+from this repository. The script imports no SDK or runtime modules. It records
+each filename, raw-byte SHA-256, physical/nonblank counts and a SHA-256 over
+each scope's sorted filename/hash pairs. Nonblank excludes only whitespace-only
+lines; comments and docstrings remain included.
+
+| Scope | Files | Physical | Nonblank |
+|---|---:|---:|---:|
+| Adapter only: `atom_binding.py` and shared `binding_cli.py` | 2 | 392 | 333 |
+| Shared parser/policy: `delta.py`, `variants.py` | 2 | 498 | 444 |
+| Public runtime loading/support, including package initialization | 6 | 733 | 634 |
+| Publisher graph source and its direct imports | 3 | 570 | 507 |
+| Full public ATOM implementation: union of preceding four disjoint scopes | 13 | 2,193 | 1,918 |
+| Optional experimental #28 runtime additions | 4 | 1,445 | 1,295 |
+| Full public implementation plus optional experimental additions | 17 | 3,638 | 3,213 |
+
+The six loading/support files are `rngd_pd/__init__.py`,
+`swap/{__init__,atom,atom_bundles}.py` and `engines/{__init__,model}.py`.
+The three publisher graph files are `vendors/{__init__,rbln_decode_batch,rbln_decode}.py`;
+`atom.decode_module` imports `rbln_decode_batch`, whose top-level import pulls
+in `rbln_decode`. They are conservatively counted as existing graph source even
+though precompiled `AtomSession` loading does not import them. All paths are
+under `src/`. The complete files are counted, including dormant compilation,
+benchmark and alternate-loader helpers; those helpers' unrelated deferred
+dependencies are not recursively added. The optional four files are
+`swap/{atom_constants,atom_inputs,rngd,load}.py`: `ConstantWeightDecode` uses
+`Checkpoint` from `rngd.py`, and its inherited legacy update method refers to
+`load.py`. That host checkpoint path does not construct `SwappableDecode` or
+import the Furiosa runtime. This is an explicit source scope, not a claim to
+measure every repository file.
+
+Vendor SDK/dependency implementations, tests, documentation, native harnesses,
+analysis scripts, caches and generated graph/checkpoint artifacts are excluded.
+The shared CLI's 199 physical lines are counted in each adapter scope when
+reported separately; unioning both adapters must count that file once.
+Raw-byte hashes depend on the exact file snapshot, including line endings.
+Rerun the report after source changes.
+
+## Public runtime API boundary
+
+| Boundary | Source and API | Classification |
+|---|---|---|
+| Compiled artifact load and native execution | `atom.py`: `rebel.RBLNCompiledModel(path)`, `create_runtime(device=..., tensor_type="np")`, runtime `run(...)` | Public rebel loading/execution surface; no private native handle access |
+| Public publisher compilation | `atom.build_session`: `rebel.compile_from_torch(..., input_info=..., npu=...)`, compiled `save(...)`, `get_total_device_alloc()` | Existing public compiler surface; not called by the binding's load, plan, or request operations |
+| Host embedding and model configuration | `atom.Tables`, `engines/model.py`: documented safetensors loading, NumPy transforms and `ModelConfig.inv_freq()` | Host dependencies and repository metadata; no vendor binary decode |
+| Graph model construction | `vendors/rbln_decode_batch.py`, `vendors/rbln_decode.py`: public Torch modules, tensor operations and parameters | Existing publisher graph code, counted whole-file; dormant heterogeneous benchmarks are not invoked |
+| Alternate Optimum bundle load | `atom_bundles._load_bundle`: `RBLNAutoModelForCausalLM.from_pretrained(export=False, ...)` | Existing alternate loader in an imported file; not invoked by this binding |
+| Binding ownership and metadata | `atom_binding.py`: `AtomSession.rt`, `close`, host `tables`, `active`, and experimental `_closed`/`graphs`/`compiled` checks | Local Python engine contract; the `_closed` attribute belongs to this repository, distinct from the private vendor ABI listed above |
+
+The default public path adds no dependency, SDK patch, binary decoder or
+simulated device mirror. The experimental constant path remains a separately
+flagged ABI dependency; its presence in a broader LOC total does not make it
+public-API conformance evidence.

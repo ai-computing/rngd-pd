@@ -1,0 +1,204 @@
+{
+  "excluded": "Vendor SDK/dependency implementations, tests, docs, caches, generated artifacts, native harness and this script",
+  "files": {
+    "src/rngd_pd/__init__.py": {
+      "nonblank": 8,
+      "physical": 10,
+      "sha256": "1f5b32e544c4509860aaf607514f70c4f49b2ca28fdc560308d647b2b591b66f"
+    },
+    "src/rngd_pd/engines/__init__.py": {
+      "nonblank": 1,
+      "physical": 1,
+      "sha256": "71128201bde7aa95964ac9b16215b2c4d5a0025504af6c4af0ea30d05d08eef2"
+    },
+    "src/rngd_pd/engines/model.py": {
+      "nonblank": 169,
+      "physical": 193,
+      "sha256": "b767ab40be5182c4a8661f23b1e923762835ac0abb7df47a9874e73cac0830fe"
+    },
+    "src/rngd_pd/swap/__init__.py": {
+      "nonblank": 9,
+      "physical": 11,
+      "sha256": "558b5b03e6111a1d3bd0bb301db7f3cab726cc41896a6c1924881c68f395440d"
+    },
+    "src/rngd_pd/swap/atom.py": {
+      "nonblank": 247,
+      "physical": 289,
+      "sha256": "c51fce8bdde47a1b6dec9e5db32a9558f462aa90dfa4255908cdb7b307fe0130"
+    },
+    "src/rngd_pd/swap/atom_binding.py": {
+      "nonblank": 164,
+      "physical": 193,
+      "sha256": "86b8c20d4acf505df05470035ebb31b23ff55c97dbc4df081bbc563e3ef95037"
+    },
+    "src/rngd_pd/swap/atom_bundles.py": {
+      "nonblank": 200,
+      "physical": 229,
+      "sha256": "e62158886887cef33129cf8a0077019608adef77090b73e7ff3b476e2259e15e"
+    },
+    "src/rngd_pd/swap/atom_constants.py": {
+      "nonblank": 258,
+      "physical": 279,
+      "sha256": "c2e642781abe340ae9f6c8f57ffc2121d9b65300af50a56d5a47970c393ed024"
+    },
+    "src/rngd_pd/swap/atom_inputs.py": {
+      "nonblank": 421,
+      "physical": 488,
+      "sha256": "6b1023402f84d51d0a414af51a4c5d7f86f5e89e4ef60003cf20315e282de934"
+    },
+    "src/rngd_pd/swap/binding_cli.py": {
+      "nonblank": 169,
+      "physical": 199,
+      "sha256": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04"
+    },
+    "src/rngd_pd/swap/delta.py": {
+      "nonblank": 362,
+      "physical": 402,
+      "sha256": "da0b1d4a0f28d0e9e7ec061fc66a361dc521350340d35aee2db1417fbe5ac92a"
+    },
+    "src/rngd_pd/swap/load.py": {
+      "nonblank": 45,
+      "physical": 52,
+      "sha256": "5851730bc4e0c96249e0b1a6c8f87a46df694c1564f9fd25a7ebb0aef442c3c0"
+    },
+    "src/rngd_pd/swap/rngd.py": {
+      "nonblank": 571,
+      "physical": 626,
+      "sha256": "96985660773ac262c3418187f754262e6e5007c1c9e6fe72630d139258cd342a"
+    },
+    "src/rngd_pd/swap/variants.py": {
+      "nonblank": 82,
+      "physical": 96,
+      "sha256": "e8467d7d33b378f17c548855e9c1dd5e0f2dda2e21d9b587598b07f775b3ac26"
+    },
+    "src/rngd_pd/vendors/__init__.py": {
+      "nonblank": 1,
+      "physical": 1,
+      "sha256": "10a6322e8155663dd9e1a6a7db5397f31a56faa08c627020e7c496c32b249716"
+    },
+    "src/rngd_pd/vendors/rbln_decode.py": {
+      "nonblank": 320,
+      "physical": 358,
+      "sha256": "d89fa567e8b070c9b43e347b4512b6bf7b09edc4d16526b432a230ba75fbde65"
+    },
+    "src/rngd_pd/vendors/rbln_decode_batch.py": {
+      "nonblank": 186,
+      "physical": 211,
+      "sha256": "96ab031a171fdace0daff555331eaca5d6294680793ce541c0f00263ec836587"
+    }
+  },
+  "method": "UTF-8 splitlines; nonblank uses str.strip; whole files including comments/docstrings and dormant helpers",
+  "schema": "atom-binding-loc.v1",
+  "scope_notes": {
+    "experimental_constant_runtime_additions": "Optional #28 ConstantWeightDecode/DeviceWeightDecode and direct Checkpoint/load_delta support. Checkpoint uses host parsing; deferred SwappableDecode Furiosa construction and unrelated CLI benchmark dependencies are outside scope",
+    "full_with_experimental_constant_runtime": "Union of public scope and optional engine additions, not a claim that the experimental ABI is public or that every dormant helper dependency is counted recursively",
+    "graph_build_source": "Conservatively includes public publisher build_session graph implementation and its top-level model import; these files are not imported by precompiled AtomSession loading",
+    "public_runtime_load_support": "Actual package initialization plus AtomSession/Tables/model support; atom.py unconditionally imports atom_bundles, whose Optimum loader is not invoked"
+  },
+  "scopes": {
+    "adapter_only": {
+      "file_count": 2,
+      "files": [
+        "src/rngd_pd/swap/atom_binding.py",
+        "src/rngd_pd/swap/binding_cli.py"
+      ],
+      "nonblank": 333,
+      "physical": 392,
+      "source_sha256": "9acf767649ec833e3a9a2ccf2bd8556b59a525f8c52eed7ecaabca72955735d0"
+    },
+    "experimental_constant_runtime_additions": {
+      "file_count": 4,
+      "files": [
+        "src/rngd_pd/swap/atom_constants.py",
+        "src/rngd_pd/swap/atom_inputs.py",
+        "src/rngd_pd/swap/rngd.py",
+        "src/rngd_pd/swap/load.py"
+      ],
+      "nonblank": 1295,
+      "physical": 1445,
+      "source_sha256": "e9f5cec7547bd936ee97887740d33ed26be192c5edd7b3151c6cc5a84415b18e"
+    },
+    "full_public_atom_runtime": {
+      "file_count": 13,
+      "files": [
+        "src/rngd_pd/swap/atom_binding.py",
+        "src/rngd_pd/swap/binding_cli.py",
+        "src/rngd_pd/swap/delta.py",
+        "src/rngd_pd/swap/variants.py",
+        "src/rngd_pd/__init__.py",
+        "src/rngd_pd/swap/__init__.py",
+        "src/rngd_pd/swap/atom.py",
+        "src/rngd_pd/swap/atom_bundles.py",
+        "src/rngd_pd/engines/__init__.py",
+        "src/rngd_pd/engines/model.py",
+        "src/rngd_pd/vendors/__init__.py",
+        "src/rngd_pd/vendors/rbln_decode_batch.py",
+        "src/rngd_pd/vendors/rbln_decode.py"
+      ],
+      "nonblank": 1918,
+      "physical": 2193,
+      "source_sha256": "70afd17e7d1334561c82109fcfb987e3a52345bb0ccfa3fc64a8b5e2445cb4b7"
+    },
+    "full_with_experimental_constant_runtime": {
+      "file_count": 17,
+      "files": [
+        "src/rngd_pd/swap/atom_binding.py",
+        "src/rngd_pd/swap/binding_cli.py",
+        "src/rngd_pd/swap/delta.py",
+        "src/rngd_pd/swap/variants.py",
+        "src/rngd_pd/__init__.py",
+        "src/rngd_pd/swap/__init__.py",
+        "src/rngd_pd/swap/atom.py",
+        "src/rngd_pd/swap/atom_bundles.py",
+        "src/rngd_pd/engines/__init__.py",
+        "src/rngd_pd/engines/model.py",
+        "src/rngd_pd/vendors/__init__.py",
+        "src/rngd_pd/vendors/rbln_decode_batch.py",
+        "src/rngd_pd/vendors/rbln_decode.py",
+        "src/rngd_pd/swap/atom_constants.py",
+        "src/rngd_pd/swap/atom_inputs.py",
+        "src/rngd_pd/swap/rngd.py",
+        "src/rngd_pd/swap/load.py"
+      ],
+      "nonblank": 3213,
+      "physical": 3638,
+      "source_sha256": "d26cef1687cce626d86667b84fa2f59080db54b1312e1f38180096bf56058d79"
+    },
+    "graph_build_source": {
+      "file_count": 3,
+      "files": [
+        "src/rngd_pd/vendors/__init__.py",
+        "src/rngd_pd/vendors/rbln_decode_batch.py",
+        "src/rngd_pd/vendors/rbln_decode.py"
+      ],
+      "nonblank": 507,
+      "physical": 570,
+      "source_sha256": "2b4b13a560bd826e5e25e64e0ef0343a09e5b3eacc51affa75811605d850d9ee"
+    },
+    "parser_and_policy": {
+      "file_count": 2,
+      "files": [
+        "src/rngd_pd/swap/delta.py",
+        "src/rngd_pd/swap/variants.py"
+      ],
+      "nonblank": 444,
+      "physical": 498,
+      "source_sha256": "832f010dc86e19b99f97e881794fcd64d364c55a6e72382b125ffbe501dce392"
+    },
+    "public_runtime_load_support": {
+      "file_count": 6,
+      "files": [
+        "src/rngd_pd/__init__.py",
+        "src/rngd_pd/swap/__init__.py",
+        "src/rngd_pd/swap/atom.py",
+        "src/rngd_pd/swap/atom_bundles.py",
+        "src/rngd_pd/engines/__init__.py",
+        "src/rngd_pd/engines/model.py"
+      ],
+      "nonblank": 634,
+      "physical": 733,
+      "source_sha256": "474ae726c35a82c3e0a88b04dc0483f29fb0d62e17f4f01ed6a509464faafc15"
+    }
+  },
+  "source_identity": "SHA-256 of raw file bytes; scope SHA-256 over sorted compact JSON [path, file SHA-256] pairs; exact working-tree snapshot"
+}
