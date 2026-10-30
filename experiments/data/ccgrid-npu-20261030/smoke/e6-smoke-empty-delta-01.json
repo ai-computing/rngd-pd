@@ -6814,6 +6814,46 @@
   },
   "publication": {
     "original_private_result_sha256": "0068117166ae9cc6ce9855e3c81174cdd25b9f6bd08cc7afce5eba03aa527796",
-    "redaction": "Machine paths and hostname/allocator UUID removed; numeric samples/tokens/counters unchanged."
+    "redaction": "Machine paths and hostname/allocator UUID removed; numeric samples/tokens/counters unchanged.",
+    "operational": {
+      "utc": 1793353965.1392715,
+      "status": "completed",
+      "harness_sha256": "6d0246640bca9a73c98d269e40dec759b527c2db7d50d952bb3a94c32621cb33",
+      "pod_uid": "c541dc8d-6db6-47f1-a020-19bba7fc0a7f",
+      "source_commit": "530195d121f3ced24f0761a7d9de646810fa0dee",
+      "source_dirty": "",
+      "public_harness_sha256": "9e05dcb3615d7c0673464213d94a6b8d76b92812a657fd3b2b7df73bbad2afbb",
+      "assignment": {
+        "physical_host_index": 0,
+        "torch_ordinal": 0,
+        "visible_cards": [
+          0,
+          1,
+          3
+        ]
+      },
+      "config_sha256": "157c6cb97d4509c47aef556a86b3c8bb022620cedab2b52c398cc140598356e5",
+      "actual_pod_creation_timestamp": "2026-10-30T09:52:15Z",
+      "argv": [
+        "<private-path>",
+        "$RUN_ROOT/e6-source/bench/ccgrid_e6.py",
+        "trial",
+        "--config",
+        "$RUN_ROOT/runs/e6-smoke-empty-delta-01/config.json",
+        "--out",
+        "$RUN_ROOT/runs/e6-smoke-empty-delta-01/result.json"
+      ],
+      "exit": 0,
+      "finished_utc": 1793354013.761267
+    },
+    "cleanup": {
+      "already_absent": true,
+      "basis": "Saved terminal API returned no Job and no Pod; TTL removal preceded controller adoption."
+    },
+    "scratch_cleanup": {
+      "trial": "e6-smoke-empty-delta-01",
+      "work_absent": true,
+      "free_bytes": 440825610240
+    }
   }
 }

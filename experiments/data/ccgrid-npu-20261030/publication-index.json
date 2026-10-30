@@ -12,6 +12,46 @@
       "validity": "valid"
     },
     {
+      "trial_id": "e6-main-empty-r01-resident",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-empty-r02-delta",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r01-delta",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r01-full",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r01-resident",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r02-delta",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r02-full",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r02-resident",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
       "trial_id": "e6-smoke-empty-delta-01",
       "headline": false,
       "validity": "valid"
@@ -27,5 +67,6 @@
       "validity": "valid"
     }
   ],
+  "e6_matrix_complete": false,
   "note": "Partial publication while the measurement matrix runs; n1 smoke is never pooled into headline repetitions."
 }

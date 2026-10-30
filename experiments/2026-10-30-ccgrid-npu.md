@@ -16,6 +16,15 @@ Each smoke arm has n=1 and is excluded from headline aggregates. Files are
 path-sanitized copies with original private-result hashes; no native/model
 payload is downloaded or published. The final n5 collection will be separate.
 
+The [raw-linked E6 collection](data/ccgrid-npu-20261030/e6-collection.json) and
+[summary](data/ccgrid-npu-20261030/e6-summary.json) are explicitly incomplete
+until all30 trials finish. At this publication milestone10 main samples are
+verified; no group has five repetitions. The
+[frozen matrix plan](data/ccgrid-npu-20261030/e6-frozen-matrix-plan.json) fixes
+the blocked order before measurement. Published samples include their actual
+physical-card assignment and verified cleanup evidence. Numeric values in the
+normalized collection were checked against the unredacted original records.
+
 ## Questions and fixed comparisons
 
 E6 measures an actual B4/S256→B4/S512 switch on the same Llama-3.1-8B
@@ -113,3 +122,7 @@ issues: lost E7 evidence on late native failure and mixing graph preparation
 states in summaries. Both were reproduced and fixed before native repetitions.
 E7 additionally preserves primary/cleanup errors, verifies original native output
 devices and supports command-scoped Git provenance from root-owned Jobs.
+E8 also verifies the allocated device ordinal through the same recursive output
+guard. After that correction the local full CPU suite passed451 tests, skipped8
+and passed4 subtests; exact-source CI bbceb17 passed457, skipped2 and passed4
+subtests. These checks are not native E8 measurements.

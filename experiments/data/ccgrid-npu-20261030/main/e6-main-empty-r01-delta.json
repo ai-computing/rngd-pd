@@ -6814,6 +6814,49 @@
   },
   "publication": {
     "original_private_result_sha256": "7b6163954783a201144696166111afc1578e2c6ffef7553c9f3249b0f7fe8114",
-    "redaction": "Machine paths and hostname/allocator UUID removed; numeric samples/tokens/counters unchanged."
+    "redaction": "Machine paths and hostname/allocator UUID removed; numeric samples/tokens/counters unchanged.",
+    "operational": {
+      "utc": 1793355175.4712334,
+      "status": "completed",
+      "harness_sha256": "42546f1900e8b5a1f84e0e3d04b1e70b2ed9eda8119986cbfd20ca6f7abb0038",
+      "pod_uid": "e28f8478-ab94-4e79-8219-54a2bf7477e1",
+      "source_commit": "530195d121f3ced24f0761a7d9de646810fa0dee",
+      "source_dirty": "",
+      "public_harness_sha256": "9e05dcb3615d7c0673464213d94a6b8d76b92812a657fd3b2b7df73bbad2afbb",
+      "assignment": {
+        "physical_host_index": 0,
+        "torch_ordinal": 0,
+        "visible_cards": [
+          0,
+          1,
+          3
+        ]
+      },
+      "config_sha256": "fb6fcebcd8d60ec6ac2284d7caa742f4a91b6541cfaa63f869291bd0ef4e71a3",
+      "actual_pod_creation_timestamp": "2026-10-30T10:12:18Z",
+      "argv": [
+        "<private-path>",
+        "$RUN_ROOT/e6-source/bench/ccgrid_e6.py",
+        "trial",
+        "--config",
+        "$RUN_ROOT/runs/e6-main-empty-r01-delta/config.json",
+        "--out",
+        "$RUN_ROOT/runs/e6-main-empty-r01-delta/result.json"
+      ],
+      "exit": 0,
+      "finished_utc": 1793355219.7747715
+    },
+    "cleanup": {
+      "job_uid": "4b81563f-451a-4c85-baa0-6e516b2d76a9",
+      "pod_uid": "e28f8478-ab94-4e79-8219-54a2bf7477e1",
+      "job_absent": true,
+      "pod_absent": true,
+      "terminal_phase": "Succeeded"
+    },
+    "scratch_cleanup": {
+      "trial": "e6-main-empty-r01-delta",
+      "work_absent": true,
+      "free_bytes": 440627466240
+    }
   }
 }
