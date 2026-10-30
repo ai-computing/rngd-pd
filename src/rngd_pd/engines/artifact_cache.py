@@ -62,9 +62,11 @@ def _output_metadata(rec):
                                    dtype=t.dtype, device="meta")
 
     zero = rec.zero_sized_tensor_info
+    if zero is not None:
+        zero = replace(zero, output_indices_and_tensors=tuple(
+            (index, meta(t)) for index, t in zero.output_indices_and_tensors))
     return replace(rec,
-        zero_sized_tensor_info=replace(zero, output_indices_and_tensors=tuple(
-            (index, meta(t)) for index, t in zero.output_indices_and_tensors)),
+        zero_sized_tensor_info=zero,
         passthrough_pairs=tuple(replace(p, target_tensor=meta(p.target_tensor))
                                 for p in rec.passthrough_pairs))
 

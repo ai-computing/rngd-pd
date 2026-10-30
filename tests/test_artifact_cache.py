@@ -1,6 +1,5 @@
 """Cache publication and compatibility checks without the vendor SDK."""
 from dataclasses import dataclass
-import io
 import sys
 from types import ModuleType, SimpleNamespace
 from unittest.mock import Mock
@@ -24,9 +23,9 @@ class Passthrough:
 
 @dataclass
 class Reconstructor:
-    zero_sized_tensor_info: ZeroOutputs
+    zero_sized_tensor_info: ZeroOutputs | None
     passthrough_pairs: tuple
-    aliased_output_indices: tuple
+    output_reconstruction_indices: tuple | None
 
 
 @pytest.fixture
@@ -47,7 +46,7 @@ def module():
         target = torch.empty(3, 4).t()
         zero = torch.empty(0, 4)
     rec = Reconstructor(ZeroOutputs(((3, zero),)),
-                        (Passthrough(target, 7),), ((0, 1),))
+                        (Passthrough(target, 7),), (0, 0, 1, 2))
     return SimpleNamespace(module_weight={"constant": torch.arange(4)},
                            output_reconstructor=rec)
 
@@ -61,7 +60,7 @@ def test_new_cache_roundtrip_preserves_output_metadata_without_mutating_module(t
     assert restored.blob == b"opaque native program"
     assert torch.equal(restored.module_weight["constant"], m.module_weight["constant"])
     rec = restored.output_reconstructor
-    assert rec.aliased_output_indices == ((0, 1),)
+    assert rec.output_reconstruction_indices == (0, 0, 1, 2)
     assert rec.passthrough_pairs[0].offset_src_to_dst == 7
     for old, new in [(m.output_reconstructor.passthrough_pairs[0].target_tensor,
                       rec.passthrough_pairs[0].target_tensor),
@@ -71,6 +70,14 @@ def test_new_cache_roundtrip_preserves_output_metadata_without_mutating_module(t
         assert type(new) is torch.Tensor and new.device.type == "meta"
         assert (old.shape, old.stride(), old.dtype) == (new.shape, new.stride(), new.dtype)
     restored.to.assert_called_once_with("furiosa:0")
+
+
+def test_default_output_reconstructor_has_no_zero_metadata(tmp_path, sdk):
+    m = module()
+    m.output_reconstructor = Reconstructor(None, (), None)
+    path = ac.path_for(str(tmp_path), "kernel")
+    ac.save(m, path)
+    assert ac.load(path).output_reconstructor == Reconstructor(None, (), None)
 
 
 @pytest.mark.parametrize("field", ["SDK", "torch"])
