@@ -106,3 +106,16 @@ Onggi8f0b4bc103cc1608a7288bd14c59f67a292d3d74. Issues34–37; branch
   must provide both base/target fresh tokens even though public CLI permits missing
   base tokens; normalized collection fields must be independently compared with
   original raw records. CPU tests alone authorize no performance claim.
+- Superseding E8 ruling, explicitly requested by the paper session: correctness
+  is exact token-ID equality with a fresh load of the same target B/S variant.
+  B8-vs-B4 divergence is a cross-shape observation with its first differing token,
+  not a failed same-target switch. Preserve the original failed gate without
+  rewriting it. No dense-logit/activation equality is inferred from token IDs.
+- Root directly owns remote operations after repeated worker capacity errors.
+  Full and delta E6 smoke records passed independent local gates. The persistent
+  controller exports/hash-verifies raw small files before scratch removal and
+  runs one Job/card at a time; only three successful smoke arms unlock30 fresh
+  trials (three arms x two node-cache conditions x five repetitions).
+  Root-owned scratch permissions were repaired by a CPU-only ownership Job (no
+  NPU requested) and future operational cleanup runs after the first-token clock.
+  ADR-0010/PR76 binding and B2 work remain deferred until E6 completion.

@@ -1,0 +1,31 @@
+{
+  "schema": "ccgrid-npu-publication-index-v1",
+  "published_samples": [
+    {
+      "trial_id": "e6-main-empty-r01-delta",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-empty-r01-full",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-smoke-empty-delta-01",
+      "headline": false,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-smoke-empty-full-01",
+      "headline": false,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-smoke-empty-resident-01",
+      "headline": false,
+      "validity": "valid"
+    }
+  ],
+  "note": "Partial publication while the measurement matrix runs; n1 smoke is never pooled into headline repetitions."
+}

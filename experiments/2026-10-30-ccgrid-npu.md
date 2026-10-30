@@ -1,12 +1,20 @@
 # CCGrid 2027: per-level reconfiguration and resident-update experiments
 
-Status: E6 bounded native smoke; headline repetitions are not complete. E8 is
-blocked at its B8 cross-shape golden gate and is investigated separately.
+Status: E6 three-arm smoke passed; the30-trial matrix is running and headline
+repetitions are not complete. E8 uses
+the corrected same-target fresh-load criterion and is queued after E6.
 Tracking: [E6 #34](https://github.com/ai-computing/rngd-pd/issues/34),
 [E7 #35](https://github.com/ai-computing/rngd-pd/issues/35),
 [E8 #36](https://github.com/ai-computing/rngd-pd/issues/36),
 [optional E9 #37](https://github.com/ai-computing/rngd-pd/issues/37).
 Implementation/method ledger: [plan](../docs/superpowers/plans/2026-10-30-ccgrid-npu-experiments.md).
+
+Partial evidence: [preparation and source/input hashes](data/ccgrid-npu-20261030/preparation.json),
+[fresh references and preserved cross-shape observation](data/ccgrid-npu-20261030/references-and-cross-shape-observation.json),
+[published sample index](data/ccgrid-npu-20261030/publication-index.json).
+Each smoke arm has n=1 and is excluded from headline aggregates. Files are
+path-sanitized copies with original private-result hashes; no native/model
+payload is downloaded or published. The final n5 collection will be separate.
 
 ## Questions and fixed comparisons
 
@@ -48,6 +56,15 @@ and checks the target, returns to a checked base and then starts the switch
 timer. Projection/LM buffers and already loaded graph identities must remain
 unchanged. E9 is optional after the RNGD experiments; no vendor-versus-vendor
 performance comparison is intended.
+
+E8 correctness compares the switched/resident output with an independently fresh
+load of the **same target variant**, requiring exact equality of every integer
+token ID. It does not require B8 to reproduce B4's greedy continuation: different
+batch tactics or BF16 accumulation order can change that continuation. Dense
+logit/activation bitwise equality is not claimed by a token-ID comparison.
+The earlier B8 cross-shape gate remains as its original failed attempt record;
+the observed divergence position is recorded separately. This criterion change
+was explicitly requested by the coordinating paper session before E8 repetitions.
 
 ## Reproduction interfaces
 
