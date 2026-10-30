@@ -7,6 +7,10 @@ projection-row and LM-row fixtures on one allocated RNGD: physical card 0,
 checkpoint changes. The complete successful result is
 [native-02/result.json](data/binding-20261030/runs/rngd-b2-native-02/result.json).
 
+The separate [native fault follow-up](REPORT-RNGD-FAULTS-20261030.md) adds actual
+whole-request drain and partial rollback failure/unload evidence for the same
+unchanged runtime.
+
 | Claim | Raw evidence |
 |---|---|
 | Three B2 cases pass every kit assertion, including pure planning, full changed-byte coverage, actual unit hashes, retained undo and second-rollback refusal | [kit report](data/binding-20261030/runs/rngd-b2-native-02/work/kit-report.json), [kit stdout](data/binding-20261030/runs/rngd-b2-native-02/work/kit.stdout.log) |

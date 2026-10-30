@@ -24,6 +24,6 @@ jobs:
           python -m pytest -q tests
       - name: Verify published native binding evidence
         run: |
-          for check in experiments/verify_rngd_binding_evidence.py experiments/verify_atom_binding_evidence.py; do
+          for check in experiments/verify_rngd_binding_evidence.py experiments/verify_atom_binding_evidence.py experiments/verify_rngd_fault_evidence.py; do
             if [ -f "$check" ]; then python "$check"; fi
           done
