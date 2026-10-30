@@ -22,6 +22,31 @@
       "validity": "valid"
     },
     {
+      "trial_id": "e6-main-empty-r02-full",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-empty-r02-resident",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-empty-r03-delta",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-empty-r03-full",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-empty-r03-resident",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
       "trial_id": "e6-main-prepopulated-r01-delta",
       "headline": true,
       "validity": "valid"
@@ -48,6 +73,31 @@
     },
     {
       "trial_id": "e6-main-prepopulated-r02-resident",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r03-delta",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r03-full",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r03-resident",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r04-delta",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r04-full",
       "headline": true,
       "validity": "valid"
     },

@@ -18,12 +18,16 @@ payload is downloaded or published. The final n5 collection will be separate.
 
 The [raw-linked E6 collection](data/ccgrid-npu-20261030/e6-collection.json) and
 [summary](data/ccgrid-npu-20261030/e6-summary.json) are explicitly incomplete
-until all30 trials finish. At this publication milestone10 main samples are
+until all30 trials finish. At this publication milestone20 main samples are
 verified; no group has five repetitions. The
 [frozen matrix plan](data/ccgrid-npu-20261030/e6-frozen-matrix-plan.json) fixes
 the blocked order before measurement. Published samples include their actual
 physical-card assignment and verified cleanup evidence. Numeric values in the
 normalized collection were checked against the unredacted original records.
+The submitted Job requests4 CPUs/64GiB and limits12 CPUs/128GiB, with RNGD1.
+CPU cores and background node load are not exclusively controlled. The fixed
+SDK venv is mounted read-only; ephemeral Ubuntu dependency bootstrap counts in
+Pod time. These native Pod timings do not describe a prebuilt production image.
 
 ## Questions and fixed comparisons
 
