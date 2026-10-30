@@ -62,6 +62,14 @@ and validation. See the [native 2026.4 record](../experiments/2026-10-30-rngd-sd
 New archives honor the builder's umask; replacement preserves existing file
 permissions so shared readers work without making private entries public.
 
+Initial host weight layout can use two workers with
+`SwappableDecode(..., host_workers=2)`; default 1 preserves serial CPU usage.
+Checkpoint reads and device operations stay on the calling thread. Only pure
+CPU transforms run in the bounded pool, which is joined before startup returns
+or raises. Two workers at Torch intra-op=4 may use eight CPU threads. Prepared
+worker configs accept the same RNGD-only option; it does not accelerate device
+DMA itself or change resident row-update arithmetic.
+
 This is a custom CompileModule cache, separate from Furiosa-LLM's FXB model
 loader. It does not add live FXB weight replacement. The SDK wrapper exposes
 its native serializer through `_inner`; that small adapter boundary must be
