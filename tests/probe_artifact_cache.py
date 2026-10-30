@@ -17,15 +17,14 @@ NKV, HD, S = 8, 128, 16
 
 def _build_and_inputs():
     import torch, furiosa.torch
-    from furiosa.torch import native_device as nd
-    nd.set_fusion(8); nd.set_mesh_kind(nd.MeshKind.Mesh(2))
-    from furiosa.torch.custom_ops import CompileModule
+    from rngd_pd.engines.fsdk import open_device, dev_str
+    open_device()
     BF = torch.bfloat16
     class Inject(torch.nn.Module):
         def forward(self, Kp, k, oh):
             return Kp + k.view(NKV, HD, 1) * oh.view(1, 1, S)
     sample = (torch.zeros(NKV, HD, S, dtype=BF), torch.zeros(NKV, HD, dtype=BF), torch.zeros(S, dtype=BF))
-    def _d(a): return torch.from_numpy(np.ascontiguousarray(a)).to(BF).to("rngd:0")
+    def _d(a): return torch.from_numpy(np.ascontiguousarray(a)).to(BF).to(dev_str(0))
     rng = np.random.default_rng(7)
     inp = (_d(rng.standard_normal((NKV, HD, S))), _d(rng.standard_normal((NKV, HD))),
            _d(np.eye(S)[3].astype(np.float32)))
@@ -37,16 +36,17 @@ def _ck(t): return hashlib.blake2b(np.ascontiguousarray(t.detach().float().cpu()
 
 def phase_compile():
     import torch, furiosa.torch  # noqa
-    from furiosa.torch.custom_ops import CompileModule
+    from rngd_pd.engines.fsdk import CompileModule, dev_str, sync
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "serving"))
     from rngd_pd.engines import artifact_cache as AC
     Inject, sample, inp = _build_and_inputs()
     def compile_fn():
-        m = CompileModule.from_module(Inject(), sample); m.to("rngd:0"); return m
-    m, mode, secs = AC.get_or_compile(CACHE, KEY, compile_fn, device="rngd:0")
+        m = CompileModule.from_module(Inject(), sample); m.to(dev_str(0)); return m
+    m, mode, secs = AC.get_or_compile(CACHE, KEY, compile_fn, device=dev_str(0))
     out = m(*inp)
+    sync(0)
     p = AC.path_for(CACHE, KEY)
-    size = os.path.getsize(p + ".edf") + os.path.getsize(p + ".w") if AC.exists(p) else -1
+    size = AC.size(p) if AC.exists(p) else -1
     print(f"COMPILE mode={mode} secs={secs:.1f} ck={_ck(out)} size={size}")
 
 
@@ -54,9 +54,11 @@ def phase_load():
     import torch, furiosa.torch  # noqa
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "serving"))
     from rngd_pd.engines import artifact_cache as AC
+    from rngd_pd.engines.fsdk import dev_str, sync
     _, _, inp = _build_and_inputs()
-    m, mode, secs = AC.get_or_compile(CACHE, KEY, lambda: (_ for _ in ()).throw(RuntimeError("should not compile!")), device="rngd:0")
+    m, mode, secs = AC.get_or_compile(CACHE, KEY, lambda: (_ for _ in ()).throw(RuntimeError("should not compile!")), device=dev_str(0))
     out = m(*inp)
+    sync(0)
     print(f"LOAD mode={mode} secs={secs:.2f} ck={_ck(out)}")
 
 

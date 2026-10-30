@@ -22,7 +22,7 @@ import torch
 
 from rngd_pd.engines.decode_batch import (decode_graph_spec, lmhead_graph_spec,
                                           MAX_SHAPES)
-from rngd_pd.engines.artifact_cache import get_or_compile, exists, path_for
+from rngd_pd.engines.artifact_cache import get_or_compile, exists, path_for, size
 from rngd_pd.paths import ARTIFACT_CACHE
 
 # The .w half of an artifact is a torch.save pickle carrying a pytree treespec,
@@ -86,8 +86,8 @@ def main():
         t0 = time.time()
         _m, mode, secs = get_or_compile(a.cache, key, build, device=None)
         assert exists(target), f"[{label}] 컴파일은 됐는데 캐시에 안 남았다"
-        size = sum(os.path.getsize(target + e) for e in (".edf", ".w"))
-        print(f"[{label}] {mode} in {secs:.0f}s, 캐시에 기록됨 {size/1e6:.1f} MB "
+        nbytes = size(target)
+        print(f"[{label}] {mode} in {secs:.0f}s, 캐시에 기록됨 {nbytes/1e6:.1f} MB "
               f"(총 {time.time()-t0:.0f}s)")
 
 

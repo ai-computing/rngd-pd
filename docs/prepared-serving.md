@@ -25,7 +25,7 @@ python -m rngd_pd.serving.cluster --role decode --backend rngd --chip -1 \
 ```
 
 `SwappableDecode` uploads the shared projections and LM head once. Every listed
-variant is prepared at startup with `allow_compile=False`; missing EDFs fail
+variant is prepared at startup with `allow_compile=False`; missing compiled artifacts fail
 startup. No compilation or model-weight upload occurs when selecting a prepared
 variant. Use the graph-baking commands in [delta-swap.md](delta-swap.md) first.
 

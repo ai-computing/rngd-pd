@@ -1,15 +1,16 @@
-"""EDF artifact cache (Phase 5) — persist a compiled CompileModule so restart skips the ~30min compile.
+"""Compiled module cache: legacy EDF pairs or atomic SDK/Torch-checked Runnables.
 
-torch.save on a CompileModule fails (native `ir.Scatter` isn't picklable), but the EDF exposes a native
-`serialize()`/`Edf.deserialize()`, and the `module_weight` (ExportedProgramWeight, pure torch) pickles.
-So an artifact = { <key>.edf : edf.serialize() bytes,  <key>.w : torch.save(module_weight) }. On load
-we deserialize the EDF, reload the weight, and rebuild `CompileModule(EdfModule(edf), weight)` — no
-recompile. Verified in a fresh process (probe_artifact_cache.py): identical output, load in seconds.
-
-Content-addressed by (model, dims, bucket, tactic) so each unique config compiles once, ever.
-furiosa imports are lazy so this module stays importable on NPU-free hosts (serving_app --mock).
+2026.2 retains its .edf/.w format. New SDKs use a .runnable archive containing
+opaque native serialization and trusted Torch weights/output metadata. Only
+load cache files from trusted builds. Vendor imports remain lazy for CPU hosts.
 """
 import os, time, hashlib
+from dataclasses import replace
+import io
+import json
+import stat
+import uuid
+import zipfile
 import torch
 
 
@@ -18,25 +19,93 @@ def cache_key(**kw):
 
 
 def path_for(cache_dir, key):
-    """Artifacts live under the SDK that built them.
+    """Artifacts live under the SDK that built them; new SDKs also pin Torch.
 
     A 2026.2.0 EDF loading under 2026.3.0 would succeed and only be wrong in
     the numbers, which is the failure mode that has already overturned three
     conclusions here. Separating by directory rather than by key keeps the
     existing artifacts usable -- they only have to move, not be rebuilt.
     """
-    from rngd_pd.engines.fsdk import SDK
+    from rngd_pd.engines.fsdk import SDK, NEW
     d = os.path.join(cache_dir, SDK)
+    if NEW:
+        d = os.path.join(d, str(torch.__version__))
     os.makedirs(d, exist_ok=True)
     return os.path.join(d, key)
 
 
 def exists(path):
-    return os.path.exists(path + ".edf") and os.path.exists(path + ".w")
+    return all(os.path.isfile(p) for p in _files(path))
+
+
+def _files(path):
+    from rngd_pd.engines.fsdk import NEW
+    return (path + ".runnable",) if NEW else (path + ".edf", path + ".w")
+
+
+def size(path):
+    """Bytes in the active SDK's complete cache entry."""
+    return sum(os.path.getsize(p) for p in _files(path))
+
+
+def _metadata():
+    from rngd_pd.engines.fsdk import SDK
+    return dict(format="runnable-v1", sdk=SDK, torch=str(torch.__version__))
+
+
+def _output_metadata(rec):
+    """Replace export-time FakeTensors with shape-only, picklable metadata."""
+    if rec is None:
+        return None
+
+    def meta(t):
+        return torch.empty_strided(tuple(t.shape), tuple(t.stride()),
+                                   dtype=t.dtype, device="meta")
+
+    zero = rec.zero_sized_tensor_info
+    if zero is not None:
+        zero = replace(zero, output_indices_and_tensors=tuple(
+            (index, meta(t)) for index, t in zero.output_indices_and_tensors))
+    return replace(rec,
+        zero_sized_tensor_info=zero,
+        passthrough_pairs=tuple(replace(p, target_tensor=meta(p.target_tensor))
+                                for p in rec.passthrough_pairs))
+
+
+def _save_runnable(module, path):
+    from rngd_pd.engines.fsdk import runnable_blob
+    state = io.BytesIO()
+    torch.save(dict(module_weight=module.module_weight,
+                    output_reconstructor=_output_metadata(module.output_reconstructor)), state)
+    blob = runnable_blob(module)
+    target = path + ".runnable"
+    try:
+        mode = stat.S_IMODE(os.stat(target).st_mode)
+    except FileNotFoundError:
+        mode = None
+    tmp = path + "." + uuid.uuid4().hex + ".tmp"
+    # Match legacy open(..., "wb"): respect the builder's umask without changing it.
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0), 0o666)
+    try:
+        with os.fdopen(fd, "wb") as f:
+            with zipfile.ZipFile(f, "w") as archive:
+                archive.writestr("metadata.json", json.dumps(_metadata()))
+                archive.writestr("runnable.bin", blob)
+                archive.writestr("state.pt", state.getvalue())
+        if mode is not None:
+            os.chmod(tmp, mode)
+        os.replace(tmp, target)
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+    return size(path)
 
 
 def save(module, path):
-    """Persist a compiled CompileModule as (<path>.edf blob, <path>.w weight). Returns bytes written."""
+    """Persist a compiled module in the active SDK's format; return bytes."""
+    from rngd_pd.engines.fsdk import NEW
+    if NEW:
+        return _save_runnable(module, path)
     blob = module.edf.serialize()                       # native EDF serialization (binaries+scatter+shapes)
     tmp = path + ".edf.tmp"
     with open(tmp, "wb") as f:
@@ -49,6 +118,19 @@ def save(module, path):
 
 def load(path, device=None):
     """Rebuild a compiled CompileModule from a saved artifact. No recompile."""
+    from rngd_pd.engines.fsdk import NEW
+    if NEW:
+        from rngd_pd.engines.fsdk import module_from_blob
+        with zipfile.ZipFile(path + ".runnable") as archive:
+            if json.loads(archive.read("metadata.json")) != _metadata():
+                raise ValueError("incompatible artifact cache format, SDK or Torch version; rebake")
+            # Cache files are trusted executable/pickle artifacts, just as legacy .w files are.
+            state = torch.load(io.BytesIO(archive.read("state.pt")),
+                               weights_only=False, map_location="cpu")
+            m = module_from_blob(archive.read("runnable.bin"), state)
+        if device is not None:
+            m.to(device)
+        return m
     from furiosa.native_torch import ir
     from rngd_pd.engines.fsdk import CompileModule
     from rngd_pd.engines.fsdk import EdfModule
@@ -71,7 +153,7 @@ def get_or_compile(cache_dir, key, compile_fn, device=None):
     try:
         save(m, path)
     except Exception as e:                              # never fail the request path over caching
-        print(f"[artifact_cache] WARN: could not persist EDF ({e}); cold-start cache disabled for {key}")
+        print(f"[artifact_cache] WARN: could not persist compiled module ({e}); cold-start cache disabled for {key}")
     return m, "compile", time.time() - t0
 
 
