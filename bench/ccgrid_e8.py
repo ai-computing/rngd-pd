@@ -21,7 +21,7 @@ describes OS page-cache eviction or artifact delivery. Both use existing
 compiled cache entries, allow_compile=False, and a hard from_module guard.
 
 Every original CompileModule.__call__ is observed without replacing outputs:
-output tensors must still be Furiosa tensors; these observation checks remain
+output tensors must use Furiosa and the allocated ordinal; these checks remain
 inside measured intervals. All shared group tensors plus
 the LM buffer retain both Python identity and data_ptr across the switch;
 already loaded compiled modules retain identity. Full shared-weight upload
@@ -75,29 +75,18 @@ def validate(a):
     return base, target, reference
 
 
-def check_native_output(output):
-    import torch
-    def tensors(value):
-        if isinstance(value, torch.Tensor):
-            yield value
-        elif isinstance(value, (list, tuple)):
-            for item in value:
-                yield from tensors(item)
-        elif isinstance(value, dict):
-            for item in value.values():
-                yield from tensors(item)
-    actual = list(tensors(output))
-    if not actual or any(t.device.type != "furiosa" for t in actual):
-        raise RuntimeError("original compiled graph outputs must contain only furiosa tensors")
+def check_native_output(output, chip):
+    common.check_native_output(output, "furiosa", chip)
 
 
 @contextmanager
-def observe_native(engine_class, row):
+def observe_native(engine_class, row, chip):
     from rngd_pd.engines.fsdk import CompileModule, SDK
     counts = row["counts"] = dict(compilation_attempts=0, native_calls=0,
         native_output_checks=0, shared_uploads=0)
     phases = row["native_calls_by_phase"] = {}
     row["sdk"] = SDK
+    row["expected_native_device"] = dict(type="furiosa", index=chip)
     phase = ["load"]
     original_compile = inspect.getattr_static(CompileModule, "from_module")
     original_call = CompileModule.__call__
@@ -109,7 +98,7 @@ def observe_native(engine_class, row):
         counts["native_calls"] += 1
         phases[phase[0]] = phases.get(phase[0], 0) + 1
         output = original_call(module, *args, **kwargs)
-        check_native_output(output)
+        check_native_output(output, chip)
         counts["native_output_checks"] += 1
         return output
     def upload(engine, *args, **kwargs):
@@ -162,7 +151,7 @@ def sample(a, row, base, target, reference):
     from rngd_pd.swap.rngd import SwappableDecode
     torch.set_num_threads(a.intra_op)
     engine = None
-    with observe_native(SwappableDecode, row) as phase:
+    with observe_native(SwappableDecode, row, a.chip) as phase:
         try:
             began = time.perf_counter_ns()
             engine = SwappableDecode(a.ckpt, group=base.group, chip=a.chip,

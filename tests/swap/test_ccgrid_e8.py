@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 from threading import RLock
 import time
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 
 import numpy as np
 import pytest
@@ -99,7 +99,8 @@ def cpu(harness, tmp_path, monkeypatch):
     sdk = ModuleType("rngd_pd.engines.fsdk")
     sdk.CompileModule, sdk.SDK = CpuModule, "CPU-test-adapter"
     monkeypatch.setitem(sys.modules, sdk.__name__, sdk)
-    def check_cpu(output):
+    def check_cpu(output, chip):
+        assert chip == 0
         assert isinstance(output, torch.Tensor) and output.device.type == "cpu"
     # Only the unavailable SDK/device boundary changes; original graph results
     # and production weight loading, prepare(), swap() and transforms stay real.
@@ -219,7 +220,17 @@ def test_base_reference_mismatch_gates_before_target_is_prepared(harness, cpu, t
 
 def test_original_cpu_graph_output_is_rejected_by_native_guard(harness):
     with pytest.raises(RuntimeError, match="furiosa"):
-        harness.check_native_output((torch.ones(2),))
+        harness.check_native_output((torch.ones(2),), 0)
+
+
+def test_native_guard_rejects_another_furiosa_ordinal(harness, monkeypatch):
+    class Tensor:
+        def __init__(self, index):
+            self.device = SimpleNamespace(type="furiosa", index=index)
+    monkeypatch.setitem(sys.modules, "torch", SimpleNamespace(Tensor=Tensor))
+    harness.check_native_output({"output": [Tensor(0)]}, 0)
+    with pytest.raises(RuntimeError, match="furiosa:0"):
+        harness.check_native_output((Tensor(1),), 0)
 
 
 @pytest.mark.parametrize("mutation", ["batch", "missing_base", "context", "same", "group"])
