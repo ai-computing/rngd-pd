@@ -1,8 +1,11 @@
 # CCGrid 2027: per-level reconfiguration and resident-update experiments
 
 Status: E6 completed30/30 valid main trials, n=5 per arm/cache condition.
-E8 uses the corrected same-target fresh-load criterion and its native matrix
-is running. ADR-0010/B2 suitability is being checked before E7 measurements.
+E8 completed30/30 valid native samples across three directions and both graph
+states, n=5 each, using the corrected same-target fresh-load criterion. E7 completed
+smoke4/4 and main30/30 with actual PR76 switchplan.v1 input; its six fixture/mode
+groups each have n5. All owned Jobs/Pods and active RNGD requesters are absent.
+ADR-0010 B2 remains unclaimed; see the compatibility assessment below.
 Tracking: [E6 #34](https://github.com/ai-computing/rngd-pd/issues/34),
 [E7 #35](https://github.com/ai-computing/rngd-pd/issues/35),
 [E8 #36](https://github.com/ai-computing/rngd-pd/issues/36),
@@ -10,6 +13,8 @@ Tracking: [E6 #34](https://github.com/ai-computing/rngd-pd/issues/34),
 Implementation/method ledger: [plan](../docs/superpowers/plans/2026-10-30-ccgrid-npu-experiments.md).
 
 Evidence: [final E6 results and figures](data/ccgrid-npu-20261030/E6-RESULTS.md),
+[final E8 results](data/ccgrid-npu-20261030/E8-RESULTS.md),
+[final E7 results](data/ccgrid-npu-20261030/E7-RESULTS.md),
 [preparation and source/input hashes](data/ccgrid-npu-20261030/preparation.json),
 [fresh references and preserved cross-shape observation](data/ccgrid-npu-20261030/references-and-cross-shape-observation.json),
 [published sample index](data/ccgrid-npu-20261030/publication-index.json).
@@ -109,7 +114,7 @@ checked against them. No allocator retries or card-wait subtraction are hidden.
 
 ## Evidence and validity
 
-The future collection links every original sample by SHA256 and retains its
+Each published collection links every original sample by SHA256 and retains its
 source revision, environment, checkpoint/artifact identities, real prompts and
 tokens, status, validity and phase samples. The analysis script rehashes linked
 raw files and reports all attempts, valid n, median and inclusive linear IQR.
@@ -117,7 +122,10 @@ Any failed sample, missing metric or n<5 prevents a group from qualifying as a
 headline. Additional corrective attempts remain separately labeled.
 
 E6 native results and aggregates passed their smoke and measurement gates.
-E7/E8 native results remain pending. CPU tests establish harness behavior only. The paper session owns
+E8 native results passed all30 same-target/retention/device gates. E7 passed
+all30 same-checkpoint token/native/device gates, with77 exported small files
+verified,470 executed source blobs matched to Git and exact CLI reproduction.
+CPU tests establish harness behavior only. The paper session owns
 `data/NUMBERS.md`; this experiment does not modify that ledger.
 
 The final harness CPU suite passed450 tests, skipped8 environment-dependent
@@ -130,3 +138,24 @@ E8 also verifies the allocated device ordinal through the same recursive output
 guard. After that correction the local full CPU suite passed451 tests, skipped8
 and passed4 subtests; exact-source CI bbceb17 passed457, skipped2 and passed4
 subtests. These checks are not native E8 measurements.
+
+## ADR-0010 adoption
+
+The strict versioned consumer uses canonical ranges from actual onggi PR76 CLI
+output, preserves manifest/source metadata, and retains unversioned compatibility.
+The parser sourcef0f08bf full local suite passed590 tests, skipped8 and passed4
+subtests; CI41051893033 and publication-head CI41052659068 were read green,
+596passed2skip4subtests. These are CPU checks.
+
+[The binding fit assessment](../docs/adr0010-rngd-fit.md) records the missing
+actual device artifact-space readback, retained rollback journal and owner/drain
+protocol, plus existing private Furiosa SDK dependencies. E7 performance does
+not establish B2 conformance. [onggi#79](https://github.com/ai-computing/onggi/issues/79)
+tracks runtime-valid fixtures and verification coverage. The latter has a
+[bounded fix in PR80](https://github.com/ai-computing/onggi/pull/80): twelve stdlib
+regressions and fake B1/B2 cases pass locally; a fake pass is not native evidence.
+
+E9 remains explicitly deferred: no new ATOM measurements or cross-vendor performance
+claim is inferred from the completed RNGD matrix. Native serving B2 and runtime-valid
+fixtures remain separate follow-ups. Final integration/check outcomes are recorded
+in the shared experiment board Log after publication.

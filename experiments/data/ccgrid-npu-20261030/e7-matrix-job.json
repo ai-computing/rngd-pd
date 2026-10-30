@@ -1,0 +1,364 @@
+{
+  "apiVersion": "batch/v1",
+  "kind": "Job",
+  "metadata": {
+    "name": "cdx-e7-main-v1",
+    "namespace": "codex-ccgrid-npu-20261030",
+    "labels": {
+      "owner": "codex",
+      "experiment": "ccgrid-e7-main"
+    }
+  },
+  "spec": {
+    "backoffLimit": 0,
+    "activeDeadlineSeconds": 3600,
+    "ttlSecondsAfterFinished": 600,
+    "template": {
+      "metadata": {
+        "labels": {
+          "owner": "codex",
+          "experiment": "ccgrid-e7-main"
+        }
+      },
+      "spec": {
+        "restartPolicy": "Never",
+        "automountServiceAccountToken": false,
+        "nodeSelector": {
+          "kubernetes.io/hostname": "node-0"
+        },
+        "containers": [
+          {
+            "command": [
+              "bash",
+              "-c",
+              "set -eu\nexport DEBIAN_FRONTEND=noninteractive\napt-get update -qq\napt-get install -y -qq --no-install-recommends python3.10 libgomp1 libnuma1 ca-certificates tzdata git >/dev/null\nln -sf python3.10 /usr/bin/python3\nexec <private-path> $RUN_ROOT/scripts/run_e7_matrix.py\n"
+            ],
+            "env": [
+              {
+                "name": "PYTHONDONTWRITEBYTECODE",
+                "value": "1"
+              },
+              {
+                "name": "OMP_NUM_THREADS",
+                "value": "4"
+              },
+              {
+                "name": "MKL_NUM_THREADS",
+                "value": "4"
+              },
+              {
+                "name": "HF_HUB_OFFLINE",
+                "value": "1"
+              },
+              {
+                "name": "LD_LIBRARY_PATH",
+                "value": "/host-libs:/host-usrlib"
+              },
+              {
+                "name": "PATH",
+                "value": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/host-bin"
+              },
+              {
+                "name": "PYTHONNOUSERSITE",
+                "value": "1"
+              },
+              {
+                "name": "RNGD_MAX_SHAPES",
+                "value": "8"
+              },
+              {
+                "name": "CCGRID_ROOT",
+                "value": "$RUN_ROOT"
+              },
+              {
+                "name": "CCGRID_SOURCE",
+                "value": "$RUN_ROOT/e7-source"
+              },
+              {
+                "name": "PYTHONPATH",
+                "value": "$RUN_ROOT/e7-source/src"
+              },
+              {
+                "name": "XDG_CACHE_HOME",
+                "value": "$RUN_ROOT/runs/e7-main-v1/xdg"
+              },
+              {
+                "name": "TMPDIR",
+                "value": "$RUN_ROOT/tmp"
+              },
+              {
+                "name": "CONTAINER_NAME",
+                "value": "run"
+              },
+              {
+                "name": "POD_UID",
+                "valueFrom": {
+                  "fieldRef": {
+                    "fieldPath": "metadata.uid"
+                  }
+                }
+              },
+              {
+                "name": "CCGRID_RUN",
+                "value": "$RUN_ROOT/runs/e7-main-v1"
+              },
+              {
+                "name": "GOMAXPROCS",
+                "value": "4"
+              }
+            ],
+            "image": "ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+            "imagePullPolicy": "IfNotPresent",
+            "name": "run",
+            "resources": {
+              "limits": {
+                "cpu": "12",
+                "furiosa.ai/rngd": "1",
+                "memory": "128Gi"
+              },
+              "requests": {
+                "cpu": "4",
+                "furiosa.ai/rngd": "1",
+                "memory": "64Gi"
+              }
+            },
+            "securityContext": {
+              "privileged": true
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "<private-path>",
+                "name": "source-views",
+                "readOnly": true
+              },
+              {
+                "mountPath": "/host-libs",
+                "name": "host-libs",
+                "readOnly": true
+              },
+              {
+                "mountPath": "/host-usrlib",
+                "name": "host-usrlib",
+                "readOnly": true
+              },
+              {
+                "mountPath": "/host-bin",
+                "name": "host-bin",
+                "readOnly": true
+              },
+              {
+                "mountPath": "/usr/lib/python3/dist-packages",
+                "name": "dist",
+                "readOnly": true
+              },
+              {
+                "mountPath": "/usr/local/lib/python3.10/dist-packages",
+                "name": "local-dist",
+                "readOnly": true
+              },
+              {
+                "mountPath": "<private-path>",
+                "name": "rngd-sdk",
+                "readOnly": true
+              },
+              {
+                "mountPath": "/run/swap",
+                "name": "assigned"
+              },
+              {
+                "mountPath": "/dev/shm",
+                "name": "shm"
+              },
+              {
+                "mountPath": "<private-path>",
+                "name": "prior-opt",
+                "readOnly": true
+              },
+              {
+                "mountPath": "<private-path>",
+                "name": "onggi-build",
+                "readOnly": true
+              },
+              {
+                "name": "work",
+                "mountPath": "$RUN_ROOT",
+                "readOnly": false
+              },
+              {
+                "name": "own-cache",
+                "mountPath": "$RUN_ROOT/cache",
+                "readOnly": true
+              },
+              {
+                "name": "source",
+                "mountPath": "$RUN_ROOT/e7-source",
+                "readOnly": true
+              },
+              {
+                "name": "published",
+                "mountPath": "$RUN_ROOT/artifacts-v2",
+                "readOnly": true
+              },
+              {
+                "name": "device-checkpoint",
+                "mountPath": "/var/lib/kubelet/device-plugins",
+                "readOnly": true
+              }
+            ]
+          }
+        ],
+        "initContainers": [
+          {
+            "command": [
+              "bash",
+              "-c",
+              "set -eu\nls /dev/rngd | sed -n 's/^\\(npu[0-9]*\\)ch0$/\\1/p' | sort -u > /run/swap/rngd\n[ \"$(wc -l < /run/swap/rngd)\" -eq 1 ]\ncat /run/swap/rngd\n"
+            ],
+            "image": "ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+            "imagePullPolicy": "IfNotPresent",
+            "name": "assigned-rngd",
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "furiosa.ai/rngd": "1",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "furiosa.ai/rngd": "1",
+                "memory": "64Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/run/swap",
+                "name": "assigned"
+              }
+            ]
+          }
+        ],
+        "volumes": [
+          {
+            "hostPath": {
+              "path": "<private-path>",
+              "type": "Directory"
+            },
+            "name": "source-views"
+          },
+          {
+            "hostPath": {
+              "path": "/usr/lib/x86_64-linux-gnu",
+              "type": "Directory"
+            },
+            "name": "host-libs"
+          },
+          {
+            "hostPath": {
+              "path": "/usr/lib",
+              "type": "Directory"
+            },
+            "name": "host-usrlib"
+          },
+          {
+            "hostPath": {
+              "path": "/usr/bin",
+              "type": "Directory"
+            },
+            "name": "host-bin"
+          },
+          {
+            "hostPath": {
+              "path": "/usr/lib/python3/dist-packages",
+              "type": "Directory"
+            },
+            "name": "dist"
+          },
+          {
+            "hostPath": {
+              "path": "/usr/local/lib/python3.10/dist-packages",
+              "type": "Directory"
+            },
+            "name": "local-dist"
+          },
+          {
+            "hostPath": {
+              "path": "<private-path>",
+              "type": "Directory"
+            },
+            "name": "rngd-sdk"
+          },
+          {
+            "emptyDir": {},
+            "name": "assigned"
+          },
+          {
+            "emptyDir": {
+              "medium": "Memory",
+              "sizeLimit": "16Gi"
+            },
+            "name": "shm"
+          },
+          {
+            "hostPath": {
+              "path": "<private-path>",
+              "type": "Directory"
+            },
+            "name": "prior-opt"
+          },
+          {
+            "hostPath": {
+              "path": "<private-path>",
+              "type": "Directory"
+            },
+            "name": "onggi-build"
+          },
+          {
+            "name": "work",
+            "hostPath": {
+              "path": "$RUN_ROOT",
+              "type": "Directory"
+            }
+          },
+          {
+            "name": "own-cache",
+            "hostPath": {
+              "path": "$RUN_ROOT/cache",
+              "type": "Directory"
+            }
+          },
+          {
+            "name": "source",
+            "hostPath": {
+              "path": "$RUN_ROOT/e7-source",
+              "type": "Directory"
+            }
+          },
+          {
+            "name": "published",
+            "hostPath": {
+              "path": "$RUN_ROOT/artifacts-v2",
+              "type": "Directory"
+            }
+          },
+          {
+            "name": "device-checkpoint",
+            "hostPath": {
+              "path": "/var/lib/kubelet/device-plugins",
+              "type": "Directory"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "publication": {
+    "original_private_file": "e7-matrix-job.json",
+    "original_private_sha256": "13f67f68e3496c76d909cb677894ec26133c736b5f21464583e61683eee72e91",
+    "original_private_bytes": 11429,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

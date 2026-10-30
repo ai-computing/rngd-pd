@@ -1,0 +1,50 @@
+{
+  "schema": "ccgrid-e7-fresh-references-v1",
+  "status": "completed",
+  "utc": 1793361407.9649887,
+  "pod_uid": "c50b1afb-5392-443e-a1b0-5f31cc1b3782",
+  "cases": [
+    {
+      "role": "sparse",
+      "argv": [
+        "<private-path>",
+        "$RUN_ROOT/scripts/native_reference.py",
+        "--variant",
+        "B4-S256-g2",
+        "--checkpoint",
+        "<private-path>",
+        "--prompt-offset",
+        "0",
+        "--out",
+        "$RUN_ROOT/runs/e7-fresh-refs-v1/work/sparse-B4-S256-g2.json"
+      ],
+      "exit": 0,
+      "raw_sha256": "74437837153a81ff3cafcedbc5db7963661332f259af9195920accc46e19408d"
+    },
+    {
+      "role": "lm",
+      "argv": [
+        "<private-path>",
+        "$RUN_ROOT/scripts/native_reference.py",
+        "--variant",
+        "B4-S256-g2",
+        "--checkpoint",
+        "<private-path>",
+        "--prompt-offset",
+        "0",
+        "--out",
+        "$RUN_ROOT/runs/e7-fresh-refs-v1/work/lm-B4-S256-g2.json"
+      ],
+      "exit": 0,
+      "raw_sha256": "df6a7fbd31fcd0c91ef26f813bb38796efda0a69cb73be735e6c19d18602a864"
+    }
+  ],
+  "adapter_sha256": "4b8b67b4037cdcf4ab5f12184d5ae66ba518b91cffc9acd9f0a8f393c6a88873",
+  "finished_utc": 1793361449.806769,
+  "publication": {
+    "original_private_file": "operational.json",
+    "original_private_sha256": "e8509563b9e1532d2eaea461206548fd4ed6d2867be3cd046d390506a1e7d28a",
+    "original_private_bytes": 1527,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

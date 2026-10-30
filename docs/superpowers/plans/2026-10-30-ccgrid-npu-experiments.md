@@ -61,10 +61,12 @@ Onggi8f0b4bc103cc1608a7288bd14c59f67a292d3d74. Issues34–37; branch
 - [x] Implement/test E7 single-sample coordinator and update byte/timing evidence.
 - [x] E6 real allocated Job smoke, fresh-reference/shape/native-identity gates.
 - [x] E6 n5 per arm/cache:30/30 valid, all owned Jobs/Pods absent after cleanup.
-- [ ] E7 and E8 n5; release between measurement jobs. E8 matrix now running.
-- [ ] Optional E9 if core experiments complete; otherwise explicitly deferred.
-- [ ] Independently verify raw files, derive summaries, publish PR evidence, update
-  board, read exact-head checks and merge completed experiment work as authorized.
+- [x] E8 n5:30/30 valid, three directions x first-use/prepared x five repeats.
+- [x] E7 n5:4/4 smoke +30/30 main valid, six groups n5, all Jobs/Pods removed.
+- [x] Optional E9 explicitly deferred; no new ATOM results claimed.
+- [x] Independently verify raw files, derive summaries and publish PR evidence.
+- Exact-head CI and integration merge outcome are recorded in the shared board
+  Log after publication; main integration chain remains outside this merge.
 
 ## Review focus and ledger
 
@@ -131,3 +133,21 @@ Onggi8f0b4bc103cc1608a7288bd14c59f67a292d3d74. Issues34–37; branch
   three directions x first-use/prepared x n5. No original cross-shape record is
   deleted. Root retains exclusive hardware ownership. ADR-0010 contract review
   begins separately; no B2 or public-only serving claim is implied by E6/E8.
+
+- E8 completed30/30 native samples, all six groups n5, published atdb57b1f.
+  Root checked original63 export files, every core source Git blob, raw numeric
+  values/tokens/identities, all canonical public Git hashes and CLI reproduction.
+- ADR-0010 v1 consumer integrated atf0f08bf, local590pass8skip4subtests, exact-head
+  CI41051893033 read596pass2skip4subtests. Actual PR76 CLI binary47bfaae6 and
+  sparse/LM fixture file SHA256 are frozen before E7, which passed4smokes.
+  B2-only remains blocked on artifact-space actual readback/retained journal and
+  runtime-valid fixture coverage; existing internal SDK dependencies are flagged.
+  onggi#79/PR80 addresses the neutral kit false-positive verification boundary,
+  with no native B2 claim. E7 measurements keep this limitation explicit.
+
+- E7 completed4/4 smoke and30/30 main, every group n5, all exact base/target
+  native tokens and device checks pass. Root independently checked77 small
+  exports,470 executed Git blobs, all raw numeric/plan/token fields and full CLI
+  reproduction. Direct final API: no owned Jobs/Pods or active RNGD requester.
+  Sparse/LM row update-to-first-token medians0.635/0.632s; replacement0.963/1.127s;
+  restart19.948/20.359s. Logical bytes and native timing limits remain explicit.

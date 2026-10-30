@@ -58,8 +58,12 @@ establish conformance of this model-serving path.
 
 The upstream kit also needs to match verification units against the planned
 coverage: its current `verify_units()` iterates the supplied list and accepts
-an empty list. Corruption, drain and restoration-failure cases need runtime
-tests even when its synthetic reference binding passes.
+an empty list. [onggi PR80](https://github.com/ai-computing/onggi/pull/80) fixes missing, duplicate
+and unexpected verification intervals, including empty-file reload and independent
+device byte accounting. Twelve stdlib regressions and the reference fake B1/B2
+cases pass locally. Runtime-valid fixture hooks remain in
+[onggi#79](https://github.com/ai-computing/onggi/issues/79). Corruption, drain and
+restoration-failure cases still need runtime tests even when a synthetic binding passes.
 
 ## Public API audit
 
