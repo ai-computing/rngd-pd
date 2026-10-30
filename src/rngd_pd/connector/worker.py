@@ -176,4 +176,3 @@ class WorkerKVConnector:
 
     def get_finished(self, finished_req_ids):
         return (None, None)
-
