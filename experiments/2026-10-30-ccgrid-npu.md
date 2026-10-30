@@ -1,6 +1,7 @@
 # CCGrid 2027: per-level reconfiguration and resident-update experiments
 
-Status: preparation; no new native measurement result yet.
+Status: E6 bounded native smoke; headline repetitions are not complete. E8 is
+blocked at its B8 cross-shape golden gate and is investigated separately.
 Tracking: [E6 #34](https://github.com/ai-computing/rngd-pd/issues/34),
 [E7 #35](https://github.com/ai-computing/rngd-pd/issues/35),
 [E8 #36](https://github.com/ai-computing/rngd-pd/issues/36),
@@ -88,3 +89,10 @@ headline. Additional corrective attempts remain separately labeled.
 Native results and aggregate links will be added after the smoke and measurement
 gates. CPU tests establish harness behavior only. The paper session owns
 `data/NUMBERS.md`; this experiment does not modify that ledger.
+
+The final harness CPU suite passed450 tests, skipped8 environment-dependent
+cases and passed4 subtests. A single independent review found two Important
+issues: lost E7 evidence on late native failure and mixing graph preparation
+states in summaries. Both were reproduced and fixed before native repetitions.
+E7 additionally preserves primary/cleanup errors, verifies original native output
+devices and supports command-scoped Git provenance from root-owned Jobs.

@@ -58,7 +58,7 @@ Onggi8f0b4bc103cc1608a7288bd14c59f67a292d3d74. Issues34–37; branch
   base-aware delta; protect base ownership; do not omit initial resident load.
 - [ ] Freeze graph hashes, complete artifact manifests and fixed input/run config.
 - [x] Implement/test pure analysis and E6 trial/worker harness; preserve failures.
-- [ ] Implement/test E7 single-sample coordinator and update byte/timing evidence.
+- [x] Implement/test E7 single-sample coordinator and update byte/timing evidence.
 - [ ] Smoke real allocated Job, fresh-reference/shape/native-identity gates.
 - [ ] Run E6 n5 per arm/cache, then E7 and E8 n5; release between measurement jobs.
 - [ ] Optional E9 if core experiments complete; otherwise explicitly deferred.
@@ -91,3 +91,18 @@ Onggi8f0b4bc103cc1608a7288bd14c59f67a292d3d74. Issues34–37; branch
   B4/S512 and B8/S256(+LM), exact SDK264/group2; runtime compilation still forbidden.
   Publish attempt1 incorrectly labeled reused graph provenance; preserve it and
   use corrected-v2 immutable manifests only. No native trial used attempt1.
+- Review fix completed: E7 writes phase outputs into its persistent result before
+  later sync/cleanup, preserves primary errors plus separate close errors, and
+  observes original native calls/device type+allocated index with a compile guard.
+  Command-scoped Git safe.directory handles the root Job/owned-source boundary.
+  Root full CPU verification after all fixes:450passed8skip4subtests63.24s.
+- E8 CPU harness covers first-use/prepared with actual target warmup and return
+  to base, retained shared buffers/modules, native output checks and failure data.
+  Native B8 cross-shape golden gate failed (one lane at generated token4). Do not
+  change that gate silently; E8 is blocked pending diagnosis. B4/S256 and B4/S512
+  native references pass, so frozen530195d E6 smoke proceeds independently.
+- Review-declined rulings: native ownership/clocks/fresh-reference provenance stay
+  exclusive hardware-owner gates plus root raw verification; E7 matrix inputs
+  must provide both base/target fresh tokens even though public CLI permits missing
+  base tokens; normalized collection fields must be independently compared with
+  original raw records. CPU tests alone authorize no performance claim.
