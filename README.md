@@ -47,6 +47,10 @@ The [SDK 2026.4 validation](experiments/2026-10-30-rngd-sdk264.md) covers native
 Runnable cache reload and resident sparse updates on RNGD 8B B4/S256/group2;
 group8 currently fails native compilation. Initial full-model loading remains
 separate from the smaller resident update.
+Optional `host_workers=2` parallelizes initial CPU weight layout preparation;
+the [same-stack 8B comparison](experiments/2026-10-30-rngd-host-staging.md)
+reduced constructor median from 18.68 to 13.09 seconds with additional CPU/RAM.
+The default remains one worker; this does not speed up device DMA itself.
 
 ## ✨ Highlights
 

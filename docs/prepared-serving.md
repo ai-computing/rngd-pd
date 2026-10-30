@@ -29,6 +29,26 @@ variant is prepared at startup with `allow_compile=False`; missing compiled arti
 startup. No compilation or model-weight upload occurs when selecting a prepared
 variant. Use the graph-baking commands in [delta-swap.md](delta-swap.md) first.
 
+RNGD can opt into two CPU weight-layout workers at startup with
+`"host_workers": 2`; the default is 1. This preserves caller-thread checkpoint
+reads and q/BF16 arithmetic. At Torch intra-op=4 it can use eight CPU threads;
+budget CPU capacity rather than enabling it on a CPU-limited worker. It applies
+to initial projection staging; resident updates remain serial and keep their
+existing rollback behavior. The option is rejected for ATOM engines.
+
+For the validated SDK2026.4 B4/S256/group2 cache, an example is:
+
+```json
+{
+  "engine": "rngd",
+  "checkpoint": "/models/llama-base",
+  "checkpoint_id": "sha256:<immutable-checkpoint-manifest-digest>",
+  "cache_dir": "/artifacts/rngd",
+  "host_workers": 2,
+  "variants": ["B4-S256-g2"]
+}
+```
+
 ## ATOM embedded weights
 
 Compile all B/S buckets together with the existing native session builder:

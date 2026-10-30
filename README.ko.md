@@ -367,6 +367,9 @@ onggi 변경 범위를 조회하고, 실제로 바뀐 텐서만 전송할 수 �
   [SDK 2026.4 검증](experiments/2026-10-30-rngd-sdk264.md)은 8B B4/S256/group2에서
   새 Runnable 캐시 로딩과 부분 갱신을 확인했습니다. group8은 현재 컴파일러 오류가 있으며,
   최초 전체 적재 시간 단축은 이 부분 갱신의 검증 범위에 포함되지 않습니다.
+  별도 [최초 준비 시간 검증](experiments/2026-10-30-rngd-host-staging.md)에서는
+  `host_workers=2`로 CPU 가중치 변환을 병렬화해 중앙값 18.68초 → 13.09초를 확인했습니다.
+  CPU·RAM을 더 쓰는 선택 옵션이며 기본값은 1입니다. NPU DMA 자체의 개선은 아닙니다.
 - **ATOM 내장 가중치:** native 세션(`AtomSession`), 호스트 사전 준비(`HostPool`),
   optimum 번들(`SwappableAtom`)을 지원합니다. 공동 컴파일 변형은 가중치를 공유하며,
   내장 가중치가 바뀌면 재로딩이 필요합니다.

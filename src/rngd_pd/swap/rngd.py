@@ -140,7 +140,10 @@ class SwappableDecode:
     """
 
     def __init__(self, checkpoint, group=8, chip=0, cache_dir=None,
-                 allow_compile=False, log=print):
+                 allow_compile=False, log=print, host_workers=1):
+        if type(host_workers) is not int or host_workers not in (1, 2):
+            raise ValueError("host_workers must be 1 or 2")
+        self.host_workers = host_workers
         import torch
         from rngd_pd.engines.fsdk import dev_str, open_device
         from rngd_pd.paths import ARTIFACT_CACHE
@@ -196,10 +199,12 @@ class SwappableDecode:
 
     def _host(self, name, transform, rows=None):
         """One checkpoint tensor in the layout the graph takes, on the host (bf16)."""
-        torch = self.torch
         t = self.ck.get(name)
         if rows is not None:
             t = t[rows[0]:rows[1]]
+        return self._transform_weight(t, transform)
+
+    def _transform_weight(self, t, transform):
         if transform == "q":
             return (t.float() * (1.0 / math.sqrt(HD))).t().contiguous().to(self.BF)
         if transform == "t":
@@ -220,18 +225,32 @@ class SwappableDecode:
         self.n2 = [self._host(f"model.layers.{i}.post_attention_layernorm.weight", "norm")
                    for i in range(self.nl)]
 
-    def _group_slot_host(self, g, slot):
+    def _group_slot_host(self, g, slot, executor=None):
         suffix = next(k for k, v in _LAYER.items() if v[0] == slot)
         tr = _LAYER[suffix][1]
-        return self.torch.stack([self._host(f"model.layers.{i}.{suffix}", tr)
-                                 for i in range(g * self.group, (g + 1) * self.group)])
+        names = [f"model.layers.{i}.{suffix}"
+                 for i in range(g * self.group, (g + 1) * self.group)]
+        if executor is None:
+            return self.torch.stack([self._host(name, tr) for name in names])
+        raw = [self.ck.get(name) for name in names]
+
+        def layout(t):
+            # Grad mode is thread-local; checkpoint access stays on the caller.
+            with self.torch.no_grad():
+                return self._transform_weight(t, tr)
+
+        return self.torch.stack(list(executor.map(layout, raw)))
 
     def _upload_shared(self):
         """The variant-independent weights: one device copy, shared by every graph."""
+        from concurrent.futures import ThreadPoolExecutor
+        from contextlib import nullcontext
         self.shared = []
-        for g in range(self.ngroups):
-            self.shared.append({s: self._group_slot_host(g, s).to(self.dev)
-                                for s in _SHARED_SLOTS})
+        context = ThreadPoolExecutor(max_workers=2) if self.host_workers == 2 else nullcontext(None)
+        with context as executor:
+            for g in range(self.ngroups):
+                self.shared.append({s: self._group_slot_host(g, s, executor).to(self.dev)
+                                    for s in _SHARED_SLOTS})
         self.wlm_d = self._lm_host().to(self.dev)
 
     def _lm_host(self):
