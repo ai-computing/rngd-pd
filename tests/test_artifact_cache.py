@@ -1,5 +1,7 @@
 """Cache publication and compatibility checks without the vendor SDK."""
 from dataclasses import dataclass
+import os
+import stat
 import sys
 from types import ModuleType, SimpleNamespace
 from unittest.mock import Mock
@@ -145,3 +147,27 @@ def test_legacy_edf_roundtrip_remains_available(tmp_path, sdk, monkeypatch):
     restored = ac.load(path)
     assert restored.edf == ("restored", b"legacy edf")
     assert torch.equal(restored.weight["constant"], m.module_weight["constant"])
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX cache sharing permissions")
+def test_new_archive_respects_builders_umask(tmp_path, sdk):
+    path = ac.path_for(str(tmp_path), "kernel")
+    previous = os.umask(0o027)
+    try:
+        ac.save(module(), path)
+    finally:
+        os.umask(previous)
+    assert stat.S_IMODE(os.stat(path + ".runnable").st_mode) == 0o640
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX cache sharing permissions")
+def test_republication_preserves_existing_private_permissions(tmp_path, sdk):
+    path = ac.path_for(str(tmp_path), "kernel")
+    ac.save(module(), path)
+    os.chmod(path + ".runnable", 0o600)
+    previous = os.umask(0o022)
+    try:
+        ac.save(module(), path)
+    finally:
+        os.umask(previous)
+    assert stat.S_IMODE(os.stat(path + ".runnable").st_mode) == 0o600

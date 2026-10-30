@@ -8,7 +8,8 @@ import os, time, hashlib
 from dataclasses import replace
 import io
 import json
-import tempfile
+import stat
+import uuid
 import zipfile
 import torch
 
@@ -77,15 +78,23 @@ def _save_runnable(module, path):
     torch.save(dict(module_weight=module.module_weight,
                     output_reconstructor=_output_metadata(module.output_reconstructor)), state)
     blob = runnable_blob(module)
-    fd, tmp = tempfile.mkstemp(prefix=os.path.basename(path) + ".", suffix=".tmp",
-                               dir=os.path.dirname(path) or ".")
+    target = path + ".runnable"
+    try:
+        mode = stat.S_IMODE(os.stat(target).st_mode)
+    except FileNotFoundError:
+        mode = None
+    tmp = path + "." + uuid.uuid4().hex + ".tmp"
+    # Match legacy open(..., "wb"): respect the builder's umask without changing it.
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0), 0o666)
     try:
         with os.fdopen(fd, "wb") as f:
             with zipfile.ZipFile(f, "w") as archive:
                 archive.writestr("metadata.json", json.dumps(_metadata()))
                 archive.writestr("runnable.bin", blob)
                 archive.writestr("state.pt", state.getvalue())
-        os.replace(tmp, path + ".runnable")
+        if mode is not None:
+            os.chmod(tmp, mode)
+        os.replace(tmp, target)
     finally:
         if os.path.exists(tmp):
             os.unlink(tmp)
