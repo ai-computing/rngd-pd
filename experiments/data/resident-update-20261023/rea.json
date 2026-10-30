@@ -1,0 +1,480 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "scope": "Static REA investigation of installed ATOM resident constant updates; no device execution by this investigation.",
+  "method": {
+    "rea_version": "6.7.0",
+    "node_version": "24.11.1",
+    "rea_repository": "https://github.com/morluto/rea",
+    "rea_npm_integrity": "sha512-yhIx2ioJYYT1C/tONfYeitC6LhnKmCh+ZwRUOgYuhSc733lGhkkt73zhug9WmLgxoMdKuqIYGCoBfD4fXkOhFw==",
+    "reap_repository": "https://github.com/JoasASantos/REA-Prompts",
+    "reap_commit": "349a59ba476675889b6d88536fb42936ec02af83",
+    "article": "https://discuss.pytorch.kr/t/reap-rea-55-rea/12255",
+    "article_access": "Discourse JSON endpoint; browser extraction failed.",
+    "workflow": "Static feature tracing and function deep dive; addressed evidence; facts, inference and unknowns separated.",
+    "provider": "GNU objdump via REA inspect-with-objdump; assembly, not decompiled pseudocode.",
+    "narrowing": "REA 6.7.0 lacks the --symbol option described on repository main. Small thunk and binding were disassembled once; large runtime/compiler functions used transparent, separately hashed exact-symbol objdump wrappers.",
+    "installation": "Pinned official npm package in a new isolated scratch directory; no MCP or global agent configuration changes."
+  },
+  "artifacts": [
+    {
+      "role": "Python SDK binding",
+      "basename": "_C.cpython-310-x86_64-linux-gnu.so",
+      "package": "rebel",
+      "size_bytes": 782808,
+      "sha256": "ef3f87485aabc37bcc1f6ae23072b4e22e94522d7f47619d43168ba89b92e299"
+    },
+    {
+      "role": "Compiler/runtime implementation for Python binding",
+      "basename": "librbln.so",
+      "size_bytes": 405631113,
+      "sha256": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581"
+    },
+    {
+      "role": "Standalone runtime implementation",
+      "basename": "librbln_runtime.so",
+      "size_bytes": 34146089,
+      "sha256": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba"
+    },
+    {
+      "role": "Pinned ATOM 3.0 userspace thunk",
+      "basename": "librbln-thunk.so.3.0.0",
+      "size_bytes": 608112,
+      "sha256": "5cc0575543d1f10babc6a16c8fd1d54b373132c1f0f49dd53dd291809d298b09"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "kind": "fact",
+      "claim": "ApplyExternTransforms sets skip-already-applied=true and calls ApplyWeightTransforms on RuntimeBase embedded at Python object +0x40.",
+      "artifact": "librbln.so",
+      "addresses": [
+        "0x62b8410",
+        "0x62b8415",
+        "0x62b841a",
+        "0x62b842c"
+      ],
+      "evidence_ids": [
+        "ev_48701dee71f868240f2b64b1e1bf1752111ca799aa0adc2b3ecb841c5e1b26fa"
+      ]
+    },
+    {
+      "id": "F2",
+      "kind": "fact",
+      "claim": "reset_applied_transform_graphs is registered by the Python binding and clears applied-graph hashset nodes, buckets and counts. It does not clear constant buffers. Python offsets +0xd8..+0xf0 match RuntimeBase offsets +0x98..+0xb0 after its +0x40 embedding.",
+      "artifact": "_C.cpython-310-x86_64-linux-gnu.so",
+      "addresses": [
+        "0x71ee0",
+        "0x71ee7",
+        "0x75220",
+        "0x75229",
+        "0x75243",
+        "0x75265",
+        "0x7526a",
+        "0x75275"
+      ],
+      "evidence_ids": [
+        "ev_ed05eec8369ba8cfbff165fe61236e3a5bf0f6ddef7e5667dc3e36424a442e03"
+      ]
+    },
+    {
+      "id": "F3",
+      "kind": "fact",
+      "claim": "BuildTransformRuns skips an already-applied graph when the boolean is true, and checks supplied input keys before constructing jobs.",
+      "artifact": "librbln_runtime.so",
+      "addresses": [
+        "0xfc156e",
+        "0xfc178d",
+        "0xfc1798",
+        "0xfc17cc",
+        "0xfc17d2",
+        "0xfc1870"
+      ],
+      "evidence_ids": [
+        "ev_31e2557c9ca520366a902c45d34b2e47c1191e91ccf853a2c098d90ee3a00502"
+      ]
+    },
+    {
+      "id": "F4",
+      "kind": "fact",
+      "claim": "ExecuteTransformRuns has a host-to-device copy path taking destination, device index and length from a prepared run; it also calls ApplyWeightSerializationFormat. This establishes transformed-weight writes, not a generic raw-byte patch API.",
+      "artifact": "librbln.so",
+      "addresses": [
+        "0xa95c0a4",
+        "0xa95c0a8",
+        "0xa95c0ac",
+        "0xa95c0c3",
+        "0xa95c728"
+      ],
+      "evidence_ids": [
+        "ev_5ce096452aece0dd56e19a8022b9aad7138d69850c130a001c444af4fe5cff78"
+      ],
+      "corroborating_runtime_addresses": [
+        "0xfbbfc3",
+        "0xfbc628"
+      ],
+      "corroborating_evidence_ids": [
+        "ev_7df121b57829a58da6279779c9eb53a539a2927bf3171f5a48bd8bfbf1fabf71"
+      ]
+    },
+    {
+      "id": "F5",
+      "kind": "fact",
+      "claim": "ApplyHostParamsOnly is a distinct Python entry point into RuntimeInstance::ApplyHostParams. IO patch batching has separate begin/end native entry points.",
+      "artifact": "librbln.so",
+      "addresses": [
+        "0x62b8450",
+        "0x62b846a"
+      ],
+      "evidence_ids": [
+        "ev_1e787d9c670e149071876c49ae6da61e7ccc301313e25260406aae1579cedd22",
+        "ev_ec6d394b096adb28b1ff366ba5e16a9996c510875d3ac2e78c9162c208efa188",
+        "ev_476626f264483a3cdc30bf949371ed836cb0430060cde0ba0a0288e0c8ba3d28"
+      ]
+    },
+    {
+      "id": "F6",
+      "kind": "fact",
+      "claim": "The thunk exports constant pool creation, allocation and data-setting. Its data setter checks readiness and indices; a helper computes a destination in an existing pool and copies min(supplied length, slot length). A supported external runtime handle or arbitrary byte-offset signature was not established.",
+      "artifact": "librbln-thunk.so.3.0.0",
+      "addresses": [
+        "0xf930",
+        "0x10180",
+        "0x106b0",
+        "0x10755",
+        "0x10772",
+        "0x209de",
+        "0x20a03",
+        "0x20a0d"
+      ],
+      "evidence_ids": [
+        "ev_1a5960fb22a288089616af5cbd4ff2b3fbab0892224f16bd605e115a1761ef8b"
+      ]
+    }
+  ],
+  "candidate_sequence": [
+    "Compile weight-free and retain the existing runtime through the SDK runtime-holder option, confirmed by the companion active API inspection.",
+    "Map changed names to meta-load keys and expand to complete extern_transform_key_groups dependencies.",
+    "Reset applied-graph bookkeeping before each reapplication.",
+    "Apply only complete selected dependency groups with contiguous CPU tensors; apply host parameters separately if required.",
+    "Verify changed output, stable runtime identity, unrelated tensor preservation, compile count and device allocation behavior in an isolated device test."
+  ],
+  "inferences": [
+    {
+      "id": "I1",
+      "claim": "This is a credible native path to selected resident constant updates while reusing one runtime; actual allocation/upload behavior requires device validation.",
+      "based_on": [
+        "F1",
+        "F2",
+        "F3",
+        "F4"
+      ]
+    },
+    {
+      "id": "I2",
+      "claim": "Applying changed host tensors without resetting graph bookkeeping can silently omit an already-applied graph.",
+      "based_on": [
+        "F1",
+        "F2",
+        "F3"
+      ]
+    }
+  ],
+  "unknowns": [
+    "Full Llama-3.1-8B weight-free compilation success under this SDK and fixture.",
+    "Target model dependency groups and transformed upload bytes for a one-tensor edit.",
+    "Internal temporary or persistent device allocation behavior.",
+    "Concurrent inference/update ordering and synchronization requirements.",
+    "A supported arbitrary byte-offset constant-patch interface.",
+    "No new RNGD native binding capability was established."
+  ],
+  "source_caveat": {
+    "active_source": "rebel/core/weight_free.py",
+    "active_source_sha256": "19d0e17d95ac3a3c62019082d497fc3d7f57bb5f37455d77c20440dad35dffe8",
+    "readable_backup": "rebel/core_ori/weight_free.py",
+    "readable_backup_sha256": "71e3f2741c5000c831e43ddf4c7e8324115295a493ca5f6d1667845491812b48",
+    "equivalence_assumed": false,
+    "verification": "Companion investigation inspected normal active API methods; REA confirmed native entry points and behavior independently of backup source."
+  },
+  "evidence": [
+    {
+      "artifact": "librbln_runtime.so",
+      "evidence_file": "RuntimeInstance15EndIOPatchBatch.json",
+      "evidence_id": "ev_476626f264483a3cdc30bf949371ed836cb0430060cde0ba0a0288e0c8ba3d28",
+      "original_evidence_sha256": "f98571a560db8c599efadc962aef900a899de55b3cbe0fe6015c44ef1b5a13fa",
+      "subject_sha256": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "librbln_runtime.so",
+      "evidence_file": "RuntimeBase21ApplyWeightTransforms.json",
+      "evidence_id": "ev_ed97b24c22261b0103db71431c68609521e48cfbc2d1fa914929ccd9caa32283",
+      "original_evidence_sha256": "01c37c7afd88afe9ea503f72c63e3534ca8420f863aa081654666372cebcf37e",
+      "subject_sha256": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "librbln_runtime.so",
+      "evidence_file": "RuntimeBase18BuildTransformRuns.json",
+      "evidence_id": "ev_31e2557c9ca520366a902c45d34b2e47c1191e91ccf853a2c098d90ee3a00502",
+      "original_evidence_sha256": "8102dceb93486315f5da45bcef19ec65a645a9f52b5bd5cfdf17721e2d0cd05f",
+      "subject_sha256": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "librbln_runtime.so",
+      "evidence_file": "RuntimeInstance15ApplyHostParams.json",
+      "evidence_id": "ev_f38227fe785d335a2319945d11653a8110ce5fe31e7ab435300b684a4053aebd",
+      "original_evidence_sha256": "23a5f334b6b75ffa0e14f7ff2248f0ba20db020bd94a5f59ab99c99f8f9762bb",
+      "subject_sha256": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "librbln.so",
+      "evidence_file": "CompilerRuntimeBase27ApplyExternBufferTransforms.json",
+      "evidence_id": "ev_8b7bc46ba85c23efa5bf33352de47b4dd0abce4c6f73c0e75713cbff669bcf00",
+      "original_evidence_sha256": "f08e5dd0c39c5c5938dc1ff747cd73a24c5ad26a8afd23750f2617f22e10300e",
+      "subject_sha256": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "librbln_runtime.so",
+      "evidence_file": "RuntimeBase20ExecuteTransformRuns.json",
+      "evidence_id": "ev_7df121b57829a58da6279779c9eb53a539a2927bf3171f5a48bd8bfbf1fabf71",
+      "original_evidence_sha256": "6e7cbc06e195f1911df44c935f761aeb716ee482b0e2a3843aab4672b72df33a",
+      "subject_sha256": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "librbln_runtime.so",
+      "evidence_file": "RuntimeInstance17BeginIOPatchBatch.json",
+      "evidence_id": "ev_ec6d394b096adb28b1ff366ba5e16a9996c510875d3ac2e78c9162c208efa188",
+      "original_evidence_sha256": "99560097dbcc6c7462c51217b4c140729889d549c2704867849c7b4047d98d40",
+      "subject_sha256": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "librbln.so",
+      "evidence_file": "CompilerPyRblnSyncRuntime19ApplyHostParamsOnly.json",
+      "evidence_id": "ev_1e787d9c670e149071876c49ae6da61e7ccc301313e25260406aae1579cedd22",
+      "original_evidence_sha256": "96a8b70d8bc310db46f3e3cdb2c37aa53d6f65c0d3ac845e1b6aa692e9a99803",
+      "subject_sha256": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "librbln.so",
+      "evidence_file": "CompilerRuntimeBase20ExecuteTransformRuns.json",
+      "evidence_id": "ev_5ce096452aece0dd56e19a8022b9aad7138d69850c130a001c444af4fe5cff78",
+      "original_evidence_sha256": "9398ecade9f2697b3ce8f3b790a48649f309d9cc8d71c6cec51ac41a6811450d",
+      "subject_sha256": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "librbln_runtime.so",
+      "evidence_file": "RuntimeBase27ApplyExternBufferTransforms.json",
+      "evidence_id": "ev_fc29ff399c2e7fdaa9038f79b5cc2f1bf3f1da08373216aac6907f107ece65f2",
+      "original_evidence_sha256": "f6fa31a531fec30a315e73d1d4166b5bff793dd69483af1388643cb24641dd6c",
+      "subject_sha256": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "84757474138e3caad3813302ddba7230012d30d51de58d31aa576327d5c037ba",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "librbln.so",
+      "evidence_file": "CompilerPyRblnSyncRuntime21ApplyExternTransforms.json",
+      "evidence_id": "ev_48701dee71f868240f2b64b1e1bf1752111ca799aa0adc2b3ecb841c5e1b26fa",
+      "original_evidence_sha256": "47d82f97df3ff14641488354e3e1f4e51c6c9bd47e8b9ff9d860c0a330d166c6",
+      "subject_sha256": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "librbln-thunk.so.3.0.0",
+      "evidence_file": "atom-thunk-disassemble.json",
+      "evidence_id": "ev_1a5960fb22a288089616af5cbd4ff2b3fbab0892224f16bd605e115a1761ef8b",
+      "original_evidence_sha256": "b0cd869518c0cbf2b7c7d0f17803cc92bb2dc7ccd6771110dc95a61b9082ab63",
+      "subject_sha256": "5cc0575543d1f10babc6a16c8fd1d54b373132c1f0f49dd53dd291809d298b09",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "5cc0575543d1f10babc6a16c8fd1d54b373132c1f0f49dd53dd291809d298b09",
+      "artifact_changed": false
+    },
+    {
+      "artifact": "_C.cpython-310-x86_64-linux-gnu.so",
+      "evidence_file": "rebel-C-disassemble.json",
+      "evidence_id": "ev_ed05eec8369ba8cfbff165fe61236e3a5bf0f6ddef7e5667dc3e36424a442e03",
+      "original_evidence_sha256": "a732d2f689bb8f9374fa37e9bc32016b17d28a105dc3af8ac6e9d1e8badf9a87",
+      "subject_sha256": "ef3f87485aabc37bcc1f6ae23072b4e22e94522d7f47619d43168ba89b92e299",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "completion_status": "complete",
+      "artifact_sha256_after": "ef3f87485aabc37bcc1f6ae23072b4e22e94522d7f47619d43168ba89b92e299",
+      "artifact_changed": false
+    }
+  ],
+  "narrowing_wrappers": [
+    {
+      "label": "RuntimeBase27ApplyExternBufferTransforms",
+      "symbol": "_ZN4rbln11RuntimeBase27ApplyExternBufferTransformsERKSt3mapImSt4pairIPKhmESt4lessImESaIS2_IKmS5_EEEb",
+      "wrapper_basename": "objdump-RuntimeBase27ApplyExternBufferTransforms",
+      "wrapper_sha256": "75b15685f33fde90bd20a4372f4b14aa75c2e379aab5aa618d55f7b8fcbb6d22",
+      "evidence_id": "ev_fc29ff399c2e7fdaa9038f79b5cc2f1bf3f1da08373216aac6907f107ece65f2",
+      "argv_rule": "exec /usr/bin/objdump \"$@\" --disassemble=<symbol>"
+    },
+    {
+      "label": "RuntimeBase21ApplyWeightTransforms",
+      "symbol": "_ZN4rbln11RuntimeBase21ApplyWeightTransformsERKSt3mapImSt4pairImmESt4lessImESaIS2_IKmS3_EEEb",
+      "wrapper_basename": "objdump-RuntimeBase21ApplyWeightTransforms",
+      "wrapper_sha256": "9054f09202034027e2ee0a0b77558b38728949bf5c23daf9700ab105518c3de7",
+      "evidence_id": "ev_ed97b24c22261b0103db71431c68609521e48cfbc2d1fa914929ccd9caa32283",
+      "argv_rule": "exec /usr/bin/objdump \"$@\" --disassemble=<symbol>"
+    },
+    {
+      "label": "RuntimeBase18BuildTransformRuns",
+      "symbol": "_ZN4rbln11RuntimeBase18BuildTransformRunsERKSt3mapImSt4pairIPKhmESt4lessImESaIS2_IKmS5_EEEbRSt6vectorINS0_12TransformJobESaISF_EERSE_INS0_3RunESaISJ_EE",
+      "wrapper_basename": "objdump-RuntimeBase18BuildTransformRuns",
+      "wrapper_sha256": "59334243bf3bf367c392a4ed9eeb2dc92715b960361aafad0ac2fdcc83f686af",
+      "evidence_id": "ev_31e2557c9ca520366a902c45d34b2e47c1191e91ccf853a2c098d90ee3a00502",
+      "argv_rule": "exec /usr/bin/objdump \"$@\" --disassemble=<symbol>"
+    },
+    {
+      "label": "RuntimeBase20ExecuteTransformRuns",
+      "symbol": "_ZN4rbln11RuntimeBase20ExecuteTransformRunsERSt6vectorINS0_12TransformJobESaIS2_EERKS1_INS0_3RunESaIS6_EERKSt3mapImSt4pairIPKhmESt4lessImESaISC_IKmSF_EEE",
+      "wrapper_basename": "objdump-RuntimeBase20ExecuteTransformRuns",
+      "wrapper_sha256": "589e40329a82e868eea0675f5dca59d101b164dbe7185621dc00c426cec42f28",
+      "evidence_id": "ev_7df121b57829a58da6279779c9eb53a539a2927bf3171f5a48bd8bfbf1fabf71",
+      "argv_rule": "exec /usr/bin/objdump \"$@\" --disassemble=<symbol>"
+    },
+    {
+      "label": "RuntimeInstance15ApplyHostParams",
+      "symbol": "_ZN4rbln15RuntimeInstance15ApplyHostParamsERKSt3mapImSt4pairImmESt4lessImESaIS2_IKmS3_EEE",
+      "wrapper_basename": "objdump-RuntimeInstance15ApplyHostParams",
+      "wrapper_sha256": "68d039e461624c905f8603d375f1a2d33c9ea15a7396ed91b19a36504ef26669",
+      "evidence_id": "ev_f38227fe785d335a2319945d11653a8110ce5fe31e7ab435300b684a4053aebd",
+      "argv_rule": "exec /usr/bin/objdump \"$@\" --disassemble=<symbol>"
+    },
+    {
+      "label": "RuntimeInstance17BeginIOPatchBatch",
+      "symbol": "_ZN4rbln15RuntimeInstance17BeginIOPatchBatchEv",
+      "wrapper_basename": "objdump-RuntimeInstance17BeginIOPatchBatch",
+      "wrapper_sha256": "0705c799c21d2441b0d257986101a3f6fa19ce133201920e76ab9ed94729bfbb",
+      "evidence_id": "ev_ec6d394b096adb28b1ff366ba5e16a9996c510875d3ac2e78c9162c208efa188",
+      "argv_rule": "exec /usr/bin/objdump \"$@\" --disassemble=<symbol>"
+    },
+    {
+      "label": "RuntimeInstance15EndIOPatchBatch",
+      "symbol": "_ZN4rbln15RuntimeInstance15EndIOPatchBatchEv",
+      "wrapper_basename": "objdump-RuntimeInstance15EndIOPatchBatch",
+      "wrapper_sha256": "4d3a5ab13a5658874173ba81c6a688a9dfe31032180ef73e1b5d0dee0d655006",
+      "evidence_id": "ev_476626f264483a3cdc30bf949371ed836cb0430060cde0ba0a0288e0c8ba3d28",
+      "argv_rule": "exec /usr/bin/objdump \"$@\" --disassemble=<symbol>"
+    },
+    {
+      "label": "CompilerPyRblnSyncRuntime21ApplyExternTransforms",
+      "symbol": "_ZN4rbln17PyRblnSyncRuntime21ApplyExternTransformsERKSt3mapImSt4pairImmESt4lessImESaIS2_IKmS3_EEE",
+      "wrapper_basename": "objdump-CompilerPyRblnSyncRuntime21ApplyExternTransforms",
+      "wrapper_sha256": "2e27c36e756ceaa4358d7d212be7d4a909a6577a6b50fe9a26719cc064dd6ed9",
+      "evidence_id": "ev_48701dee71f868240f2b64b1e1bf1752111ca799aa0adc2b3ecb841c5e1b26fa",
+      "argv_rule": "exec /usr/bin/objdump \"$@\" --disassemble=<symbol>"
+    },
+    {
+      "label": "CompilerPyRblnSyncRuntime19ApplyHostParamsOnly",
+      "symbol": "_ZN4rbln17PyRblnSyncRuntime19ApplyHostParamsOnlyERKSt3mapImSt4pairImmESt4lessImESaIS2_IKmS3_EEE",
+      "wrapper_basename": "objdump-CompilerPyRblnSyncRuntime19ApplyHostParamsOnly",
+      "wrapper_sha256": "a2b4d5124519d106f439deb806737c4d556c8ada0306018c96d4ec88d597663f",
+      "evidence_id": "ev_1e787d9c670e149071876c49ae6da61e7ccc301313e25260406aae1579cedd22",
+      "argv_rule": "exec /usr/bin/objdump \"$@\" --disassemble=<symbol>"
+    },
+    {
+      "label": "CompilerRuntimeBase27ApplyExternBufferTransforms",
+      "symbol": "_ZN4rbln11RuntimeBase27ApplyExternBufferTransformsERKSt3mapImSt4pairIPKhmESt4lessImESaIS2_IKmS5_EEEb",
+      "wrapper_basename": "objdump-CompilerRuntimeBase27ApplyExternBufferTransforms",
+      "wrapper_sha256": "75b15685f33fde90bd20a4372f4b14aa75c2e379aab5aa618d55f7b8fcbb6d22",
+      "evidence_id": "ev_8b7bc46ba85c23efa5bf33352de47b4dd0abce4c6f73c0e75713cbff669bcf00",
+      "argv_rule": "exec /usr/bin/objdump \"$@\" --disassemble=<symbol>"
+    },
+    {
+      "label": "CompilerRuntimeBase20ExecuteTransformRuns",
+      "symbol": "_ZN4rbln11RuntimeBase20ExecuteTransformRunsERSt6vectorINS0_12TransformJobESaIS2_EERKS1_INS0_3RunESaIS6_EERKSt3mapImSt4pairIPKhmESt4lessImESaISC_IKmSF_EEE",
+      "wrapper_basename": "objdump-CompilerRuntimeBase20ExecuteTransformRuns",
+      "wrapper_sha256": "589e40329a82e868eea0675f5dca59d101b164dbe7185621dc00c426cec42f28",
+      "evidence_id": "ev_5ce096452aece0dd56e19a8022b9aad7138d69850c130a001c444af4fe5cff78",
+      "argv_rule": "exec /usr/bin/objdump \"$@\" --disassemble=<symbol>"
+    }
+  ],
+  "limitations": [
+    "Static GNU disassembly is not decompilation, device execution, upload measurement or an allocation trace.",
+    "All 13 observations completed with exit code zero, no truncation and unchanged pre/post digests; this cannot prove exact bytes consumed if the file changes during execution.",
+    "No installed binary patched, original project files changed, or existing provider session resumed by this investigation.",
+    "Full original evidence retained in isolated analysis scratch; this sanitized report omits absolute user paths and raw vendor assembly."
+  ]
+}
