@@ -51,6 +51,17 @@ if NEW:
         return TclModule(_symbolic_axes(dsl))
 
     EdfModule = None            # no EDF container in 2026.3.0
+
+    def runnable_blob(module):
+        """Native opaque cache bytes on the validated 2026.4 wrapper ABI."""
+        # shortcut: Python exposes no serializer; revalidate _inner on SDK upgrades.
+        return module.runnable._inner.serialize()
+
+    def module_from_blob(blob, state):
+        from furiosa.torch import Runnable
+        native = ir.Runnable.deserialize(blob)
+        return CompileModule(Runnable(native), state["module_weight"],
+                             state["output_reconstructor"])
 else:
     from furiosa.torch.custom_ops import CompileModule, TacticKernelModule  # noqa
     from furiosa.torch.custom_ops.dfg import DfgModule                      # noqa
