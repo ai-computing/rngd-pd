@@ -29,6 +29,10 @@ out.mkdir(exist_ok=True)
 def export(fig, name):
     for suffix in ['png', 'svg', 'pdf']:
         fig.savefig(out / (name + '.' + suffix), dpi=200, bbox_inches='tight')
+        if suffix == 'svg':
+            path = out / (name + '.svg')
+            path.write_text('\n'.join(line.rstrip() for line in path.read_text(encoding='utf-8').splitlines()) + '\n',
+                            encoding='utf-8', newline='\n')
     plt.close(fig)
 
 
