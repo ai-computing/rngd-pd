@@ -134,6 +134,29 @@ worker's persistent transport and real device loading; the kit's synthetic
 artifacts alone are not native ATOM graphs. A conformance-load hook must
 attach or load an actual precompiled native graph in that worker.
 
+The [2026-10-30 bounded native report](../experiments/REPORT-ATOM-BINDING-20261030.md)
+records a passing default-public-factory B1 run: two kit cases, seven binding
+loads including five reload repeats, fresh-session token parity, 120 completed
+native runtime calls including the fresh reference, and zero compiler attempts.
+The compiled source SHA stayed unchanged. The successful worker used one
+strictly exposed physical/logical device 0, unprivileged; nonzero remapping has
+only CPU parser evidence. [All four attempts and exact preparation exports](../experiments/data/atom-binding-20261030/package-manifest.json)
+remain available, including three failed device-selection attempts.
+
+The [recomputed five-trial summary](../experiments/data/atom-binding-20261030/derived-summary.json)
+reports median load including validation/hash 20.048155 s (IQR 0.014296 s),
+with 9.162043 s admission validation/hash included. Post-load prompt TTFT is
+0.561485 s; it starts after the load returns. The fixtures share the same
+graph and differ only in publisher metadata. This establishes B1 identity and
+reload planning, not changed-weight application, B2, cold-cache latency or an
+external trigger-to-first-token measurement. Parse/create figures are SDK-call
+wall times, not weight-upload or DMA latency; initialization may defer work
+into inference and no traffic counters were recorded. The standard-library verifier
+`python experiments/verify_atom_binding_evidence.py` checks raw package/export
+hashes, captured native source identity, input inventories and all repeat
+statistics without loading an SDK. The [public API audit](#public-runtime-api-boundary)
+and the experimental constant-engine boundary above remain separate.
+
 The implementation's physical line counts (including comments and blanks)
 are reproducible in the [exact source snapshot](atom-binding-loc.json).
 Run `python experiments/analyze_atom_binding_loc.py --out docs/atom-binding-loc.json`

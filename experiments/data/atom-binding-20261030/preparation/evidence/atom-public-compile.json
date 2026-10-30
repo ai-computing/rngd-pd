@@ -1,0 +1,38 @@
+{
+  "status": "completed",
+  "utc": 1793365616.0645864,
+  "scope": "CPU-only public rebel.compile_from_torch; create_runtime forbidden",
+  "checkpoint": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+  "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-public-session/session.rbln",
+  "B": 1,
+  "S": 64,
+  "layers": 32,
+  "torch": "2.11.0+cpu",
+  "rebel": "0.11.0",
+  "source_commit": "f5fa13377a3d967ba3d4022fb73ae59b1c87441c",
+  "source_files": {
+    "src/rngd_pd/swap/atom.py": "19b2f4256f0f04f68729628a975ed2c46039321b8524a7a459dfb913259d2c23",
+    "src/rngd_pd/vendors/rbln_decode_batch.py": "eee03b4e1f48a0b7dffe315fd5dd693f77d59d1de132d1fcad9412914bbb3656",
+    "src/rngd_pd/engines/model.py": "e9f89d5bde73015d6f630a14cf498a34cab9c753367d7afe2d0ec93e81fdc547"
+  },
+  "compile_s": 119.3434407110326,
+  "graph_sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+  "graph_bytes": 15176307063,
+  "sidecar": {
+    "model": "resident-base",
+    "layers": 32,
+    "variants": [
+      "B1-S64"
+    ],
+    "compiler": "0.11.0",
+    "load_s": 20.21648438903503,
+    "compile_s": 89.33515704213642,
+    "save_s": 9.744808402843773,
+    "device_alloc": 15210643456,
+    "file_bytes": 15176307063
+  },
+  "sidecar_sha256": "b132e8ed7c149bf9e56119b586b8594131fc5614d68c0a0086196af8d6388a28",
+  "runtime_creations": 0,
+  "finished_utc": 1793365746.419093,
+  "peak_rss_bytes": 51654447104
+}
