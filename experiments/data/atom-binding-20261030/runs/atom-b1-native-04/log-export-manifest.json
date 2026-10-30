@@ -1,0 +1,14 @@
+{
+  "files": [
+    {
+      "path": "kit.stdout",
+      "bytes": 786,
+      "sha256": "cc1598ab77d2e224f5a62041a07f36f5612a94031bb76092b45837d8abfef09b"
+    },
+    {
+      "path": "kit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

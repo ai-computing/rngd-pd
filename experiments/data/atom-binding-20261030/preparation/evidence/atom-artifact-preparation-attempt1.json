@@ -1,0 +1,88 @@
+{
+  "status": "failed",
+  "utc": 1793366569.7942207,
+  "scope": "off-card graph hardlinks and actual onggi push/diff; no runtime creation",
+  "commands": [
+    {
+      "argv": [
+        "/home/gspark/workspace/codex_ccgrid_npu_20261030/tools/onggi-v1",
+        "push",
+        "--store",
+        "/home/gspark/workspace/codex_binding_conformance_20261030/atom-store",
+        "--sub",
+        "0",
+        "--compress",
+        "none",
+        "--workers",
+        "2",
+        "--uploads",
+        "2",
+        "--quiet",
+        "--json",
+        "--ref",
+        "base",
+        "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base"
+      ],
+      "returncode": 0,
+      "elapsed_s": 27.75062926695682,
+      "stderr": "",
+      "stdout": {
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "ref": "base",
+        "stats": {
+          "files": 4,
+          "bytes": 15176307521,
+          "new_bytes": 15129884389,
+          "packs": 226,
+          "pack_bytes": 15129884389,
+          "skipped": null,
+          "duration_ns": 27732535702,
+          "files_total": 4,
+          "bytes_total": 15176307521
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/gspark/workspace/codex_ccgrid_npu_20261030/tools/onggi-v1",
+        "push",
+        "--store",
+        "/home/gspark/workspace/codex_binding_conformance_20261030/atom-store",
+        "--sub",
+        "0",
+        "--compress",
+        "none",
+        "--workers",
+        "2",
+        "--uploads",
+        "2",
+        "--quiet",
+        "--json",
+        "--ref",
+        "target",
+        "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/target"
+      ],
+      "returncode": 0,
+      "elapsed_s": 16.271536580985412,
+      "stderr": "",
+      "stdout": {
+        "manifest": "sha256:4784f48f923a9dbceb48db7b231f120bdffc784cafb85a9583b945059d0b44c3",
+        "ref": "target",
+        "stats": {
+          "files": 4,
+          "bytes": 15176307523,
+          "new_bytes": 186,
+          "packs": 1,
+          "pack_bytes": 186,
+          "skipped": null,
+          "duration_ns": 16249438270,
+          "files_total": 4,
+          "bytes_total": 15176307523
+        }
+      }
+    }
+  ],
+  "binary_sha256": "47bfaae6bace003bc29c9223521a80b44526c25835dc36d350b2979585abc114",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/gspark/workspace/codex_binding_conformance_20261030/scripts/prepare_atom_artifacts.py\", line 30, in <module>\n    plan=r/'inputs'/('atom-'+role+'.switchplan.json');plan.write_bytes(p.stdout)\n  File \"/usr/lib/python3.10/pathlib.py\", line 1143, in write_bytes\n    with self.open(mode='wb') as f:\n  File \"/usr/lib/python3.10/pathlib.py\", line 1119, in open\n    return self._accessor.open(self, mode, buffering, encoding, errors,\nFileNotFoundError: [Errno 2] No such file or directory: '/home/gspark/workspace/codex_binding_conformance_20261030/inputs/atom-base.switchplan.json'\n",
+  "finished_utc": 1793366614.143518
+}

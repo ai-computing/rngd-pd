@@ -1,0 +1,19 @@
+{
+  "archive": {
+    "bytes": 13912,
+    "sha256": "b31f205409f983d141d18029e75013315df041d8ca007089778a5b516e2e9390",
+    "files": 2
+  },
+  "files": [
+    {
+      "path": "kit-report.json",
+      "bytes": 30872,
+      "sha256": "21665c010b2f9ed27a72bc963d32f6071311fc8b7ab12747a3aab84352b0bc8e"
+    },
+    {
+      "path": "result.json",
+      "bytes": 34258,
+      "sha256": "2a78e60e434661acf6d31504441216f48d4e84a9c45a12e526aa86568ddba696"
+    }
+  ]
+}
