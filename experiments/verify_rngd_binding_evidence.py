@@ -61,6 +61,10 @@ def verify(root):
     kit = load(root / "runs/rngd-b2-native-02/work/kit-report.json")
     require(failed["status"] == "failed" and failed_kit["ok"] is False, "failed attempt not preserved")
     require(failed["source_files"] == result["source_files"], "runtime changed between failed/successful attempts")
+    repository = Path(__file__).resolve().parents[1]
+    for name, expected in result["source_files"].items():
+        data = (repository / name).read_bytes().replace(b"\r\n", b"\n")
+        require(digest(data) == expected, "current runtime differs from measured native source: " + name)
     rejected = next(case for case in failed_kit["cases"] if case["name"] == "native-sparse")
     unsupported = next(step["stdout"] for step in rejected["results"]
                        if (step.get("stdout") or {}).get("schema") == "onggi.updateplan.v1")
