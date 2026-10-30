@@ -3,9 +3,13 @@
 `RngdBinding` implements the ADR-0010 B2 transaction interface for a bounded,
 lossless subset of the existing `SwappableDecode` serving layout. The default
 factory owns the real serving engine; an injected CPU factory is a transaction
-test double. Native conformance of this new owner is pending. CPU tests and
-older native row-update/cache experiments do not establish native B2 for this
-implementation.
+test double. One native run passed the unchanged neutral B2 kit for identical,
+interior projection-row and LM-row fixtures, with actual serving readback,
+retained undo, independent fresh-token parity and a silent-corruption gate.
+This is bounded-subset n=1 conformance evidence, not an n≥5 timing result.
+The original coarse E7 sparse range correctly requires reload because it also
+touches unsupported host/scaled bytes; that failed attempt is preserved.
+See the [native report and exact raw evidence](../experiments/REPORT-RNGD-BINDING-20261030.md).
 
 The adapter passes checkpoint byte ranges to existing serving tensors. It does
 not map arbitrary compiled `.edf`, `.fxb`, or other opaque model bytes into
@@ -202,7 +206,7 @@ adapter do not make the inherited serving engine a public vendor ABI.
 
 | Boundary | Operations and exact source | Classification |
 |---|---|---|
-| Adapter, device readback | `Tensor.cpu()`, device/dtype checks, `numel()` and `element_size()`; [`rngd_binding.py:288–303`](../src/rngd_pd/swap/rngd_binding.py#L288-L303) | Public Torch tensor surface, exercised on actual serving parents by the production factory; new native proof pending |
+| Adapter, device readback | `Tensor.cpu()`, device/dtype checks, `numel()` and `element_size()`; [`rngd_binding.py:288–303`](../src/rngd_pd/swap/rngd_binding.py#L288-L303) | Public Torch tensor surface, exercised on actual serving parents by the production factory in the [bounded native B2 pass](../experiments/REPORT-RNGD-BINDING-20261030.md) |
 | Adapter, device write | Tensor indexing, `.t().contiguous()`, `.to(device)`, and destination `.copy_()`; [`rngd_binding.py:305–320`](../src/rngd_pd/swap/rngd_binding.py#L305-L320) | Public Torch tensor surface; no direct Furiosa private import in the adapter |
 | Adapter, host byte conversion | `torch.frombuffer(..., bfloat16)`, reshape/clone; contiguous uint8 view, NumPy bytes and SHA-256; [`rngd_binding.py:73–79`](../src/rngd_pd/swap/rngd_binding.py#L73-L79), [`277–286`](../src/rngd_pd/swap/rngd_binding.py#L277-L286) | Host Torch/NumPy plus Python stdlib; BF16 bits preserved without numeric scaling |
 | Adapter to repository runtime | `shared`, `wlm_d`, `lm_name`, layout/group metadata, `_lock`, `_sync`, `_generation`, `_failed`, `swap()`/`close()`; [`rngd_binding.py:127–181`](../src/rngd_pd/swap/rngd_binding.py#L127-L181), [`351–435`](../src/rngd_pd/swap/rngd_binding.py#L351-L435) | Private/local engine contract; distinct from a private vendor SDK API |
@@ -253,4 +257,8 @@ documentation, graph/weight artifacts and this analysis script are excluded.
 ATOM-only modules and unrelated serving/connector/native-v4 modules are outside
 the full RNGD scope. The report is an exact working-tree snapshot; rerun it and
 update this table after source changes. Native conformance remains a separate
-evidence gate from these counts and the CPU transaction suite.
+evidence gate from these counts and the CPU transaction suite. The
+[evidence package manifest](../experiments/data/binding-20261030/package-manifest.json)
+separately records native LF source hashes and exact/LF-equivalent comparisons
+with this Windows working-tree/LOC snapshot; line-ending differences are not
+silently treated as identical raw source bytes.

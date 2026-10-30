@@ -1,0 +1,34 @@
+{
+  "archive": {
+    "bytes": 228295,
+    "sha256": "d6e9ff4f42f4c66d1ac34c293716aeaac94f1ec55b366342ab652ef48bb792fc",
+    "files": 5
+  },
+  "files": [
+    {
+      "path": "operational.json",
+      "bytes": 387615,
+      "sha256": "7917c4a8cb89e40b6d708b933731ace4e4366ada7be725cb02aa4807111b0d32"
+    },
+    {
+      "path": "result.json",
+      "bytes": 387615,
+      "sha256": "7917c4a8cb89e40b6d708b933731ace4e4366ada7be725cb02aa4807111b0d32"
+    },
+    {
+      "path": "work/kit-report.json",
+      "bytes": 50957,
+      "sha256": "44290091cb16df839c78cb2efe8e64a31b43594f2900af9d35cc7891446dcb12"
+    },
+    {
+      "path": "work/kit.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "work/kit.stdout.log",
+      "bytes": 1201,
+      "sha256": "33c9a0ff3ecf6a55c8eb0b3b9e49dd2a2217a2583f6fd04c9de1333e839e81a9"
+    }
+  ]
+}
