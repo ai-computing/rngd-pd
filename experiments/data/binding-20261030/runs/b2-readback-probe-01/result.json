@@ -1,0 +1,20 @@
+{
+  "status": "completed",
+  "utc": 1793365355.077182,
+  "pod_uid": "d1d7eec0-0a3e-4bd0-90d4-4cb5cf8adf34",
+  "api_scope": "torch.Tensor.to/cpu/copy_ and public furiosa.torch device/stream functions",
+  "physical_host_index": 0,
+  "torch_ordinal": 0,
+  "sdk": "2026.4.0",
+  "torch": "2.10.0+cpu",
+  "projection_strided_write": true,
+  "actual_device_readback": true,
+  "retained_actual_readback_journal": true,
+  "restored_exactly": true,
+  "pointer_retained": true,
+  "before_sha256": "017a8f476e9f06db1d49e32bd46e0ea5b1ec889d19956afe63e82a7f361d5fae",
+  "target_sha256": "27147bd776903e318ba00c3902719f5d30d52a50335bbaf558bfe8916e979360",
+  "after_sha256": "5f3096ecd603ef846a0def0e8804bc43df9fab01a4f8479cea2159059b380038",
+  "restored_sha256": "017a8f476e9f06db1d49e32bd46e0ea5b1ec889d19956afe63e82a7f361d5fae",
+  "completed_utc": 1793365357.5710967
+}
