@@ -1,0 +1,12 @@
+{
+  "utc": 1793361290.9140809,
+  "owned_pods": [],
+  "owned_jobs": [],
+  "rngd_active_requesters": [],
+  "publication": {
+    "original_private_file": "root-e8-final-cleanup.json",
+    "original_private_sha256": "1535e57f77dc9eec13908c1fc7e8df674a4de334368b58ca9c3633721be63097",
+    "original_private_bytes": 95,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

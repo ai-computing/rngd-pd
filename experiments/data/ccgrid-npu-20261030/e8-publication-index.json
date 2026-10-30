@@ -1,0 +1,294 @@
+{
+  "schema": "ccgrid-e8-publication-index-v1",
+  "source_commit": "bbceb1759ae0522c65921512f3dd2b8ca95b24dd",
+  "valid_samples": 30,
+  "groups": 6,
+  "verified_export_files": 63,
+  "verified_archive_sha256": "7d039e88672181cbafc21e5bc08821f4e67ef73f583382f98a1cec15adacb8d8",
+  "original_export_manifest_sha256": "bd85938c9467e4e0746075baa627be8635fd9464cbb6e210801470905c53525b",
+  "records": [
+    {
+      "path": "e8-matrix-plan.json",
+      "public_sha256": "03d44a99cf3c8889bc03aa9876fca9ae6a53499085ac0af8ba8a1fc48dc6a043",
+      "original_private_file": "e8-matrix-plan.json",
+      "original_private_sha256": "1bc5f2cd13b8df0a48fed4cfbac5826c24709d8872b17e9237eb98b9e6567645",
+      "original_private_bytes": 11208,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e8-matrix-job.json",
+      "public_sha256": "1f15b76528568222261e9e3920881b443ef3ce2fb97153b827d119775e69dec3",
+      "original_private_file": "e8-matrix-job.json",
+      "original_private_sha256": "55788c636cc22575f048daac495852d6760f1d68fbb977112f19d55bc431e60b",
+      "original_private_bytes": 11107,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e8-result.json",
+      "public_sha256": "36dfbc3a7744823d691db039bfd266dbbb97e0ed3a2218a1c142d4a82c2a194f",
+      "original_private_file": "result.json",
+      "original_private_sha256": "af7b102661e8969c5b7d2efd9bab3fb1e36e17be114ce50a26b60f1af2c14ee5",
+      "original_private_bytes": 18913,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e8-operational.json",
+      "public_sha256": "48e7e7db2e3ad9d65c40f773f0417df81259e3f3d3fd99c3bd530229b68e981f",
+      "original_private_file": "operational.json",
+      "original_private_sha256": "8eadeeeb421849497e457778db78fbf904843827b9d875a0f25fef1125511cbe",
+      "original_private_bytes": 6659,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e8-export-manifest.json",
+      "public_sha256": "537f2195751f66d00fd288014d3dbf58b0d421c1a708e3f02fa986b6bb262417",
+      "original_private_file": "export-manifest.json",
+      "original_private_sha256": "bd85938c9467e4e0746075baa627be8635fd9464cbb6e210801470905c53525b",
+      "original_private_bytes": 11913,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e8-cleanup.json",
+      "public_sha256": "2cc65b497eb589929a99a3074a78a15b09b94ca496c0e54cb2720e5b12128ce6",
+      "original_private_file": "cleanup.json",
+      "original_private_sha256": "ccab3905390b9974e4d50c46919e744eddbfae23de10127b69eb9216575f11bf",
+      "original_private_bytes": 3843,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e8-root-final-cleanup.json",
+      "public_sha256": "d477c5ebd82dce8507d651399c7058fad65b38dbdf14037ea40e54a4aa73d3dd",
+      "original_private_file": "root-e8-final-cleanup.json",
+      "original_private_sha256": "1535e57f77dc9eec13908c1fc7e8df674a4de334368b58ca9c3633721be63097",
+      "original_private_bytes": 95,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e8-terminal-api.json",
+      "public_sha256": "ec41843120c3e288d24f20ae0926ba52284ad1e074d53ed75cdbaf006c3116ad",
+      "original_private_file": "terminal-api.json",
+      "original_private_sha256": "ea9bf2e569714f11d7280808edf951c1cf7bbe27e58b98c6ce1c39803717098f",
+      "original_private_bytes": 6178,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e8-create.json",
+      "public_sha256": "23483a4225d1809c40b3f47ef53f81f426a0cd72b5d170ee7457a31eb3409f62",
+      "original_private_file": "create.json",
+      "original_private_sha256": "eaa105ac12ca79ff62b25a921de9c6e7d1920a7b5c0ca9ca6c284489fb2fa77b",
+      "original_private_bytes": 93,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    }
+  ],
+  "inputs": {
+    "B4-S256-g2--B4-S512-g2.json": {
+      "path": "e8/inputs/B4-S256-g2--B4-S512-g2.json",
+      "public_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3",
+      "original_private_file": "B4-S256-g2--B4-S512-g2.json",
+      "original_private_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3",
+      "original_private_bytes": 2556,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    "B4-S512-g2--B8-S256-g2.json": {
+      "path": "e8/inputs/B4-S512-g2--B8-S256-g2.json",
+      "public_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c",
+      "original_private_file": "B4-S512-g2--B8-S256-g2.json",
+      "original_private_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c",
+      "original_private_bytes": 3420,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    "B8-S256-g2--B4-S256-g2.json": {
+      "path": "e8/inputs/B8-S256-g2--B4-S256-g2.json",
+      "public_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe",
+      "original_private_file": "B8-S256-g2--B4-S256-g2.json",
+      "original_private_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe",
+      "original_private_bytes": 3420,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    }
+  },
+  "samples": [
+    {
+      "trial_id": "e8-r01-first-use-B4-S256-g2--B4-S512-g2",
+      "path": "e8/main/e8-r01-first-use-B4-S256-g2--B4-S512-g2.json",
+      "public_sha256": "f37e64c0e2a2dd5ce8fdac3eb38b5d2140fa072055ffb50f9fb743713ed68349",
+      "original_private_sha256": "ccf7f78aead0756aed974b6e0916ced7ac90a3040fac357cbbe7d7a85e32f965"
+    },
+    {
+      "trial_id": "e8-r01-first-use-B4-S512-g2--B8-S256-g2",
+      "path": "e8/main/e8-r01-first-use-B4-S512-g2--B8-S256-g2.json",
+      "public_sha256": "fcb23b3ed2ff3b2282ca7b474f9bc1f7ee9657b818f95c72eee9d27bd354557e",
+      "original_private_sha256": "f8a19e79e0ff26a227a2285cec54bc743ca24d15030ff5440dabaef46e2f6704"
+    },
+    {
+      "trial_id": "e8-r01-first-use-B8-S256-g2--B4-S256-g2",
+      "path": "e8/main/e8-r01-first-use-B8-S256-g2--B4-S256-g2.json",
+      "public_sha256": "ca3d6c76f8062b26d3eb3b54284dfcee1957fc03808a8639a9d98c5dba175212",
+      "original_private_sha256": "08bcd054938a1973bee49b5269f16318d9840aaa6386f672888f53e76ff98a83"
+    },
+    {
+      "trial_id": "e8-r01-prepared-B4-S256-g2--B4-S512-g2",
+      "path": "e8/main/e8-r01-prepared-B4-S256-g2--B4-S512-g2.json",
+      "public_sha256": "2eb8f3b9b203d7d88bceb2d221074b8e8dfcc43a2f5bcc4563de2048084e0472",
+      "original_private_sha256": "f1790d28022ca85995b38a4fa2952b88451056e952dcdf132beff16019774f4a"
+    },
+    {
+      "trial_id": "e8-r01-prepared-B4-S512-g2--B8-S256-g2",
+      "path": "e8/main/e8-r01-prepared-B4-S512-g2--B8-S256-g2.json",
+      "public_sha256": "be66148e6dc6a219cefe48be06d522ea8a30cba3cf15d109af3606bb12bcb3a8",
+      "original_private_sha256": "baab8ef0580bc1f89eef0f790e586f263527e43e21bc4d9acc96b46d580b76c3"
+    },
+    {
+      "trial_id": "e8-r01-prepared-B8-S256-g2--B4-S256-g2",
+      "path": "e8/main/e8-r01-prepared-B8-S256-g2--B4-S256-g2.json",
+      "public_sha256": "99e2f96920c7a301c9d05eb5eb48014da618a5a8ccba3cb0122ccb9fbb57ce16",
+      "original_private_sha256": "a50e0e229fd5032a451c6756ab6553226648b83cf8de69f7e8a087ebf7f823aa"
+    },
+    {
+      "trial_id": "e8-r02-prepared-B4-S512-g2--B8-S256-g2",
+      "path": "e8/main/e8-r02-prepared-B4-S512-g2--B8-S256-g2.json",
+      "public_sha256": "0747f79e8b063950bf7118a2622cdefa48a5a0f613ad2ef13bb6a35776750448",
+      "original_private_sha256": "76e288b3f5144fd30bd0ed9ce3c064f541455a54490afc7b870db99883efe5f9"
+    },
+    {
+      "trial_id": "e8-r02-prepared-B8-S256-g2--B4-S256-g2",
+      "path": "e8/main/e8-r02-prepared-B8-S256-g2--B4-S256-g2.json",
+      "public_sha256": "12fb94ac7ae5dec47e0ea3063d330ea33572419218a8e8373a31f553599f546e",
+      "original_private_sha256": "857c0073f6dedc5f435fe5b34afd1adc27e6b9084e04bf3521df039682fbac85"
+    },
+    {
+      "trial_id": "e8-r02-prepared-B4-S256-g2--B4-S512-g2",
+      "path": "e8/main/e8-r02-prepared-B4-S256-g2--B4-S512-g2.json",
+      "public_sha256": "27e2b1c651a70b8d983ec694ae11da0172af3e5c8f75d792790ebe7130676752",
+      "original_private_sha256": "01040a1c52543c07e3d024b159b96c53d8e48372adc080b54d6a30ff88299b49"
+    },
+    {
+      "trial_id": "e8-r02-first-use-B4-S512-g2--B8-S256-g2",
+      "path": "e8/main/e8-r02-first-use-B4-S512-g2--B8-S256-g2.json",
+      "public_sha256": "fd2cfba674323f7ff657e39179d5ee8952746fd5d76e989d6a8244228744680b",
+      "original_private_sha256": "e94837e0d1fd348c3b0da9526bf34695046bd3da224e316a1c7a767f1e4c43ea"
+    },
+    {
+      "trial_id": "e8-r02-first-use-B8-S256-g2--B4-S256-g2",
+      "path": "e8/main/e8-r02-first-use-B8-S256-g2--B4-S256-g2.json",
+      "public_sha256": "1d24d0b7bb417814d197c54fa7d977cd704bb2dc9283e2ca2acca919cf0e64e1",
+      "original_private_sha256": "ed3adf9cec8788de0467b3b26e3070b76a80a1e4c360ea656fac770b1530ca6b"
+    },
+    {
+      "trial_id": "e8-r02-first-use-B4-S256-g2--B4-S512-g2",
+      "path": "e8/main/e8-r02-first-use-B4-S256-g2--B4-S512-g2.json",
+      "public_sha256": "3421b829aabc0d68a3be0ee34c435956e39ac36e0fc3cbc2042cc02b56de4be6",
+      "original_private_sha256": "86b28d2c8ad7554e5411983623ace212fff041e1cdff2b35ec53dda134bc9d9e"
+    },
+    {
+      "trial_id": "e8-r03-first-use-B8-S256-g2--B4-S256-g2",
+      "path": "e8/main/e8-r03-first-use-B8-S256-g2--B4-S256-g2.json",
+      "public_sha256": "d90c9bc37f7c1812613999120397d5397e81f3b157af9c3f4b13f4b13be23a69",
+      "original_private_sha256": "346b9e59e440cf109ca73b37b320b6cdcbb47e53af8b2df606dda9da3d786596"
+    },
+    {
+      "trial_id": "e8-r03-first-use-B4-S256-g2--B4-S512-g2",
+      "path": "e8/main/e8-r03-first-use-B4-S256-g2--B4-S512-g2.json",
+      "public_sha256": "cdafad6e1ddd9b4beab1bcd92e39ac50b5f03a399356e1da78af75c645d793b6",
+      "original_private_sha256": "98d604d06f960baf3359b9505a393bcb242bab65219e11aa46d69f17fe664539"
+    },
+    {
+      "trial_id": "e8-r03-first-use-B4-S512-g2--B8-S256-g2",
+      "path": "e8/main/e8-r03-first-use-B4-S512-g2--B8-S256-g2.json",
+      "public_sha256": "7f57396cbf07c7122a216566b7aeafba0aa16611c69d642391e497bb82f683aa",
+      "original_private_sha256": "55cb6d276e8d65e1f416b3a5a1388e1510a021d40f444fd21e080af501fb5e88"
+    },
+    {
+      "trial_id": "e8-r03-prepared-B8-S256-g2--B4-S256-g2",
+      "path": "e8/main/e8-r03-prepared-B8-S256-g2--B4-S256-g2.json",
+      "public_sha256": "76eabcbbc964e669545a4c8ecf6ca8814372f09659bd43c63fa1be8d0012fa25",
+      "original_private_sha256": "050a7fe42dec51e37239370c962dab45cda8f319c8caa996a5058a60738514bd"
+    },
+    {
+      "trial_id": "e8-r03-prepared-B4-S256-g2--B4-S512-g2",
+      "path": "e8/main/e8-r03-prepared-B4-S256-g2--B4-S512-g2.json",
+      "public_sha256": "b05251d1eba489d33fefbb8d05b407bc60c5ce4e58fd0a3014054176aed1ce1a",
+      "original_private_sha256": "d1c310605a1bcf2b69e1ef70915ce04543f181632ebc8bd90dcd2a663d565d80"
+    },
+    {
+      "trial_id": "e8-r03-prepared-B4-S512-g2--B8-S256-g2",
+      "path": "e8/main/e8-r03-prepared-B4-S512-g2--B8-S256-g2.json",
+      "public_sha256": "0d1ebaef98802f98229582f71d46f6b9194d180ded74383dd6a269cae76615d4",
+      "original_private_sha256": "158a9eea348e8b56cbbf9aa6f1582cce58587c2c41cb87fc4e49752beab82057"
+    },
+    {
+      "trial_id": "e8-r04-prepared-B4-S256-g2--B4-S512-g2",
+      "path": "e8/main/e8-r04-prepared-B4-S256-g2--B4-S512-g2.json",
+      "public_sha256": "29f8207b5f2fd8cb4adb06e4090548bf5674f56e4a6c3171bce9e8a6420ecb0f",
+      "original_private_sha256": "b8fe1c909b6c9a2cd2eb6b08d4f92958b8e0aa8529fd6c4fedd67de4077eaf42"
+    },
+    {
+      "trial_id": "e8-r04-prepared-B4-S512-g2--B8-S256-g2",
+      "path": "e8/main/e8-r04-prepared-B4-S512-g2--B8-S256-g2.json",
+      "public_sha256": "80640f1dcc579798c360b2995064172a0fc39dd5138e8765dcc95b9e19e765ad",
+      "original_private_sha256": "0526e0cc46149a95244e7da434c221d698e30962584af8e63767feefe265836a"
+    },
+    {
+      "trial_id": "e8-r04-prepared-B8-S256-g2--B4-S256-g2",
+      "path": "e8/main/e8-r04-prepared-B8-S256-g2--B4-S256-g2.json",
+      "public_sha256": "f7af6149117921df9d5097c418bc7cce3425c790aa258f89c2dc93aee45db9dd",
+      "original_private_sha256": "fcf5c241b891baaa06c2e9d4f74cb5e26342d660be745b5df7894bef98e55ff7"
+    },
+    {
+      "trial_id": "e8-r04-first-use-B4-S256-g2--B4-S512-g2",
+      "path": "e8/main/e8-r04-first-use-B4-S256-g2--B4-S512-g2.json",
+      "public_sha256": "64ef765f1e5671dc5bc2289c3eda96f22f06ee1b9820e8cf05e19ce04fd54d2c",
+      "original_private_sha256": "51718969e3d7f250be763cf677048ded031c78f3b773bf6e5c8ee8f950f584c3"
+    },
+    {
+      "trial_id": "e8-r04-first-use-B4-S512-g2--B8-S256-g2",
+      "path": "e8/main/e8-r04-first-use-B4-S512-g2--B8-S256-g2.json",
+      "public_sha256": "422cf8a32b1697bf093dcd6b037b516a45c2f92c7e77bf560d36c7f6b10bb574",
+      "original_private_sha256": "46775b2f48fd39497c145d661238e2ff24c87fa752ef6cf1bed184ac0ecbfffb"
+    },
+    {
+      "trial_id": "e8-r04-first-use-B8-S256-g2--B4-S256-g2",
+      "path": "e8/main/e8-r04-first-use-B8-S256-g2--B4-S256-g2.json",
+      "public_sha256": "0aa2b83ef055be85a56da0d3a5b036436d31bf9cd7ed21fe76f729169c1abd4c",
+      "original_private_sha256": "c16b9d0c19f6c5ca2d13f7ff6c58766f3347d5e2e96f880d2de30c76c9e046da"
+    },
+    {
+      "trial_id": "e8-r05-first-use-B4-S512-g2--B8-S256-g2",
+      "path": "e8/main/e8-r05-first-use-B4-S512-g2--B8-S256-g2.json",
+      "public_sha256": "a94bce3117297e02bbd603a09d66d721aadb05a983cce1c08316eda40253611e",
+      "original_private_sha256": "b7ca6a9eddd224e87031d42bd06bb0c3b651f65fffabcff975b2af0376c25499"
+    },
+    {
+      "trial_id": "e8-r05-first-use-B8-S256-g2--B4-S256-g2",
+      "path": "e8/main/e8-r05-first-use-B8-S256-g2--B4-S256-g2.json",
+      "public_sha256": "ae25d7c39799ad728b8ba7efd2dd144931ac698112441c1993347cd8a284d9ed",
+      "original_private_sha256": "4e08377ff28cd7fab22a43e92293c98d93b4362e5b420334cf0611970973edec"
+    },
+    {
+      "trial_id": "e8-r05-first-use-B4-S256-g2--B4-S512-g2",
+      "path": "e8/main/e8-r05-first-use-B4-S256-g2--B4-S512-g2.json",
+      "public_sha256": "7bc61608080e6c5264883fd00e64da1d29f8178cafefed74bcb583894c5e48bf",
+      "original_private_sha256": "c1381ad5bd46241ead76c430cc1b6e30d494a188d64a756cdbaa79da6bad65a5"
+    },
+    {
+      "trial_id": "e8-r05-prepared-B4-S512-g2--B8-S256-g2",
+      "path": "e8/main/e8-r05-prepared-B4-S512-g2--B8-S256-g2.json",
+      "public_sha256": "ce7e3a533fd351ba4c0730bdb566f3041e4aaa648c1d922b242bfdd7cd7ca0f6",
+      "original_private_sha256": "3203efee14aa86dd8bf33ce641c13165da51eb2c5c811e2caddfea82af3a3446"
+    },
+    {
+      "trial_id": "e8-r05-prepared-B8-S256-g2--B4-S256-g2",
+      "path": "e8/main/e8-r05-prepared-B8-S256-g2--B4-S256-g2.json",
+      "public_sha256": "cf66c13147777e980945f8b62b53356eb23f5e9f544619bc8ed9444ceae89b6e",
+      "original_private_sha256": "4b4a1c3d5582e7e817f687f66dc62bc0cafa05dec7c7fee32471c752a1fe7f31"
+    },
+    {
+      "trial_id": "e8-r05-prepared-B4-S256-g2--B4-S512-g2",
+      "path": "e8/main/e8-r05-prepared-B4-S256-g2--B4-S512-g2.json",
+      "public_sha256": "6beae5e727ffaaa7b8ae1adbc05c18363b445a35d86c10df8fc94b31799c54ad",
+      "original_private_sha256": "e725a8d047548c0d54faedf81e6b2341ae6518e214fafdb3ca0ee8c5298008f6"
+    }
+  ],
+  "original_reference_evidence": "references-and-cross-shape-observation.json",
+  "cleanup_scope": "Saved controller API confirms owned Job and Pod absent; final actual API confirms owned jobs/pods and active RNGD requesters empty.",
+  "payload_scope": "Exported small evidence verified locally. Checkpoint/native payloads were not downloaded or independently rehashed by this publication."
+}

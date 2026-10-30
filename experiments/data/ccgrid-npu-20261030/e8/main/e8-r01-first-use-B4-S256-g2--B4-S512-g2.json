@@ -1,0 +1,3351 @@
+{
+  "schema": "ccgrid-e8-sample-v1",
+  "graph_state": "first-use",
+  "base_variant": "B4-S256-g2",
+  "target_variant": "B4-S512-g2",
+  "chip": 0,
+  "host_workers": 2,
+  "intra_op": 4,
+  "allow_compile": false,
+  "allocator_retries": 0,
+  "cache": "$RUN_ROOT/cache/graphs",
+  "metadata": {
+    "utc": "2026-10-30T11:34:34.943391+00:00",
+    "pid": 2729,
+    "ppid": 1,
+    "executable": "<private-path>",
+    "invocation_argv": [
+      "<private-path>",
+      "$RUN_ROOT/e8-source/bench/ccgrid_e8.py",
+      "sample",
+      "--ckpt",
+      "<private-path>",
+      "--cache",
+      "$RUN_ROOT/cache/graphs",
+      "--chip",
+      "0",
+      "--reference",
+      "$RUN_ROOT/runs/e8-main-same-target-v1/inputs/B4-S256-g2--B4-S512-g2.json",
+      "--base-variant",
+      "B4-S256-g2",
+      "--target-variant",
+      "B4-S512-g2",
+      "--graph-state",
+      "first-use",
+      "--host-workers",
+      "2",
+      "--intra-op",
+      "4",
+      "--out",
+      "$RUN_ROOT/runs/e8-main-same-target-v1/work/e8-r01-first-use-B4-S256-g2--B4-S512-g2.json"
+    ],
+    "actual_sys_argv": [
+      "$RUN_ROOT/e8-source/bench/ccgrid_e8.py",
+      "sample",
+      "--ckpt",
+      "<private-path>",
+      "--cache",
+      "$RUN_ROOT/cache/graphs",
+      "--chip",
+      "0",
+      "--reference",
+      "$RUN_ROOT/runs/e8-main-same-target-v1/inputs/B4-S256-g2--B4-S512-g2.json",
+      "--base-variant",
+      "B4-S256-g2",
+      "--target-variant",
+      "B4-S512-g2",
+      "--graph-state",
+      "first-use",
+      "--host-workers",
+      "2",
+      "--intra-op",
+      "4",
+      "--out",
+      "$RUN_ROOT/runs/e8-main-same-target-v1/work/e8-r01-first-use-B4-S256-g2--B4-S512-g2.json"
+    ],
+    "cwd": "/",
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.35",
+    "packages": {
+      "numpy": "2.2.6",
+      "torch": "2.10.0+cpu",
+      "safetensors": "0.8.0",
+      "furiosa-torch": "2026.4.0",
+      "furiosa-llm": "2026.4.0",
+      "furiosa-runtime": null
+    },
+    "environment": {
+      "PYTHONPATH": "$RUN_ROOT/e8-source/src",
+      "OMP_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "RNGD_MAX_SHAPES": "8",
+      "KUBERNETES_SERVICE_HOST": "10.96.0.1"
+    },
+    "script_entry_perf_ns": 1335049792676285,
+    "source": {
+      "commit": "bbceb1759ae0522c65921512f3dd2b8ca95b24dd",
+      "dirty": "",
+      "script_sha256": "5ee6d26d6b7d9f453cfa3fcdaa764f2f02ee494c49656f9349ed2ac3dde23dd6",
+      "sha256": {
+        "bench/ccgrid_e7.py": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+        "src/rngd_pd/swap/rngd.py": "c04984c53e109097bef2bd840e730d0b1a56f966c4f9847b8f5fc2385fb5ac9f",
+        "src/rngd_pd/swap/delta.py": "0d2d59294353080158698e136897f3349542e44118c9e201e30584b3acda575f",
+        "src/rngd_pd/swap/variants.py": "a1e772221226b042b97ea1b046e067a72709f94886db5610a5b2a9732ce6e744",
+        "src/rngd_pd/swap/bench_rngd.py": "a18035bc56bbbeb4bc8e00cdc167005dda5697ddade499e65497f0905096c0a6",
+        "bench/ccgrid_e8.py": "5ee6d26d6b7d9f453cfa3fcdaa764f2f02ee494c49656f9349ed2ac3dde23dd6"
+      }
+    }
+  },
+  "native_observation": "original CompileModule calls and output-device checks; overhead included",
+  "first_token_timing_method": "generate call start + native engine-reported prompt TTFT",
+  "logical_bytes_note": "shared group + LM payload; not physical DMA",
+  "reference": {
+    "path": "$RUN_ROOT/runs/e8-main-same-target-v1/inputs/B4-S256-g2--B4-S512-g2.json",
+    "sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3"
+  },
+  "checkpoint": {
+    "path": "<private-path>",
+    "files": [
+      {
+        "name": "config.json",
+        "size": 855,
+        "mtime_ns": 1792733529673292140,
+        "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+      },
+      {
+        "name": "model-00001-of-00004.safetensors",
+        "size": 4976698672,
+        "mtime_ns": 1773634882816711071,
+        "sha256": null
+      },
+      {
+        "name": "model-00002-of-00004.safetensors",
+        "size": 4999802720,
+        "mtime_ns": 1773634884507729476,
+        "sha256": null
+      },
+      {
+        "name": "model-00003-of-00004.safetensors",
+        "size": 4915916176,
+        "mtime_ns": 1773634882856711506,
+        "sha256": null
+      },
+      {
+        "name": "model-00004-of-00004.safetensors",
+        "size": 1168138808,
+        "mtime_ns": 1773634794331758639,
+        "sha256": null
+      },
+      {
+        "name": "model.safetensors.index.json",
+        "size": 23950,
+        "mtime_ns": 1792733529673292140,
+        "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+      }
+    ]
+  },
+  "base_prompts": [
+    [
+      102089,
+      76471,
+      61385,
+      32447,
+      37008,
+      5012,
+      9121,
+      2081
+    ],
+    [
+      21114,
+      97611,
+      77964,
+      109539,
+      60484,
+      72835,
+      116492,
+      87566
+    ],
+    [
+      75909,
+      65280,
+      67234,
+      112215,
+      33353,
+      97920,
+      80538,
+      428
+    ],
+    [
+      47358,
+      102902,
+      66562,
+      4126,
+      91810,
+      87585,
+      101604,
+      21161
+    ]
+  ],
+  "prompts": [
+    [
+      102089,
+      76471,
+      61385,
+      32447,
+      37008,
+      5012,
+      9121,
+      2081
+    ],
+    [
+      21114,
+      97611,
+      77964,
+      109539,
+      60484,
+      72835,
+      116492,
+      87566
+    ],
+    [
+      75909,
+      65280,
+      67234,
+      112215,
+      33353,
+      97920,
+      80538,
+      428
+    ],
+    [
+      47358,
+      102902,
+      66562,
+      4126,
+      91810,
+      87585,
+      101604,
+      21161
+    ]
+  ],
+  "counts": {
+    "compilation_attempts": 0,
+    "native_calls": 510,
+    "native_output_checks": 510,
+    "shared_uploads": 1
+  },
+  "native_calls_by_phase": {
+    "base": 255,
+    "target": 255
+  },
+  "sdk": "2026.4.0",
+  "expected_native_device": {
+    "type": "furiosa",
+    "index": 0
+  },
+  "weights": {
+    "host_weights_s": 0.29860466602258384,
+    "upload_weights_s": 16.54377699410543
+  },
+  "engine_load_s": 16.844314661,
+  "base_graph": {
+    "prepared": true,
+    "graph_source": [
+      "cache",
+      "cache"
+    ],
+    "graph_read_s": 0.012646147049963474,
+    "graph_to_device_s": 0.0013398709706962109,
+    "tables_s": 0.026165578048676252,
+    "swap_s": 0.040185005869716406,
+    "variant": "B4-S256-g2"
+  },
+  "base_tokens": [
+    [
+      198,
+      791,
+      1176,
+      1403,
+      5238,
+      315,
+      279,
+      33894
+    ],
+    [
+      29,
+      946,
+      946,
+      946,
+      946,
+      946,
+      946,
+      946
+    ],
+    [
+      9831,
+      19954,
+      13094,
+      66965,
+      29726,
+      13094,
+      33390,
+      33353
+    ],
+    [
+      198,
+      220,
+      482,
+      220,
+      16,
+      13,
+      15,
+      13
+    ]
+  ],
+  "base_tokens_equal_reference": true,
+  "base_generation_s": 0.282169207,
+  "base_prompt_ttft_s": 0.16757961106486619,
+  "actual_target_warmup": false,
+  "preparation_excluded_s": 0.0,
+  "weight_buffers_before": [
+    {
+      "name": "group0/wd",
+      "object_id": 128299728616592,
+      "data_ptr": 50130321408,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group0/wg",
+      "object_id": 128299728612672,
+      "data_ptr": 50600083456,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group0/wk",
+      "object_id": 128299728935312,
+      "data_ptr": 50918850560,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group0/wo",
+      "object_id": 128299728606192,
+      "data_ptr": 50834964480,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group0/wq",
+      "object_id": 128299728704656,
+      "data_ptr": 50935627776,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group0/wu",
+      "object_id": 128299728616512,
+      "data_ptr": 50365202432,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group0/wv",
+      "object_id": 128299728760448,
+      "data_ptr": 50902073344,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group1/wd",
+      "object_id": 128299727226816,
+      "data_ptr": 49257906176,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group1/wg",
+      "object_id": 128299727226896,
+      "data_ptr": 49727668224,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group1/wk",
+      "object_id": 128299757495744,
+      "data_ptr": 50046435328,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group1/wo",
+      "object_id": 128299728605712,
+      "data_ptr": 49962549248,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group1/wq",
+      "object_id": 128299728616432,
+      "data_ptr": 50063212544,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group1/wu",
+      "object_id": 128299728616672,
+      "data_ptr": 49492787200,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group1/wv",
+      "object_id": 128299728616192,
+      "data_ptr": 50029658112,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group2/wd",
+      "object_id": 128299727225776,
+      "data_ptr": 48385490944,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group2/wg",
+      "object_id": 128299758888384,
+      "data_ptr": 48855252992,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group2/wk",
+      "object_id": 128299728379696,
+      "data_ptr": 49174020096,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group2/wo",
+      "object_id": 128299727226656,
+      "data_ptr": 49090134016,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group2/wq",
+      "object_id": 128299727226736,
+      "data_ptr": 49190797312,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group2/wu",
+      "object_id": 128299727226976,
+      "data_ptr": 48620371968,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group2/wv",
+      "object_id": 128299727226096,
+      "data_ptr": 49157242880,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group3/wd",
+      "object_id": 128299727226496,
+      "data_ptr": 47513075712,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group3/wg",
+      "object_id": 128299727226256,
+      "data_ptr": 47982837760,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group3/wk",
+      "object_id": 128299727226576,
+      "data_ptr": 48301604864,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group3/wo",
+      "object_id": 128299727225616,
+      "data_ptr": 48217718784,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group3/wq",
+      "object_id": 128299728715376,
+      "data_ptr": 48318382080,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group3/wu",
+      "object_id": 128299728714416,
+      "data_ptr": 47747956736,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group3/wv",
+      "object_id": 128299727227456,
+      "data_ptr": 48284827648,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group4/wd",
+      "object_id": 128299727225216,
+      "data_ptr": 46640660480,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group4/wg",
+      "object_id": 128299727225456,
+      "data_ptr": 47110422528,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group4/wk",
+      "object_id": 128299727225936,
+      "data_ptr": 47429189632,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group4/wo",
+      "object_id": 128299727227136,
+      "data_ptr": 47345303552,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group4/wq",
+      "object_id": 128299727227776,
+      "data_ptr": 47445966848,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group4/wu",
+      "object_id": 128299727228016,
+      "data_ptr": 46875541504,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group4/wv",
+      "object_id": 128299727225696,
+      "data_ptr": 47412412416,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group5/wd",
+      "object_id": 128299727228656,
+      "data_ptr": 45768245248,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group5/wg",
+      "object_id": 128299727228576,
+      "data_ptr": 46238007296,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group5/wk",
+      "object_id": 128299727225856,
+      "data_ptr": 46556774400,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group5/wo",
+      "object_id": 128299727227856,
+      "data_ptr": 46472888320,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group5/wq",
+      "object_id": 128299727227936,
+      "data_ptr": 46573551616,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group5/wu",
+      "object_id": 128299727228416,
+      "data_ptr": 46003126272,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group5/wv",
+      "object_id": 128299727226336,
+      "data_ptr": 46539997184,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group6/wd",
+      "object_id": 128299727229216,
+      "data_ptr": 44895830016,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group6/wg",
+      "object_id": 128299728706096,
+      "data_ptr": 45365592064,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group6/wk",
+      "object_id": 128299727228096,
+      "data_ptr": 45684359168,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group6/wo",
+      "object_id": 128299727228176,
+      "data_ptr": 45600473088,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group6/wq",
+      "object_id": 128299727227696,
+      "data_ptr": 45701136384,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group6/wu",
+      "object_id": 128299727229456,
+      "data_ptr": 45130711040,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group6/wv",
+      "object_id": 128299727228896,
+      "data_ptr": 45667581952,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group7/wd",
+      "object_id": 128299727229856,
+      "data_ptr": 44023414784,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group7/wg",
+      "object_id": 128299727230016,
+      "data_ptr": 44493176832,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group7/wk",
+      "object_id": 128299727228816,
+      "data_ptr": 44811943936,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group7/wo",
+      "object_id": 128299727228736,
+      "data_ptr": 44728057856,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group7/wq",
+      "object_id": 128299727229296,
+      "data_ptr": 44828721152,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group7/wu",
+      "object_id": 128299727228496,
+      "data_ptr": 44258295808,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group7/wv",
+      "object_id": 128299727229616,
+      "data_ptr": 44795166720,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group8/wd",
+      "object_id": 128299727230576,
+      "data_ptr": 43150999552,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group8/wg",
+      "object_id": 128299727230256,
+      "data_ptr": 43620761600,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group8/wk",
+      "object_id": 128299727229056,
+      "data_ptr": 43939528704,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group8/wo",
+      "object_id": 128299727228976,
+      "data_ptr": 43855642624,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group8/wq",
+      "object_id": 128299727229936,
+      "data_ptr": 43956305920,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group8/wu",
+      "object_id": 128299727230336,
+      "data_ptr": 43385880576,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group8/wv",
+      "object_id": 128299727227216,
+      "data_ptr": 43922751488,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group9/wd",
+      "object_id": 128299727231056,
+      "data_ptr": 42278584320,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group9/wg",
+      "object_id": 128299727231216,
+      "data_ptr": 42748346368,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group9/wk",
+      "object_id": 128299727229376,
+      "data_ptr": 43067113472,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group9/wo",
+      "object_id": 128299727227056,
+      "data_ptr": 42983227392,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group9/wq",
+      "object_id": 128299727229776,
+      "data_ptr": 43083890688,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group9/wu",
+      "object_id": 128299727230976,
+      "data_ptr": 42513465344,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group9/wv",
+      "object_id": 128299727230096,
+      "data_ptr": 43050336256,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group10/wd",
+      "object_id": 128299727231856,
+      "data_ptr": 41406169088,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group10/wg",
+      "object_id": 128299727227536,
+      "data_ptr": 41875931136,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group10/wk",
+      "object_id": 128299727229536,
+      "data_ptr": 42194698240,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group10/wo",
+      "object_id": 128299728887280,
+      "data_ptr": 42110812160,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group10/wq",
+      "object_id": 128299727228336,
+      "data_ptr": 42211475456,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group10/wu",
+      "object_id": 128299727231456,
+      "data_ptr": 41641050112,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group10/wv",
+      "object_id": 128299728763248,
+      "data_ptr": 42177921024,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group11/wd",
+      "object_id": 128299727231616,
+      "data_ptr": 40533753856,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group11/wg",
+      "object_id": 128299728606352,
+      "data_ptr": 41003515904,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group11/wk",
+      "object_id": 128299727230816,
+      "data_ptr": 41322283008,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group11/wo",
+      "object_id": 128299727231296,
+      "data_ptr": 41238396928,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group11/wq",
+      "object_id": 128299727230416,
+      "data_ptr": 41339060224,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group11/wu",
+      "object_id": 128299727231536,
+      "data_ptr": 40768634880,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group11/wv",
+      "object_id": 128299727231776,
+      "data_ptr": 41305505792,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group12/wd",
+      "object_id": 128299727231936,
+      "data_ptr": 39661338624,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group12/wg",
+      "object_id": 128299727232576,
+      "data_ptr": 40131100672,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group12/wk",
+      "object_id": 128299727230736,
+      "data_ptr": 40449867776,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group12/wo",
+      "object_id": 128299727231136,
+      "data_ptr": 40365981696,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group12/wq",
+      "object_id": 128299727232336,
+      "data_ptr": 40466644992,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group12/wu",
+      "object_id": 128299727232816,
+      "data_ptr": 39896219648,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group12/wv",
+      "object_id": 128299727232496,
+      "data_ptr": 40433090560,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group13/wd",
+      "object_id": 128299727230496,
+      "data_ptr": 38788923392,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group13/wg",
+      "object_id": 128299727233056,
+      "data_ptr": 39258685440,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group13/wk",
+      "object_id": 128299727230896,
+      "data_ptr": 39577452544,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group13/wo",
+      "object_id": 128299727232976,
+      "data_ptr": 39493566464,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group13/wq",
+      "object_id": 128299727231696,
+      "data_ptr": 39594229760,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group13/wu",
+      "object_id": 128299727230656,
+      "data_ptr": 39023804416,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group13/wv",
+      "object_id": 128299727232176,
+      "data_ptr": 39560675328,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group14/wd",
+      "object_id": 128299727233136,
+      "data_ptr": 37916508160,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group14/wg",
+      "object_id": 128299727232896,
+      "data_ptr": 38386270208,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group14/wk",
+      "object_id": 128299727233456,
+      "data_ptr": 38705037312,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group14/wo",
+      "object_id": 128299727233296,
+      "data_ptr": 38621151232,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group14/wq",
+      "object_id": 128299727232016,
+      "data_ptr": 38721814528,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group14/wu",
+      "object_id": 128299727233536,
+      "data_ptr": 38151389184,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group14/wv",
+      "object_id": 128299727232656,
+      "data_ptr": 38688260096,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group15/wd",
+      "object_id": 128299727233376,
+      "data_ptr": 37044092928,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group15/wg",
+      "object_id": 128299727232096,
+      "data_ptr": 37513854976,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group15/wk",
+      "object_id": 128299727229136,
+      "data_ptr": 37832622080,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group15/wo",
+      "object_id": 128299727234176,
+      "data_ptr": 37748736000,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group15/wq",
+      "object_id": 128299727233936,
+      "data_ptr": 37849399296,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group15/wu",
+      "object_id": 128299727233776,
+      "data_ptr": 37278973952,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group15/wv",
+      "object_id": 128299727233696,
+      "data_ptr": 37815844864,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "lm_head",
+      "object_id": 128299728843008,
+      "data_ptr": 35993419776,
+      "shape": [
+        32,
+        4008,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 1050673152
+    }
+  ],
+  "graph_modules_before": {
+    "B4-S256-g2": {
+      "m": 128299727275776,
+      "lmh": 128299727275008
+    }
+  },
+  "target_graph_prepared_before": false,
+  "logical_shared_weight_upload_bytes": 15009316864,
+  "base_barrier_perf_ns": 1335069289587429,
+  "switch_trigger_perf_ns": 1335069289587779,
+  "graph": {
+    "prepared": true,
+    "graph_source": [
+      "cache",
+      "cache"
+    ],
+    "graph_read_s": 0.003581465920433402,
+    "graph_to_device_s": 0.0010518759954720736,
+    "tables_s": 0.025765452068299055,
+    "swap_s": 0.030415934044867754,
+    "variant": "B4-S512-g2"
+  },
+  "tokens": [
+    [
+      198,
+      791,
+      1176,
+      1403,
+      5238,
+      315,
+      279,
+      33894
+    ],
+    [
+      29,
+      946,
+      946,
+      946,
+      946,
+      946,
+      946,
+      946
+    ],
+    [
+      9831,
+      19954,
+      13094,
+      66965,
+      29726,
+      13094,
+      33390,
+      33353
+    ],
+    [
+      198,
+      220,
+      482,
+      220,
+      16,
+      13,
+      15,
+      13
+    ]
+  ],
+  "tokens_equal_reference": true,
+  "generation_s": 0.346960215,
+  "prompt_ttft_s": 0.22146193985827267,
+  "generation_start_perf_ns": 1335069320054904,
+  "first_token_perf_ns": 1335069541516844,
+  "weight_buffers_after": [
+    {
+      "name": "group0/wd",
+      "object_id": 128299728616592,
+      "data_ptr": 50130321408,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group0/wg",
+      "object_id": 128299728612672,
+      "data_ptr": 50600083456,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group0/wk",
+      "object_id": 128299728935312,
+      "data_ptr": 50918850560,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group0/wo",
+      "object_id": 128299728606192,
+      "data_ptr": 50834964480,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group0/wq",
+      "object_id": 128299728704656,
+      "data_ptr": 50935627776,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group0/wu",
+      "object_id": 128299728616512,
+      "data_ptr": 50365202432,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group0/wv",
+      "object_id": 128299728760448,
+      "data_ptr": 50902073344,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group1/wd",
+      "object_id": 128299727226816,
+      "data_ptr": 49257906176,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group1/wg",
+      "object_id": 128299727226896,
+      "data_ptr": 49727668224,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group1/wk",
+      "object_id": 128299757495744,
+      "data_ptr": 50046435328,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group1/wo",
+      "object_id": 128299728605712,
+      "data_ptr": 49962549248,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group1/wq",
+      "object_id": 128299728616432,
+      "data_ptr": 50063212544,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group1/wu",
+      "object_id": 128299728616672,
+      "data_ptr": 49492787200,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group1/wv",
+      "object_id": 128299728616192,
+      "data_ptr": 50029658112,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group2/wd",
+      "object_id": 128299727225776,
+      "data_ptr": 48385490944,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group2/wg",
+      "object_id": 128299758888384,
+      "data_ptr": 48855252992,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group2/wk",
+      "object_id": 128299728379696,
+      "data_ptr": 49174020096,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group2/wo",
+      "object_id": 128299727226656,
+      "data_ptr": 49090134016,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group2/wq",
+      "object_id": 128299727226736,
+      "data_ptr": 49190797312,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group2/wu",
+      "object_id": 128299727226976,
+      "data_ptr": 48620371968,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group2/wv",
+      "object_id": 128299727226096,
+      "data_ptr": 49157242880,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group3/wd",
+      "object_id": 128299727226496,
+      "data_ptr": 47513075712,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group3/wg",
+      "object_id": 128299727226256,
+      "data_ptr": 47982837760,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group3/wk",
+      "object_id": 128299727226576,
+      "data_ptr": 48301604864,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group3/wo",
+      "object_id": 128299727225616,
+      "data_ptr": 48217718784,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group3/wq",
+      "object_id": 128299728715376,
+      "data_ptr": 48318382080,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group3/wu",
+      "object_id": 128299728714416,
+      "data_ptr": 47747956736,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group3/wv",
+      "object_id": 128299727227456,
+      "data_ptr": 48284827648,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group4/wd",
+      "object_id": 128299727225216,
+      "data_ptr": 46640660480,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group4/wg",
+      "object_id": 128299727225456,
+      "data_ptr": 47110422528,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group4/wk",
+      "object_id": 128299727225936,
+      "data_ptr": 47429189632,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group4/wo",
+      "object_id": 128299727227136,
+      "data_ptr": 47345303552,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group4/wq",
+      "object_id": 128299727227776,
+      "data_ptr": 47445966848,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group4/wu",
+      "object_id": 128299727228016,
+      "data_ptr": 46875541504,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group4/wv",
+      "object_id": 128299727225696,
+      "data_ptr": 47412412416,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group5/wd",
+      "object_id": 128299727228656,
+      "data_ptr": 45768245248,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group5/wg",
+      "object_id": 128299727228576,
+      "data_ptr": 46238007296,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group5/wk",
+      "object_id": 128299727225856,
+      "data_ptr": 46556774400,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group5/wo",
+      "object_id": 128299727227856,
+      "data_ptr": 46472888320,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group5/wq",
+      "object_id": 128299727227936,
+      "data_ptr": 46573551616,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group5/wu",
+      "object_id": 128299727228416,
+      "data_ptr": 46003126272,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group5/wv",
+      "object_id": 128299727226336,
+      "data_ptr": 46539997184,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group6/wd",
+      "object_id": 128299727229216,
+      "data_ptr": 44895830016,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group6/wg",
+      "object_id": 128299728706096,
+      "data_ptr": 45365592064,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group6/wk",
+      "object_id": 128299727228096,
+      "data_ptr": 45684359168,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group6/wo",
+      "object_id": 128299727228176,
+      "data_ptr": 45600473088,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group6/wq",
+      "object_id": 128299727227696,
+      "data_ptr": 45701136384,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group6/wu",
+      "object_id": 128299727229456,
+      "data_ptr": 45130711040,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group6/wv",
+      "object_id": 128299727228896,
+      "data_ptr": 45667581952,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group7/wd",
+      "object_id": 128299727229856,
+      "data_ptr": 44023414784,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group7/wg",
+      "object_id": 128299727230016,
+      "data_ptr": 44493176832,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group7/wk",
+      "object_id": 128299727228816,
+      "data_ptr": 44811943936,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group7/wo",
+      "object_id": 128299727228736,
+      "data_ptr": 44728057856,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group7/wq",
+      "object_id": 128299727229296,
+      "data_ptr": 44828721152,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group7/wu",
+      "object_id": 128299727228496,
+      "data_ptr": 44258295808,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group7/wv",
+      "object_id": 128299727229616,
+      "data_ptr": 44795166720,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group8/wd",
+      "object_id": 128299727230576,
+      "data_ptr": 43150999552,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group8/wg",
+      "object_id": 128299727230256,
+      "data_ptr": 43620761600,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group8/wk",
+      "object_id": 128299727229056,
+      "data_ptr": 43939528704,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group8/wo",
+      "object_id": 128299727228976,
+      "data_ptr": 43855642624,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group8/wq",
+      "object_id": 128299727229936,
+      "data_ptr": 43956305920,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group8/wu",
+      "object_id": 128299727230336,
+      "data_ptr": 43385880576,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group8/wv",
+      "object_id": 128299727227216,
+      "data_ptr": 43922751488,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group9/wd",
+      "object_id": 128299727231056,
+      "data_ptr": 42278584320,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group9/wg",
+      "object_id": 128299727231216,
+      "data_ptr": 42748346368,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group9/wk",
+      "object_id": 128299727229376,
+      "data_ptr": 43067113472,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group9/wo",
+      "object_id": 128299727227056,
+      "data_ptr": 42983227392,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group9/wq",
+      "object_id": 128299727229776,
+      "data_ptr": 43083890688,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group9/wu",
+      "object_id": 128299727230976,
+      "data_ptr": 42513465344,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group9/wv",
+      "object_id": 128299727230096,
+      "data_ptr": 43050336256,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group10/wd",
+      "object_id": 128299727231856,
+      "data_ptr": 41406169088,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group10/wg",
+      "object_id": 128299727227536,
+      "data_ptr": 41875931136,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group10/wk",
+      "object_id": 128299727229536,
+      "data_ptr": 42194698240,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group10/wo",
+      "object_id": 128299728887280,
+      "data_ptr": 42110812160,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group10/wq",
+      "object_id": 128299727228336,
+      "data_ptr": 42211475456,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group10/wu",
+      "object_id": 128299727231456,
+      "data_ptr": 41641050112,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group10/wv",
+      "object_id": 128299728763248,
+      "data_ptr": 42177921024,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group11/wd",
+      "object_id": 128299727231616,
+      "data_ptr": 40533753856,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group11/wg",
+      "object_id": 128299728606352,
+      "data_ptr": 41003515904,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group11/wk",
+      "object_id": 128299727230816,
+      "data_ptr": 41322283008,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group11/wo",
+      "object_id": 128299727231296,
+      "data_ptr": 41238396928,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group11/wq",
+      "object_id": 128299727230416,
+      "data_ptr": 41339060224,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group11/wu",
+      "object_id": 128299727231536,
+      "data_ptr": 40768634880,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group11/wv",
+      "object_id": 128299727231776,
+      "data_ptr": 41305505792,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group12/wd",
+      "object_id": 128299727231936,
+      "data_ptr": 39661338624,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group12/wg",
+      "object_id": 128299727232576,
+      "data_ptr": 40131100672,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group12/wk",
+      "object_id": 128299727230736,
+      "data_ptr": 40449867776,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group12/wo",
+      "object_id": 128299727231136,
+      "data_ptr": 40365981696,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group12/wq",
+      "object_id": 128299727232336,
+      "data_ptr": 40466644992,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group12/wu",
+      "object_id": 128299727232816,
+      "data_ptr": 39896219648,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group12/wv",
+      "object_id": 128299727232496,
+      "data_ptr": 40433090560,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group13/wd",
+      "object_id": 128299727230496,
+      "data_ptr": 38788923392,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group13/wg",
+      "object_id": 128299727233056,
+      "data_ptr": 39258685440,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group13/wk",
+      "object_id": 128299727230896,
+      "data_ptr": 39577452544,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group13/wo",
+      "object_id": 128299727232976,
+      "data_ptr": 39493566464,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group13/wq",
+      "object_id": 128299727231696,
+      "data_ptr": 39594229760,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group13/wu",
+      "object_id": 128299727230656,
+      "data_ptr": 39023804416,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group13/wv",
+      "object_id": 128299727232176,
+      "data_ptr": 39560675328,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group14/wd",
+      "object_id": 128299727233136,
+      "data_ptr": 37916508160,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group14/wg",
+      "object_id": 128299727232896,
+      "data_ptr": 38386270208,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group14/wk",
+      "object_id": 128299727233456,
+      "data_ptr": 38705037312,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group14/wo",
+      "object_id": 128299727233296,
+      "data_ptr": 38621151232,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group14/wq",
+      "object_id": 128299727232016,
+      "data_ptr": 38721814528,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group14/wu",
+      "object_id": 128299727233536,
+      "data_ptr": 38151389184,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group14/wv",
+      "object_id": 128299727232656,
+      "data_ptr": 38688260096,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group15/wd",
+      "object_id": 128299727233376,
+      "data_ptr": 37044092928,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group15/wg",
+      "object_id": 128299727232096,
+      "data_ptr": 37513854976,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group15/wk",
+      "object_id": 128299727229136,
+      "data_ptr": 37832622080,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group15/wo",
+      "object_id": 128299727234176,
+      "data_ptr": 37748736000,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group15/wq",
+      "object_id": 128299727233936,
+      "data_ptr": 37849399296,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group15/wu",
+      "object_id": 128299727233776,
+      "data_ptr": 37278973952,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group15/wv",
+      "object_id": 128299727233696,
+      "data_ptr": 37815844864,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "lm_head",
+      "object_id": 128299728843008,
+      "data_ptr": 35993419776,
+      "shape": [
+        32,
+        4008,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 1050673152
+    }
+  ],
+  "graph_modules_after": {
+    "B4-S256-g2": {
+      "m": 128299727275776,
+      "lmh": 128299727275008
+    },
+    "B4-S512-g2": {
+      "m": 128299727282064,
+      "lmh": 128299727274192
+    }
+  },
+  "timings": {
+    "swap_s": 0.030465775,
+    "graph_read_s": 0.003581465920433402,
+    "graph_to_device_s": 0.0010518759954720736,
+    "tables_s": 0.025765452068299055,
+    "prompt_ttft_s": 0.22146193985827267,
+    "switch_to_first_token_s": 0.251929065,
+    "switch_through_generation_s": 0.37742734
+  },
+  "weight_buffers_retained": true,
+  "loaded_graph_modules_retained": true,
+  "base_graph_modules_retained": true,
+  "status": "ok",
+  "completed_utc": "2026-10-30T11:34:55.474863+00:00",
+  "publication": {
+    "original_private_file": "e8-r01-first-use-B4-S256-g2--B4-S512-g2.json",
+    "original_private_sha256": "ccf7f78aead0756aed974b6e0916ced7ac90a3040fac357cbbe7d7a85e32f965",
+    "original_private_bytes": 68150,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}
