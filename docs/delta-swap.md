@@ -38,12 +38,41 @@ make them portable across PyTorch versions. `bench/prebake.py` documents the
 environment used for the existing serving artifacts. Graph-spec lookup is now
 lazy: a cache hit does not allocate compiler sample tensors.
 
+SDK 2026.4 uses a different cache loader. Native Runnable bytes and Torch
+weights/output reconstruction metadata are published together in one atomic
+`.runnable` archive under `CACHE/SDK/TORCH/KEY`. The loader checks all format
+and version metadata before restoring the trusted executable/pickle payloads.
+Alias, passthrough and empty output metadata must survive a fresh-process load.
+SDK 2026.2 continues to use its existing `CACHE/SDK/KEY.edf` and `.w` pair.
+Do not rename/copy old EDF entries into a new SDK directory.
+
+For the installed SDK 2026.4 / Torch 2.10 CPU environment, the validated
+B4/S256 graph uses **group=2**. Group=8 was rejected by the native compiler
+with a memory-explosion error even with a 128 GiB container. Bake with the same
+interpreter that the worker uses and explicitly select its Torch version:
+
+```bash
+POD_TORCH=2.10 RNGD_MAX_SHAPES=8 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 \
+python bench/prebake.py --model "$CHECKPOINT" --B 4 --S 256 --group 2 --cache "$CACHE"
+```
+
+Use `SwappableDecode(..., group=2)` and `Variant(4, 256, 2)` for that setting;
+the constructor default remains group=8. Other shapes need separate compilation
+and validation. See the [native 2026.4 record](../experiments/2026-10-30-rngd-sdk264.md).
+New archives honor the builder's umask; replacement preserves existing file
+permissions so shared readers work without making private entries public.
+
+This is a custom CompileModule cache, separate from Furiosa-LLM's FXB model
+loader. It does not add live FXB weight replacement. The SDK wrapper exposes
+its native serializer through `_inner`; that small adapter boundary must be
+revalidated with SDK upgrades. Cache files must come from trusted builds.
+
 The implementation currently requires the Llama-3.1-8B dimensions
 (4096/14336, 32 attention heads, 8 KV heads, head dimension 128). Checkpoint
 configuration is checked before an update; a different architecture, rotary
 configuration, tensor set, shape or dtype requires a full reload. The existing
-EDF artifact-cache path is the tested path; newer SDK cache formats require
-their own compatible loader.
+EDF path and the SDK 2026.4 Runnable path use their respective compatible
+loaders; other SDK/cache combinations require independent validation.
 
 ## onggi to NPU in one call
 

@@ -43,6 +43,10 @@ until that consolidation is validated, this repository remains the executable PD
 
 Compiled-variant swapping: [`rngd_pd.swap`](docs/delta-swap.md) keeps RNGD weights resident
 and selects co-compiled ATOM decoders, with an optional background warm pool.
+The [SDK 2026.4 validation](experiments/2026-10-30-rngd-sdk264.md) covers native
+Runnable cache reload and resident sparse updates on RNGD 8B B4/S256/group2;
+group8 currently fails native compilation. Initial full-model loading remains
+separate from the smaller resident update.
 
 ## ✨ Highlights
 
