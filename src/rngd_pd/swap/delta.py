@@ -9,8 +9,10 @@ the data. Nothing else about either file is interpreted.
 Standard library only, so the planning runs on any host.
 """
 import bisect
+import copy
 import json
 import os
+import re
 import struct
 
 DTYPE_BYTES = {"BF16": 2, "F16": 2, "F32": 4, "F64": 8, "I8": 1, "U8": 1,
@@ -26,6 +28,8 @@ CHECKPOINT_GRAPH_KEYS = (
 
 def _relative(path):
     from pathlib import PurePosixPath
+    if not isinstance(path, str) or "\x00" in path:
+        raise ValueError(f"not a checkpoint-relative path: {path!r}")
     p = PurePosixPath(path.replace("\\", "/"))
     if p.is_absolute() or ".." in p.parts or ":" in str(p) or not p.parts:
         raise ValueError(f"not a checkpoint-relative path: {path!r}")
@@ -86,18 +90,106 @@ def read_header(path):
     return out
 
 
+def parse_onggi_switchplan(doc):
+    """Validate a decoded onggi.switchplan.v1 and return an independent copy.
+
+    Paths are canonical artifact-relative paths. Manifest identities and range
+    source metadata are preserved; validation does not admit a resident manifest
+    or verify artifact bytes. Unknown additive fields are left uninterpreted.
+    """
+    if not isinstance(doc, dict) or doc.get("schema") != "onggi.switchplan.v1":
+        raise ValueError("unsupported onggi switchplan schema")
+    for key in ("base_manifest", "manifest"):
+        if (not isinstance(doc.get(key), str)
+                or re.fullmatch(r"sha256:[0-9a-f]{64}", doc[key]) is None):
+            raise ValueError(f"invalid switchplan {key}")
+    if not isinstance(doc.get("files"), list):
+        raise ValueError("onggi switchplan must contain a files list")
+
+    def numbers(obj, required, optional=()):
+        for key in required + tuple(k for k in optional if k in obj):
+            value = obj.get(key)
+            if type(value) is not int or value < 0:
+                raise ValueError(f"switchplan {key} must be a nonnegative integer")
+
+    totals = ("size", "same", "moved", "new")
+    metrics = ("same_blocks", "changed_runs", "largest_run")
+    numbers(doc, totals, metrics + ("new_stored",))
+    parsed = copy.deepcopy(doc)
+    seen = set()
+    aggregate = dict.fromkeys(totals, 0)
+    for fd in parsed["files"]:
+        if not isinstance(fd, dict):
+            raise ValueError("switchplan files must be objects")
+        path = fd["path"] = _relative(fd.get("path"))
+        if path in seen:
+            raise ValueError(f"duplicate file range entry: {path}")
+        seen.add(path)
+        if "base" in fd:
+            fd["base"] = _relative(fd["base"])
+        numbers(fd, totals, metrics)
+        if fd["same"] > 0 and "base" not in fd:
+            raise ValueError("same bytes require a paired base file")
+        ranges = fd.get("ranges", [])
+        if not isinstance(ranges, list):
+            raise ValueError("switchplan ranges must be a list")
+        cursor = 0
+        classified = dict(same=0, elsewhere=0, new=0)
+        changed = []
+        for span in ranges:
+            if not isinstance(span, dict):
+                raise ValueError("switchplan ranges must be objects")
+            numbers(span, ("offset", "length"))
+            offset, length, kind = span["offset"], span["length"], span.get("kind")
+            if kind not in ("same", "elsewhere", "new"):
+                raise ValueError("invalid switchplan range kind")
+            if length == 0 or offset != cursor or offset + length > fd["size"]:
+                raise ValueError("switchplan ranges must partition the target in order")
+            if kind == "elsewhere":
+                span["source_file"] = _relative(span.get("source_file"))
+                numbers(span, ("source_offset",))
+            elif "source_file" in span or "source_offset" in span:
+                raise ValueError("source fields are only valid for elsewhere ranges")
+            cursor += length
+            classified[kind] += length
+            if kind != "same":
+                changed.append((offset, length))
+        if cursor != fd["size"]:
+            raise ValueError("switchplan ranges must cover the file; run onggi diff --ranges --json")
+        if (fd["same"], fd["moved"], fd["new"]) != (
+                classified["same"], classified["elsewhere"], classified["new"]):
+            raise ValueError("switchplan file classification totals disagree with ranges")
+        if "changed" in fd:
+            legacy = fd["changed"]
+            if (not isinstance(legacy, list)
+                    or any(not isinstance(r, list) or len(r) != 2 for r in legacy)):
+                raise ValueError("switchplan changed must contain offset/length pairs")
+            if _ranges(legacy, fd["size"]) != _ranges(changed):
+                raise ValueError("switchplan changed disagrees with canonical ranges")
+        for key in totals:
+            aggregate[key] += fd[key]
+    if any(parsed[key] != aggregate[key] for key in totals):
+        raise ValueError("switchplan aggregate totals disagree with files")
+    return parsed
+
+
 def load_onggi_ranges(doc):
     """`onggi diff --ranges --json` output -> {file path: [(offset, length)]}.
 
-    Accepts the parsed JSON, a JSON string or a path to a file holding it. A
-    file without a paired base (`base` empty) has no "same" bytes: every byte
-    of it counts as changed.
+    Accepts the parsed JSON, a JSON string or a path to a file holding it.
+    Versioned switchplans use canonical elsewhere/new target ranges. In legacy
+    unversioned output, a file without a paired base counts as entirely changed.
     """
     if isinstance(doc, (str, os.PathLike)) and os.path.exists(doc):
         with open(doc) as f:
             doc = json.load(f)
     elif isinstance(doc, str):
         doc = json.loads(doc)
+    if isinstance(doc, dict) and "schema" in doc:
+        parsed = parse_onggi_switchplan(doc)
+        return {fd["path"]: _ranges([(r["offset"], r["length"])
+                                    for r in fd.get("ranges", []) if r["kind"] != "same"])
+                for fd in parsed["files"]}
     if not isinstance(doc, dict) or not isinstance(doc.get("files"), list):
         raise ValueError("onggi diff must contain a files list")
     out = {}
