@@ -152,9 +152,12 @@ def build_prepared(path, S, chip):
         if cfg.get('warmup', False):
             adapter.warmup()
         return adapter
-    except BaseException:
+    except BaseException as startup_error:
         if adapter is not None:
             adapter.discard_kv()
         if engine is not None:
-            engine.close()
+            try:
+                engine.close()
+            except BaseException as cleanup_error:
+                raise startup_error from cleanup_error
         raise

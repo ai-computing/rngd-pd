@@ -16,8 +16,11 @@ Optional prepared config `warmup` is an exact boolean, default false. When true,
 startup selects every configured variant, allocates private blank KV and runs
 one actual engine step at safe token/position zero before readiness. Private
 KV is discarded after each attempt, including failure or cancellation. Any
-startup failure closes the initialized engine and propagates; readiness is
-never published. Existing atom-inputs materialization remains unchanged.
+startup failure attempts to close the initialized engine and propagates the
+original exception, retaining a cleanup failure as its cause. Failed RNGD close
+synchronization disables serving and retains potentially live native buffers
+until a successful retry or process recovery. Readiness is never published.
+Existing atom-inputs materialization remains unchanged.
 
 No new dependencies, remote processes or device allocations are authorized by
 this code task. Verify fresh producer/consumer processes with all vLLM imports

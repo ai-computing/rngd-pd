@@ -123,3 +123,67 @@ def test_warmup_failure_or_cancellation_discards_kv_and_closes_engine(tmp_path, 
     assert all(a._K is None and a._V is None for a in discarded)
     assert len(closed) == 1 and closed[0].rt is None and closed[0].compiled is None
     assert not cluster.STATE['ready']
+
+
+@pytest.mark.parametrize('failure', [KeyboardInterrupt, SystemExit, RuntimeError])
+def test_rngd_cleanup_sync_failure_preserves_startup_error_and_owns_buffers(tmp_path, monkeypatch, failure):
+    import torch
+    from rngd_pd.swap import rngd
+    tiny_checkpoint(tmp_path / 'ck')
+    for name, value in dict(H=4, M=8, NH=1, NKV=1, HD=4).items():
+        monkeypatch.setattr(rngd, name, value)
+    startup_error = failure('warmup interrupted')
+    cleanup_error = RuntimeError('device synchronization unavailable')
+    sync_failed = [False]
+    engines, adapters, owned = [], [], {}
+
+    def sync(chip):
+        if sync_failed[0]:
+            raise cleanup_error
+
+    monkeypatch.setitem(sys.modules, 'rngd_pd.engines.fsdk', SimpleNamespace(
+        dev_str=lambda chip: 'cpu', open_device=lambda *args: None, sync=sync))
+    monkeypatch.setitem(cluster.STATE, 'ready', False)
+    original_discard = prepared.PreparedEngine.discard_kv
+
+    def discard(adapter):
+        original_discard(adapter)
+        adapters.append(adapter)
+
+    class Decoder(torch.nn.Module):
+        def forward(self, *args):
+            engine = engines[0]
+            owned.update(weight=engine.shared[0]['wq'], head=engine.wlm_d,
+                         variant=next(iter(engine.variants.values())),
+                         checkpoint_handles=dict(engine.ck._open))
+            sync_failed[0] = True
+            raise startup_error
+
+    def graphs(engine, variant):
+        engines.append(engine)
+        return Decoder(), torch.nn.Identity(), ['cache', 'cache']
+
+    monkeypatch.setattr(rngd.SwappableDecode, '_graphs', graphs)
+    monkeypatch.setattr(prepared.PreparedEngine, 'discard_kv', discard)
+    cfg = tmp_path / 'prepared.json'
+    cfg.write_text(json.dumps(dict(engine='rngd', checkpoint='ck',
+        checkpoint_id='immutable', variants=['B1-S8-g1'], warmup=True)))
+    with pytest.raises(BaseException) as caught:
+        prepared.build_prepared(cfg, 8, 0)
+    assert caught.value is startup_error
+    assert caught.value.__cause__ is cleanup_error
+    engine = engines[0]
+    assert engine._failed
+    assert not cluster.STATE['ready']
+    assert adapters and all(a._K is None and a._V is None for a in adapters)
+    assert engine.shared[0]['wq'] is owned['weight']
+    assert engine.wlm_d is owned['head']
+    assert next(iter(engine.variants.values())) is owned['variant']
+    assert engine.ck._open == owned['checkpoint_handles']
+    with pytest.raises(RuntimeError, match='unavailable'):
+        engine.swap(adapters[0].variants[0])
+    sync_failed[0] = False
+    engine.close()
+    assert engine._failed
+    assert engine.shared == [] and engine.variants == {}
+    assert engine.wlm_d is None and engine.active is None and engine.ck._open == {}

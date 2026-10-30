@@ -52,3 +52,51 @@ readiness. Existing prepared/default atom-inputs preparation stays intact.
   default behavior, cancellation cleanup and readiness ordering. No material
   unresolved source findings. Native runtime behavior and actual prompt replay
   remain assigned to the hardware owner; CPU tests do not establish them.
+
+## Fresh final review and bounded fix pass
+
+The parent supplied a fresh read-only review: no Critical/Important findings
+under the reviewer's original grading, with one cleanup finding. Static
+comparison against the vLLM 0.18.0 base found no MRO/metadata incompatibility;
+the reviewer reported 69 focused tests passed and 3 skipped.
+
+- Regrade: Important. A warmup KeyboardInterrupt followed by a failed RNGD close
+  synchronization replaced the cancellation with RuntimeError and left the
+  engine usable. This violates the explicit startup cancellation/fail-closed
+  contract even though readiness was never published.
+- RED: three real tiny-CPU RNGD adapter cases (KeyboardInterrupt, SystemExit,
+  RuntimeError) reproduced replacement of the original startup exception.
+- GREEN: preserve the original BaseException object with cleanup failure as its
+  explicit cause. Mark RNGD failed before close synchronization; if the fence
+  fails, retain native weights, graphs and checkpoint handles rather than
+  forcibly freeing potentially live buffers. Private adapter KV remains
+  discarded and readiness remains false. A retry close releases ownership
+  after synchronization recovers. All three regressions pass.
+- The serialized kernels and native computational bodies are unchanged.
+  This is the single authorized review fix pass; no second review requested.
+- Final fix-pass CPU suite: 390 passed, 8 skipped, 4 subtests passed in 24.61 s
+  with the existing resident-opt Windows venv and PYTHONPATH=src.
+  `git diff --check` passed. Native hardware gates below remain open.
+
+The reviewer's declined-to-judge list, verbatim:
+"installed-vLLM execution; nativeSDK synchronization/allocation behavior;
+realprompt/KV HTTP replay; hardwareperformance; UCXrecovery; deployment.
+Unchangednativekernels notexhaustivelyreviewed."
+
+Parent rulings on every declined item:
+
+- Ruling: installed-vLLM execution remains unvalidated at runtime; existing CPU
+  plugin contracts and static review are the evidence. Cost if wrong: a live
+  installed-vLLM deployment can still expose integration differences.
+- Ruling: native SDK synchronization/allocation effects and real prompt/KV HTTP
+  replay remain mandatory hardware gates. Cost if wrong: CPU green could hide
+  device ownership or native correctness failures; it must not authorize rollout.
+- Ruling: make no performance/SLO claim from this integration run. Cost if wrong:
+  startup/serving latency could be represented without native measurements.
+- Ruling: UCX recovery is not covered; the upcoming replay selects shm. Cost if
+  wrong: UCX DMA/error recovery can violate ownership assumptions independently.
+- Ruling: generated Kubernetes ownership proof is not production deployment.
+  Cost if wrong: rollout/operational behavior would be asserted without evidence.
+- Ruling: unchanged kernels retain their previous frozen proof and are not
+  recertified for arbitrary configurations. Cost if wrong: untested shapes,
+  model layouts or SDK versions could be mistaken for validated ones.

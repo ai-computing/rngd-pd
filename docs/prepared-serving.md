@@ -142,7 +142,11 @@ Set `"warmup": true` in any prepared config to execute one actual native step
 for every configured variant before the worker becomes ready. The default is
 false; only JSON booleans are accepted. Warmup uses token/position zero and
 private blank KV, discarded after every attempt. A preparation/warmup error or
-cancellation fails startup and closes the initialized engine. RNGD still loads
+cancellation fails startup and attempts to close the initialized engine. The
+original startup exception is preserved if cleanup also fails, with the cleanup
+failure as its cause. A failed RNGD close synchronization disables further
+serving while retaining potentially live native buffers; retry close only after
+synchronization recovers, or recover through process teardown. RNGD still loads
 only existing cached graphs; ATOM device-input startup retains its existing
 materialization even when optional warmup is disabled. Warmup is kernel execution,
 not prompt prefill or evidence of token quality.
