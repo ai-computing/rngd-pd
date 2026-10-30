@@ -1,0 +1,378 @@
+{
+  "schema": "ccgrid-e7-matrix-plan-v1",
+  "benchmark_source_commit": "f0f08bfca4409b55226022760cacb789e97a458c",
+  "onggi_source_commit": "2d84ac39374d71086436e65b967a4f718876a2f3",
+  "onggi_binary_sha256": "47bfaae6bace003bc29c9223521a80b44526c25835dc36d350b2979585abc114",
+  "input_preparation_sha256": "8bc7fcee68a7daa5a031c5cb2289bef9504793396ccd2e8b2739ddee1efa054c",
+  "n": 5,
+  "smoke_samples": 4,
+  "main_samples": 30,
+  "adapter_sha256": "e93c49a0430fb79573697d5d539ec492f12f607d5ef21565d09c738534e13f2b",
+  "physical_host_index": 0,
+  "torch_ordinal": 0,
+  "sdk": "2026.4.0",
+  "torch": "2.10.0+cpu",
+  "intra_op": 4,
+  "host_workers": 2,
+  "max_shapes": 8,
+  "variant": "B4-S256-g2",
+  "base_checkpoint": "<private-path>",
+  "targets": {
+    "sparse": "<private-path>",
+    "lm": "<private-path>"
+  },
+  "cache": "$RUN_ROOT/cache/graphs",
+  "trials": [
+    {
+      "trial_id": "e7-smoke-sparse-inplace-01",
+      "fixture": "sparse",
+      "mode": "inplace",
+      "headline": false,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-smoke-sparse-replace-01",
+      "fixture": "sparse",
+      "mode": "replace",
+      "headline": false,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-smoke-sparse-restart-01",
+      "fixture": "sparse",
+      "mode": "restart",
+      "headline": false,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-smoke-lm-inplace-01",
+      "fixture": "lm",
+      "mode": "inplace",
+      "headline": false,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r01-sparse-inplace",
+      "fixture": "sparse",
+      "mode": "inplace",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r01-sparse-replace",
+      "fixture": "sparse",
+      "mode": "replace",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r01-sparse-restart",
+      "fixture": "sparse",
+      "mode": "restart",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r01-lm-inplace",
+      "fixture": "lm",
+      "mode": "inplace",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r01-lm-replace",
+      "fixture": "lm",
+      "mode": "replace",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r01-lm-restart",
+      "fixture": "lm",
+      "mode": "restart",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r02-sparse-replace",
+      "fixture": "sparse",
+      "mode": "replace",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r02-sparse-restart",
+      "fixture": "sparse",
+      "mode": "restart",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r02-lm-inplace",
+      "fixture": "lm",
+      "mode": "inplace",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r02-lm-replace",
+      "fixture": "lm",
+      "mode": "replace",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r02-lm-restart",
+      "fixture": "lm",
+      "mode": "restart",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r02-sparse-inplace",
+      "fixture": "sparse",
+      "mode": "inplace",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r03-sparse-restart",
+      "fixture": "sparse",
+      "mode": "restart",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r03-lm-inplace",
+      "fixture": "lm",
+      "mode": "inplace",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r03-lm-replace",
+      "fixture": "lm",
+      "mode": "replace",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r03-lm-restart",
+      "fixture": "lm",
+      "mode": "restart",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r03-sparse-inplace",
+      "fixture": "sparse",
+      "mode": "inplace",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r03-sparse-replace",
+      "fixture": "sparse",
+      "mode": "replace",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r04-lm-inplace",
+      "fixture": "lm",
+      "mode": "inplace",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r04-lm-replace",
+      "fixture": "lm",
+      "mode": "replace",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r04-lm-restart",
+      "fixture": "lm",
+      "mode": "restart",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r04-sparse-inplace",
+      "fixture": "sparse",
+      "mode": "inplace",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r04-sparse-replace",
+      "fixture": "sparse",
+      "mode": "replace",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r04-sparse-restart",
+      "fixture": "sparse",
+      "mode": "restart",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r05-lm-replace",
+      "fixture": "lm",
+      "mode": "replace",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r05-lm-restart",
+      "fixture": "lm",
+      "mode": "restart",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "trial_id": "e7-r05-sparse-inplace",
+      "fixture": "sparse",
+      "mode": "inplace",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r05-sparse-replace",
+      "fixture": "sparse",
+      "mode": "replace",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r05-sparse-restart",
+      "fixture": "sparse",
+      "mode": "restart",
+      "headline": true,
+      "reference_file": "sparse-reference.json",
+      "reference_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "ranges_file": "e7-sparse-ranges-v1.json",
+      "ranges_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "trial_id": "e7-r05-lm-inplace",
+      "fixture": "lm",
+      "mode": "inplace",
+      "headline": true,
+      "reference_file": "lm-reference.json",
+      "reference_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "ranges_file": "e7-lm-ranges-v1.json",
+      "ranges_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    }
+  ],
+  "criterion": "Exact same-target fresh native token IDs; both base and target gated. Smoke excluded. No retries/outlier removal.",
+  "timing": "Monotonic base-ready/drained barrier to actual native target first-token estimate; excludes planning/base setup. Restart includes sequential worker close/exit/start/import/load.",
+  "byte_scope": "Logical weight payloads, not physical DMA. replace replaces entire touched stacked group including neighboring layers.",
+  "contract_scope": "Consumes actual onggi.switchplan.v1; existing refined safetensors performance planner is NOT an ADR-0010 B2 binding.",
+  "os_page_cache": "Shared/uncontrolled; no cold/warm cache experiment claimed. Colocated read-only fixture targets. No artifact delivery time.",
+  "publication": {
+    "original_private_file": "e7-matrix-plan.json",
+    "original_private_sha256": "9a2d02a0b610af54e10a1e0a0334561867128411a70d97942096d0b0f1e64f77",
+    "original_private_bytes": 15664,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

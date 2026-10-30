@@ -1,0 +1,126 @@
+{
+  "job_uid": "f9b1f5d1-a280-4a28-ba4c-21c29dc6fd11",
+  "pod_uid": "9199199b-2726-4501-aad9-f1e5d3f3322d",
+  "job_absent": true,
+  "pod_absent": true,
+  "terminal_phase": "Succeeded",
+  "containers": [
+    {
+      "containerID": "containerd://8979590f39bf2cba35387146a2b036d6ba8338c9646bd502aba4fa1845cde6e5",
+      "image": "sha256:cee13550f97b8a595506e8e4ca74263ba44924248779a4ba4f942e197652acff",
+      "imageID": "docker.io/library/ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+      "lastState": {},
+      "name": "run",
+      "ready": false,
+      "restartCount": 0,
+      "started": false,
+      "state": {
+        "terminated": {
+          "containerID": "containerd://8979590f39bf2cba35387146a2b036d6ba8338c9646bd502aba4fa1845cde6e5",
+          "exitCode": 0,
+          "finishedAt": "2026-10-30T12:17:55Z",
+          "reason": "Completed",
+          "startedAt": "2026-10-30T12:01:52Z"
+        }
+      },
+      "volumeMounts": [
+        {
+          "mountPath": "<private-path>",
+          "name": "source-views",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/host-libs",
+          "name": "host-libs",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/host-usrlib",
+          "name": "host-usrlib",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/host-bin",
+          "name": "host-bin",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/usr/lib/python3/dist-packages",
+          "name": "dist",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/usr/local/lib/python3.10/dist-packages",
+          "name": "local-dist",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "<private-path>",
+          "name": "rngd-sdk",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/run/swap",
+          "name": "assigned"
+        },
+        {
+          "mountPath": "/dev/shm",
+          "name": "shm"
+        },
+        {
+          "mountPath": "<private-path>",
+          "name": "prior-opt",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "<private-path>",
+          "name": "onggi-build",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "$RUN_ROOT",
+          "name": "work"
+        },
+        {
+          "mountPath": "$RUN_ROOT/cache",
+          "name": "own-cache",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "$RUN_ROOT/e7-source",
+          "name": "source",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "$RUN_ROOT/artifacts-v2",
+          "name": "published",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/var/lib/kubelet/device-plugins",
+          "name": "device-checkpoint",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        }
+      ]
+    }
+  ],
+  "publication": {
+    "original_private_file": "cleanup.json",
+    "original_private_sha256": "d9d2599a6e8c55fef7b0fa8b7298782438f82c795a1fc49b45c22c9548fdcb48",
+    "original_private_bytes": 3843,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

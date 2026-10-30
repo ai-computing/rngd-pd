@@ -1,0 +1,413 @@
+{
+  "schema": "ccgrid-e7-sample-v1",
+  "mode": "inplace",
+  "variant": "B4-S256-g2",
+  "chip": 0,
+  "cache": "$RUN_ROOT/cache/graphs",
+  "metadata": {
+    "utc": "2026-10-30T12:17:35.637422+00:00",
+    "pid": 4049,
+    "ppid": 1,
+    "executable": "<private-path>",
+    "invocation_argv": [
+      "<private-path>",
+      "$RUN_ROOT/e7-source/bench/ccgrid_e7.py",
+      "sample",
+      "--ckpt",
+      "<private-path>",
+      "--target",
+      "<private-path>",
+      "--ranges",
+      "$RUN_ROOT/runs/e7-main-v1/inputs/e7-lm-ranges-v1.json",
+      "--cache",
+      "$RUN_ROOT/cache/graphs",
+      "--chip",
+      "0",
+      "--reference",
+      "$RUN_ROOT/runs/e7-main-v1/inputs/lm-reference.json",
+      "--variant",
+      "B4-S256-g2",
+      "--host-workers",
+      "2",
+      "--intra-op",
+      "4",
+      "--mode",
+      "inplace",
+      "--out",
+      "$RUN_ROOT/runs/e7-main-v1/work/e7-r05-lm-inplace.json"
+    ],
+    "actual_sys_argv": [
+      "$RUN_ROOT/e7-source/bench/ccgrid_e7.py",
+      "sample",
+      "--ckpt",
+      "<private-path>",
+      "--target",
+      "<private-path>",
+      "--ranges",
+      "$RUN_ROOT/runs/e7-main-v1/inputs/e7-lm-ranges-v1.json",
+      "--cache",
+      "$RUN_ROOT/cache/graphs",
+      "--chip",
+      "0",
+      "--reference",
+      "$RUN_ROOT/runs/e7-main-v1/inputs/lm-reference.json",
+      "--variant",
+      "B4-S256-g2",
+      "--host-workers",
+      "2",
+      "--intra-op",
+      "4",
+      "--mode",
+      "inplace",
+      "--out",
+      "$RUN_ROOT/runs/e7-main-v1/work/e7-r05-lm-inplace.json"
+    ],
+    "cwd": "/",
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.35",
+    "packages": {
+      "numpy": "2.2.6",
+      "torch": "2.10.0+cpu",
+      "safetensors": "0.8.0",
+      "furiosa-torch": "2026.4.0",
+      "furiosa-llm": "2026.4.0",
+      "furiosa-runtime": null
+    },
+    "environment": {
+      "PYTHONPATH": "$RUN_ROOT/e7-source/src",
+      "OMP_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "RNGD_MAX_SHAPES": "8",
+      "KUBERNETES_SERVICE_HOST": "10.96.0.1"
+    },
+    "script_entry_perf_ns": 1337630506897624,
+    "source": {
+      "commit": "f0f08bfca4409b55226022760cacb789e97a458c",
+      "dirty": "",
+      "script_sha256": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+      "sha256": {
+        "bench/ccgrid_e7.py": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+        "src/rngd_pd/swap/rngd.py": "c04984c53e109097bef2bd840e730d0b1a56f966c4f9847b8f5fc2385fb5ac9f",
+        "src/rngd_pd/swap/delta.py": "a91f5011348c408214da4ddeb3d06dbedd2b7c0eed48c909889ce875a1e691ed",
+        "src/rngd_pd/swap/variants.py": "a1e772221226b042b97ea1b046e067a72709f94886db5610a5b2a9732ce6e744",
+        "src/rngd_pd/swap/bench_rngd.py": "a18035bc56bbbeb4bc8e00cdc167005dda5697ddade499e65497f0905096c0a6"
+      }
+    }
+  },
+  "allow_compile": false,
+  "allocator_retries": 0,
+  "host_workers": 2,
+  "intra_op": 4,
+  "logical_device_written_bytes_note": "logical weight payload; not physical DMA",
+  "replacement_unit": null,
+  "reference": {
+    "path": "$RUN_ROOT/runs/e7-main-v1/inputs/lm-reference.json",
+    "sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161"
+  },
+  "ranges": {
+    "path": "$RUN_ROOT/runs/e7-main-v1/inputs/e7-lm-ranges-v1.json",
+    "sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+  },
+  "checkpoints": {
+    "ckpt": {
+      "path": "<private-path>",
+      "files": [
+        {
+          "name": "config.json",
+          "size": 855,
+          "mtime_ns": 1792733529673292140,
+          "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+        },
+        {
+          "name": "model-00001-of-00004.safetensors",
+          "size": 4976698672,
+          "mtime_ns": 1773634882816711071,
+          "sha256": null
+        },
+        {
+          "name": "model-00002-of-00004.safetensors",
+          "size": 4999802720,
+          "mtime_ns": 1773634884507729476,
+          "sha256": null
+        },
+        {
+          "name": "model-00003-of-00004.safetensors",
+          "size": 4915916176,
+          "mtime_ns": 1773634882856711506,
+          "sha256": null
+        },
+        {
+          "name": "model-00004-of-00004.safetensors",
+          "size": 1168138808,
+          "mtime_ns": 1773634794331758639,
+          "sha256": null
+        },
+        {
+          "name": "model.safetensors.index.json",
+          "size": 23950,
+          "mtime_ns": 1792733529673292140,
+          "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+        }
+      ]
+    },
+    "target": {
+      "path": "<private-path>",
+      "files": [
+        {
+          "name": "config.json",
+          "size": 855,
+          "mtime_ns": 1792740550728546596,
+          "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+        },
+        {
+          "name": "model-00001-of-00004.safetensors",
+          "size": 4976698672,
+          "mtime_ns": 1773634882816711071,
+          "sha256": null
+        },
+        {
+          "name": "model-00002-of-00004.safetensors",
+          "size": 4999802720,
+          "mtime_ns": 1773634884507729476,
+          "sha256": null
+        },
+        {
+          "name": "model-00003-of-00004.safetensors",
+          "size": 4915916176,
+          "mtime_ns": 1773634882856711506,
+          "sha256": null
+        },
+        {
+          "name": "model-00004-of-00004.safetensors",
+          "size": 1168138808,
+          "mtime_ns": 1792740550735546794,
+          "sha256": null
+        },
+        {
+          "name": "model.safetensors.index.json",
+          "size": 23950,
+          "mtime_ns": 1792740550727546568,
+          "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+        }
+      ]
+    }
+  },
+  "plan": {
+    "tensors": 1,
+    "upload_bytes": 1050673152,
+    "changed_bytes": 255619,
+    "total_bytes": 16060522496,
+    "header_changes": [],
+    "removed": [],
+    "names": [
+      "lm_head.weight"
+    ]
+  },
+  "plan_tensors": {
+    "lm_head.weight": {
+      "file": "model-00004-of-00004.safetensors",
+      "rows": [
+        [
+          12041,
+          12049
+        ]
+      ],
+      "bytes": 1050673152
+    }
+  },
+  "plan_s": 0.002502321,
+  "plan_phase": "before base engine load; excluded from update interval",
+  "timings": {
+    "engine_load_s": 15.867420549,
+    "variant_load_s": 0.040515352,
+    "base_prompt_ttft_s": 0.16348045086488128,
+    "base_generation_s": 0.28191283,
+    "apply_return_s": 0.469825254,
+    "apply_s": 0.469985745,
+    "prompt_ttft_s": 0.16159206512384117,
+    "script_entry_to_first_token_s": 19.267173954,
+    "update_to_first_token_s": 0.63158187,
+    "generation_s": 0.280223226,
+    "update_through_generation_s": 0.750213031
+  },
+  "phase": "resident",
+  "prompts": [
+    [
+      102089,
+      76471,
+      61385,
+      32447,
+      37008,
+      5012,
+      9121,
+      2081
+    ],
+    [
+      21114,
+      97611,
+      77964,
+      109539,
+      60484,
+      72835,
+      116492,
+      87566
+    ],
+    [
+      75909,
+      65280,
+      67234,
+      112215,
+      33353,
+      97920,
+      80538,
+      428
+    ],
+    [
+      47358,
+      102902,
+      66562,
+      4126,
+      91810,
+      87585,
+      101604,
+      21161
+    ]
+  ],
+  "native_counts": {
+    "compilation_attempts": 0,
+    "native_calls": 510,
+    "native_output_checks": 510
+  },
+  "sdk": "2026.4.0",
+  "expected_native_device": {
+    "type": "furiosa",
+    "index": 0
+  },
+  "native_outputs_verified": true,
+  "native_observation": "original compiled calls and device type/index checks; overhead included",
+  "weights": {
+    "host_weights_s": 0.2696768050082028,
+    "upload_weights_s": 15.59569910611026
+  },
+  "graph": {
+    "prepared": true,
+    "graph_source": [
+      "cache",
+      "cache"
+    ],
+    "graph_read_s": 0.013644668040797114,
+    "graph_to_device_s": 0.0012070508673787117,
+    "tables_s": 0.02555282204411924,
+    "swap_s": 0.040444892132654786,
+    "variant": "B4-S256-g2"
+  },
+  "base_tokens": [
+    [
+      198,
+      791,
+      1176,
+      1403,
+      5238,
+      315,
+      279,
+      33894
+    ],
+    [
+      29,
+      946,
+      946,
+      946,
+      946,
+      946,
+      946,
+      946
+    ],
+    [
+      9831,
+      19954,
+      13094,
+      66965,
+      29726,
+      13094,
+      33390,
+      33353
+    ],
+    [
+      198,
+      220,
+      482,
+      220,
+      16,
+      13,
+      15,
+      13
+    ]
+  ],
+  "base_tokens_equal_reference": true,
+  "base_ready_perf_ns": 1337649142489708,
+  "apply": {
+    "delta_s": 0.0020145170856267214,
+    "uploaded_bytes": 65536,
+    "mode": "inplace",
+    "tensors": 1,
+    "host_only": [],
+    "validation_s": 0.00128181092441082,
+    "stage_s": 0.00022833212278783321,
+    "rollback_stage_s": 5.829986184835434e-05,
+    "copy_s": 0.0004416140727698803
+  },
+  "logical_device_written_bytes": 65536,
+  "tokens": [
+    [
+      12043,
+      12043,
+      12043,
+      12043,
+      12046,
+      12043,
+      12043,
+      12046
+    ],
+    [
+      12043,
+      12043,
+      12046,
+      12043,
+      12046,
+      12046,
+      12046,
+      12046
+    ],
+    [
+      12043,
+      12043,
+      12046,
+      12043,
+      12043,
+      12043,
+      12043,
+      12043
+    ],
+    [
+      12043,
+      12043,
+      12043,
+      12043,
+      12043,
+      12043,
+      12043,
+      12043
+    ]
+  ],
+  "tokens_equal_reference": true,
+  "first_token_timing_method": "generate call start + engine-reported prompt TTFT",
+  "first_token_perf_ns": 1337649774071578,
+  "status": "ok",
+  "completed_utc": "2026-10-30T12:17:55.216380+00:00",
+  "publication": {
+    "original_private_file": "e7-r05-lm-inplace.json",
+    "original_private_sha256": "04fc1cb617c0e498b1f175d41d126ef1a082f145e82b7f5d7a8b8ed1c889bcf3",
+    "original_private_bytes": 10698,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

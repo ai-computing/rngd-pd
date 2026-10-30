@@ -1,0 +1,182 @@
+{
+  "job": {
+    "uid": "f9b1f5d1-a280-4a28-ba4c-21c29dc6fd11",
+    "status": {
+      "completionTime": "2026-10-30T12:17:58Z",
+      "conditions": [
+        {
+          "lastProbeTime": "2026-10-30T12:17:58Z",
+          "lastTransitionTime": "2026-10-30T12:17:58Z",
+          "message": "Reached expected number of succeeded pods",
+          "reason": "CompletionsReached",
+          "status": "True",
+          "type": "SuccessCriteriaMet"
+        },
+        {
+          "lastProbeTime": "2026-10-30T12:17:58Z",
+          "lastTransitionTime": "2026-10-30T12:17:58Z",
+          "message": "Reached expected number of succeeded pods",
+          "reason": "CompletionsReached",
+          "status": "True",
+          "type": "Complete"
+        }
+      ],
+      "ready": 0,
+      "startTime": "2026-10-30T12:01:48Z",
+      "succeeded": 1,
+      "terminating": 0,
+      "uncountedTerminatedPods": {}
+    }
+  },
+  "pods": [
+    {
+      "metadata": {
+        "creationTimestamp": "2026-10-30T12:01:48Z",
+        "generateName": "cdx-e7-main-v1-",
+        "labels": {
+          "batch.kubernetes.io/controller-uid": "f9b1f5d1-a280-4a28-ba4c-21c29dc6fd11",
+          "batch.kubernetes.io/job-name": "cdx-e7-main-v1",
+          "controller-uid": "f9b1f5d1-a280-4a28-ba4c-21c29dc6fd11",
+          "experiment": "ccgrid-e7-main",
+          "job-name": "cdx-e7-main-v1",
+          "owner": "codex"
+        },
+        "name": "cdx-e7-main-v1-ff4sp",
+        "namespace": "codex-ccgrid-npu-20261030",
+        "ownerReferences": [
+          {
+            "apiVersion": "batch/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Job",
+            "name": "cdx-e7-main-v1",
+            "uid": "f9b1f5d1-a280-4a28-ba4c-21c29dc6fd11"
+          }
+        ],
+        "resourceVersion": "113614915",
+        "uid": "9199199b-2726-4501-aad9-f1e5d3f3322d"
+      },
+      "phase": "Succeeded",
+      "node": "node-0",
+      "containers": [
+        {
+          "containerID": "containerd://8979590f39bf2cba35387146a2b036d6ba8338c9646bd502aba4fa1845cde6e5",
+          "image": "sha256:cee13550f97b8a595506e8e4ca74263ba44924248779a4ba4f942e197652acff",
+          "imageID": "docker.io/library/ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+          "lastState": {},
+          "name": "run",
+          "ready": false,
+          "restartCount": 0,
+          "started": false,
+          "state": {
+            "terminated": {
+              "containerID": "containerd://8979590f39bf2cba35387146a2b036d6ba8338c9646bd502aba4fa1845cde6e5",
+              "exitCode": 0,
+              "finishedAt": "2026-10-30T12:17:55Z",
+              "reason": "Completed",
+              "startedAt": "2026-10-30T12:01:52Z"
+            }
+          },
+          "volumeMounts": [
+            {
+              "mountPath": "<private-path>",
+              "name": "source-views",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-libs",
+              "name": "host-libs",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-usrlib",
+              "name": "host-usrlib",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-bin",
+              "name": "host-bin",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/lib/python3/dist-packages",
+              "name": "dist",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/local/lib/python3.10/dist-packages",
+              "name": "local-dist",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "<private-path>",
+              "name": "rngd-sdk",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/run/swap",
+              "name": "assigned"
+            },
+            {
+              "mountPath": "/dev/shm",
+              "name": "shm"
+            },
+            {
+              "mountPath": "<private-path>",
+              "name": "prior-opt",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "<private-path>",
+              "name": "onggi-build",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "$RUN_ROOT",
+              "name": "work"
+            },
+            {
+              "mountPath": "$RUN_ROOT/cache",
+              "name": "own-cache",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "$RUN_ROOT/e7-source",
+              "name": "source",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "$RUN_ROOT/artifacts-v2",
+              "name": "published",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/var/lib/kubelet/device-plugins",
+              "name": "device-checkpoint",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "publication": {
+    "original_private_file": "terminal-api.json",
+    "original_private_sha256": "3ee6e372aeba6bc606d0f5cebcce317060bd875a4cc53c390756997b1d33c876",
+    "original_private_bytes": 6118,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

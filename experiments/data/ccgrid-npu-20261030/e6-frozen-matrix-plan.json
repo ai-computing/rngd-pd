@@ -1,0 +1,157 @@
+{
+  "source": "530195d121f3ced24f0761a7d9de646810fa0dee",
+  "n": 5,
+  "plan": [
+    {
+      "trial": "e6-main-empty-r01-full",
+      "arm": "full",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r01-delta",
+      "arm": "delta",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r01-resident",
+      "arm": "resident",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-prepopulated-r01-full",
+      "arm": "full",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r01-delta",
+      "arm": "delta",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r01-resident",
+      "arm": "resident",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r02-delta",
+      "arm": "delta",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r02-resident",
+      "arm": "resident",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r02-full",
+      "arm": "full",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-empty-r02-delta",
+      "arm": "delta",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r02-resident",
+      "arm": "resident",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r02-full",
+      "arm": "full",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r03-resident",
+      "arm": "resident",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r03-full",
+      "arm": "full",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r03-delta",
+      "arm": "delta",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-prepopulated-r03-resident",
+      "arm": "resident",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r03-full",
+      "arm": "full",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r03-delta",
+      "arm": "delta",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r04-full",
+      "arm": "full",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r04-delta",
+      "arm": "delta",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r04-resident",
+      "arm": "resident",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-empty-r04-full",
+      "arm": "full",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r04-delta",
+      "arm": "delta",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r04-resident",
+      "arm": "resident",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r05-delta",
+      "arm": "delta",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r05-resident",
+      "arm": "resident",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-empty-r05-full",
+      "arm": "full",
+      "cache_state": "empty"
+    },
+    {
+      "trial": "e6-main-prepopulated-r05-delta",
+      "arm": "delta",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r05-resident",
+      "arm": "resident",
+      "cache_state": "prepopulated"
+    },
+    {
+      "trial": "e6-main-prepopulated-r05-full",
+      "arm": "full",
+      "cache_state": "prepopulated"
+    }
+  ],
+  "script_sha256": "1099ba7c4ba68311a2df9d18962ca7c8a592cf0067d3f4464505e68238339893"
+}

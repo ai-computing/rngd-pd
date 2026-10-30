@@ -1,0 +1,182 @@
+{
+  "job": {
+    "uid": "7055a274-7722-458e-9461-9328b211110b",
+    "status": {
+      "completionTime": "2026-10-30T11:45:34Z",
+      "conditions": [
+        {
+          "lastProbeTime": "2026-10-30T11:45:34Z",
+          "lastTransitionTime": "2026-10-30T11:45:34Z",
+          "message": "Reached expected number of succeeded pods",
+          "reason": "CompletionsReached",
+          "status": "True",
+          "type": "SuccessCriteriaMet"
+        },
+        {
+          "lastProbeTime": "2026-10-30T11:45:34Z",
+          "lastTransitionTime": "2026-10-30T11:45:34Z",
+          "message": "Reached expected number of succeeded pods",
+          "reason": "CompletionsReached",
+          "status": "True",
+          "type": "Complete"
+        }
+      ],
+      "ready": 0,
+      "startTime": "2026-10-30T11:34:07Z",
+      "succeeded": 1,
+      "terminating": 0,
+      "uncountedTerminatedPods": {}
+    }
+  },
+  "pods": [
+    {
+      "metadata": {
+        "creationTimestamp": "2026-10-30T11:34:07Z",
+        "generateName": "cdx-e8-main-same-target-v1-",
+        "labels": {
+          "batch.kubernetes.io/controller-uid": "7055a274-7722-458e-9461-9328b211110b",
+          "batch.kubernetes.io/job-name": "cdx-e8-main-same-target-v1",
+          "controller-uid": "7055a274-7722-458e-9461-9328b211110b",
+          "experiment": "ccgrid-e8-main",
+          "job-name": "cdx-e8-main-same-target-v1",
+          "owner": "codex"
+        },
+        "name": "cdx-e8-main-same-target-v1-kbzmv",
+        "namespace": "codex-ccgrid-npu-20261030",
+        "ownerReferences": [
+          {
+            "apiVersion": "batch/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Job",
+            "name": "cdx-e8-main-same-target-v1",
+            "uid": "7055a274-7722-458e-9461-9328b211110b"
+          }
+        ],
+        "resourceVersion": "113597845",
+        "uid": "71f6e50c-3a97-469d-bc3f-22e23356dd2e"
+      },
+      "phase": "Succeeded",
+      "node": "node-0",
+      "containers": [
+        {
+          "containerID": "containerd://780014354b1ecd49db5a26e3e4a0abd9350f92f09374a8ad63ee36ceac591fa5",
+          "image": "sha256:cee13550f97b8a595506e8e4ca74263ba44924248779a4ba4f942e197652acff",
+          "imageID": "docker.io/library/ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+          "lastState": {},
+          "name": "run",
+          "ready": false,
+          "restartCount": 0,
+          "started": false,
+          "state": {
+            "terminated": {
+              "containerID": "containerd://780014354b1ecd49db5a26e3e4a0abd9350f92f09374a8ad63ee36ceac591fa5",
+              "exitCode": 0,
+              "finishedAt": "2026-10-30T11:45:31Z",
+              "reason": "Completed",
+              "startedAt": "2026-10-30T11:34:12Z"
+            }
+          },
+          "volumeMounts": [
+            {
+              "mountPath": "<private-path>",
+              "name": "source-views",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-libs",
+              "name": "host-libs",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-usrlib",
+              "name": "host-usrlib",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-bin",
+              "name": "host-bin",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/lib/python3/dist-packages",
+              "name": "dist",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/local/lib/python3.10/dist-packages",
+              "name": "local-dist",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "<private-path>",
+              "name": "rngd-sdk",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/run/swap",
+              "name": "assigned"
+            },
+            {
+              "mountPath": "/dev/shm",
+              "name": "shm"
+            },
+            {
+              "mountPath": "<private-path>",
+              "name": "prior-opt",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "<private-path>",
+              "name": "onggi-build",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "$RUN_ROOT",
+              "name": "work"
+            },
+            {
+              "mountPath": "$RUN_ROOT/cache",
+              "name": "own-cache",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "$RUN_ROOT/e8-source",
+              "name": "source",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "$RUN_ROOT/artifacts-v2",
+              "name": "published",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/var/lib/kubelet/device-plugins",
+              "name": "device-checkpoint",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "publication": {
+    "original_private_file": "terminal-api.json",
+    "original_private_sha256": "ea9bf2e569714f11d7280808edf951c1cf7bbe27e58b98c6ce1c39803717098f",
+    "original_private_bytes": 6178,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}
