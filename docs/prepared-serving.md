@@ -136,6 +136,36 @@ the tested stack. Subsequent requests use those prepared shapes. This opt-in
 path retains the slower device-input decode rate documented in
 [delta-swap.md](delta-swap.md); it is not the default ATOM choice.
 
+## Native warmup and standalone KV
+
+Set `"warmup": true` in any prepared config to execute one actual native step
+for every configured variant before the worker becomes ready. The default is
+false; only JSON booleans are accepted. Warmup uses token/position zero and
+private blank KV, discarded after every attempt. A preparation/warmup error or
+cancellation fails startup and closes the initialized engine. RNGD still loads
+only existing cached graphs; ATOM device-input startup retains its existing
+materialization even when optional warmup is disabled. Warmup is kernel execution,
+not prompt prefill or evidence of token quality.
+
+The cluster's whole-request KV path uses
+`rngd_pd.connector.worker.WorkerKVConnector` and `WorkerRole.WORKER` without
+requiring vLLM. The optional `rngd_pd.connector.rngd_kv.RngdKVConnector` plugin
+retains the genuine vLLM base class and shares the same transfer implementation;
+importing that plugin without vLLM raises an actionable error. No vLLM shim is
+installed by production code.
+
+To replay real prefill after its producer exits, publish each layer's full-width
+arrays through the selected shared-memory transport with the worker connector's
+`save_kv_layer` and `wait_for_save`. Preserve the real prefill's `next` token,
+prompt length and immutable checkpoint ID. POST `/decode` with `req_id`, `first`
+(that `next` token), `pos` (prompt length), `max_new` and `checkpoint_id` after
+the consumer is ready. K per layer is `(nkv, hd, wire_S)` and V is
+`(nkv, wire_S, hd)`; use the same `PD_SHM_ROOT` and bf16 serialization on both
+sides. `tokens[0]` echoes the supplied `first`; compare the native-produced
+suffix using `max_new >= 2` against a fresh matching reference. Closing the
+shared-memory producer preserves its published files until the consumer loads
+them. This replay does not establish a live gateway/prefill measurement.
+
 ## Admission, transport and upgrade limits
 
 - `PD_MAX_REQUESTS=32` bounds concurrent POST handlers, including streaming and

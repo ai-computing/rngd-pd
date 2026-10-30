@@ -99,29 +99,31 @@ Default transport is shared memory under `PD_SHM_ROOT`; both processes must
 share that directory. Explicit TCP requires both to select `AIRM_KV_TRANSPORT=tcp`
 and the same `AIRM_KV_TCP_ADDR`. Do not enable UCX merely for this smoke.
 
-## Safest native verification sequence
+## Native verification sequence after standalone/prewarm extension
+
+The subsequent [standalone/prewarm plan](2026-10-30-standalone-prewarm.md)
+removes the cluster's vLLM dependency and adds optional `"warmup": true`.
+The merge's source hashes and test record above remain its original scope.
 
 1. On hardware already allocated by its owner, load the exact frozen source,
    existing validated group2 cache and matching checkpoint/config. Record source
    hash, artifact/checkpoint identity, SDK, native device and cache hit/failure.
    Do not allocate a second NPU or compile an unrelated graph for this check.
-2. For a bounded decode-only test, publish deterministic synthetic zero KV in
-   the full layouts above, then POST `max_new >= 2`. Record all input fields,
-   KV checksums and output tokens. Repeat with a fresh process/reference using
-   exactly the same synthetic inputs and compare the native-produced suffix.
-   This verifies native cached decode through HTTP and the transport; zero KV
-   and an arbitrary `first` are not evidence of valid prefill or model quality.
-3. If the deployment's vLLM connector import boundary is unavailable, construct
-   `PreparedDecodeWorker(build_prepared(config, S, chip), S, wait_ms=0)` and supply
-   deterministic host arrays through a test-local `_load_kv` replacement returning
-   `(K,V,0.0,-1.0,None)`. Keep the real prepared engine and native step. Label this
-   narrower check as worker/native decode with KV transport bypassed; it does
-   not verify HTTP, the real connector or real vLLM integration.
-4. To establish actual PD serving, replace synthetic inputs with a matching
-   prefill process's real KV, next token, position and immutable checkpoint ID.
-   Compare tokens with a fresh matching checkpoint reference, then separately
-   measure cold/prepared TTFT, KV import, allocations/HBM, repeated B/S switches,
-   mixed lengths, overload, cancellation and stream disconnects.
+2. Replay the real native prompt through the matching producer and record its
+   K/V, next token, position, immutable checkpoint ID and fresh reference tokens.
+   Publish full-width layer arrays with `WorkerKVConnector(WorkerRole.WORKER,
+   req_id=..., transport=select_transport(), n_layers=...)`; set transport WIRE
+   to bf16. Call `wait_for_save`, then close the producer. Its real shm payload
+   remains available for the later HTTP consumer. Record payload checksums.
+3. Start the actual prepared HTTP consumer with `"warmup": true`, wait for
+   readiness and POST those real request fields with `max_new >= 2`. Record
+   all output tokens and compare against fresh reference tokens. Do not inject
+   vLLM stubs or bypass its production loader; standalone cluster serving needs
+   neither. The optional vLLM plugin itself still requires vLLM.
+4. Label sequential replay as real prompt/KV decode through HTTP, and separately
+   establish a live prefill/gateway deployment. Record cold/prepared TTFT,
+   KV import, allocations/HBM, repeated B/S switches, mixed lengths, overload,
+   cancellation and stream disconnects before broad deployment claims.
 
 No native hardware, end-to-end prefill, real vLLM paged integration, container
 rollout or UCX recovery was run by this integration task. Existing per-branch
