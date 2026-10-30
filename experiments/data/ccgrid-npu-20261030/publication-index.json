@@ -47,6 +47,36 @@
       "validity": "valid"
     },
     {
+      "trial_id": "e6-main-empty-r04-delta",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-empty-r04-full",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-empty-r04-resident",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-empty-r05-delta",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-empty-r05-full",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-empty-r05-resident",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
       "trial_id": "e6-main-prepopulated-r01-delta",
       "headline": true,
       "validity": "valid"
@@ -102,6 +132,26 @@
       "validity": "valid"
     },
     {
+      "trial_id": "e6-main-prepopulated-r04-resident",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r05-delta",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r05-full",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
+      "trial_id": "e6-main-prepopulated-r05-resident",
+      "headline": true,
+      "validity": "valid"
+    },
+    {
       "trial_id": "e6-smoke-empty-delta-01",
       "headline": false,
       "validity": "valid"
@@ -117,6 +167,6 @@
       "validity": "valid"
     }
   ],
-  "e6_matrix_complete": false,
-  "note": "Partial publication while the measurement matrix runs; n1 smoke is never pooled into headline repetitions."
+  "e6_matrix_complete": true,
+  "note": "Complete E6 matrix; n1 smoke is never pooled into headline repetitions."
 }

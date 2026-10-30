@@ -1924,6 +1924,12 @@
       ]
     }
   },
+  "original_reference_file_sha256": {
+    "base-B4-S256-g2.json": "d10e5dadc145898b7672ac54f715f17ab95e57d151e0ffca2f68a0d8f1494239",
+    "base-B4-S512-g2.json": "ba51ee1bebdb65a6fe13093e38683b9ea9061eaa9d991abe26da7e53be564541",
+    "base-B8-S256-g2.json": "64e8aaf589981f04f9d568719492ea5da50a19d833c09a906ff3f0379e19d466",
+    "run.json": "a569a27722e50d09b4cbd08d824984846ebc68b6e2b077202609b4d6cd723934"
+  },
   "criterion_revision": {
     "requested_by": "coordinating paper session",
     "criterion": "Exact integer token IDs equal independently fresh load of the same target variant.",
@@ -1948,5 +1954,6 @@
       "first_different_generated_token_1_based": null
     }
   ],
+  "cross_shape_observation_scope": "First four shared-prompt lanes only; the old gate stopped before an independent second-four B4 reference was run.",
   "native_execution_note": "B8 completed native generation and device checks; original status remains failed under the superseded cross-shape gate. It is not a failed same-target switch."
 }

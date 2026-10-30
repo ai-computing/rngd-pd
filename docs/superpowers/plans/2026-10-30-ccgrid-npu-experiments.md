@@ -56,11 +56,12 @@ Onggi8f0b4bc103cc1608a7288bd14c59f67a292d3d74. Issues34–37; branch
 - [x] Read board rules, log plan/ETA before work, create issues34–37 and branch.
 - [x] Independent read-only method review: distinguish prepare/full pull from
   base-aware delta; protect base ownership; do not omit initial resident load.
-- [ ] Freeze graph hashes, complete artifact manifests and fixed input/run config.
+- [x] Freeze graph hashes, complete artifact manifests and fixed input/run config.
 - [x] Implement/test pure analysis and E6 trial/worker harness; preserve failures.
 - [x] Implement/test E7 single-sample coordinator and update byte/timing evidence.
-- [ ] Smoke real allocated Job, fresh-reference/shape/native-identity gates.
-- [ ] Run E6 n5 per arm/cache, then E7 and E8 n5; release between measurement jobs.
+- [x] E6 real allocated Job smoke, fresh-reference/shape/native-identity gates.
+- [x] E6 n5 per arm/cache:30/30 valid, all owned Jobs/Pods absent after cleanup.
+- [ ] E7 and E8 n5; release between measurement jobs. E8 matrix now running.
 - [ ] Optional E9 if core experiments complete; otherwise explicitly deferred.
 - [ ] Independently verify raw files, derive summaries, publish PR evidence, update
   board, read exact-head checks and merge completed experiment work as authorized.
@@ -119,3 +120,14 @@ Onggi8f0b4bc103cc1608a7288bd14c59f67a292d3d74. Issues34–37; branch
   Root-owned scratch permissions were repaired by a CPU-only ownership Job (no
   NPU requested) and future operational cleanup runs after the first-token clock.
   ADR-0010/PR76 binding and B2 work remain deferred until E6 completion.
+- E6 completed30/30 valid main trials. All six groups have n5 and no excluded
+  main samples; n1 smoke is separate. Empty-cache trigger medians: full66.807s,
+  delta19.199s, resident0.532s. Pod medians119.637/72.435/53.993s retain initial
+  setup costs. Prepopulated groups are separate. All target tokens equal fresh
+  load, compile0, actual physical0, process/buffer/module and cleanup gates pass.
+  Root rehashed57 preparation records,416 frozen Git blobs, every exported
+  raw file and every normalized metric. Final summary/figures preserve limits.
+- After E6, E8 native matrix uses frozenbbceb17, same-target fresh token IDs,
+  three directions x first-use/prepared x n5. No original cross-shape record is
+  deleted. Root retains exclusive hardware ownership. ADR-0010 contract review
+  begins separately; no B2 or public-only serving claim is implied by E6/E8.

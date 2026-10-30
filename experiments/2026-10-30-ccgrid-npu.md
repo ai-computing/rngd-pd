@@ -1,25 +1,25 @@
 # CCGrid 2027: per-level reconfiguration and resident-update experiments
 
-Status: E6 three-arm smoke passed; the30-trial matrix is running and headline
-repetitions are not complete. E8 uses
-the corrected same-target fresh-load criterion and is queued after E6.
+Status: E6 completed30/30 valid main trials, n=5 per arm/cache condition.
+E8 uses the corrected same-target fresh-load criterion and its native matrix
+is running. ADR-0010/B2 suitability is being checked before E7 measurements.
 Tracking: [E6 #34](https://github.com/ai-computing/rngd-pd/issues/34),
 [E7 #35](https://github.com/ai-computing/rngd-pd/issues/35),
 [E8 #36](https://github.com/ai-computing/rngd-pd/issues/36),
 [optional E9 #37](https://github.com/ai-computing/rngd-pd/issues/37).
 Implementation/method ledger: [plan](../docs/superpowers/plans/2026-10-30-ccgrid-npu-experiments.md).
 
-Partial evidence: [preparation and source/input hashes](data/ccgrid-npu-20261030/preparation.json),
+Evidence: [final E6 results and figures](data/ccgrid-npu-20261030/E6-RESULTS.md),
+[preparation and source/input hashes](data/ccgrid-npu-20261030/preparation.json),
 [fresh references and preserved cross-shape observation](data/ccgrid-npu-20261030/references-and-cross-shape-observation.json),
 [published sample index](data/ccgrid-npu-20261030/publication-index.json).
 Each smoke arm has n=1 and is excluded from headline aggregates. Files are
 path-sanitized copies with original private-result hashes; no native/model
-payload is downloaded or published. The final n5 collection will be separate.
+payload is downloaded or published. Main repetitions are in a separate collection.
 
 The [raw-linked E6 collection](data/ccgrid-npu-20261030/e6-collection.json) and
-[summary](data/ccgrid-npu-20261030/e6-summary.json) are explicitly incomplete
-until all30 trials finish. At this publication milestone20 main samples are
-verified; no group has five repetitions. The
+[summary](data/ccgrid-npu-20261030/e6-summary.json) contain all30 valid main
+samples; all six groups meet n=5. The
 [frozen matrix plan](data/ccgrid-npu-20261030/e6-frozen-matrix-plan.json) fixes
 the blocked order before measurement. Published samples include their actual
 physical-card assignment and verified cleanup evidence. Numeric values in the
@@ -116,8 +116,8 @@ raw files and reports all attempts, valid n, median and inclusive linear IQR.
 Any failed sample, missing metric or n<5 prevents a group from qualifying as a
 headline. Additional corrective attempts remain separately labeled.
 
-Native results and aggregate links will be added after the smoke and measurement
-gates. CPU tests establish harness behavior only. The paper session owns
+E6 native results and aggregates passed their smoke and measurement gates.
+E7/E8 native results remain pending. CPU tests establish harness behavior only. The paper session owns
 `data/NUMBERS.md`; this experiment does not modify that ledger.
 
 The final harness CPU suite passed450 tests, skipped8 environment-dependent
