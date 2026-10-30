@@ -14,8 +14,9 @@ def bare(group=2, dtype=torch.bfloat16):
     e = SwappableDecode.__new__(SwappableDecode)
     e.torch, e.BF, e.dev = torch, torch.bfloat16, "cpu"
     e.group, e.ngroups, e.host_workers = group, 1, 2
-    raw = [(torch.arange(70, dtype=torch.float32).reshape(7, 10)[:, ::2] / 17 - i).to(dtype)
+    raw = [((torch.arange(70, dtype=torch.float32).reshape(7, 10) / 17 - i).to(dtype))[:, ::2]
            for i in range(group)]
+    assert all(not t.is_contiguous() for t in raw)
     owner = threading.get_ident()
 
     def get(name):
@@ -62,7 +63,8 @@ def test_initial_pool_is_bounded_and_workers_disable_gradients():
     assert len(e.shared) == 1 and all(not t.requires_grad for t in e.shared[0].values())
 
 
-def test_failed_transform_joins_workers_without_device_upload():
+@pytest.mark.parametrize("error", [RuntimeError, KeyboardInterrupt, SystemExit])
+def test_failed_transform_joins_workers_without_device_upload(error):
     e, _ = bare()
     gate = threading.Barrier(2, timeout=5)
     workers = set()
@@ -70,11 +72,11 @@ def test_failed_transform_joins_workers_without_device_upload():
     def fail(t, kind):
         workers.add(threading.current_thread())
         gate.wait()
-        raise RuntimeError("bad checkpoint tensor")
+        raise error("bad checkpoint tensor")
 
     e._transform_weight = fail
     e._lm_host = lambda: pytest.fail("failed projections must not upload LM")
-    with pytest.raises(RuntimeError, match="bad checkpoint tensor"):
+    with pytest.raises(error, match="bad checkpoint tensor"):
         e._upload_shared()
     assert len(workers) == 2 and all(not t.is_alive() for t in workers)
     assert e.shared == []
