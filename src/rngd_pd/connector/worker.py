@@ -161,11 +161,8 @@ class WorkerKVConnector:
         v = deser(self.t.pull(f"{self._loading_req_id}/{layer_name}/v", timeout=t))
         if self._kv_caches is not None:
             li = int(layer_name.split(".")[-1])
-            # The producer may send only the columns the prompt filled --
-            # a 20-token prompt has no reason to ship a 512-wide cache -- so
-            # place what arrived and clear the rest. The tail matters: a decode
-            # step injects its k/v by adding at a one-hot slot, which only
-            # equals a write if the slot starts at zero.
+            # Transfer full wire-width arrays matching the registered buffers.
+            # Prompt length does not change these shapes or imply tail padding.
             if isinstance(self._kv_caches, dict):
                 dst = self._kv_caches.get(layer_name)
                 if dst is not None: dst[0][:] = k; dst[1][:] = v

@@ -213,6 +213,12 @@ The chart continues to run the same `rngd_pd.serving.cluster` module.
 
 ## Verification and hardware gate
 
+The [2026-10-30 native prepared HTTP record](../experiments/2026-10-30-onggi-prepared-serving.md)
+now verifies real Onggi init preparation, optional prewarm readiness, real prompt
+KV replay and12 HTTP/96 reference-equal tokens on RNGD SDK2026.4 B4/S256/group2.
+It also records the retained failed prefix-KV attempt and completed UID cleanup.
+It does not establish live prefill/gateway handoff or ATOM HTTP startup.
+
 ```bash
 python -m pip install -e .
 python -m pytest -q tests
@@ -231,5 +237,6 @@ record: token equality with a fresh destination load; cold and prepared TTFT;
 across repeated B/S switches; mixed context/output lengths; overload and stream
 disconnects. Repeat on the site's SDK versions. Real UCX error/DMA recovery,
 container builds and Kubernetes rollout have not been validated by these CPU
-tests. Existing [hardware results](../experiments/2026-10-23-npu-delta-load.md)
-cover the underlying loaders, not a new end-to-end serving measurement.
+tests. Earlier [hardware results](../experiments/2026-10-23-npu-delta-load.md)
+cover the underlying loaders; the native HTTP record above adds a bounded
+decode replay, with broader deployment gates still required.

@@ -41,6 +41,12 @@
 ([엔진 통합 계획](https://github.com/ai-computing/ai-rm/blob/master/docs/engine-integration.md)). 통합이 검증될
 때까지는 이 저장소가 실행 가능한 PD 서빙 경로로 남는다.
 
+[실제 prepared HTTP 검증](experiments/2026-10-30-onggi-prepared-serving.md)은
+Onggi init 준비부터 선택적 시작 예열·독립 워커까지 연결했다. SDK 2026.4의
+B4/S256/group2에서 요청 12건·토큰 96개가 기준 결과와 일치하고 상주 버퍼를
+재컴파일 없이 유지했다. 실제 프롬프트·KV 재생 검증이며, 실시간 prefill·gateway와
+ATOM HTTP 시작 경로는 별도 검증 대상으로 남는다.
+
 ## ✨ 주요 기능
 
 <table>

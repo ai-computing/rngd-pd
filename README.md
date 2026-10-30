@@ -52,6 +52,12 @@ the [same-stack 8B comparison](experiments/2026-10-30-rngd-host-staging.md)
 reduced constructor median from 18.68 to 13.09 seconds with additional CPU/RAM.
 The default remains one worker; this does not speed up device DMA itself.
 
+[Native prepared HTTP validation](experiments/2026-10-30-onggi-prepared-serving.md)
+connects Onggi init preparation to a standalone worker with optional startup
+warmup: 12 requests /96 reference-equal tokens, retained resident buffers and
+zero recompiles on SDK 2026.4 B4/S256/group2. This is real prompt/KV replay;
+live prefill/gateway and ATOM HTTP startup remain separate validation gates.
+
 ## ✨ Highlights
 
 <table>

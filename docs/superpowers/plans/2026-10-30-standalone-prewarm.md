@@ -100,3 +100,27 @@ Parent rulings on every declined item:
 - Ruling: unchanged kernels retain their previous frozen proof and are not
   recertified for arbitrary configurations. Cost if wrong: untested shapes,
   model layouts or SDK versions could be mistaken for validated ones.
+
+## Native validation and publication completion
+
+- [x] Exclusive hardware owner froze runtimefafd820 and Onggi466ef918 and ran
+  the real init-to-native-HTTP path without shared SDK edits or vLLM test stubs.
+- [x] Native gate:12HTTP requests,96tokens equal fresh producer and prior public
+  references,12supplied+84native suffix tokens,17warmup native calls before
+  readiness, then136/255/374,upload1/graphload1/compile0.113projection/LM buffers
+  and compiled IDs retained. Negative409/400 checks passed executed assertions.
+- [x] Preserve first harness failure (prompt-only KV), correct only harness to
+  full native S256 arrays and retain both attempts. No cold-start/speedup claim;
+  standalone warmup latency was not separately measured.
+- [x] UID-guarded cleanup and independent namespace/all3owned Pod absence.
+  Root independently validated205 small evidence files and canonical frozen
+  source hashes, native reference/HTTP tokens, profiles/manifests and identities.
+- [x] Document the bounded native result and remaining gates. Publication code
+  change is only the incorrect prefix-transfer comment; every src Python AST
+  matches frozenfafd820. Native kernels remain unchanged.
+- Final publication gate: require exact final-head CI before completion; record
+  its URL/results in PR33. Leave the integration stack reviewable; no main merge,
+  PR retarget/close or production rollout in this action.
+
+Experiment: ../../../experiments/2026-10-30-onggi-prepared-serving.md.
+Public evidence is pinned to Onggi8f0b4bc103cc1608a7288bd14c59f67a292d3d74.

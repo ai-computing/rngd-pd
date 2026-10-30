@@ -128,3 +128,17 @@ The merge's source hashes and test record above remain its original scope.
 No native hardware, end-to-end prefill, real vLLM paged integration, container
 rollout or UCX recovery was run by this integration task. Existing per-branch
 native measurements retain their original documented scope.
+
+## Subsequent native gate completed
+
+The separate hardware owner completed the frozenfafd820/onggi466ef918 run.
+See [the final experiment record](../../../experiments/2026-10-30-onggi-prepared-serving.md).
+Real init, standalone warmup before readiness, actual native prompt/KV,12HTTP
+requests/96reference-equal tokens and resident-buffer retention passed. The
+first prefix-only KV harness failure is preserved separately; corrected full
+S256 wire arrays passed under the same source/profile/resource conditions.
+All owned Pods/namespace were deleted with UID guards and independently absent.
+The parent independently rehashed205 small evidence files, canonical409runtime
+and125Onggi source files, token arrays, profiles/manifests and buffer identities.
+Native payloads were not downloaded. This closes this configuration's mandatory
+native replay gate; the deployment/transport/arbitrary-shape limits above remain.
