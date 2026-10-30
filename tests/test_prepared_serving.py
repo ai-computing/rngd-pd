@@ -171,6 +171,18 @@ def test_gateway_forwards_prefill_checkpoint_identity():
     assert seen[0]["checkpoint_id"] == "sha256:model-a"
 
 
+@pytest.mark.parametrize("kind,workers", [("rngd", x) for x in [0, 3, True, 1.5, None, "2"]]
+                         + [("atom", 2), ("atom-inputs", 2)])
+def test_prepared_host_worker_option_rejected_before_engine_start(tmp_path, kind, workers):
+    from rngd_pd.serving.prepared import read_config
+    cfg = tmp_path / "prepared.json"
+    cfg.write_text(json.dumps(dict(engine=kind, checkpoint="ck", checkpoint_id="immutable",
+                                  artifact="unused.rbln", host_workers=workers,
+                                  variants=["B1-S8-g1" if kind == "rngd" else "B1-S8"])))
+    with pytest.raises(ValueError, match="host_workers"):
+        read_config(cfg, 16)
+
+
 def tiny_checkpoint(path):
     import torch
     from safetensors.torch import save_file
@@ -233,7 +245,8 @@ def test_native_atom_factory_uses_one_session_for_all_requests(tmp_path, monkeyp
     assert shapes == [(1, 8, 11.), (2, 16, 11.)]
 
 
-def test_rngd_factory_imports_kv_into_real_engine_without_reuploading_weights(tmp_path, monkeypatch):
+@pytest.mark.parametrize("host_workers", [1, 2])
+def test_rngd_factory_imports_kv_into_real_engine_without_reuploading_weights(tmp_path, monkeypatch, host_workers):
     import sys
     import torch
     from rngd_pd.swap import rngd
@@ -260,8 +273,9 @@ def test_rngd_factory_imports_kv_into_real_engine_without_reuploading_weights(tm
                         (Decoder(), Head(), ["cache", "cache"]))
     cfg = tmp_path / "prepared.json"
     cfg.write_text(json.dumps(dict(engine="rngd", checkpoint="ck", checkpoint_id="immutable",
-                                  variants=["B1-S8-g1", "B2-S16-g1"])))
+                                  host_workers=host_workers, variants=["B1-S8-g1", "B2-S16-g1"])))
     adapter = build_prepared(cfg, 16, 0)
+    assert adapter.engine.host_workers == host_workers
     resident_weight = adapter.engine.shared[0]["wq"]
     w = cluster.PreparedDecodeWorker(adapter, 16, wait_ms=0)
     w._load_kv = lambda rid: (np.full((1, 1, 4, 16), 11., np.float32),

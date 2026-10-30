@@ -10,6 +10,10 @@ def read_config(path, S):
         cfg = json.load(f)
     if cfg.get("engine") not in ("rngd", "atom", "atom-inputs"):
         raise ValueError("prepared engine must be rngd, atom or atom-inputs")
+    if "host_workers" in cfg:
+        workers = cfg["host_workers"]
+        if cfg["engine"] != "rngd" or type(workers) is not int or workers not in (1, 2):
+            raise ValueError("host_workers is RNGD-only and must be 1 or 2")
     for key in ("checkpoint", "checkpoint_id"):
         if not isinstance(cfg.get(key), str) or not cfg[key].strip():
             raise ValueError(f"prepared config requires {key}")
@@ -108,7 +112,7 @@ def build_prepared(path, S, chip):
         from rngd_pd.swap.rngd import SwappableDecode, NKV, HD
         engine = SwappableDecode(cfg["checkpoint"], group=variants[0].group,
                                  chip=chip, cache_dir=cfg.get("cache_dir"),
-                                 allow_compile=False)
+                                 allow_compile=False, host_workers=cfg.get("host_workers", 1))
         for v in variants:
             engine.prepare(v)
         dims = engine.nl, NKV, HD
