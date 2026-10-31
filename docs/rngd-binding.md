@@ -200,6 +200,10 @@ physical bus traffic. See
 
 ## API and dependency audit
 
+The [function-level Furiosa inventory](rngd-furiosa-api-inventory.md) records
+exact callers, no-compile B2 reachability, official public alternatives and
+the remaining vendor clarification requests.
+
 This is a source audit of the exact files hashed in the
 [LOC report](rngd-binding-loc.json). Public Torch tensor operations in the new
 adapter do not make the inherited serving engine a public vendor ABI.
