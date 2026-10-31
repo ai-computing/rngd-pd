@@ -52,6 +52,12 @@ the [same-stack 8B comparison](experiments/2026-10-30-rngd-host-staging.md)
 reduced constructor median from 18.68 to 13.09 seconds with additional CPU/RAM.
 The default remains one worker; this does not speed up device DMA itself.
 
+[Native prepared HTTP validation](experiments/2026-10-30-onggi-prepared-serving.md)
+connects Onggi init preparation to a standalone worker with optional startup
+warmup: 12 requests /96 reference-equal tokens, retained resident buffers and
+zero recompiles on SDK 2026.4 B4/S256/group2. This is real prompt/KV replay;
+live prefill/gateway and ATOM HTTP startup remain separate validation gates.
+
 ## ✨ Highlights
 
 <table>
@@ -388,15 +394,25 @@ it runs onggi, refines checkpoint ranges, and transfers only changed tensors.
   including complete update/first-token timing and the full-tensor control.
 - **ATOM embedded weights:** native bucketing (`AtomSession`), host-prepared
   session reload (`HostPool`), and optimum bundles (`SwappableAtom`). Co-compiled
-  selection retains the weights; a changed embedded model requires a reload.
+  selection retains the weights; changed ordinary embedded bundles require a reload.
 - **ATOM device-input weights:** `DeviceWeightDecode` now stages only changed
   tensors, probes them on the card, and commits their input references without
   rebuilding the graph. This uses extra memory for the changed tensors and
   retains rebel 0.11's slower device-input decode rate and initial in-process
   compilation requirement.
+- **ATOM weight-free constants (experimental):** `ConstantWeightDecode` retains
+  fast compiled constant graphs and refreshes only affected weight-transform
+  groups in their existing runtime. On Llama-3.1-8B, four alternating updates
+  changed one 117 MB group without replacing the runtime or recompiling; all
+  generated tokens matched fresh loads. Decode steps measured 68.7 ms versus
+  509–515 ms for the existing device-input control; onggi analysis through the
+  first updated token took 2.66–2.74 s. Initial
+  compilation/loading took 151–168 s. This requires a new weight-free compilation,
+  a dedicated worker process and the validated internal SDK ABI; it is an SDK
+  opt-in, separate from the deployed HTTP worker. See [evidence and limits](experiments/2026-10-23-resident-constant-update.md).
 
-A real onggi → NPU test changed one 117 MB tensor of a 16.1 GB checkpoint:
-RNGD updated in 1.12–2.00 s (first token 1.50–2.57 s), ATOM in 1.25–1.34 s
+An earlier onggi → NPU test changed one 117 MB tensor of a 16.1 GB checkpoint:
+RNGD updated in 1.12–2.00 s (first token 1.50–2.57 s), device-input ATOM in 1.25–1.34 s
 (first token 5.32–5.40 s for an 8-token prompt). All 160 compared generated
 tokens match fresh destination loads. See the [protocol and raw results](experiments/2026-10-23-npu-delta-load.md),
 including ATOM's initial compilation cost and slower device-input decode.

@@ -1,0 +1,211 @@
+{
+  "job": {
+    "uid": "c6518893-9ce9-424c-a09c-7ea6e3b7344d",
+    "status": {
+      "conditions": [
+        {
+          "lastProbeTime": "2026-10-30T13:46:37Z",
+          "lastTransitionTime": "2026-10-30T13:46:37Z",
+          "message": "Job has reached the specified backoff limit",
+          "reason": "BackoffLimitExceeded",
+          "status": "True",
+          "type": "FailureTarget"
+        },
+        {
+          "lastProbeTime": "2026-10-30T13:46:37Z",
+          "lastTransitionTime": "2026-10-30T13:46:37Z",
+          "message": "Job has reached the specified backoff limit",
+          "reason": "BackoffLimitExceeded",
+          "status": "True",
+          "type": "Failed"
+        }
+      ],
+      "failed": 1,
+      "ready": 0,
+      "startTime": "2026-10-30T13:45:51Z",
+      "terminating": 0,
+      "uncountedTerminatedPods": {}
+    }
+  },
+  "pods": [
+    {
+      "metadata": {
+        "creationTimestamp": "2026-10-30T13:45:51Z",
+        "generateName": "cdx-atom-b1-native-02-",
+        "labels": {
+          "batch.kubernetes.io/controller-uid": "c6518893-9ce9-424c-a09c-7ea6e3b7344d",
+          "batch.kubernetes.io/job-name": "cdx-atom-b1-native-02",
+          "controller-uid": "c6518893-9ce9-424c-a09c-7ea6e3b7344d",
+          "experiment": "atom-binding-conformance",
+          "job-name": "cdx-atom-b1-native-02",
+          "owner": "codex"
+        },
+        "name": "cdx-atom-b1-native-02-czt8d",
+        "namespace": "codex-ccgrid-npu-20261030",
+        "ownerReferences": [
+          {
+            "apiVersion": "batch/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Job",
+            "name": "cdx-atom-b1-native-02",
+            "uid": "c6518893-9ce9-424c-a09c-7ea6e3b7344d"
+          }
+        ],
+        "resourceVersion": "113661508",
+        "uid": "b45bf99c-10d0-4d43-91ff-33c7e0c133b5"
+      },
+      "phase": "Failed",
+      "node": "etri-001",
+      "containers": [
+        {
+          "containerID": "containerd://faea41e82e2cc7f425e81611b41f8ab67f0153e48c02a92b2c2305ba4e196505",
+          "image": "sha256:cee13550f97b8a595506e8e4ca74263ba44924248779a4ba4f942e197652acff",
+          "imageID": "docker.io/library/ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+          "lastState": {},
+          "name": "run",
+          "ready": false,
+          "restartCount": 0,
+          "started": false,
+          "state": {
+            "terminated": {
+              "containerID": "containerd://faea41e82e2cc7f425e81611b41f8ab67f0153e48c02a92b2c2305ba4e196505",
+              "exitCode": 1,
+              "finishedAt": "2026-10-30T13:46:35Z",
+              "reason": "Error",
+              "startedAt": "2026-10-30T13:45:56Z"
+            }
+          },
+          "volumeMounts": [
+            {
+              "mountPath": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures",
+              "name": "source-views",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-libs",
+              "name": "host-libs",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-usrlib",
+              "name": "host-usrlib",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-bin",
+              "name": "host-bin",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/lib/python3/dist-packages",
+              "name": "dist",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/local/lib/python3.10/dist-packages",
+              "name": "local-dist",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/venvs/furiosa-2026.4",
+              "name": "rngd-sdk",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/run/swap",
+              "name": "assigned"
+            },
+            {
+              "mountPath": "/dev/shm",
+              "name": "shm"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_rngd_opt_20261023",
+              "name": "prior-opt",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_onggi_integration_20261030",
+              "name": "onggi-build",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030",
+              "name": "work",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache",
+              "name": "own-cache",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source",
+              "name": "source",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2",
+              "name": "published",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/var/lib/kubelet/device-plugins",
+              "name": "device-checkpoint",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_binding_conformance_20261030",
+              "name": "binding-work"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-runtime-source",
+              "name": "binding-source",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_binding_conformance_20261030/conformance-source",
+              "name": "binding-kit",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv",
+              "name": "atom-sdk",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/.local/lib/python3.10/site-packages",
+              "name": "atom-local",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/run/udev",
+              "name": "host-udev",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

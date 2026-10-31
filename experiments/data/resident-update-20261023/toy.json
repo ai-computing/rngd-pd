@@ -1,0 +1,157 @@
+{
+  "model": {
+    "layers": 16,
+    "width": 4096,
+    "weight_dtype": "float16",
+    "resident_weight_bytes": 536870912
+  },
+  "device": "RBLN-CA22",
+  "sdk": "rebel 0.11.0",
+  "torch": "2.11.0+cpu",
+  "configuration": {
+    "RBLN_WEIGHT_FREE": "1",
+    "compile_mode": "gen",
+    "weight_sharing": true,
+    "eager_global_context": true
+  },
+  "runs": [
+    {
+      "result_name": "direct-constant-v2",
+      "original_result_sha256": "527ad4a891f5acc0d76563c5cef81f55a36c1d7bad4ea476352ef191f6581fcb",
+      "apply_call_s": 0.2278322500642389,
+      "transform_input_bytes": [
+        33554432
+      ],
+      "applied_graph_counts": [
+        1
+      ],
+      "program_weight_transform_groups": [
+        16,
+        0
+      ],
+      "rows": [
+        {
+          "batch": 1,
+          "prepare_through_response_s": 4.175554055953398,
+          "median_s": 0.0023759924806654453,
+          "samples_s": [
+            0.002470143954269588,
+            0.0023905819980427623,
+            0.002368442015722394,
+            0.0023734819842502475,
+            0.0023776829475536942,
+            0.0023802019422873855,
+            0.0023743020137771964,
+            0.0023812620202079415,
+            0.0023585520684719086,
+            0.002369342022575438
+          ]
+        },
+        {
+          "batch": 4,
+          "prepare_through_response_s": 1.374415428028442,
+          "median_s": 0.002406572049949318,
+          "samples_s": [
+            0.002543904003687203,
+            0.002402773010544479,
+            0.0024140130262821913,
+            0.002397731994278729,
+            0.002410323009826243,
+            0.002412562957033515,
+            0.0024056120309978724,
+            0.002402552985586226,
+            0.002407532068900764,
+            0.0024052029475569725
+          ]
+        }
+      ],
+      "updated_first_response": [
+        {
+          "batch": 1,
+          "first_s": 0.0025166550185531378
+        },
+        {
+          "batch": 4,
+          "first_s": 0.002460793941281736
+        }
+      ]
+    },
+    {
+      "result_name": "direct-helper-v1",
+      "original_result_sha256": "0c00d972164c0020927d730eaf150ce8a814cdf1553220ad8a6ff7a6ca5933c4",
+      "apply_call_s": 0.4190212070243433,
+      "transform_input_bytes": [
+        33554432
+      ],
+      "applied_graph_counts": [
+        1
+      ],
+      "program_weight_transform_groups": [
+        16,
+        0
+      ],
+      "rows": [
+        {
+          "batch": 1,
+          "prepare_through_response_s": 5.963453009957448,
+          "median_s": 0.0026039619697257876,
+          "samples_s": [
+            0.0026769000105559826,
+            0.0026163950096815825,
+            0.002593758050352335,
+            0.0025807589991018176,
+            0.0026102170813828707,
+            0.002604546956717968,
+            0.0026033769827336073,
+            0.0025966580724343657,
+            0.0026226049521937966,
+            0.002601735992357135
+          ]
+        },
+        {
+          "batch": 4,
+          "prepare_through_response_s": 2.773948240908794,
+          "median_s": 0.002585309965070337,
+          "samples_s": [
+            0.002672072034329176,
+            0.0025883789639919996,
+            0.002576039987616241,
+            0.006400890066288412,
+            0.0026649130741134286,
+            0.0025879599852487445,
+            0.0025732599897310138,
+            0.0025756111135706306,
+            0.0025699009420350194,
+            0.0025826599448919296
+          ]
+        }
+      ],
+      "updated_first_response": [
+        {
+          "batch": 1,
+          "first_s": 0.00271741789765656
+        },
+        {
+          "batch": 4,
+          "first_s": 0.002656472963280976
+        }
+      ],
+      "production_reverse": {
+        "changed_weight_bytes": 33554432,
+        "transform_input_bytes": 33554432,
+        "transform_groups": 1,
+        "host_parameters": 0,
+        "both_program_outputs_equal_original_exactly": true
+      },
+      "production_updater_source_sha256": "a6aa0c12990d7972d28ffe34dc30aac1276b189485abfa9103b90050bf9df335"
+    }
+  ],
+  "limitations": [
+    "Toy matrix stack, not an LLM or HTTP serving benchmark.",
+    "CPU reference tolerances: rtol 0.05, atol 0.01; reverse NPU comparison is exact.",
+    "Transform-input bytes describe logical host weight payload, not PCIe counters.",
+    "Apply-call timing alone does not establish independent transfer synchronization.",
+    "Other allocated workloads shared the host; timings are observations, not an SLO.",
+    "Initial layout probe used CPU fallback and is excluded; metadata-empty controls failed partial update."
+  ]
+}

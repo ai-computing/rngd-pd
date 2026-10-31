@@ -1,0 +1,127 @@
+{
+  "schema": "atom-binding-evidence-summary.v1",
+  "verified": true,
+  "conformance_attempts": 4,
+  "passing_attempts": 1,
+  "native_runtime_commit": "fbfdb8bb9aa86750f144fa4ead276fe17f6db537",
+  "graph_producer_commit": "f5fa13377a3d967ba3d4022fb73ae59b1c87441c",
+  "neutral_kit_commit": "71c37d26f3ec9bedc20c93b27c2cfde9dfd64d53",
+  "native_cases": 2,
+  "repeated_reload_n": 5,
+  "native_runtime_calls": 120,
+  "compile_attempts": 0,
+  "graph_sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+  "graph_bytes": 15176307063,
+  "timing_seconds": {
+    "load_including_hash_s": {
+      "n": 5,
+      "median": 20.04815501300618,
+      "q1": 20.04621197306551,
+      "q3": 20.060508007882163,
+      "iqr": 0.014296034816652536
+    },
+    "admission_validation_and_hash_s": {
+      "n": 5,
+      "median": 9.162042880197987,
+      "q1": 9.160045424010605,
+      "q3": 9.162131191929802,
+      "iqr": 0.0020857679191976786
+    },
+    "generation_s": {
+      "n": 5,
+      "median": 1.039721054956317,
+      "q1": 1.0387347219511867,
+      "q3": 1.0400973069481552,
+      "iqr": 0.0013625849969685078
+    },
+    "ttft_s": {
+      "n": 5,
+      "median": 0.5614851980935782,
+      "q1": 0.5609718901105225,
+      "q3": 0.5615980159491301,
+      "iqr": 0.0006261258386075497
+    },
+    "median_decode_step_s": {
+      "n": 5,
+      "median": 0.06830773898400366,
+      "q1": 0.06826628907583654,
+      "q3": 0.0683382039424032,
+      "iqr": 7.191486656665802e-05
+    },
+    "parse_s": {
+      "n": 5,
+      "median": 10.491921261884272,
+      "q1": 10.476988586131483,
+      "q3": 10.494406854035333,
+      "iqr": 0.017418267903849483
+    },
+    "create_runtime_s": {
+      "n": 5,
+      "median": 0.35348852491006255,
+      "q1": 0.3530283991713077,
+      "q3": 0.3548117419704795,
+      "iqr": 0.0017833427991718054
+    },
+    "load_plus_post_load_ttft_s": {
+      "n": 5,
+      "median": 20.60964021109976,
+      "q1": 20.602939824108034,
+      "q3": 20.622614822816104,
+      "iqr": 0.019674998708069324
+    }
+  },
+  "quartile_method": "statistics.quantiles inclusive",
+  "timing_scope": "Serial repeated full loads including source hashing; post-load prompt TTFT measured separately; no cold-cache or trigger-to-first-token claim",
+  "host_checkpoint_files": [
+    {
+      "path": "config.json",
+      "bytes": 855,
+      "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+    },
+    {
+      "path": "model-00001-of-00004.safetensors",
+      "bytes": 4976698672,
+      "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668"
+    },
+    {
+      "path": "model-00002-of-00004.safetensors",
+      "bytes": 4999802720,
+      "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15"
+    },
+    {
+      "path": "model-00003-of-00004.safetensors",
+      "bytes": 4915916176,
+      "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa"
+    },
+    {
+      "path": "model-00004-of-00004.safetensors",
+      "bytes": 1168138808,
+      "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b"
+    },
+    {
+      "path": "model.safetensors.index.json",
+      "bytes": 23950,
+      "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+    }
+  ],
+  "host_checkpoint_payloads_packaged": false,
+  "input_verification": "Artifact graph/metadata inventories match kit+off-card producer; packaged metadata/provider/CLI plans byte-verified. Host checkpoint payload hashes are recorded by native worker; payloads absent so not independently rehashed here.",
+  "successful_assignment": {
+    "physical_device_id": 0,
+    "device_semantics": "public rbln-smi logical NPU ID mapped to the init-allocated physical /dev/rblnN filename",
+    "broad_visibility_allowed": false,
+    "broader_devices_exposed": [],
+    "allocated_device_files": [
+      "/dev/rbln0"
+    ],
+    "actual_device_files": [
+      "/dev/rbln0"
+    ],
+    "rbln_environment": {},
+    "sdk_device_id": 0
+  },
+  "nonzero_physical_mapping_native_verified": false,
+  "failed_attempts_preserved": 3,
+  "public_factory_only": true,
+  "conformance_level": "B1"
+}

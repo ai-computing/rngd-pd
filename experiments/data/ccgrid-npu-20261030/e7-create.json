@@ -1,0 +1,10 @@
+{
+  "uid": "f9b1f5d1-a280-4a28-ba4c-21c29dc6fd11",
+  "created": "2026-10-30T12:01:48Z",
+  "publication": {
+    "original_private_file": "create.json",
+    "original_private_sha256": "357bfb4bcc7af0f3073813e17f05a951c0c9f2ad695b6ae94904858e96f2280c",
+    "original_private_bytes": 93,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

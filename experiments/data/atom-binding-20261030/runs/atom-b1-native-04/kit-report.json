@@ -1,0 +1,935 @@
+{
+  "argv": [
+    "--fixtures",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/atom-fixtures.json",
+    "--report",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/runs/atom-b1-native-04/kit-report.json",
+    "--level",
+    "B1",
+    "--",
+    "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+    "-m",
+    "rngd_pd.swap.binding_cli",
+    "--socket",
+    "/tmp/atom-b1-1.sock"
+  ],
+  "binding_command": [
+    "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+    "-m",
+    "rngd_pd.swap.binding_cli",
+    "--socket",
+    "/tmp/atom-b1-1.sock"
+  ],
+  "cases": [
+    {
+      "base_dir": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "base_files": {
+        "atom-binding.json": {
+          "sha256": "5fe19e9c34cb7ca8cd40594332ceb4696c23b9a022cd61d2de4bdfb6a33f1345",
+          "size": 26
+        },
+        "profile.json": {
+          "sha256": "080d3c33f0810e8e18073b0bd113087497d0e5156b714d4e11c054fb577708ad",
+          "size": 184
+        },
+        "session.rbln": {
+          "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+          "size": 15176307063
+        },
+        "session.rbln.json": {
+          "sha256": "b132e8ed7c149bf9e56119b586b8594131fc5614d68c0a0086196af8d6388a28",
+          "size": 248
+        }
+      },
+      "expect_mode": "reload",
+      "failures": [],
+      "name": "native-identical",
+      "results": [
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "describe",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "batch": 1,
+            "device": "RBLN-CA22",
+            "format": "rbln",
+            "layout": "public-embedded-weight-session",
+            "revision": "base",
+            "runtime": "rebel-compiler-0.11.0",
+            "schema": "onggi.profile.v1"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "conformance-load",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+            "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "resident"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "changed_runs": 0,
+            "files": [
+              {
+                "base": "atom-binding.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "atom-binding.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 26,
+                    "offset": 0
+                  }
+                ],
+                "same": 26,
+                "same_blocks": 26,
+                "size": 26
+              },
+              {
+                "base": "profile.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "profile.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 184,
+                    "offset": 0
+                  }
+                ],
+                "same": 184,
+                "same_blocks": 184,
+                "size": 184
+              },
+              {
+                "base": "session.rbln",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 15176307063,
+                    "offset": 0
+                  }
+                ],
+                "same": 15176307063,
+                "same_blocks": 15176307063,
+                "size": 15176307063
+              },
+              {
+                "base": "session.rbln.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 248,
+                    "offset": 0
+                  }
+                ],
+                "same": 248,
+                "same_blocks": 248,
+                "size": 248
+              }
+            ],
+            "largest_run": 0,
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "moved": 0,
+            "new": 0,
+            "new_stored": 0,
+            "same": 15176307521,
+            "same_blocks": 15176307521,
+            "schema": "onggi.switchplan.v1",
+            "size": 15176307521
+          },
+          "stdout": {
+            "base_manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "bytes": 15176307521,
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "mode": "reload",
+            "reason": "B1 ATOM binding requires a full runtime reload",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "changed_runs": 0,
+            "files": [
+              {
+                "base": "atom-binding.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "atom-binding.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 26,
+                    "offset": 0
+                  }
+                ],
+                "same": 26,
+                "same_blocks": 26,
+                "size": 26
+              },
+              {
+                "base": "profile.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "profile.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 184,
+                    "offset": 0
+                  }
+                ],
+                "same": 184,
+                "same_blocks": 184,
+                "size": 184
+              },
+              {
+                "base": "session.rbln",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 15176307063,
+                    "offset": 0
+                  }
+                ],
+                "same": 15176307063,
+                "same_blocks": 15176307063,
+                "size": 15176307063
+              },
+              {
+                "base": "session.rbln.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 248,
+                    "offset": 0
+                  }
+                ],
+                "same": 248,
+                "same_blocks": 248,
+                "size": 248
+              }
+            ],
+            "largest_run": 0,
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "moved": 0,
+            "new": 0,
+            "new_stored": 0,
+            "same": 15176307521,
+            "same_blocks": 15176307521,
+            "schema": "onggi.switchplan.v1",
+            "size": 15176307521
+          },
+          "stdout": {
+            "base_manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "bytes": 15176307521,
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "mode": "reload",
+            "reason": "B1 ATOM binding requires a full runtime reload",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "resident"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "changed_runs": 0,
+            "files": [
+              {
+                "base": "atom-binding.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "atom-binding.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 26,
+                    "offset": 0
+                  }
+                ],
+                "same": 26,
+                "same_blocks": 26,
+                "size": 26
+              },
+              {
+                "base": "profile.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "profile.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 184,
+                    "offset": 0
+                  }
+                ],
+                "same": 184,
+                "same_blocks": 184,
+                "size": 184
+              },
+              {
+                "base": "session.rbln",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 15176307063,
+                    "offset": 0
+                  }
+                ],
+                "same": 15176307063,
+                "same_blocks": 15176307063,
+                "size": 15176307063
+              },
+              {
+                "base": "session.rbln.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 248,
+                    "offset": 0
+                  }
+                ],
+                "same": 248,
+                "same_blocks": 248,
+                "size": 248
+              }
+            ],
+            "largest_run": 0,
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "moved": 0,
+            "new": 0,
+            "new_stored": 0,
+            "same": 15176307521,
+            "same_blocks": 15176307521,
+            "schema": "onggi.switchplan.v1",
+            "size": 15176307521
+          },
+          "stdout": {
+            "base_manifest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "bytes": 15176307521,
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "mode": "reload",
+            "reason": "base manifest is not resident",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        }
+      ],
+      "switchplan_sha256": "e346c648b26611b05e7c4707f014f629784f5a2d7f82cb11f41be32c00fccb41",
+      "target_dir": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "target_files": {
+        "atom-binding.json": {
+          "sha256": "5fe19e9c34cb7ca8cd40594332ceb4696c23b9a022cd61d2de4bdfb6a33f1345",
+          "size": 26
+        },
+        "profile.json": {
+          "sha256": "080d3c33f0810e8e18073b0bd113087497d0e5156b714d4e11c054fb577708ad",
+          "size": 184
+        },
+        "session.rbln": {
+          "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+          "size": 15176307063
+        },
+        "session.rbln.json": {
+          "sha256": "b132e8ed7c149bf9e56119b586b8594131fc5614d68c0a0086196af8d6388a28",
+          "size": 248
+        }
+      }
+    },
+    {
+      "base_dir": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "base_files": {
+        "atom-binding.json": {
+          "sha256": "5fe19e9c34cb7ca8cd40594332ceb4696c23b9a022cd61d2de4bdfb6a33f1345",
+          "size": 26
+        },
+        "profile.json": {
+          "sha256": "080d3c33f0810e8e18073b0bd113087497d0e5156b714d4e11c054fb577708ad",
+          "size": 184
+        },
+        "session.rbln": {
+          "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+          "size": 15176307063
+        },
+        "session.rbln.json": {
+          "sha256": "b132e8ed7c149bf9e56119b586b8594131fc5614d68c0a0086196af8d6388a28",
+          "size": 248
+        }
+      },
+      "expect_mode": "reload",
+      "failures": [],
+      "name": "native-metadata-revision",
+      "results": [
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "describe",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/target"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "batch": 1,
+            "device": "RBLN-CA22",
+            "format": "rbln",
+            "layout": "public-embedded-weight-session",
+            "revision": "target",
+            "runtime": "rebel-compiler-0.11.0",
+            "schema": "onggi.profile.v1"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "conformance-load",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+            "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "resident"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "changed_runs": 1,
+            "files": [
+              {
+                "base": "atom-binding.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "atom-binding.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 26,
+                    "offset": 0
+                  }
+                ],
+                "same": 26,
+                "same_blocks": 26,
+                "size": 26
+              },
+              {
+                "base": "profile.json",
+                "changed": [
+                  [
+                    0,
+                    186
+                  ]
+                ],
+                "changed_runs": 1,
+                "largest_run": 186,
+                "moved": 0,
+                "new": 186,
+                "path": "profile.json",
+                "ranges": [
+                  {
+                    "kind": "new",
+                    "length": 186,
+                    "offset": 0
+                  }
+                ],
+                "same": 0,
+                "same_blocks": 0,
+                "size": 186
+              },
+              {
+                "base": "session.rbln",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 15176307063,
+                    "offset": 0
+                  }
+                ],
+                "same": 15176307063,
+                "same_blocks": 15176307063,
+                "size": 15176307063
+              },
+              {
+                "base": "session.rbln.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 248,
+                    "offset": 0
+                  }
+                ],
+                "same": 248,
+                "same_blocks": 248,
+                "size": 248
+              }
+            ],
+            "largest_run": 186,
+            "manifest": "sha256:4784f48f923a9dbceb48db7b231f120bdffc784cafb85a9583b945059d0b44c3",
+            "moved": 0,
+            "new": 186,
+            "new_stored": 186,
+            "same": 15176307337,
+            "same_blocks": 15176307337,
+            "schema": "onggi.switchplan.v1",
+            "size": 15176307523
+          },
+          "stdout": {
+            "base_manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "bytes": 15176307523,
+            "manifest": "sha256:4784f48f923a9dbceb48db7b231f120bdffc784cafb85a9583b945059d0b44c3",
+            "mode": "reload",
+            "reason": "B1 ATOM binding requires a full runtime reload",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "changed_runs": 1,
+            "files": [
+              {
+                "base": "atom-binding.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "atom-binding.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 26,
+                    "offset": 0
+                  }
+                ],
+                "same": 26,
+                "same_blocks": 26,
+                "size": 26
+              },
+              {
+                "base": "profile.json",
+                "changed": [
+                  [
+                    0,
+                    186
+                  ]
+                ],
+                "changed_runs": 1,
+                "largest_run": 186,
+                "moved": 0,
+                "new": 186,
+                "path": "profile.json",
+                "ranges": [
+                  {
+                    "kind": "new",
+                    "length": 186,
+                    "offset": 0
+                  }
+                ],
+                "same": 0,
+                "same_blocks": 0,
+                "size": 186
+              },
+              {
+                "base": "session.rbln",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 15176307063,
+                    "offset": 0
+                  }
+                ],
+                "same": 15176307063,
+                "same_blocks": 15176307063,
+                "size": 15176307063
+              },
+              {
+                "base": "session.rbln.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 248,
+                    "offset": 0
+                  }
+                ],
+                "same": 248,
+                "same_blocks": 248,
+                "size": 248
+              }
+            ],
+            "largest_run": 186,
+            "manifest": "sha256:4784f48f923a9dbceb48db7b231f120bdffc784cafb85a9583b945059d0b44c3",
+            "moved": 0,
+            "new": 186,
+            "new_stored": 186,
+            "same": 15176307337,
+            "same_blocks": 15176307337,
+            "schema": "onggi.switchplan.v1",
+            "size": 15176307523
+          },
+          "stdout": {
+            "base_manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "bytes": 15176307523,
+            "manifest": "sha256:4784f48f923a9dbceb48db7b231f120bdffc784cafb85a9583b945059d0b44c3",
+            "mode": "reload",
+            "reason": "B1 ATOM binding requires a full runtime reload",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "resident"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/tmp/atom-b1-1.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "changed_runs": 1,
+            "files": [
+              {
+                "base": "atom-binding.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "atom-binding.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 26,
+                    "offset": 0
+                  }
+                ],
+                "same": 26,
+                "same_blocks": 26,
+                "size": 26
+              },
+              {
+                "base": "profile.json",
+                "changed": [
+                  [
+                    0,
+                    186
+                  ]
+                ],
+                "changed_runs": 1,
+                "largest_run": 186,
+                "moved": 0,
+                "new": 186,
+                "path": "profile.json",
+                "ranges": [
+                  {
+                    "kind": "new",
+                    "length": 186,
+                    "offset": 0
+                  }
+                ],
+                "same": 0,
+                "same_blocks": 0,
+                "size": 186
+              },
+              {
+                "base": "session.rbln",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 15176307063,
+                    "offset": 0
+                  }
+                ],
+                "same": 15176307063,
+                "same_blocks": 15176307063,
+                "size": 15176307063
+              },
+              {
+                "base": "session.rbln.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "session.rbln.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 248,
+                    "offset": 0
+                  }
+                ],
+                "same": 248,
+                "same_blocks": 248,
+                "size": 248
+              }
+            ],
+            "largest_run": 186,
+            "manifest": "sha256:4784f48f923a9dbceb48db7b231f120bdffc784cafb85a9583b945059d0b44c3",
+            "moved": 0,
+            "new": 186,
+            "new_stored": 186,
+            "same": 15176307337,
+            "same_blocks": 15176307337,
+            "schema": "onggi.switchplan.v1",
+            "size": 15176307523
+          },
+          "stdout": {
+            "base_manifest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "bytes": 15176307523,
+            "manifest": "sha256:4784f48f923a9dbceb48db7b231f120bdffc784cafb85a9583b945059d0b44c3",
+            "mode": "reload",
+            "reason": "base manifest is not resident",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        }
+      ],
+      "switchplan_sha256": "d9049e5f8b321852fb13759f3ba90bf79cc457ed402e72246793c8230147d949",
+      "target_dir": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/target",
+      "target_files": {
+        "atom-binding.json": {
+          "sha256": "5fe19e9c34cb7ca8cd40594332ceb4696c23b9a022cd61d2de4bdfb6a33f1345",
+          "size": 26
+        },
+        "profile.json": {
+          "sha256": "3dd7ebe83338ab39ea32ff371e1fa5e05f90954f28d7d58c8e08496d4b321d42",
+          "size": 186
+        },
+        "session.rbln": {
+          "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+          "size": 15176307063
+        },
+        "session.rbln.json": {
+          "sha256": "b132e8ed7c149bf9e56119b586b8594131fc5614d68c0a0086196af8d6388a28",
+          "size": 248
+        }
+      }
+    }
+  ],
+  "failures": [],
+  "fixtures": {
+    "path": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/atom-fixtures.json",
+    "sha256": "872b242fe84c37ae859efdd51b0b5f80a196a69d0d9ac015e979e8dfaa55d7cf"
+  },
+  "level": "B1",
+  "ok": true,
+  "schema": "onggi.binding-report.v1"
+}
