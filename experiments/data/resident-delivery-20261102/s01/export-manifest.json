@@ -1,0 +1,255 @@
+{
+  "archive": {
+    "path": "/home/gspark/workspace/codex_resident_delivery_20261102/evidence/s01-small.json.gz",
+    "bytes": 476442,
+    "sha256": "80c91dd96c668eeb9ab9ab2b99f2a6ff9b2ca053d36a4e621c2f479ca28ef1f8",
+    "files": 49
+  },
+  "files": [
+    {
+      "path": "inputs/cohorts/s01/cohort.json",
+      "bytes": 1646,
+      "sha256": "cb13b17d8b0321e723262d2918488bd455ceb74a414a9efac80107443499d9cb"
+    },
+    {
+      "path": "inputs/cohorts/s01/s01-full-csi-no-rebase.json",
+      "bytes": 1851,
+      "sha256": "d18634fd6c30d386968bb263c18c9838ee47842934ff5eada7e6d2fec64a9d77"
+    },
+    {
+      "path": "inputs/cohorts/s01/s01-full-csi-rebase.json",
+      "bytes": 1842,
+      "sha256": "3e8543588e9db4ba8c3ac68a336b860ecfb61078c421a6ab5b3ab2ba2ab1c690"
+    },
+    {
+      "path": "inputs/cohorts/s01/s01-graph-copy.json",
+      "bytes": 1618,
+      "sha256": "0bbc64d8792cd353fb97961fc724509d437561ce9b493e886e26aaba0dbd90f8"
+    },
+    {
+      "path": "inputs/cohorts/s01/s01-graph-csi-active.json",
+      "bytes": 1636,
+      "sha256": "2c7f888237f77874d83f8233509826f23197be4e4910ecad526220aaac91affa"
+    },
+    {
+      "path": "inputs/cohorts/s01/s01-graph-csi.json",
+      "bytes": 1826,
+      "sha256": "cf48fe443fa5a61354732bf6780e4e000c6cbbb95ebc69189b5da2417dd727ca"
+    },
+    {
+      "path": "inputs/preparation.json",
+      "bytes": 16804,
+      "sha256": "de9d95c8a7835fbb00b2ce9c2acca3522582f33f013f369caff9d6e704e6f544"
+    },
+    {
+      "path": "prep/s01/fd/c/prep-csi.log",
+      "bytes": 1400,
+      "sha256": "b33a8969b9975c4641639be693ff578175e6e9dfaa9c64acfc7690bbf58651f6"
+    },
+    {
+      "path": "prep/s01/fd/c/receipt.json",
+      "bytes": 28054,
+      "sha256": "5ec6d10adc5ef6e02560845159a4aac2fe407a2b4f6b20d9b9379d288086a4cd"
+    },
+    {
+      "path": "prep/s01/fn/c/prep-csi.log",
+      "bytes": 1399,
+      "sha256": "c1eb6797025ebccbbf91930209be278dde22a4d5f0154eea481d81e137ad3b01"
+    },
+    {
+      "path": "prep/s01/fn/c/receipt.json",
+      "bytes": 27644,
+      "sha256": "d7b1ffbd3925f2ed088c40ad0a5c900767fc04bd76cb8e93c95160763c3ae274"
+    },
+    {
+      "path": "prep/s01/gd/c/prep-csi.log",
+      "bytes": 1376,
+      "sha256": "bf936aef27a93602e5124b55f79f8b504fd8b6146740bbfd6b456903ddd9c2ba"
+    },
+    {
+      "path": "prep/s01/gd/c/receipt.json",
+      "bytes": 21778,
+      "sha256": "8992c6cbd8a1a34189876dfcfb25caf632ed70fa97119d6ceb2d426d79455ac7"
+    },
+    {
+      "path": "runs/s01-cohort.json",
+      "bytes": 6184,
+      "sha256": "a4374561d29322118dfa1edc1486c47022ab45afd5ee970e820753431fa324fd"
+    },
+    {
+      "path": "runs/s01-full-csi-no-rebase/config.json",
+      "bytes": 2046,
+      "sha256": "5ff199da4a382c726b1b9fba0c279895a62a310fa057df75bfa2e90eb438a5b6"
+    },
+    {
+      "path": "runs/s01-full-csi-no-rebase/result.json",
+      "bytes": 261163,
+      "sha256": "09bb8e4c5c7116453c59d15a2436a67c71344a95c95c35cb74ee3c2dcd41a850"
+    },
+    {
+      "path": "runs/s01-full-csi-no-rebase/stderr.log",
+      "bytes": 252,
+      "sha256": "b817581fbdc8c6a484e2371504204a37982b8fd5f7c46dd8a118d70598a6c846"
+    },
+    {
+      "path": "runs/s01-full-csi-no-rebase/stdout.log",
+      "bytes": 51,
+      "sha256": "668649dc4fcdd5abb4ecd77ad056d0de3ac2cc4275dc439ab0a4b722fa90421a"
+    },
+    {
+      "path": "runs/s01-full-csi-no-rebase/work/config.json",
+      "bytes": 2046,
+      "sha256": "5ff199da4a382c726b1b9fba0c279895a62a310fa057df75bfa2e90eb438a5b6"
+    },
+    {
+      "path": "runs/s01-full-csi-no-rebase/work/demand-csi.log",
+      "bytes": 1497,
+      "sha256": "c4ab3a010d997af2c70880b2195e820b635b5c2fa8eae32e583be23ad17ef2b8"
+    },
+    {
+      "path": "runs/s01-full-csi-no-rebase/work/partial-result.json",
+      "bytes": 261073,
+      "sha256": "76b7a257a420a7b6589f44509a81a0759feaaf04d6f226a4064bd98b608b2084"
+    },
+    {
+      "path": "runs/s01-full-csi-rebase/config.json",
+      "bytes": 2037,
+      "sha256": "c53b09a06696665d47add51a7a340dc75a4ac1916536ddb679b1b9ecdb27ca46"
+    },
+    {
+      "path": "runs/s01-full-csi-rebase/result.json",
+      "bytes": 246008,
+      "sha256": "8a184452163288e597c498bc0959c1d983f0acee2533a796d5c9fda1811cc3bf"
+    },
+    {
+      "path": "runs/s01-full-csi-rebase/stderr.log",
+      "bytes": 252,
+      "sha256": "b817581fbdc8c6a484e2371504204a37982b8fd5f7c46dd8a118d70598a6c846"
+    },
+    {
+      "path": "runs/s01-full-csi-rebase/stdout.log",
+      "bytes": 51,
+      "sha256": "668649dc4fcdd5abb4ecd77ad056d0de3ac2cc4275dc439ab0a4b722fa90421a"
+    },
+    {
+      "path": "runs/s01-full-csi-rebase/work/config.json",
+      "bytes": 2037,
+      "sha256": "c53b09a06696665d47add51a7a340dc75a4ac1916536ddb679b1b9ecdb27ca46"
+    },
+    {
+      "path": "runs/s01-full-csi-rebase/work/demand-csi.log",
+      "bytes": 1788,
+      "sha256": "dc8b43f1d8da1a5ebd3867558485f0fac1558896405ebb8f296a957101055773"
+    },
+    {
+      "path": "runs/s01-full-csi-rebase/work/partial-result.json",
+      "bytes": 245918,
+      "sha256": "f7ba952556bd9fcd926e07350ca0eca0a511a279ca2f46d12516090722d1abcf"
+    },
+    {
+      "path": "runs/s01-graph-copy/config.json",
+      "bytes": 1813,
+      "sha256": "c9b638230fe0f2253e093021fb2755db1324ee6f153ec6ffffd8d8837dc24774"
+    },
+    {
+      "path": "runs/s01-graph-copy/result.json",
+      "bytes": 160641,
+      "sha256": "20a0a14df16d90f1c0032f026443a697ac65b1bb2c53f3eca5a51cd104c6ae84"
+    },
+    {
+      "path": "runs/s01-graph-copy/stderr.log",
+      "bytes": 504,
+      "sha256": "46b45d2ba8e908f9bca83c2edec923e12cf5497a6bfc9e47776dc9026e4fab47"
+    },
+    {
+      "path": "runs/s01-graph-copy/stdout.log",
+      "bytes": 51,
+      "sha256": "668649dc4fcdd5abb4ecd77ad056d0de3ac2cc4275dc439ab0a4b722fa90421a"
+    },
+    {
+      "path": "runs/s01-graph-copy/work/config.json",
+      "bytes": 1813,
+      "sha256": "c9b638230fe0f2253e093021fb2755db1324ee6f153ec6ffffd8d8837dc24774"
+    },
+    {
+      "path": "runs/s01-graph-copy/work/partial-result.json",
+      "bytes": 160551,
+      "sha256": "883b113914020c74de33de4915ea38b1cb31631c598bee0880c450a3625f6abb"
+    },
+    {
+      "path": "runs/s01-graph-csi/config.json",
+      "bytes": 2021,
+      "sha256": "0fc034e77554c453fc63a5e7771592363ac2185416afc2036c6e8cc0288ca9bb"
+    },
+    {
+      "path": "runs/s01-graph-csi/result.json",
+      "bytes": 217918,
+      "sha256": "83a21959a5c73889aabca4bf175494f4df842965274edeba700c39ba92a5a75e"
+    },
+    {
+      "path": "runs/s01-graph-csi/stderr.log",
+      "bytes": 252,
+      "sha256": "b817581fbdc8c6a484e2371504204a37982b8fd5f7c46dd8a118d70598a6c846"
+    },
+    {
+      "path": "runs/s01-graph-csi/stdout.log",
+      "bytes": 51,
+      "sha256": "668649dc4fcdd5abb4ecd77ad056d0de3ac2cc4275dc439ab0a4b722fa90421a"
+    },
+    {
+      "path": "runs/s01-graph-csi/work/config.json",
+      "bytes": 2021,
+      "sha256": "0fc034e77554c453fc63a5e7771592363ac2185416afc2036c6e8cc0288ca9bb"
+    },
+    {
+      "path": "runs/s01-graph-csi/work/demand-csi.log",
+      "bytes": 1667,
+      "sha256": "12fcbdaab14fbb9aed9f6375424a04caebdada8d576548b2caef1209fe46118a"
+    },
+    {
+      "path": "runs/s01-graph-csi/work/partial-result.json",
+      "bytes": 217828,
+      "sha256": "edadecfab906c80349f1ce13a8b05767fbb488692a748016a1b676be47669322"
+    },
+    {
+      "path": "runs/s01-graph-csi-active/config.json",
+      "bytes": 1831,
+      "sha256": "5fb7999d9cff5db6bbab9a5345dc77684b51c82a240d418d8d39471fb6fb3d4e"
+    },
+    {
+      "path": "runs/s01-graph-csi-active/result.json",
+      "bytes": 211011,
+      "sha256": "6487246f0e7df19b2260a9b640e812162275c8e053bb0de65321ae067693ee40"
+    },
+    {
+      "path": "runs/s01-graph-csi-active/stderr.log",
+      "bytes": 252,
+      "sha256": "b817581fbdc8c6a484e2371504204a37982b8fd5f7c46dd8a118d70598a6c846"
+    },
+    {
+      "path": "runs/s01-graph-csi-active/stdout.log",
+      "bytes": 51,
+      "sha256": "668649dc4fcdd5abb4ecd77ad056d0de3ac2cc4275dc439ab0a4b722fa90421a"
+    },
+    {
+      "path": "runs/s01-graph-csi-active/work/config.json",
+      "bytes": 1831,
+      "sha256": "5fb7999d9cff5db6bbab9a5345dc77684b51c82a240d418d8d39471fb6fb3d4e"
+    },
+    {
+      "path": "runs/s01-graph-csi-active/work/demand-csi.log",
+      "bytes": 1906,
+      "sha256": "b9184df2439a67cce6bd18b2f075f586ddd9de1f3b271ab1f9b55a5515946941"
+    },
+    {
+      "path": "runs/s01-graph-csi-active/work/partial-result.json",
+      "bytes": 210921,
+      "sha256": "346ad49dad5ac38388300af2f5bfc18a50cc78face514f15fd44058b556e6553"
+    },
+    {
+      "path": "runs/s01-graph-csi-active/work/prep-csi.log",
+      "bytes": 1238,
+      "sha256": "734157fff18683a0af85acb38e44255930da6140e4b219322e8ab5179d820b20"
+    }
+  ]
+}

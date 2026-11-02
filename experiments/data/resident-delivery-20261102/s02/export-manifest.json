@@ -1,0 +1,75 @@
+{
+  "archive": {
+    "path": "/home/gspark/workspace/codex_resident_delivery_20261102/evidence/s02-small.json.gz",
+    "bytes": 140722,
+    "sha256": "f682561258b6d9b298b6352f1a9d426ce171d055b5d3cfbe9a8f5fb677fb0688",
+    "files": 13
+  },
+  "files": [
+    {
+      "path": "inputs/cohorts/s02/cohort.json",
+      "bytes": 487,
+      "sha256": "3643489fbba4801718ae1e79be04d8e44789bc3230262038cadfd0480dadf323"
+    },
+    {
+      "path": "inputs/cohorts/s02/s02-full-csi-active.json",
+      "bytes": 1842,
+      "sha256": "0e35ac22bd4e9978db7dd07793a15af2ef4cbb1e8be3da0816a6a15515159644"
+    },
+    {
+      "path": "inputs/preparation.json",
+      "bytes": 16804,
+      "sha256": "de9d95c8a7835fbb00b2ce9c2acca3522582f33f013f369caff9d6e704e6f544"
+    },
+    {
+      "path": "prep/s02/fe/c/prep-csi.log",
+      "bytes": 1399,
+      "sha256": "81707455bb5bc94c444458c5a3504c986b700ede868904d2c6e5f233fd0689d5"
+    },
+    {
+      "path": "prep/s02/fe/c/receipt.json",
+      "bytes": 27263,
+      "sha256": "d904af34a031bf78bd8396db1febcbd34da618b16e235100cf7c655c7f0e3f67"
+    },
+    {
+      "path": "runs/s02-cohort.json",
+      "bytes": 1579,
+      "sha256": "3964c9a3a113ab80391e78d2fdd8ef7920ba9b2cd7d72433984336c577376a13"
+    },
+    {
+      "path": "runs/s02-full-csi-active/config.json",
+      "bytes": 2037,
+      "sha256": "145b654001752112b1d91c1887e32c6a74fedfb27096dd2cbd4809526546440d"
+    },
+    {
+      "path": "runs/s02-full-csi-active/result.json",
+      "bytes": 290428,
+      "sha256": "d83b8eac4482ff5e600ee4d4c1bbca07e0500a0a047b71de0871c121b61a6b1c"
+    },
+    {
+      "path": "runs/s02-full-csi-active/stderr.log",
+      "bytes": 252,
+      "sha256": "b817581fbdc8c6a484e2371504204a37982b8fd5f7c46dd8a118d70598a6c846"
+    },
+    {
+      "path": "runs/s02-full-csi-active/stdout.log",
+      "bytes": 51,
+      "sha256": "668649dc4fcdd5abb4ecd77ad056d0de3ac2cc4275dc439ab0a4b722fa90421a"
+    },
+    {
+      "path": "runs/s02-full-csi-active/work/config.json",
+      "bytes": 2037,
+      "sha256": "145b654001752112b1d91c1887e32c6a74fedfb27096dd2cbd4809526546440d"
+    },
+    {
+      "path": "runs/s02-full-csi-active/work/demand-csi.log",
+      "bytes": 2211,
+      "sha256": "6b1b618717a1893e2be2a6c6bfec95fd6465ef4a8b2f1bda5e2181c8277c15fd"
+    },
+    {
+      "path": "runs/s02-full-csi-active/work/partial-result.json",
+      "bytes": 290338,
+      "sha256": "5ef5048f3a6ae4a96ff96cec4e9a527b6e0b67f8dfc517ce38b2a0f3657e0779"
+    }
+  ]
+}

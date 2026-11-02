@@ -1,0 +1,70 @@
+{
+  "status": "completed",
+  "pod_uid": "9650529a-6b63-4bec-8841-33da425bb24d",
+  "chip": 0,
+  "cards": [
+    0
+  ],
+  "started_unix_ns": 1793591004250973416,
+  "roles": [
+    {
+      "role": "fresh",
+      "argv": [
+        "/home/gspark/venvs/furiosa-2026.4/bin/python",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_context_capacity.py",
+        "--role",
+        "fresh",
+        "--preparation",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/inputs/preparation.json",
+        "--out",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/capacity/c01/fresh.json"
+      ],
+      "returncode": 0,
+      "started_unix_ns": 1793591004251114239,
+      "finished_unix_ns": 1793591026774277349,
+      "result_sha256": "9af893450207784c462c184e3cc44da45c6ad5bff759374311d5b19656b0601d",
+      "status": "completed",
+      "validity": "valid",
+      "counts": {
+        "compilation_attempts": 0,
+        "native_calls": 4488,
+        "graph_loads": 2,
+        "shared_uploads": 1,
+        "native_output_devices": [
+          "furiosa:0"
+        ]
+      }
+    },
+    {
+      "role": "resident",
+      "argv": [
+        "/home/gspark/venvs/furiosa-2026.4/bin/python",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_context_capacity.py",
+        "--role",
+        "resident",
+        "--preparation",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/inputs/preparation.json",
+        "--out",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/capacity/c01/resident.json",
+        "--reference",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/capacity/c01/fresh.json"
+      ],
+      "returncode": 0,
+      "started_unix_ns": 1793591026774736866,
+      "finished_unix_ns": 1793591049933140384,
+      "result_sha256": "cedde06b3ebdd18ca91961f2c7d5fdb52a9e90e067182c1cd4a05df4f39fa740",
+      "status": "completed",
+      "validity": "valid",
+      "counts": {
+        "compilation_attempts": 0,
+        "native_calls": 4743,
+        "graph_loads": 4,
+        "shared_uploads": 1,
+        "native_output_devices": [
+          "furiosa:0"
+        ]
+      }
+    }
+  ],
+  "finished_unix_ns": 1793591049934563943
+}
