@@ -6,3 +6,4 @@ experiments/verify_b2_timing.py text eol=lf
 experiments/data/b2-timing-20261102/** whitespace=cr-at-eol
 experiments/b2-timing-summary-20261102*.json whitespace=cr-at-eol
 experiments/data/resident-delivery-20261102/** -text whitespace=cr-at-eol
+experiments/resident-delivery-summary-20261102.json -text whitespace=cr-at-eol

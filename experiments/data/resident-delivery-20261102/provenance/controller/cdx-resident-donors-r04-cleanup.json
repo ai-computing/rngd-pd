@@ -1,0 +1,174 @@
+{
+  "job_uid": "edac3a01-d0fa-4df4-913a-ae6283b7d4b6",
+  "name": "cdx-resident-donors-r04",
+  "job_absent": true,
+  "pods_absent": true,
+  "observations": [
+    {
+      "name": "cdx-resident-donors-r04-n8xd9",
+      "uid": "e7da7d3a-ed34-475a-b6f2-e765b9017f7b",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "containerID": "containerd://f51672d0cd7131238d3f9081b00f0a2a751527ae95b57a1d663b564ae2fe04da",
+          "image": "sha256:cee13550f97b8a595506e8e4ca74263ba44924248779a4ba4f942e197652acff",
+          "imageID": "docker.io/library/ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+          "lastState": {},
+          "name": "run",
+          "ready": false,
+          "restartCount": 0,
+          "started": false,
+          "state": {
+            "terminated": {
+              "containerID": "containerd://f51672d0cd7131238d3f9081b00f0a2a751527ae95b57a1d663b564ae2fe04da",
+              "exitCode": 0,
+              "finishedAt": "2026-11-02T03:19:16Z",
+              "reason": "Completed",
+              "startedAt": "2026-11-02T03:16:56Z"
+            }
+          },
+          "volumeMounts": [
+            {
+              "mountPath": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures",
+              "name": "source-views",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-libs",
+              "name": "host-libs",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-usrlib",
+              "name": "host-usrlib",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-bin",
+              "name": "host-bin",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/lib/python3/dist-packages",
+              "name": "dist",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/local/lib/python3.10/dist-packages",
+              "name": "local-dist",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/venvs/furiosa-2026.4",
+              "name": "rngd-sdk",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/run/swap",
+              "name": "assigned",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/dev/shm",
+              "name": "shm",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_rngd_opt_20261023",
+              "name": "prior-opt",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_onggi_integration_20261030",
+              "name": "onggi-build",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030",
+              "name": "work",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache",
+              "name": "own-cache",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source",
+              "name": "source",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2",
+              "name": "published",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/var/lib/kubelet/device-plugins",
+              "name": "device-checkpoint",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_binding_conformance_20261030",
+              "name": "binding-work",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_binding_conformance_20261030/runtime-source",
+              "name": "binding-source",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_binding_conformance_20261030/conformance-source",
+              "name": "binding-kit",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/bin/python3.10",
+              "name": "host-python",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/lib/python3.10",
+              "name": "host-python-stdlib",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_b2_20261102",
+              "name": "new-work",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_resident_delivery_20261102",
+              "name": "owned"
+            }
+          ]
+        }
+      ],
+      "log": "",
+      "log_stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "cohort": "s02",
+  "export_archive_sha256": "f682561258b6d9b298b6352f1a9d426ce171d055b5d3cfbe9a8f5fb677fb0688",
+  "removed": [
+    "/home/gspark/workspace/codex_resident_delivery_20261102/prep/s02",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/runs/s02-full-csi-active/work"
+  ],
+  "free_before": 334180773888,
+  "free_after": 387732643840,
+  "npu_requested": 0
+}

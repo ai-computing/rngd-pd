@@ -1,0 +1,42 @@
+{
+  "job_uid": "f964301f-98ca-4b43-bc91-0f9aa13ea323",
+  "name": "cdx-resident-build-02",
+  "job_absent": true,
+  "pods_absent": true,
+  "observations": [
+    {
+      "name": "cdx-resident-build-02-vnpj4",
+      "uid": "44b9b008-2fe6-4742-81ce-35725044f525",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "containerID": "containerd://2838036cb3fb3953536c943092ca956ad6cce68091ca269905bf1803b3df1481",
+          "image": "sha256:80d0c273b68be554ca551c61b4a22ef66baae074f3a9562636139ba01972e5b1",
+          "imageID": "docker.io/library/golang@sha256:c423747fbd96fd8f0b1102d947f51f9b266060217478e5f9bf86f145969562ee",
+          "lastState": {},
+          "name": "build",
+          "ready": false,
+          "restartCount": 0,
+          "started": false,
+          "state": {
+            "terminated": {
+              "containerID": "containerd://2838036cb3fb3953536c943092ca956ad6cce68091ca269905bf1803b3df1481",
+              "exitCode": 0,
+              "finishedAt": "2026-11-02T02:00:56Z",
+              "reason": "Completed",
+              "startedAt": "2026-11-02T02:00:23Z"
+            }
+          },
+          "volumeMounts": [
+            {
+              "mountPath": "/work",
+              "name": "work"
+            }
+          ]
+        }
+      ],
+      "log": "",
+      "log_stderr": ""
+    }
+  ]
+}

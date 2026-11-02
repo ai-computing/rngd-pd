@@ -1,0 +1,36 @@
+{
+  "status": "completed",
+  "pid": 38724,
+  "runtime_source": "829573e41959a4b0f6daa82e4862f1584367c347",
+  "cohorts": [
+    {
+      "cohort": "r02",
+      "status": "verified",
+      "finished_unix_ns": 1793588905589039900
+    },
+    {
+      "cohort": "r03",
+      "status": "verified",
+      "finished_unix_ns": 1793589404047674800
+    },
+    {
+      "cohort": "r04",
+      "status": "verified",
+      "finished_unix_ns": 1793589906086635900
+    },
+    {
+      "cohort": "r05",
+      "status": "verified",
+      "finished_unix_ns": 1793590425032833100
+    },
+    {
+      "cohort": "r06",
+      "status": "verified",
+      "finished_unix_ns": 1793590939982035000
+    }
+  ],
+  "prior_attempt": "main-controller-state.json: CPU setup only; missing container time executable; no native trials",
+  "started_unix_ns": 1793588404525839200,
+  "current_job": null,
+  "finished_unix_ns": 1793590939983035700
+}
