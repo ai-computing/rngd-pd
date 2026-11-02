@@ -204,3 +204,16 @@ PYTHONPATH=src python -m pytest -q
 CPU tests cover immutable refs, fixed conditions, path independence, exact
 inventory/hash errors, reference shape, timing endpoints and the actual mount
 evidence parser. They do not establish native or real CSI smoke success.
+
+## Active checkpoint ownership control
+
+`full-csi-active` extends the bounded ownership observation to the checkpoint
+itself, not only the graph files. Prepare an independent full base through real
+CPU-only CSI publish/unpublish and retain its exact receipt. In the native Job,
+publish that existing base again through NodePublishVolume, keep its live lease,
+and construct the owner from `base-mount/checkpoint` and its graph cache. Target
+publication must exclude this busy base and reconstruct separately. Verify the
+base files, lease and a native base request after target materialization, then
+perform the same resident target switch and close the owner before unpublishing.
+This is a functional n=1 control, separate from the four-arm n=5 timing matrix.
+The earlier graph-only active control does not establish checkpoint ownership.

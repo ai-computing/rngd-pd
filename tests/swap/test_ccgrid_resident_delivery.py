@@ -113,6 +113,19 @@ def test_metadata_records_ownership_and_permission_witnesses(harness, config):
     assert row["mode"] == source.stat().st_mode
 
 
+def test_active_checkpoint_owner_reads_the_published_full_base(harness, config, tmp_path):
+    config["arm"] = "full-csi-active"
+    for key in ("base_bundle_source", "target_bundle_source"):
+        (Path(config[key]) / "checkpoint").mkdir()
+    harness.validate(config)
+    mount = tmp_path / "published-base"
+    checkpoint, graphs = harness.live_paths(config, mount)
+    assert checkpoint == str(mount / "checkpoint")
+    assert graphs == str(mount / "cache/graphs")
+    config["arm"] = "graph-csi-active"
+    assert harness.live_paths(config, mount)[0] == config["immutable_checkpoint"]
+
+
 def test_timing_includes_hash_validation_and_excludes_generation_tail(harness):
     events = {name: {"perf_ns": value * 1_000_000_000} for name, value in
         (("demand", 1), ("delivery_finished", 3), ("hash_finished", 5), ("started", 0))}

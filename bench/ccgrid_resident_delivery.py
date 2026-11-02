@@ -22,7 +22,7 @@ import traceback
 import ccgrid_e6 as e6
 
 
-ARMS = ("graph-copy", "graph-csi", "full-csi-no-rebase", "full-csi-rebase", "graph-csi-active")
+ARMS = ("graph-copy", "graph-csi", "full-csi-no-rebase", "full-csi-rebase", "graph-csi-active", "full-csi-active")
 ENTRY = e6.stamp()
 
 
@@ -335,6 +335,12 @@ class CSI:
             self.process = None
 
 
+def live_paths(cfg, base_mount):
+    checkpoint = str(base_mount / "checkpoint") if cfg["arm"] == "full-csi-active" else cfg["immutable_checkpoint"]
+    cache = str(base_mount / "cache/graphs") if cfg["arm"].endswith("csi-active") else cfg["base_cache_dir"]
+    return checkpoint, cache
+
+
 def parity_base(engine, reference, counts):
     before = counts["native_calls"]
     tokens, ttft = engine.generate(reference["base_prompts"], len(reference["base_tokens"][0]))
@@ -397,12 +403,17 @@ def trial(cfg, result):
                 result["base_mount_evidence"] = readonly_mount(base_mount)
                 result["base_published_inventory"] = verify_inventory(base_mount, expected["base"])
                 result["donor_prepared_inventory"] = verify_inventory(donor, expected["base"])
-                if cfg["arm"] != "graph-csi-active":
+                if not cfg["arm"].endswith("csi-active"):
                     csi.rpc("unpublish", base_mount, "base", cfg["base_ref"], "base-idle")
                     base_attempted = False
                 csi.stop()
                 events["donor_preparation_finished"] = e6.stamp()
             csi.start("demand")
+            if cfg["arm"] == "full-csi-active" and cfg.get("prepared_materializer"):
+                base_attempted = True
+                csi.rpc("publish", base_mount, "base", cfg["base_ref"], "base-publish")
+                result["base_mount_evidence"] = readonly_mount(base_mount)
+                result["base_published_inventory"] = verify_inventory(base_mount, expected["base"])
             events["real_idle_wait_started"] = e6.stamp()
             time.sleep(1.05)
             events["real_idle_wait_finished"] = e6.stamp()
@@ -426,8 +437,9 @@ def trial(cfg, result):
         counts, sdk = e6.observe_native(cfg["chip"])
         result.update(sdk=sdk, torch=str(torch.__version__), counts=counts)
         events["construct_started"] = e6.stamp()
-        cache = str(base_mount / "cache/graphs") if cfg["arm"] == "graph-csi-active" else cfg["base_cache_dir"]
-        engine = SwappableDecode(cfg["immutable_checkpoint"], group=Variant.parse(cfg["base_variant"]).group,
+        checkpoint, cache = live_paths(cfg, base_mount)
+        result.update(live_checkpoint=checkpoint, live_base_graph_cache=cache)
+        engine = SwappableDecode(checkpoint, group=Variant.parse(cfg["base_variant"]).group,
             chip=cfg["chip"], cache_dir=cache, allow_compile=False, host_workers=2)
         events["constructed"] = e6.stamp()
         result["base_graph"] = engine.swap(Variant.parse(cfg["base_variant"]))
@@ -466,7 +478,7 @@ def trial(cfg, result):
             if not stats or stats.get("bytes") != sum(row["size"] for row in expected["target"].values()):
                 raise RuntimeError("target materialized PullStats missing or logical target byte count differs")
         result["snapshots"]["delivery"] = snapshot(data, [donor, base_mount, target_mount])
-        if cfg["arm"] == "graph-csi-active":
+        if cfg["arm"].endswith("csi-active"):
             preserved = verify_inventory(base_mount, expected["base"])
             result["active_base_preserved"] = preserved == result["base_published_inventory"]
             if not result["active_base_preserved"] or not donor.exists():
