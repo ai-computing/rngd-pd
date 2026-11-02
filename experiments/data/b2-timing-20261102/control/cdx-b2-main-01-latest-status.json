@@ -1,0 +1,54 @@
+{
+  "job_uid": "9d9454b6-4e50-473a-8ba3-e97f1f398c34",
+  "status": {
+    "active": 1,
+    "ready": 0,
+    "startTime": "2026-11-02T00:53:34Z",
+    "terminating": 0,
+    "uncountedTerminatedPods": {}
+  },
+  "pods": [
+    {
+      "name": "cdx-b2-main-01-hq4cb",
+      "uid": "d2760c20-d838-4e5b-8e99-ccce701f2eee",
+      "node": "etri-001",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "name": "run",
+          "state": {
+            "terminated": {
+              "containerID": "containerd://7e7c5f95bee0a66f978b4bf1287673489bb3a38e4d7e4f07aa56fdc8e679878c",
+              "exitCode": 0,
+              "finishedAt": "2026-11-02T00:57:14Z",
+              "reason": "Completed",
+              "startedAt": "2026-11-02T00:53:39Z"
+            }
+          },
+          "imageID": "docker.io/library/ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+          "restartCount": 0,
+          "ready": false
+        }
+      ],
+      "init": [
+        {
+          "name": "assigned-rngd",
+          "state": {
+            "terminated": {
+              "containerID": "containerd://4229ea72f2331d403d5afca582c90aa1fd57b3ceeabeef7418cf50adb3b53925",
+              "exitCode": 0,
+              "finishedAt": "2026-11-02T00:53:37Z",
+              "reason": "Completed",
+              "startedAt": "2026-11-02T00:53:37Z"
+            }
+          },
+          "imageID": "docker.io/library/ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+          "restartCount": 0,
+          "ready": true
+        }
+      ],
+      "log": "[chip] allocated by k8s: [0] -> npu0, using rngd:0\n/home/gspark/venvs/furiosa-2026.4/lib/python3.10/site-packages/torch/serialization.py:2143: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.\n  result = unpickler.load()\n",
+      "log_stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,2846 @@
+{
+  "schema": "ccgrid-current-b2-trial-v1",
+  "pair": 1,
+  "arm": "reload",
+  "status": "completed",
+  "phase": "smoke",
+  "native_evidence": false,
+  "started_utc": "2026-11-02T00:50:38.618200+00:00",
+  "provenance": {
+    "source_commit": "4482faef87dabef8f586c6e7dff382b889cca115",
+    "source_files": {
+      "src/rngd_pd/swap/rngd_binding.py": "dab762f62d33a5fa758119e9c8970c20d014efc863c83dcda462662df558d682",
+      "src/rngd_pd/swap/rngd.py": "96985660773ac262c3418187f754262e6e5007c1c9e6fe72630d139258cd342a",
+      "src/rngd_pd/swap/delta.py": "da0b1d4a0f28d0e9e7ec061fc66a361dc521350340d35aee2db1417fbe5ac92a",
+      "src/rngd_pd/swap/variants.py": "e8467d7d33b378f17c548855e9c1dd5e0f2dda2e21d9b587598b07f775b3ac26",
+      "src/rngd_pd/devices.py": "cf637d2d49d37ae19b9d914f1ddc2229953e9168e535ef7a4860be23ab4511ec",
+      "src/rngd_pd/engines/fsdk.py": "22466221ce176682da1a71c5c42361436c345a7c822d1f2334ba12645b3d1890",
+      "bench/ccgrid_e7.py": "fa778342027ec034e434e12f8525fc134dd03d361438e5afe4465972205a512a"
+    },
+    "harness_sha256": "faf52c5dfa3d6a4bae231d5de2654e6a00ca7e43de128504e7c5f7bc7500b44c",
+    "input_manifest_sha256": "728a63c32a5d06b9c179e0911eb3b3aef98ad36dd1b72b6cdd3c7fbe46753197",
+    "source_manifest_sha256": "9a8ac6a20f0e54ef90cef9ba04e732b32962635fff11c78ee3b2f8ec9c98584c",
+    "fixture_sha256": "298eaeea76e9a945c53822142ce7f0ebab9d93e0d200359d6cccd642383f9d52",
+    "references_sha256": "6738d1bcbec444513163599c33b6146c9d317f1253d900b3cf196ff82a0672c7",
+    "switchplan_sha256": "e7cc12dbd0e7b6ffdd000d841019daf49b9d7a57eb774c4fc694d913d4bee1e9",
+    "assignment": {
+      "pod_uid": "0aa5bdae-6d0a-49be-8b95-0ead3a5abe32",
+      "host_index": 0,
+      "torch_ordinal": 0,
+      "visible_cards": [
+        0,
+        1,
+        3
+      ],
+      "allocation_uuid": [
+        "C0413086-0708-4606-8242-4947484F4646"
+      ]
+    },
+    "packages": {
+      "torch": "2.10.0+cpu",
+      "numpy": "2.2.6",
+      "furiosa-torch": "2026.4.0",
+      "furiosa-tcc": "2026.4.0"
+    },
+    "input_files": [
+      {
+        "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/config.json",
+        "bytes": 855,
+        "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+        "role": "base",
+        "mtime_ns": 1792733529673292140
+      },
+      {
+        "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00001-of-00004.safetensors",
+        "bytes": 4976698672,
+        "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668",
+        "role": "base",
+        "mtime_ns": 1773634882816711071
+      },
+      {
+        "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00002-of-00004.safetensors",
+        "bytes": 4999802720,
+        "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+        "role": "base",
+        "mtime_ns": 1773634884507729476
+      },
+      {
+        "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00003-of-00004.safetensors",
+        "bytes": 4915916176,
+        "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+        "role": "base",
+        "mtime_ns": 1773634882856711506
+      },
+      {
+        "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00004-of-00004.safetensors",
+        "bytes": 1168138808,
+        "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+        "role": "base",
+        "mtime_ns": 1773634794331758639
+      },
+      {
+        "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model.safetensors.index.json",
+        "bytes": 23950,
+        "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+        "role": "base",
+        "mtime_ns": 1792733529673292140
+      },
+      {
+        "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/config.json",
+        "bytes": 855,
+        "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+        "role": "target",
+        "mtime_ns": 1792733529673292140
+      },
+      {
+        "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00001-of-00004.safetensors",
+        "bytes": 4976698672,
+        "sha256": "3c2a83de67d5b8f814414f7a2df4367cf678b4eee8393fc8b0372d220440210b",
+        "role": "target",
+        "mtime_ns": 1793367470689686310
+      },
+      {
+        "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00002-of-00004.safetensors",
+        "bytes": 4999802720,
+        "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+        "role": "target",
+        "mtime_ns": 1773634884507729476
+      },
+      {
+        "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00003-of-00004.safetensors",
+        "bytes": 4915916176,
+        "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+        "role": "target",
+        "mtime_ns": 1773634882856711506
+      },
+      {
+        "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00004-of-00004.safetensors",
+        "bytes": 1168138808,
+        "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+        "role": "target",
+        "mtime_ns": 1773634794331758639
+      },
+      {
+        "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model.safetensors.index.json",
+        "bytes": 23950,
+        "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+        "role": "target",
+        "mtime_ns": 1792733529673292140
+      },
+      {
+        "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable",
+        "bytes": 224097,
+        "sha256": "405001f45f4676a134738a2d340dd453f17e9ccc60ba026e05ab285b39261c70",
+        "role": "cache-or-input",
+        "mtime_ns": 1793341641939575604
+      },
+      {
+        "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs/2026.4.0/2.10.0+cpu/42100dcbf68bbc6aa86e92b0.runnable",
+        "bytes": 760632,
+        "sha256": "5e8aaff08c16606163a52e9d517dc2e1fc0b58aabb03740559af38ca4bba7bb1",
+        "role": "cache-or-input",
+        "mtime_ns": 1793341641939575604
+      },
+      {
+        "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs/2026.4.0/2.10.0+cpu/4d933693c0786da2c9f5f8e4.runnable",
+        "bytes": 745164,
+        "sha256": "f6048c67a0321bc5c83fddd8041fdc7284314957f6b4e126e7df25553027c0e4",
+        "role": "cache-or-input",
+        "mtime_ns": 1793342041131479066
+      },
+      {
+        "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs/2026.4.0/2.10.0+cpu/53378f7f15c231ec17770d12.runnable",
+        "bytes": 92916,
+        "sha256": "57dc6c488fb70d3ff966e78e8c89882c505c6beb4517a19418a09fc9771c5fa8",
+        "role": "cache-or-input",
+        "mtime_ns": 1793342067386063365
+      },
+      {
+        "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable",
+        "bytes": 778900,
+        "sha256": "f06c3bf73e93e964a9a2f575e6a73c0960aea0cae02b63f43b5cce5182f0f756",
+        "role": "cache-or-input",
+        "mtime_ns": 1793341887001046211
+      },
+      {
+        "path": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/interior.switchplan.json",
+        "bytes": 3078,
+        "sha256": "e7cc12dbd0e7b6ffdd000d841019daf49b9d7a57eb774c4fc694d913d4bee1e9",
+        "role": "cache-or-input",
+        "mtime_ns": 1793367509342076872
+      },
+      {
+        "path": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/rngd-interior-fixtures.json",
+        "bytes": 1303,
+        "sha256": "298eaeea76e9a945c53822142ce7f0ebab9d93e0d200359d6cccd642383f9d52",
+        "role": "cache-or-input",
+        "mtime_ns": 1793367509342076872
+      },
+      {
+        "path": "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-02/work/kit-report.json",
+        "bytes": 85466,
+        "sha256": "582b7f84973e1efe14749927920102089b5bea1498abcad9c66b404c7d1f0589",
+        "role": "cache-or-input",
+        "mtime_ns": 1793367757920594466
+      },
+      {
+        "path": "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-02/work/refsactual.json",
+        "bytes": 146721,
+        "sha256": "6738d1bcbec444513163599c33b6146c9d317f1253d900b3cf196ff82a0672c7",
+        "role": "cache-or-input",
+        "mtime_ns": 1793367628961287242
+      },
+      {
+        "path": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/fixtures.json",
+        "bytes": 1303,
+        "sha256": "298eaeea76e9a945c53822142ce7f0ebab9d93e0d200359d6cccd642383f9d52",
+        "role": "cache-or-input",
+        "mtime_ns": 1793579979467180334
+      },
+      {
+        "path": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/interior.switchplan.json",
+        "bytes": 3078,
+        "sha256": "e7cc12dbd0e7b6ffdd000d841019daf49b9d7a57eb774c4fc694d913d4bee1e9",
+        "role": "cache-or-input",
+        "mtime_ns": 1793579979468180259
+      },
+      {
+        "path": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/prior-kit-report.json",
+        "bytes": 85466,
+        "sha256": "582b7f84973e1efe14749927920102089b5bea1498abcad9c66b404c7d1f0589",
+        "role": "cache-or-input",
+        "mtime_ns": 1793579979468180259
+      },
+      {
+        "path": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/references.json",
+        "bytes": 146721,
+        "sha256": "6738d1bcbec444513163599c33b6146c9d317f1253d900b3cf196ff82a0672c7",
+        "role": "cache-or-input",
+        "mtime_ns": 1793579979467180334
+      }
+    ],
+    "reference_assignments": {
+      "base": {
+        "pod_uid": "9240b31a-99d9-44ea-b161-1b803f3b1019",
+        "host_index": 0,
+        "visible_cards": [
+          0,
+          1,
+          3
+        ],
+        "torch_ordinal": 0,
+        "allocation_uuid": [
+          "C0413086-0708-4606-8242-4947484F4646"
+        ]
+      },
+      "sparse": {
+        "pod_uid": "df5b624c-0b44-4263-8bf7-57ef38e6fd34",
+        "host_index": 0,
+        "visible_cards": [
+          0,
+          1,
+          3
+        ],
+        "torch_ordinal": 0,
+        "allocation_uuid": [
+          "C0413086-0708-4606-8242-4947484F4646"
+        ]
+      }
+    },
+    "hash_verification_scope": "external off-card full hashes; native sizes/inventory plus small input/source hashes",
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+    "executable": "/home/gspark/venvs/furiosa-2026.4/bin/python",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.35",
+    "hostname": "cdx-b2-smoke-01-rvtp2",
+    "environment": {
+      "OMP_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "PYTHONPATH": "/home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source/src",
+      "HOSTNAME": "cdx-b2-smoke-01-rvtp2",
+      "POD_UID": "0aa5bdae-6d0a-49be-8b95-0ead3a5abe32",
+      "POD_NAME": "cdx-b2-smoke-01-rvtp2"
+    }
+  },
+  "operations": {
+    "prepare_base_outside_trigger": {
+      "wall_s": 13.044226376,
+      "native_counts": {
+        "compilation_attempts": 0,
+        "native_calls": 255,
+        "native_output_checks": 255
+      },
+      "diagnostics_before": {
+        "initial_load_s": 0,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0,
+        "readback_source": "actual-serving-allocation.cpu()",
+        "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+      },
+      "diagnostics_after": {
+        "initial_load_s": 12.770868134917691,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0,
+        "readback_source": "actual-serving-allocation.cpu()",
+        "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+      },
+      "diagnostics": {
+        "initial_load_s": 12.770868134917691,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0
+      }
+    },
+    "plan": {
+      "wall_s": 0.000754746,
+      "native_counts": {
+        "compilation_attempts": 0,
+        "native_calls": 0,
+        "native_output_checks": 0
+      },
+      "diagnostics_before": {
+        "initial_load_s": 12.770868134917691,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0,
+        "readback_source": "actual-serving-allocation.cpu()",
+        "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+      },
+      "diagnostics_after": {
+        "initial_load_s": 12.770868134917691,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0,
+        "readback_source": "actual-serving-allocation.cpu()",
+        "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+      },
+      "diagnostics": {
+        "initial_load_s": 0.0,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0
+      }
+    },
+    "reload": {
+      "wall_s": 12.980469821,
+      "native_counts": {
+        "compilation_attempts": 0,
+        "native_calls": 0,
+        "native_output_checks": 0
+      },
+      "diagnostics_before": {
+        "initial_load_s": 12.770868134917691,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0,
+        "readback_source": "actual-serving-allocation.cpu()",
+        "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+      },
+      "diagnostics_after": {
+        "initial_load_s": 12.98044796101749,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0,
+        "readback_source": "actual-serving-allocation.cpu()",
+        "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+      },
+      "diagnostics": {
+        "initial_load_s": 0.20957982609979808,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0
+      }
+    },
+    "sync": {
+      "wall_s": 0.000129578,
+      "native_counts": {
+        "compilation_attempts": 0,
+        "native_calls": 0,
+        "native_output_checks": 0
+      },
+      "diagnostics_before": {
+        "initial_load_s": 12.98044796101749,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0,
+        "readback_source": "actual-serving-allocation.cpu()",
+        "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+      },
+      "diagnostics_after": {
+        "initial_load_s": 12.98044796101749,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0,
+        "readback_source": "actual-serving-allocation.cpu()",
+        "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+      },
+      "diagnostics": {
+        "initial_load_s": 0.0,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0
+      }
+    },
+    "generate_full_continuation": {
+      "wall_s": 0.273023539,
+      "native_counts": {
+        "compilation_attempts": 0,
+        "native_calls": 255,
+        "native_output_checks": 255
+      },
+      "diagnostics_before": {
+        "initial_load_s": 12.98044796101749,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0,
+        "readback_source": "actual-serving-allocation.cpu()",
+        "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+      },
+      "diagnostics_after": {
+        "initial_load_s": 12.98044796101749,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0,
+        "readback_source": "actual-serving-allocation.cpu()",
+        "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+      },
+      "diagnostics": {
+        "initial_load_s": 0.0,
+        "readback_calls": 0,
+        "readback_payload_bytes": 0,
+        "readback_s": 0
+      }
+    }
+  },
+  "timings": {
+    "trigger_perf_ns": 1555626540309957,
+    "generate_call_perf_ns": 1555639665290975,
+    "trigger_to_generate_call_s": 13.124981018,
+    "prompt_to_first_token_s": 0.1556131518445909,
+    "trigger_to_first_token_s": 13.28059416984459,
+    "trigger_to_generate_return_s": 13.398001217
+  },
+  "byte_scope": "logical writes and readback payload, not DMA",
+  "identities_before": {
+    "engine_id": 131405750713792,
+    "buffers": {
+      "lm_head": {
+        "python_id": 131405750955888,
+        "data_ptr": 35993419776,
+        "shape": [
+          32,
+          4008,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wd": {
+        "python_id": 131405750948448,
+        "data_ptr": 50130321408,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wg": {
+        "python_id": 131405750298528,
+        "data_ptr": 50600083456,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wk": {
+        "python_id": 131405750948368,
+        "data_ptr": 50918850560,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wo": {
+        "python_id": 131405750953168,
+        "data_ptr": 50834964480,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wq": {
+        "python_id": 131405750291168,
+        "data_ptr": 50935627776,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wu": {
+        "python_id": 131405752050976,
+        "data_ptr": 50365202432,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wv": {
+        "python_id": 131405750959408,
+        "data_ptr": 50902073344,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wd": {
+        "python_id": 131405739817488,
+        "data_ptr": 49257906176,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wg": {
+        "python_id": 131405752114992,
+        "data_ptr": 49727668224,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wk": {
+        "python_id": 131405750948848,
+        "data_ptr": 50046435328,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wo": {
+        "python_id": 131405750948608,
+        "data_ptr": 49962549248,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wq": {
+        "python_id": 131405752172384,
+        "data_ptr": 50063212544,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wu": {
+        "python_id": 131405752119232,
+        "data_ptr": 49492787200,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wv": {
+        "python_id": 131405750951728,
+        "data_ptr": 50029658112,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wd": {
+        "python_id": 131405750278944,
+        "data_ptr": 41406169088,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wg": {
+        "python_id": 131405750275744,
+        "data_ptr": 41875931136,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wk": {
+        "python_id": 131405750285824,
+        "data_ptr": 42194698240,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wo": {
+        "python_id": 131405750279664,
+        "data_ptr": 42110812160,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wq": {
+        "python_id": 131405750282944,
+        "data_ptr": 42211475456,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wu": {
+        "python_id": 131405750272224,
+        "data_ptr": 41641050112,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wv": {
+        "python_id": 131405750283184,
+        "data_ptr": 42177921024,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wd": {
+        "python_id": 131405739909232,
+        "data_ptr": 40533753856,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wg": {
+        "python_id": 131405739909072,
+        "data_ptr": 41003515904,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wk": {
+        "python_id": 131405739908752,
+        "data_ptr": 41322283008,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wo": {
+        "python_id": 131405739908432,
+        "data_ptr": 41238396928,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wq": {
+        "python_id": 131405750953568,
+        "data_ptr": 41339060224,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wu": {
+        "python_id": 131405739902672,
+        "data_ptr": 40768634880,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wv": {
+        "python_id": 131405739902432,
+        "data_ptr": 41305505792,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wd": {
+        "python_id": 131405739901952,
+        "data_ptr": 39661338624,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wg": {
+        "python_id": 131405739900992,
+        "data_ptr": 40131100672,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wk": {
+        "python_id": 131405739906752,
+        "data_ptr": 40449867776,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wo": {
+        "python_id": 131405739905712,
+        "data_ptr": 40365981696,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wq": {
+        "python_id": 131405739905872,
+        "data_ptr": 40466644992,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wu": {
+        "python_id": 131405739903312,
+        "data_ptr": 39896219648,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wv": {
+        "python_id": 131405739905472,
+        "data_ptr": 40433090560,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wd": {
+        "python_id": 131405739901312,
+        "data_ptr": 38788923392,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wg": {
+        "python_id": 131405739904032,
+        "data_ptr": 39258685440,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wk": {
+        "python_id": 131405739903392,
+        "data_ptr": 39577452544,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wo": {
+        "python_id": 131405739903232,
+        "data_ptr": 39493566464,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wq": {
+        "python_id": 131405739905392,
+        "data_ptr": 39594229760,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wu": {
+        "python_id": 131405739906032,
+        "data_ptr": 39023804416,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wv": {
+        "python_id": 131405739904112,
+        "data_ptr": 39560675328,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wd": {
+        "python_id": 131405739907392,
+        "data_ptr": 37916508160,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wg": {
+        "python_id": 131405739908912,
+        "data_ptr": 38386270208,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wk": {
+        "python_id": 131405739912272,
+        "data_ptr": 38705037312,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wo": {
+        "python_id": 131405739902912,
+        "data_ptr": 38621151232,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wq": {
+        "python_id": 131405739908592,
+        "data_ptr": 38721814528,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wu": {
+        "python_id": 131405739907872,
+        "data_ptr": 38151389184,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wv": {
+        "python_id": 131405739904992,
+        "data_ptr": 38688260096,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wd": {
+        "python_id": 131405739911472,
+        "data_ptr": 37044092928,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wg": {
+        "python_id": 131405739910512,
+        "data_ptr": 37513854976,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wk": {
+        "python_id": 131405739908832,
+        "data_ptr": 37832622080,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wo": {
+        "python_id": 131405739907232,
+        "data_ptr": 37748736000,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wq": {
+        "python_id": 131405739903472,
+        "data_ptr": 37849399296,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wu": {
+        "python_id": 131405739909312,
+        "data_ptr": 37278973952,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wv": {
+        "python_id": 131405739903632,
+        "data_ptr": 37815844864,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wd": {
+        "python_id": 131405752039072,
+        "data_ptr": 48385490944,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wg": {
+        "python_id": 131405750413616,
+        "data_ptr": 48855252992,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wk": {
+        "python_id": 131405752032032,
+        "data_ptr": 49174020096,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wo": {
+        "python_id": 131405752137376,
+        "data_ptr": 49090134016,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wq": {
+        "python_id": 131405752030672,
+        "data_ptr": 49190797312,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wu": {
+        "python_id": 131405750956368,
+        "data_ptr": 48620371968,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wv": {
+        "python_id": 131405752033232,
+        "data_ptr": 49157242880,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wd": {
+        "python_id": 131405750959888,
+        "data_ptr": 47513075712,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wg": {
+        "python_id": 131405752106448,
+        "data_ptr": 47982837760,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wk": {
+        "python_id": 131405750953888,
+        "data_ptr": 48301604864,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wo": {
+        "python_id": 131405751683808,
+        "data_ptr": 48217718784,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wq": {
+        "python_id": 131405777056400,
+        "data_ptr": 48318382080,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wu": {
+        "python_id": 131405750418176,
+        "data_ptr": 47747956736,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wv": {
+        "python_id": 131405750953968,
+        "data_ptr": 48284827648,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wd": {
+        "python_id": 131405778033120,
+        "data_ptr": 46640660480,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wg": {
+        "python_id": 131405750247296,
+        "data_ptr": 47110422528,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wk": {
+        "python_id": 131405752102128,
+        "data_ptr": 47429189632,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wo": {
+        "python_id": 131405752112992,
+        "data_ptr": 47345303552,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wq": {
+        "python_id": 131405750416656,
+        "data_ptr": 47445966848,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wu": {
+        "python_id": 131405778037520,
+        "data_ptr": 46875541504,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wv": {
+        "python_id": 131405750406976,
+        "data_ptr": 47412412416,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wd": {
+        "python_id": 131405752092928,
+        "data_ptr": 45768245248,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wg": {
+        "python_id": 131405752099488,
+        "data_ptr": 46238007296,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wk": {
+        "python_id": 131405750951568,
+        "data_ptr": 46556774400,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wo": {
+        "python_id": 131405752025792,
+        "data_ptr": 46472888320,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wq": {
+        "python_id": 131405752092528,
+        "data_ptr": 46573551616,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wu": {
+        "python_id": 131405750415936,
+        "data_ptr": 46003126272,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wv": {
+        "python_id": 131405752090688,
+        "data_ptr": 46539997184,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wd": {
+        "python_id": 131405752014368,
+        "data_ptr": 44895830016,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wg": {
+        "python_id": 131405752163984,
+        "data_ptr": 45365592064,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wk": {
+        "python_id": 131405750390352,
+        "data_ptr": 45684359168,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wo": {
+        "python_id": 131405750255056,
+        "data_ptr": 45600473088,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wq": {
+        "python_id": 131405750957808,
+        "data_ptr": 45701136384,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wu": {
+        "python_id": 131405779822736,
+        "data_ptr": 45130711040,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wv": {
+        "python_id": 131405750241136,
+        "data_ptr": 45667581952,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wd": {
+        "python_id": 131405750393552,
+        "data_ptr": 44023414784,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wg": {
+        "python_id": 131405750396192,
+        "data_ptr": 44493176832,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wk": {
+        "python_id": 131405752115872,
+        "data_ptr": 44811943936,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wo": {
+        "python_id": 131405750390032,
+        "data_ptr": 44728057856,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wq": {
+        "python_id": 131405752012928,
+        "data_ptr": 44828721152,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wu": {
+        "python_id": 131405752012608,
+        "data_ptr": 44258295808,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wv": {
+        "python_id": 131405750388832,
+        "data_ptr": 44795166720,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wd": {
+        "python_id": 131405750282864,
+        "data_ptr": 43150999552,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wg": {
+        "python_id": 131405750953408,
+        "data_ptr": 43620761600,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wk": {
+        "python_id": 131405750396832,
+        "data_ptr": 43939528704,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wo": {
+        "python_id": 131405750394592,
+        "data_ptr": 43855642624,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wq": {
+        "python_id": 131405750392032,
+        "data_ptr": 43956305920,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wu": {
+        "python_id": 131405750273184,
+        "data_ptr": 43385880576,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wv": {
+        "python_id": 131405750285104,
+        "data_ptr": 43922751488,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wd": {
+        "python_id": 131405750276064,
+        "data_ptr": 42278584320,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wg": {
+        "python_id": 131405750282304,
+        "data_ptr": 42748346368,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wk": {
+        "python_id": 131405750284064,
+        "data_ptr": 43067113472,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wo": {
+        "python_id": 131405750273984,
+        "data_ptr": 42983227392,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wq": {
+        "python_id": 131405750287264,
+        "data_ptr": 43083890688,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wu": {
+        "python_id": 131405750279024,
+        "data_ptr": 42513465344,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wv": {
+        "python_id": 131405750273024,
+        "data_ptr": 43050336256,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      }
+    },
+    "programs": {
+      "B4-S256-g2": {
+        "m": 131405750882928,
+        "lmh": 131405750879040
+      }
+    }
+  },
+  "base_tokens": [
+    [
+      198,
+      791,
+      1176,
+      1403,
+      5238,
+      315,
+      279,
+      33894
+    ],
+    [
+      29,
+      946,
+      946,
+      946,
+      946,
+      946,
+      946,
+      946
+    ],
+    [
+      9831,
+      19954,
+      13094,
+      66965,
+      29726,
+      13094,
+      33390,
+      33353
+    ],
+    [
+      198,
+      220,
+      482,
+      220,
+      16,
+      13,
+      15,
+      13
+    ]
+  ],
+  "base_prompt_ttft_s": 0.15405843104235828,
+  "update_plan": {
+    "schema": "onggi.updateplan.v1",
+    "base_manifest": "sha256:60a23d7ae5fd589640602d23170dcb7a57c51be16b5789ffa45046324d703f4d",
+    "manifest": "sha256:78520f73d9daba182924e1549401ecc51097f00ecdac5a6e57a004d49244d1ab",
+    "mode": "units",
+    "bytes": 1949696,
+    "units": [
+      {
+        "file": "model-00001-of-00004.safetensors",
+        "offset": 1054274864,
+        "length": 1949696,
+        "unit": "model.layers.0.mlp.down_proj.weight@125:193",
+        "source": "target"
+      }
+    ],
+    "proof": "bb84017fbd37a0c598b1d5d1b1ed630f4cb805e92865aec488c19bd8feaf3ac7"
+  },
+  "load_result": {
+    "schema": "onggi.resident.v1",
+    "manifest": "sha256:78520f73d9daba182924e1549401ecc51097f00ecdac5a6e57a004d49244d1ab",
+    "state": "ready",
+    "diagnostics": {
+      "initial_load_s": 12.98044796101749,
+      "readback_calls": 0,
+      "readback_payload_bytes": 0,
+      "readback_s": 0,
+      "readback_source": "actual-serving-allocation.cpu()",
+      "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+    }
+  },
+  "identities_after": {
+    "engine_id": 131405750879040,
+    "buffers": {
+      "lm_head": {
+        "python_id": 131405750276784,
+        "data_ptr": 35993419776,
+        "shape": [
+          32,
+          4008,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wd": {
+        "python_id": 131405750282944,
+        "data_ptr": 50130321408,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wg": {
+        "python_id": 131405750273024,
+        "data_ptr": 50600083456,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wk": {
+        "python_id": 131405752157344,
+        "data_ptr": 50918850560,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wo": {
+        "python_id": 131405751808576,
+        "data_ptr": 50834964480,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wq": {
+        "python_id": 131405751682528,
+        "data_ptr": 50935627776,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wu": {
+        "python_id": 131405750284064,
+        "data_ptr": 50365202432,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/0/wv": {
+        "python_id": 131405750389792,
+        "data_ptr": 50902073344,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wd": {
+        "python_id": 131405752129696,
+        "data_ptr": 49257906176,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wg": {
+        "python_id": 131405750406976,
+        "data_ptr": 49727668224,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wk": {
+        "python_id": 131405750416656,
+        "data_ptr": 50046435328,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wo": {
+        "python_id": 131405752033632,
+        "data_ptr": 49962549248,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wq": {
+        "python_id": 131405750415936,
+        "data_ptr": 50063212544,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wu": {
+        "python_id": 131405752137376,
+        "data_ptr": 49492787200,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/1/wv": {
+        "python_id": 131405752098448,
+        "data_ptr": 50029658112,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wd": {
+        "python_id": 131405740248096,
+        "data_ptr": 41406169088,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wg": {
+        "python_id": 131405752039072,
+        "data_ptr": 41875931136,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wk": {
+        "python_id": 131405740259936,
+        "data_ptr": 42194698240,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wo": {
+        "python_id": 131405740254976,
+        "data_ptr": 42110812160,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wq": {
+        "python_id": 131405750239376,
+        "data_ptr": 42211475456,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wu": {
+        "python_id": 131405740260816,
+        "data_ptr": 41641050112,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/10/wv": {
+        "python_id": 131405740259056,
+        "data_ptr": 42177921024,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wd": {
+        "python_id": 131405740251056,
+        "data_ptr": 40533753856,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wg": {
+        "python_id": 131405740259456,
+        "data_ptr": 41003515904,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wk": {
+        "python_id": 131405740257456,
+        "data_ptr": 41322283008,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wo": {
+        "python_id": 131405740249696,
+        "data_ptr": 41238396928,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wq": {
+        "python_id": 131405740260976,
+        "data_ptr": 41339060224,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wu": {
+        "python_id": 131405740257056,
+        "data_ptr": 40768634880,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/11/wv": {
+        "python_id": 131405740259216,
+        "data_ptr": 41305505792,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wd": {
+        "python_id": 131405750601024,
+        "data_ptr": 39661338624,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wg": {
+        "python_id": 131405740260656,
+        "data_ptr": 40131100672,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wk": {
+        "python_id": 131405750245216,
+        "data_ptr": 40449867776,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wo": {
+        "python_id": 131405740261296,
+        "data_ptr": 40365981696,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wq": {
+        "python_id": 131405752126816,
+        "data_ptr": 40466644992,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wu": {
+        "python_id": 131405750601184,
+        "data_ptr": 39896219648,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/12/wv": {
+        "python_id": 131405740261056,
+        "data_ptr": 40433090560,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wd": {
+        "python_id": 131405750600704,
+        "data_ptr": 38788923392,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wg": {
+        "python_id": 131405752051616,
+        "data_ptr": 39258685440,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wk": {
+        "python_id": 131405751681328,
+        "data_ptr": 39577452544,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wo": {
+        "python_id": 131405750600944,
+        "data_ptr": 39493566464,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wq": {
+        "python_id": 131405740257536,
+        "data_ptr": 39594229760,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wu": {
+        "python_id": 131405750600784,
+        "data_ptr": 39023804416,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/13/wv": {
+        "python_id": 131405750240816,
+        "data_ptr": 39560675328,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wd": {
+        "python_id": 131405750601424,
+        "data_ptr": 37916508160,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wg": {
+        "python_id": 131405750602304,
+        "data_ptr": 38386270208,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wk": {
+        "python_id": 131405750599744,
+        "data_ptr": 38705037312,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wo": {
+        "python_id": 131405750600544,
+        "data_ptr": 38621151232,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wq": {
+        "python_id": 131405740245536,
+        "data_ptr": 38721814528,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wu": {
+        "python_id": 131405750602144,
+        "data_ptr": 38151389184,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/14/wv": {
+        "python_id": 131405750600464,
+        "data_ptr": 38688260096,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wd": {
+        "python_id": 131405750603904,
+        "data_ptr": 37044092928,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wg": {
+        "python_id": 131405750601824,
+        "data_ptr": 37513854976,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wk": {
+        "python_id": 131405750600064,
+        "data_ptr": 37832622080,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wo": {
+        "python_id": 131405750602544,
+        "data_ptr": 37748736000,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wq": {
+        "python_id": 131405750599824,
+        "data_ptr": 37849399296,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wu": {
+        "python_id": 131405750602944,
+        "data_ptr": 37278973952,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/15/wv": {
+        "python_id": 131405750602784,
+        "data_ptr": 37815844864,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wd": {
+        "python_id": 131405750948848,
+        "data_ptr": 48385490944,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wg": {
+        "python_id": 131405750803872,
+        "data_ptr": 48855252992,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wk": {
+        "python_id": 131405750418176,
+        "data_ptr": 49174020096,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wo": {
+        "python_id": 131405780590864,
+        "data_ptr": 49090134016,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wq": {
+        "python_id": 131405752165984,
+        "data_ptr": 49190797312,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wu": {
+        "python_id": 131405750804592,
+        "data_ptr": 48620371968,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/2/wv": {
+        "python_id": 131405751810016,
+        "data_ptr": 49157242880,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wd": {
+        "python_id": 131405750953408,
+        "data_ptr": 47513075712,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wg": {
+        "python_id": 131405750953568,
+        "data_ptr": 47982837760,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wk": {
+        "python_id": 131405750954848,
+        "data_ptr": 48301604864,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wo": {
+        "python_id": 131405752172384,
+        "data_ptr": 48217718784,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wq": {
+        "python_id": 131405752096608,
+        "data_ptr": 48318382080,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wu": {
+        "python_id": 131405750959888,
+        "data_ptr": 47747956736,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/3/wv": {
+        "python_id": 131405750956848,
+        "data_ptr": 48284827648,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wd": {
+        "python_id": 131405750951568,
+        "data_ptr": 46640660480,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wg": {
+        "python_id": 131405750957568,
+        "data_ptr": 47110422528,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wk": {
+        "python_id": 131405752033072,
+        "data_ptr": 47429189632,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wo": {
+        "python_id": 131405750960048,
+        "data_ptr": 47345303552,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wq": {
+        "python_id": 131405750246816,
+        "data_ptr": 47445966848,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wu": {
+        "python_id": 131405750958368,
+        "data_ptr": 46875541504,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/4/wv": {
+        "python_id": 131405752093088,
+        "data_ptr": 47412412416,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wd": {
+        "python_id": 131405750948448,
+        "data_ptr": 45768245248,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wg": {
+        "python_id": 131405750958128,
+        "data_ptr": 46238007296,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wk": {
+        "python_id": 131405750415136,
+        "data_ptr": 46556774400,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wo": {
+        "python_id": 131405750956928,
+        "data_ptr": 46472888320,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wq": {
+        "python_id": 131405750400352,
+        "data_ptr": 46573551616,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wu": {
+        "python_id": 131405777890304,
+        "data_ptr": 46003126272,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/5/wv": {
+        "python_id": 131405750956288,
+        "data_ptr": 46539997184,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wd": {
+        "python_id": 131405750953968,
+        "data_ptr": 44895830016,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wg": {
+        "python_id": 131405750302528,
+        "data_ptr": 45365592064,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wk": {
+        "python_id": 131405750948608,
+        "data_ptr": 45684359168,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wo": {
+        "python_id": 131405750957808,
+        "data_ptr": 45600473088,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wq": {
+        "python_id": 131405739905552,
+        "data_ptr": 45701136384,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wu": {
+        "python_id": 131405750957728,
+        "data_ptr": 45130711040,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/6/wv": {
+        "python_id": 131405750948128,
+        "data_ptr": 45667581952,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wd": {
+        "python_id": 131405740251616,
+        "data_ptr": 44023414784,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wg": {
+        "python_id": 131405740252576,
+        "data_ptr": 44493176832,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wk": {
+        "python_id": 131405739910432,
+        "data_ptr": 44811943936,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wo": {
+        "python_id": 131405740247696,
+        "data_ptr": 44728057856,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wq": {
+        "python_id": 131405752139056,
+        "data_ptr": 44828721152,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wu": {
+        "python_id": 131405740249056,
+        "data_ptr": 44258295808,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/7/wv": {
+        "python_id": 131405740247856,
+        "data_ptr": 44795166720,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wd": {
+        "python_id": 131405740252656,
+        "data_ptr": 43150999552,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wg": {
+        "python_id": 131405740259776,
+        "data_ptr": 43620761600,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wk": {
+        "python_id": 131405750803712,
+        "data_ptr": 43939528704,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wo": {
+        "python_id": 131405740247776,
+        "data_ptr": 43855642624,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wq": {
+        "python_id": 131405740245456,
+        "data_ptr": 43956305920,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wu": {
+        "python_id": 131405740258816,
+        "data_ptr": 43385880576,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/8/wv": {
+        "python_id": 131405740246336,
+        "data_ptr": 43922751488,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wd": {
+        "python_id": 131405740255936,
+        "data_ptr": 42278584320,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wg": {
+        "python_id": 131405740253856,
+        "data_ptr": 42748346368,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wk": {
+        "python_id": 131405752023328,
+        "data_ptr": 43067113472,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wo": {
+        "python_id": 131405740258976,
+        "data_ptr": 42983227392,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wq": {
+        "python_id": 131405740255296,
+        "data_ptr": 43083890688,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wu": {
+        "python_id": 131405740257856,
+        "data_ptr": 42513465344,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "device": "furiosa:0"
+      },
+      "shared/9/wv": {
+        "python_id": 131405740251216,
+        "data_ptr": 43050336256,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "device": "furiosa:0"
+      }
+    },
+    "programs": {
+      "B4-S256-g2": {
+        "m": 131405750887776,
+        "lmh": 131405750888064
+      }
+    }
+  },
+  "logical_device_written_bytes": 15011577856,
+  "tokens": [
+    [
+      28977,
+      10610,
+      10610,
+      10610,
+      8,
+      3437,
+      62,
+      721
+    ],
+    [
+      29860,
+      29860,
+      29860,
+      29860,
+      29860,
+      29860,
+      29860,
+      29860
+    ],
+    [
+      20099,
+      9465,
+      22011,
+      1291,
+      9465,
+      22011,
+      1291,
+      1291
+    ],
+    [
+      29860,
+      29860,
+      29860,
+      29860,
+      29860,
+      29860,
+      29860,
+      196
+    ]
+  ],
+  "tokens_equal_historical_fresh": true,
+  "resident_after": {
+    "schema": "onggi.resident.v1",
+    "manifest": "sha256:78520f73d9daba182924e1549401ecc51097f00ecdac5a6e57a004d49244d1ab",
+    "state": "ready",
+    "diagnostics": {
+      "initial_load_s": 12.98044796101749,
+      "readback_calls": 0,
+      "readback_payload_bytes": 0,
+      "readback_s": 0,
+      "readback_source": "actual-serving-allocation.cpu()",
+      "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+    }
+  },
+  "finished_utc": "2026-11-02T00:51:05.063501+00:00",
+  "diagnostics_during_trigger": {
+    "initial_load_s": 0.20957982609979808,
+    "readback_calls": 0,
+    "readback_payload_bytes": 0,
+    "readback_s": 0
+  },
+  "readback_payload_bytes_during_trigger": 0,
+  "native_gate_status": "pending_final_run_observer"
+}

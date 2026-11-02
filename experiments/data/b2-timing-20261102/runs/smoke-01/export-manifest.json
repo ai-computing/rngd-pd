@@ -1,0 +1,30 @@
+{
+  "archive": {
+    "bytes": 127572,
+    "sha256": "967c1ee5761ffb00ec3addbc9012439bdf5199f029764547028caf508bd94b5a",
+    "files": 4
+  },
+  "remote": "/home/gspark/workspace/codex_ccgrid_b2_20261102/runs/smoke-01",
+  "files": [
+    {
+      "path": "events.jsonl",
+      "bytes": 256524,
+      "sha256": "55d7f2ba3a0bb91c902615b58ccea95ce3971cf4a518aab5d3d53aa9fb502391"
+    },
+    {
+      "path": "pair-01-b2.json",
+      "bytes": 67629,
+      "sha256": "880062cfc7e88de49e239e68c6bad27c8834660c372bfb1028599a3f76d54712"
+    },
+    {
+      "path": "pair-01-reload.json",
+      "bytes": 66978,
+      "sha256": "de4ee18a5ccbea8cd18cc844bb8fdac5561500904328457b79f0b7c465b4009c"
+    },
+    {
+      "path": "result.json",
+      "bytes": 170565,
+      "sha256": "a70c9e457dbf41b671ae62ebf09e46b4c3f24049b5481c2ab21e4c11f68cafd0"
+    }
+  ]
+}
