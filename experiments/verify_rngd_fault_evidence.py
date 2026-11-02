@@ -5,6 +5,7 @@ import gzip
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
+from historical_source import source_bytes
 
 
 MEASURED_HARNESS = "3e4da7803b4b2db1c4a4f6b81eb4ce20db4cf99249244aea5e1c3ad4389664bd"
@@ -64,8 +65,8 @@ def verify(root, repository):
     native02 = load(prior / "runs/rngd-b2-native-02/result.json")
     require(result["source_files"] == native02["source_files"], "runtime differs from the original B2 pass")
     for name, expected in result["source_files"].items():
-        require(digest((repository / name).read_bytes().replace(b"\r\n", b"\n")) == expected,
-                "current runtime differs from measured native LF source: " + name)
+        require(digest(source_bytes(repository, RUNTIME, name).replace(b"\r\n", b"\n")) == expected,
+                "historical runtime differs from measured native LF source: " + name)
     input_values = {}
     for name, entry in package["reused_inputs"].items():
         raw = (repository / entry["path"]).read_bytes()
@@ -150,7 +151,7 @@ def verify(root, repository):
     return dict(schema="rngd-fault-evidence-summary.v1", verified=True, native_generation_gates=5,
                 native_counts=result["native_counts"], whole_request_drain=True, actual_partial_rollback_failure=True,
                 actual_mixed_sha256=fault["actual_mixed_sha256"], fail_closed=True,
-                measured_harness_sha256=MEASURED_HARNESS, current_runtime_matches_native_canonical_source=True,
+                measured_harness_sha256=MEASURED_HARNESS, historical_runtime_matches_native_canonical_source=True,
                 owned_uid_cleanup_verified=True, readback_payload_bytes=diagnostics["readback_payload_bytes"],
                 scope="n=1 compliance; readback payload is not physical DMA; no timing claim")
 
