@@ -1,5 +1,10 @@
 # RNGD device binding: supported subset and evidence boundary
 
+The [common transition caller](common-runtime-transition.md) now connects
+resident-base checks, planning, checked B2 application or explicit reload in one
+owner-locked operation shared with ATOM. It preserves the bounded update layout,
+readback/undo and failure behavior described here; it is not a new native result.
+
 `RngdBinding` implements the ADR-0010 B2 transaction interface for a bounded,
 lossless subset of the existing `SwappableDecode` serving layout. The default
 factory owns the real serving engine; an injected CPU factory is a transaction

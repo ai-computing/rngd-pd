@@ -11,6 +11,7 @@ import re
 from threading import RLock
 
 from .delta import parse_onggi_switchplan
+from .binding_transition import transition
 
 
 def _manifest(value):
@@ -42,7 +43,7 @@ def _metadata(artifact):
     return meta, graph
 
 
-def load_atom_session(artifact, *, device=0, tables=None):
+def load_atom_session(artifact, *, device=0, tables=None, compiled=None):
     """Public native hook: parse an existing .rbln and create its runtime.
 
     tables may retain the serving worker's already loaded host embedding tables.
@@ -63,7 +64,7 @@ def load_atom_session(artifact, *, device=0, tables=None):
     variants = [Variant.parse(v, 0) for v in shape["variants"]]
     if tables is None:
         tables = Tables(str(_inside(artifact, meta.get("checkpoint"))))
-    return AtomSession(str(graph), tables, device=device, variants=variants)
+    return AtomSession(str(graph), tables, device=device, variants=variants, compiled=compiled)
 
 
 class AtomBinding:
@@ -78,6 +79,7 @@ class AtomBinding:
         if type(device) is not int or device < 0:
             raise ValueError("an explicitly allocated device index is required")
         self._runtime_api = "public-AtomSession" if factory is None else "injected-factory"
+        self._device, self._tables = device, tables
         self._factory = factory or (lambda artifact: load_atom_session(
             artifact, device=device, tables=tables))
         self._lock = RLock()
@@ -112,12 +114,20 @@ class AtomBinding:
         """Validate, drain and replace; a failed replacement leaves empty state."""
         with self._lock:
             evidence = self._admission(artifact, manifest)
+            compiled = None
+            if (self._evidence is not None
+                    and self._evidence["runtime_api"] == "public-AtomSession"
+                    and self._evidence["sha256"] == evidence["sha256"]):
+                # Keep only the parsed host object while tearing down the runtime.
+                compiled = self._engine.compiled
             self.close()
-            engine = self._factory(artifact)
+            engine = (self._factory(artifact) if compiled is None else load_atom_session(
+                artifact, device=self._device, tables=self._tables, compiled=compiled))
             if engine is None or not callable(getattr(engine, "close", None)):
                 raise ValueError("factory must return a loaded closeable engine")
             self._engine, self._manifest = engine, manifest
-            self._evidence = dict(evidence, runtime_api=self._runtime_api)
+            self._evidence = dict(evidence, runtime_api=self._runtime_api,
+                                  compiled_reused=compiled is not None)
             return self.resident()
 
     def attach(self, artifact, manifest, engine):
@@ -179,6 +189,10 @@ class AtomBinding:
 
     def apply(self, update_plan, target):
         raise NotImplementedError("B1 ATOM binding does not implement apply")
+
+    def transition(self, switch_plan, target):
+        """Explicit verified-plan caller; B1 performs a compile-free reload."""
+        return transition(self, switch_plan, target)
 
     def rollback(self):
         raise NotImplementedError("B1 ATOM binding does not implement rollback")

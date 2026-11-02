@@ -1,5 +1,11 @@
 # ATOM ADR-0010 B1 binding
 
+The new [common transition caller](common-runtime-transition.md) composes these
+operations and explicit reload under the owner lock. Consecutive default-public
+loads reuse the previous parsed host model only after matching a fresh full graph
+SHA. They still create a new device runtime. This optimization has CPU boundary
+tests, not new native timing; the original native records below remain unchanged.
+
 `rngd_pd.swap.atom_binding.AtomBinding` is an in-process, persistent owner.
 Its B1 operations are `describe(artifact)`, `resident()` and
 `plan(switch_plan)`. Planning validates `onggi.switchplan.v1` through

@@ -515,6 +515,7 @@ HTTP and llm-d. Dependencies point downward.
 
 | Document | Content |
 |---|---|
+| [docs/common-runtime-transition.md](docs/common-runtime-transition.md) | One explicit RNGD/ATOM transition caller; bounded B2 versus reload and ATOM parsed-host-model reuse |
 | [docs/llmd-usage-and-compat.md](docs/llmd-usage-and-compat.md) | Overview, usage, llm-d / vLLM compatibility matrix and measured performance (Korean) |
 | [docs/llmd-integration-plan.md](docs/llmd-integration-plan.md) | Integration plan and acceptance checklist (Korean) |
 | [docs/furiosa-request.md](docs/furiosa-request.md) | Technical request to FuriosaAI: KV export/import hook and compiler issues (Korean) |

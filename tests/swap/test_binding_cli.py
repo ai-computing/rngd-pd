@@ -107,6 +107,63 @@ def test_owner_failure_is_structured_and_does_not_kill_server(service):
     assert cli(server, "resident")[0] == 0
 
 
+def test_cli_transition_sends_plan_and_target_to_the_persistent_owner(service):
+    owner, server = service
+    calls = []
+    def transition(document, target):
+        calls.append((document, target))
+        owner.artifact = target
+        return {"schema": "onggi.transition.v1", "mode": "reload", "manifest": "target"}
+    owner.transition = transition
+    document = {"schema": "onggi.switchplan.v1", "manifest": "target"}
+    assert cli(server, "transition", "--target", "next", document=document) == (
+        0, {"schema": "onggi.transition.v1", "mode": "reload", "manifest": "target"}, "")
+    assert calls == [(document, "next")] and owner.artifact == "next"
+
+
+def test_protocol_transition_requires_a_document_and_exact_target_argument(service):
+    _, server = service
+    for request_doc in ({"operation": "transition", "args": []},
+                        {"operation": "transition", "args": ["next"], "document": []}):
+        response = request(server, request_doc)
+        assert response["ok"] is False and response["error"]["type"] == "ValueError"
+
+
+def test_cli_transition_executes_real_atom_owner_lifecycle(tmp_path):
+    from types import SimpleNamespace
+    from rngd_pd.swap.atom_binding import AtomBinding
+
+    (tmp_path / "profile.json").write_text(json.dumps({"schema": "onggi.profile.v1"}))
+    (tmp_path / "session.rbln").write_bytes(b"opaque graph; injected engine is CPU only")
+    (tmp_path / "atom-binding.json").write_text(json.dumps({"graph": "session.rbln"}))
+    base, target = ("sha256:" + char * 64 for char in "ab")
+    doc = {"schema": "onggi.switchplan.v1", "base_manifest": base,
+           "manifest": target, "size": 0, "same": 0, "moved": 0, "new": 0, "files": []}
+    engines = []
+    def factory(path):
+        engine = SimpleNamespace(closed=False)
+        engine.close = lambda: setattr(engine, "closed", True)
+        engines.append(engine)
+        return engine
+    owner = AtomBinding(factory=factory)
+    owner.load(tmp_path, base)
+    with create_server(owner, ("127.0.0.1", 0)) as server:
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            code, result, stderr = cli(server, "transition", "--target", str(tmp_path), document=doc)
+            assert code == 0 and stderr == "" and result["mode"] == "reload"
+            assert result["resident"]["manifest"] == target
+            assert engines[0].closed and len(engines) == 2
+            code, result, _ = cli(server, "transition", "--target", str(tmp_path), document=doc)
+            assert code == 1 and result["error"]["type"] == "ValueError"
+            assert not engines[1].closed and len(engines) == 2
+        finally:
+            server.shutdown()
+            thread.join(timeout=5)
+            owner.close()
+
+
 def test_protocol_cannot_invoke_arbitrary_owner_methods(service):
     owner, server = service
     response = request(server, {"operation": "close", "args": []})

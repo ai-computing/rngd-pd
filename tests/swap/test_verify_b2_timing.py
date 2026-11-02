@@ -6,8 +6,36 @@ import importlib.util
 import json
 from pathlib import Path
 import shutil
+from types import SimpleNamespace
 
 import pytest
+
+
+def test_historical_sources_verify_pinned_git_objects_after_runtime_evolves(verifier, tmp_path, monkeypatch):
+    source, harness = b"historical runtime\n", b"historical harness\n"
+    path = tmp_path / "src/runtime.py"
+    path.parent.mkdir()
+    path.write_bytes(b"new runtime implementation\n")
+    path = tmp_path / "bench/ccgrid_b2.py"
+    path.parent.mkdir()
+    path.write_bytes(b"new harness implementation\n")
+    monkeypatch.setattr(verifier, "HARNESS_SHA", verifier.digest(harness))
+    def git(args, **kwargs):
+        stdout = b""
+        if "show" in args:
+            key = args[-1]
+            stdout = source if key == verifier.BASELINE + ":src/runtime.py" else harness
+        return SimpleNamespace(returncode=0, stdout=stdout)
+    monkeypatch.setattr(verifier.subprocess, "run", git)
+    manifest = dict(source_commit=verifier.BASELINE, source_files={"src/runtime.py": verifier.digest(source)})
+    provenance = dict(manifest, harness_sha256=verifier.HARNESS_SHA)
+    result = verifier.verify_sources(manifest, provenance, tmp_path)
+    assert result["git_objects_verified"] is True
+    assert result["canonical_lf_sha256"]["src/runtime.py"] == verifier.digest(source)
+    # Corrupt provenance must still fail against the actual pinned source bytes.
+    manifest["source_files"]["src/runtime.py"] = "0" * 64
+    with pytest.raises(ValueError, match="hash"):
+        verifier.verify_sources(manifest, provenance, tmp_path)
 
 
 @pytest.fixture

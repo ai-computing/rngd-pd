@@ -43,7 +43,7 @@ def _dispatch(owner, request):
         raise ValueError("request must be a JSON object")
     operation = request.get("operation")
     counts = {"describe": 1, "resident": 0, "plan": 0, "apply": 1,
-              "rollback": 0, "conformance-load": 2}
+              "rollback": 0, "conformance-load": 2, "transition": 1}
     if not isinstance(operation, str) or operation not in counts:
         raise ValueError("unsupported operation: {!r}".format(operation))
     args = request.get("args", [])
@@ -51,7 +51,7 @@ def _dispatch(owner, request):
             or not all(isinstance(arg, str) for arg in args)):
         raise ValueError("invalid arguments for " + operation)
     document = request.get("document")
-    if operation in ("plan", "apply") and not isinstance(document, dict):
+    if operation in ("plan", "apply", "transition") and not isinstance(document, dict):
         raise ValueError("document must be a JSON object")
     if operation == "describe":
         return owner.describe(args[0])
@@ -61,6 +61,8 @@ def _dispatch(owner, request):
         return owner.plan(document)
     if operation == "apply":
         return owner.apply(document, args[0])
+    if operation == "transition":
+        return owner.transition(document, args[0])
     if operation == "rollback":
         return owner.rollback()
     return owner.load(args[0], args[1])
@@ -148,6 +150,7 @@ def _arguments(argv):
     commands.add_parser("resident")
     commands.add_parser("plan")
     commands.add_parser("apply").add_argument("--target", required=True)
+    commands.add_parser("transition").add_argument("--target", required=True)
     commands.add_parser("rollback")
     load = commands.add_parser("conformance-load")
     load.add_argument("artifact")
@@ -168,12 +171,12 @@ def main(argv=None):
             request["args"].append(args.artifact)
         if args.operation == "conformance-load":
             request["args"].append(args.manifest)
-        if args.operation in ("plan", "apply"):
+        if args.operation in ("plan", "apply", "transition"):
             document = sys.stdin.buffer.read(MAX_MESSAGE_BYTES + 1)
             if len(document) > MAX_MESSAGE_BYTES:
                 raise ValueError("JSON document exceeds size limit")
             request["document"] = json.loads(document)
-        if args.operation == "apply":
+        if args.operation in ("apply", "transition"):
             request["args"].append(args.target)
         message = _encode_message(request)
         family = socket.AF_UNIX if args.socket is not None else socket.AF_INET

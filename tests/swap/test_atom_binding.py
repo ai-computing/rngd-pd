@@ -16,6 +16,124 @@ BASE = "sha256:" + "a" * 64
 TARGET = "sha256:" + "b" * 64
 
 
+def test_transition_atom_uses_explicit_reload_and_reports_target(artifact, switch):
+    engines = []
+    def factory(path):
+        engine = SimpleNamespace(closed=False)
+        engine.close = lambda: setattr(engine, "closed", True)
+        engines.append(engine)
+        return engine
+    owner = AtomBinding(factory=factory)
+    owner.load(artifact, BASE)
+    result = owner.transition(switch, artifact)
+    assert result["schema"] == "onggi.transition.v1"
+    assert result["mode"] == "reload" and result["verification"] is None
+    assert result["resident"]["manifest"] == TARGET
+    assert result["profile"]["device"] == "RBLN-CA22"
+    assert len(engines) == 2 and engines[0].closed
+    with pytest.raises(NotImplementedError):
+        owner.apply({}, artifact)
+    owner.close()
+
+
+def test_public_atom_reload_reuses_parsed_model_only_for_identical_graph_bytes(artifact, monkeypatch):
+    parsed, runtimes = [], []
+    def forbidden(*args, **kwargs):
+        pytest.fail("reload must not compile")
+    class Compiled:
+        def __init__(self, path):
+            parsed.append(self)
+        def create_runtime(self, **kwargs):
+            runtime = SimpleNamespace(run=lambda *args: None)
+            runtimes.append(runtime)
+            return runtime
+    monkeypatch.setitem(sys.modules, "rebel", SimpleNamespace(
+        RBLNCompiledModel=Compiled, compile_from_torch=forbidden))
+    owner = AtomBinding(tables=object())
+    owner.load(artifact, BASE)
+    old_session = owner.engine
+    owner.load(artifact, TARGET)
+    assert len(parsed) == 1 and len(runtimes) == 2
+    assert old_session.rt is None and old_session.compiled is None
+    assert owner.engine.compiled is parsed[0]
+    assert owner.engine.timings["parsed_before"] is True
+    assert owner.graph_evidence()["compiled_reused"] is True
+    (artifact / "session.rbln").write_bytes(b"different compiled graph")
+    owner.load(artifact, BASE)
+    assert len(parsed) == 2 and owner.engine.compiled is parsed[1]
+    assert owner.graph_evidence()["compiled_reused"] is False
+    owner.close()
+    owner.load(artifact, BASE)
+    assert len(parsed) == 3, "explicit close must release the parsed model too"
+    owner.close()
+
+
+def test_public_atom_reused_model_creation_failure_leaves_empty_state(artifact, monkeypatch):
+    class Compiled:
+        calls = 0
+        def __init__(self, path):
+            pass
+        def create_runtime(self, **kwargs):
+            self.calls += 1
+            if self.calls == 2:
+                raise RuntimeError("runtime create failed")
+            return SimpleNamespace(run=lambda *args: None)
+    monkeypatch.setitem(sys.modules, "rebel", SimpleNamespace(RBLNCompiledModel=Compiled))
+    owner = AtomBinding(tables=object())
+    owner.load(artifact, BASE)
+    old_session = owner.engine
+    with pytest.raises(RuntimeError, match="runtime create failed"):
+        owner.load(artifact, TARGET)
+    assert old_session.rt is None and owner.resident()["state"] == "empty"
+
+
+@pytest.mark.parametrize("ready", [False, True])
+def test_transition_atom_rejects_absent_or_wrong_base_before_replacement(artifact, switch, ready):
+    engines = []
+    owner = AtomBinding(factory=lambda path: engines.append(path) or SimpleNamespace(close=lambda: None))
+    if ready:
+        owner.load(artifact, TARGET)
+    before = owner.resident()
+    with pytest.raises(ValueError, match="base.*resident"):
+        owner.transition(switch, artifact)
+    assert owner.resident() == before and len(engines) == int(ready)
+    owner.close()
+
+
+def test_transition_atom_failed_reload_leaves_empty_not_target(artifact, switch):
+    owner = AtomBinding(factory=lambda path: SimpleNamespace(close=lambda: None))
+    owner.load(artifact, BASE)
+    def failure(path):
+        raise RuntimeError("replacement failed")
+    owner._factory = failure
+    with pytest.raises(RuntimeError, match="replacement failed"):
+        owner.transition(switch, artifact)
+    assert owner.resident()["state"] == "empty"
+
+
+def test_transition_atom_waits_for_request_then_serializes_competing_callers(artifact, switch):
+    owner = AtomBinding(factory=lambda path: SimpleNamespace(close=lambda: None))
+    owner.load(artifact, BASE)
+    started = [Event(), Event()]
+    def change(index):
+        started[index].set()
+        return owner.transition(switch, artifact)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        with owner.request():
+            futures = [pool.submit(change, i) for i in range(2)]
+            assert all(event.wait(2) for event in started)
+            assert not any(future.done() for future in futures)
+        results, errors = [], []
+        for future in futures:
+            try:
+                results.append(future.result(timeout=5))
+            except ValueError as error:
+                errors.append(error)
+    assert len(results) == len(errors) == 1
+    assert "base" in str(errors[0]) and owner.resident()["manifest"] == TARGET
+    owner.close()
+
+
 @pytest.fixture
 def artifact(tmp_path):
     profile = {"schema": "onggi.profile.v1", "device": "RBLN-CA22",

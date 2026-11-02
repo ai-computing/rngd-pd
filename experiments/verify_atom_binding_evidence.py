@@ -7,6 +7,7 @@ import json
 from pathlib import Path, PurePosixPath
 import re
 import statistics
+from historical_source import source_bytes
 
 
 def require(condition, message):
@@ -135,8 +136,8 @@ def verify(root):
             sources["src/" + path.split("/src/", 1)[1]] = expected
     repository = Path(__file__).resolve().parents[1]
     for path, expected in sources.items():
-        require(digest((repository / path).read_bytes().replace(b"\r\n", b"\n")) == expected,
-                "current canonical LF source differs from native: " + path)
+        require(digest(source_bytes(repository, package["native_runtime_commit"], path).replace(b"\r\n", b"\n")) == expected,
+                "historical canonical LF source differs from native: " + path)
         require(package["source_identity_comparison"][path]["native_sha256"] == expected
                 and package["source_identity_comparison"][path]["lf_equivalent"], "source comparison receipt differs")
     require(compiled["source_files"]["src/rngd_pd/swap/atom.py"] == sources["src/rngd_pd/swap/atom.py"], "graph producer/runtime source changed")

@@ -5,6 +5,7 @@ import gzip
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
+from historical_source import source_bytes
 
 
 def require(condition, message):
@@ -63,8 +64,8 @@ def verify(root):
     require(failed["source_files"] == result["source_files"], "runtime changed between failed/successful attempts")
     repository = Path(__file__).resolve().parents[1]
     for name, expected in result["source_files"].items():
-        data = (repository / name).read_bytes().replace(b"\r\n", b"\n")
-        require(digest(data) == expected, "current runtime differs from measured native source: " + name)
+        data = source_bytes(repository, package["native_runtime_commit"], name).replace(b"\r\n", b"\n")
+        require(digest(data) == expected, "historical runtime differs from measured native source: " + name)
     rejected = next(case for case in failed_kit["cases"] if case["name"] == "native-sparse")
     unsupported = next(step["stdout"] for step in rejected["results"]
                        if (step.get("stdout") or {}).get("schema") == "onggi.updateplan.v1")

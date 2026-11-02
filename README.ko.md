@@ -494,6 +494,7 @@ tests/
 
 | 문서 | 내용 |
 |---|---|
+| [docs/common-runtime-transition.md](docs/common-runtime-transition.md) | RNGD·ATOM 공통 전환 호출, 부분 갱신/재적재 구분, ATOM host 파싱 객체 재사용 |
 | [docs/llmd-usage-and-compat.md](docs/llmd-usage-and-compat.md) | 개요, 사용법, llm-d / vLLM 호환성 매트릭스, 실측 성능 |
 | [docs/llmd-integration-plan.md](docs/llmd-integration-plan.md) | 통합 계획과 acceptance 체크리스트 |
 | [docs/furiosa-request.md](docs/furiosa-request.md) | FuriosaAI 기술 요청: KV export/import 훅과 컴파일러 이슈 |
