@@ -135,9 +135,9 @@ inode identity remains meaningful. The receipt is independently retained as:
 the example contains one abbreviated illustrative entry. Additional receipt
 fields survive verbatim. The runner checks receipt identity/status, idle state,
 actual donor inventory and complete hash/inode witnesses before server start.
-Preparation costs remain explicit external costs excluded from allocation-entry
+Preparation costs remain explicit external costs excluded from harness-entry
 timing. Local donor preparation (including full base materialization) remains
-inside the allocation timer and outside the demand endpoint; neither is free.
+inside the harness timer and outside the demand endpoint; neither is free.
 
 ## Measurement boundaries and validity
 

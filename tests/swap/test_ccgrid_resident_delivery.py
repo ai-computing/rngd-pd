@@ -122,7 +122,7 @@ def test_timing_includes_hash_validation_and_excludes_generation_tail(harness):
     assert metrics["demand_to_first_token_s"] == 7.25
     assert metrics["hash_validation_s"] == 2
     assert metrics["delivery_s"] == 2
-    assert metrics["allocation_entry_to_first_token_s"] == 8.25
+    assert metrics["harness_entry_to_first_token_s"] == 8.25
     events["hash_finished"]["perf_ns"] = 9_000_000_000
     with pytest.raises(ValueError, match="ordered"):
         harness.timing(events, target)

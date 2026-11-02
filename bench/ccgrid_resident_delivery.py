@@ -147,7 +147,7 @@ def timing(events, target):
         hash_to_generation_s=(points[4] - points[3]) / 1e9,
         prompt_to_first_token_s=(points[5] - points[4]) / 1e9,
         demand_to_first_token_s=(points[5] - points[1]) / 1e9,
-        allocation_entry_to_first_token_s=(points[5] - points[0]) / 1e9,
+        harness_entry_to_first_token_s=(points[5] - points[0]) / 1e9,
         excluded_pre_demand_setup_s=(points[1] - points[0]) / 1e9)
 
 
