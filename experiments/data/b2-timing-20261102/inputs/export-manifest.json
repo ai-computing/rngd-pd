@@ -1,0 +1,48 @@
+{
+  "archive": {
+    "bytes": 104445,
+    "sha256": "228b81e5491369da0fa5f72f752746b2a70fa69f23cad063833969303a70bb9c"
+  },
+  "files": [
+    {
+      "path": "fixtures.json",
+      "bytes": 1303,
+      "sha256": "298eaeea76e9a945c53822142ce7f0ebab9d93e0d200359d6cccd642383f9d52"
+    },
+    {
+      "path": "input-manifest.json",
+      "bytes": 8472,
+      "sha256": "728a63c32a5d06b9c179e0911eb3b3aef98ad36dd1b72b6cdd3c7fbe46753197"
+    },
+    {
+      "path": "interior.switchplan.json",
+      "bytes": 3078,
+      "sha256": "e7cc12dbd0e7b6ffdd000d841019daf49b9d7a57eb774c4fc694d913d4bee1e9"
+    },
+    {
+      "path": "main-01-config.json",
+      "bytes": 716,
+      "sha256": "220f83d9719abb6f04cf9d60b12c7eb14d851527d8d1b9fd02e784fd70a38c71"
+    },
+    {
+      "path": "prior-kit-report.json",
+      "bytes": 85466,
+      "sha256": "582b7f84973e1efe14749927920102089b5bea1498abcad9c66b404c7d1f0589"
+    },
+    {
+      "path": "references.json",
+      "bytes": 146721,
+      "sha256": "6738d1bcbec444513163599c33b6146c9d317f1253d900b3cf196ff82a0672c7"
+    },
+    {
+      "path": "smoke-01-config.json",
+      "bytes": 715,
+      "sha256": "360430a60aee448b4433805b930557d9481621d5e8f3e471ce0fc199dc64c45f"
+    },
+    {
+      "path": "source-manifest.json",
+      "bytes": 8885,
+      "sha256": "9a8ac6a20f0e54ef90cef9ba04e732b32962635fff11c78ee3b2f8ec9c98584c"
+    }
+  ]
+}
