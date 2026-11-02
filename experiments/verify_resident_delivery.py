@@ -1,5 +1,5 @@
 """Independent local gates over exported records, before any statistical summary."""
-import argparse,base64,gzip,hashlib,json,math,statistics,subprocess
+import argparse,base64,gzip,hashlib,json,math,re,statistics,subprocess
 from pathlib import Path
 REPO=Path(__file__).resolve().parents[1]
 DATA=REPO/'experiments/data/resident-delivery-20261102'
@@ -69,6 +69,21 @@ def distribution(values):
  return dict(n=len(values),values=values,median=statistics.median(values),q1=q[0],q3=q[2],iqr=q[2]-q[0])
 
 
+def resource_sample(document):
+ snapshots=document.get('snapshots',{});base=snapshots.get('base_ready',{})
+ def kib(text,name):
+  match=re.search(r'^'+re.escape(name)+r':\s+(\d+)\s+kB\s*$',text,re.MULTILINE)
+  return int(match[1]) if match else None
+ hwms=[kib(s.get('status',''),'VmHWM') for s in snapshots.values()]
+ hwms=[x for x in hwms if x is not None]
+ receipt=document.get('external_preparation',{}).get('receipt')
+ donor_s=(receipt['finished_unix_ns']-receipt['started_unix_ns'])/1e9 if receipt else None
+ if donor_s is not None:assert donor_s>=0 and receipt['status']=='completed' and receipt['npu_requested']==0
+ return dict(base_ready_rss_kib=kib(base.get('status',''),'VmRSS'),
+  base_ready_pss_kib=kib(base.get('smaps_rollup',''),'Pss'),process_hwm_kib=max(hwms) if hwms else None,
+  external_donor_preparation_s=donor_s,device_memory_bytes=None)
+
+
 def summarize(data_root,cohorts,repository=REPO):
  assert list(cohorts)==['r02','r03','r04','r05','r06'],'Use every frozen main cohort in declared order'
  arms=['graph-copy','graph-csi','full-csi-no-rebase','full-csi-rebase']
@@ -78,7 +93,7 @@ def summarize(data_root,cohorts,repository=REPO):
   verified.append(v);root=Path(data_root)/cohort;run=load(root/'runs'/(cohort+'-cohort.json'))
   for t in run['trials']:
    d=load(root/'runs'/t['trial_id']/'result.json')
-   groups[d['config']['arm']].append(dict(cohort=cohort,trial_id=t['trial_id'],metrics=d['metrics'],
+   groups[d['config']['arm']].append(dict(cohort=cohort,trial_id=t['trial_id'],metrics=d['metrics'],resources=resource_sample(d),
     pull_stats=d.get('delivery_log_proof',{}).get('pull_stats'),native_calls=d['counts']['native_calls']))
  result=dict(schema='resident-delivery-summary.v1',verified=True,cohorts=verified,arms={},
   runtime_baseline='db2dd2598daffb3d3f722007599b74d00ede61af',harness_source=FINAL_PIN,
@@ -86,11 +101,13 @@ def summarize(data_root,cohorts,repository=REPO):
   first_token='generation entry + returned native prompt TTFT; excludes remaining continuation',
   conditions='one card; same resident weights; base-only initial graph cache; first target use; empty chunk cache; no peers; alternating order; shared OS page cache uncontrolled',
   scope='POSIX delivery; graph-copy is colocated copy, not public production FXB or cloud baseline; full-file hash included; setup excluded and retained separately; CLI bytes is target logical size, not writes; no service load',
-  aggregation='per-arm median and inclusive IQR of all five observations; do not add marginal component medians')
+  aggregation='per-arm median and inclusive IQR of all five observations; do not add marginal component medians',
+  resource_scope='Host /proc kB means KiB; HWM is process lifetime, not device memory. External CPU donor preparation includes materialization/hash/unpublish. Missing/not-applicable counters are null. Container memory.peak is shared across sequential arms and is not attributed per arm.')
  for arm,rows in groups.items():
   assert len(rows)==5
   keys=set(rows[0]['metrics']);assert all(set(r['metrics'])==keys for r in rows)
-  result['arms'][arm]=dict(samples=rows,metrics={k:distribution([r['metrics'][k] for r in rows]) for k in sorted(keys)})
+  resources={k:distribution([r['resources'][k] for r in rows]) if all(r['resources'][k] is not None for r in rows) else None for k in rows[0]['resources']}
+  result['arms'][arm]=dict(samples=rows,metrics={k:distribution([r['metrics'][k] for r in rows]) for k in sorted(keys)},resources=resources)
  return result
 
 

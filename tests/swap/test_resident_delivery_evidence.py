@@ -79,3 +79,21 @@ def test_iqr_is_inclusive_and_preserves_all_observations():
 def test_nonfinite_measurement_has_no_statistical_summary():
     with pytest.raises((AssertionError, ValueError)):
         evidence.distribution([0.1, float('nan'), 0.2, 0.3, 0.4])
+
+
+def test_resources_distinguish_host_kib_and_external_donor_from_device_memory():
+    root = DATA / 'r02/runs'
+    full = json.loads((root / 'r02-full-csi-rebase/result.json').read_bytes())
+    result = evidence.resource_sample(full)
+    assert result['base_ready_pss_kib'] == 19152373
+    receipt = full['external_preparation']['receipt']
+    assert result['external_donor_preparation_s'] == (receipt['finished_unix_ns'] - receipt['started_unix_ns']) / 1e9
+    assert result['device_memory_bytes'] is None
+    copy = json.loads((root / 'r02-graph-copy/result.json').read_bytes())
+    assert evidence.resource_sample(copy)['external_donor_preparation_s'] is None
+
+
+def test_absent_memory_counters_are_unavailable():
+    result = evidence.resource_sample({'snapshots': {}})
+    assert result['base_ready_pss_kib'] is None
+    assert result['process_hwm_kib'] is None
