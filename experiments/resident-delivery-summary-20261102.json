@@ -1,0 +1,1330 @@
+{
+  "schema": "resident-delivery-summary.v1",
+  "verified": true,
+  "cohorts": [
+    {
+      "cohort": "r02",
+      "phase": "measure",
+      "verified": true,
+      "trials": 4,
+      "native_calls": 2040
+    },
+    {
+      "cohort": "r03",
+      "phase": "measure",
+      "verified": true,
+      "trials": 4,
+      "native_calls": 2040
+    },
+    {
+      "cohort": "r04",
+      "phase": "measure",
+      "verified": true,
+      "trials": 4,
+      "native_calls": 2040
+    },
+    {
+      "cohort": "r05",
+      "phase": "measure",
+      "verified": true,
+      "trials": 4,
+      "native_calls": 2040
+    },
+    {
+      "cohort": "r06",
+      "phase": "measure",
+      "verified": true,
+      "trials": 4,
+      "native_calls": 2040
+    }
+  ],
+  "arms": {
+    "graph-copy": {
+      "samples": [
+        {
+          "cohort": "r02",
+          "trial_id": "r02-graph-copy",
+          "metrics": {
+            "delivery_s": 0.00664809,
+            "hash_validation_s": 0.001902847,
+            "hash_to_generation_s": 0.196668633,
+            "prompt_to_first_token_s": 0.200288548,
+            "demand_to_first_token_s": 0.405508118,
+            "harness_entry_to_first_token_s": 16.689856253,
+            "excluded_pre_demand_setup_s": 16.284348135
+          },
+          "resources": {
+            "base_ready_rss_kib": 19024628,
+            "base_ready_pss_kib": 19029367,
+            "process_hwm_kib": 20049132,
+            "external_donor_preparation_s": null,
+            "device_memory_bytes": null
+          },
+          "pull_stats": null,
+          "native_calls": 510
+        },
+        {
+          "cohort": "r03",
+          "trial_id": "r03-graph-copy",
+          "metrics": {
+            "delivery_s": 0.007047493,
+            "hash_validation_s": 0.001913747,
+            "hash_to_generation_s": 0.211151435,
+            "prompt_to_first_token_s": 0.183043643,
+            "demand_to_first_token_s": 0.403156318,
+            "harness_entry_to_first_token_s": 17.24412892,
+            "excluded_pre_demand_setup_s": 16.840972602
+          },
+          "resources": {
+            "base_ready_rss_kib": 19089224,
+            "base_ready_pss_kib": 19094942,
+            "process_hwm_kib": 20113728,
+            "external_donor_preparation_s": null,
+            "device_memory_bytes": null
+          },
+          "pull_stats": null,
+          "native_calls": 510
+        },
+        {
+          "cohort": "r04",
+          "trial_id": "r04-graph-copy",
+          "metrics": {
+            "delivery_s": 0.005468942,
+            "hash_validation_s": 0.001888316,
+            "hash_to_generation_s": 0.200560773,
+            "prompt_to_first_token_s": 0.180148325,
+            "demand_to_first_token_s": 0.388066356,
+            "harness_entry_to_first_token_s": 15.994349617,
+            "excluded_pre_demand_setup_s": 15.606283261
+          },
+          "resources": {
+            "base_ready_rss_kib": 19010520,
+            "base_ready_pss_kib": 19012955,
+            "process_hwm_kib": 20035792,
+            "external_donor_preparation_s": null,
+            "device_memory_bytes": null
+          },
+          "pull_stats": null,
+          "native_calls": 510
+        },
+        {
+          "cohort": "r05",
+          "trial_id": "r05-graph-copy",
+          "metrics": {
+            "delivery_s": 0.008262483,
+            "hash_validation_s": 0.001906529,
+            "hash_to_generation_s": 0.200937383,
+            "prompt_to_first_token_s": 0.191388145,
+            "demand_to_first_token_s": 0.40249454,
+            "harness_entry_to_first_token_s": 16.952274388,
+            "excluded_pre_demand_setup_s": 16.549779848
+          },
+          "resources": {
+            "base_ready_rss_kib": 19069956,
+            "base_ready_pss_kib": 19078684,
+            "process_hwm_kib": 20094460,
+            "external_donor_preparation_s": null,
+            "device_memory_bytes": null
+          },
+          "pull_stats": null,
+          "native_calls": 510
+        },
+        {
+          "cohort": "r06",
+          "trial_id": "r06-graph-copy",
+          "metrics": {
+            "delivery_s": 0.005750021,
+            "hash_validation_s": 0.001951895,
+            "hash_to_generation_s": 0.204681137,
+            "prompt_to_first_token_s": 0.182156009,
+            "demand_to_first_token_s": 0.394539062,
+            "harness_entry_to_first_token_s": 15.872722402,
+            "excluded_pre_demand_setup_s": 15.47818334
+          },
+          "resources": {
+            "base_ready_rss_kib": 19102444,
+            "base_ready_pss_kib": 19111263,
+            "process_hwm_kib": 20127716,
+            "external_donor_preparation_s": null,
+            "device_memory_bytes": null
+          },
+          "pull_stats": null,
+          "native_calls": 510
+        }
+      ],
+      "metrics": {
+        "delivery_s": {
+          "n": 5,
+          "values": [
+            0.00664809,
+            0.007047493,
+            0.005468942,
+            0.008262483,
+            0.005750021
+          ],
+          "median": 0.00664809,
+          "q1": 0.005750021,
+          "q3": 0.007047493,
+          "iqr": 0.001297472
+        },
+        "demand_to_first_token_s": {
+          "n": 5,
+          "values": [
+            0.405508118,
+            0.403156318,
+            0.388066356,
+            0.40249454,
+            0.394539062
+          ],
+          "median": 0.40249454,
+          "q1": 0.394539062,
+          "q3": 0.403156318,
+          "iqr": 0.008617256000000018
+        },
+        "excluded_pre_demand_setup_s": {
+          "n": 5,
+          "values": [
+            16.284348135,
+            16.840972602,
+            15.606283261,
+            16.549779848,
+            15.47818334
+          ],
+          "median": 16.284348135,
+          "q1": 15.606283261,
+          "q3": 16.549779848,
+          "iqr": 0.9434965870000003
+        },
+        "harness_entry_to_first_token_s": {
+          "n": 5,
+          "values": [
+            16.689856253,
+            17.24412892,
+            15.994349617,
+            16.952274388,
+            15.872722402
+          ],
+          "median": 16.689856253,
+          "q1": 15.994349617,
+          "q3": 16.952274388,
+          "iqr": 0.9579247710000001
+        },
+        "hash_to_generation_s": {
+          "n": 5,
+          "values": [
+            0.196668633,
+            0.211151435,
+            0.200560773,
+            0.200937383,
+            0.204681137
+          ],
+          "median": 0.200937383,
+          "q1": 0.200560773,
+          "q3": 0.204681137,
+          "iqr": 0.004120364000000015
+        },
+        "hash_validation_s": {
+          "n": 5,
+          "values": [
+            0.001902847,
+            0.001913747,
+            0.001888316,
+            0.001906529,
+            0.001951895
+          ],
+          "median": 0.001906529,
+          "q1": 0.001902847,
+          "q3": 0.001913747,
+          "iqr": 1.0899999999999885e-05
+        },
+        "prompt_to_first_token_s": {
+          "n": 5,
+          "values": [
+            0.200288548,
+            0.183043643,
+            0.180148325,
+            0.191388145,
+            0.182156009
+          ],
+          "median": 0.183043643,
+          "q1": 0.182156009,
+          "q3": 0.191388145,
+          "iqr": 0.009232136000000002
+        }
+      },
+      "resources": {
+        "base_ready_rss_kib": {
+          "n": 5,
+          "values": [
+            19024628,
+            19089224,
+            19010520,
+            19069956,
+            19102444
+          ],
+          "median": 19069956,
+          "q1": 19024628.0,
+          "q3": 19089224.0,
+          "iqr": 64596.0
+        },
+        "base_ready_pss_kib": {
+          "n": 5,
+          "values": [
+            19029367,
+            19094942,
+            19012955,
+            19078684,
+            19111263
+          ],
+          "median": 19078684,
+          "q1": 19029367.0,
+          "q3": 19094942.0,
+          "iqr": 65575.0
+        },
+        "process_hwm_kib": {
+          "n": 5,
+          "values": [
+            20049132,
+            20113728,
+            20035792,
+            20094460,
+            20127716
+          ],
+          "median": 20094460,
+          "q1": 20049132.0,
+          "q3": 20113728.0,
+          "iqr": 64596.0
+        },
+        "external_donor_preparation_s": null,
+        "device_memory_bytes": null
+      }
+    },
+    "graph-csi": {
+      "samples": [
+        {
+          "cohort": "r02",
+          "trial_id": "r02-graph-csi",
+          "metrics": {
+            "delivery_s": 0.023100734,
+            "hash_validation_s": 0.001825127,
+            "hash_to_generation_s": 0.200859254,
+            "prompt_to_first_token_s": 0.188366653,
+            "demand_to_first_token_s": 0.414151768,
+            "harness_entry_to_first_token_s": 17.383913573,
+            "excluded_pre_demand_setup_s": 16.969761805
+          },
+          "resources": {
+            "base_ready_rss_kib": 19090060,
+            "base_ready_pss_kib": 19095313,
+            "process_hwm_kib": 20114452,
+            "external_donor_preparation_s": 0.057359767,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 3,
+            "bytes": 1003916,
+            "read_bytes": 235221,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 235221,
+            "reused": 0,
+            "base_best": 224097,
+            "local_bytes": 0,
+            "ranges": 4,
+            "duration_ns": 10815023
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r03",
+          "trial_id": "r03-graph-csi",
+          "metrics": {
+            "delivery_s": 0.024316203,
+            "hash_validation_s": 0.001973247,
+            "hash_to_generation_s": 0.207672185,
+            "prompt_to_first_token_s": 0.1821557,
+            "demand_to_first_token_s": 0.416117335,
+            "harness_entry_to_first_token_s": 18.064552681,
+            "excluded_pre_demand_setup_s": 17.648435346
+          },
+          "resources": {
+            "base_ready_rss_kib": 19067516,
+            "base_ready_pss_kib": 19070430,
+            "process_hwm_kib": 20092020,
+            "external_donor_preparation_s": 0.066364632,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 3,
+            "bytes": 1003916,
+            "read_bytes": 235221,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 235221,
+            "reused": 0,
+            "base_best": 224097,
+            "local_bytes": 0,
+            "ranges": 4,
+            "duration_ns": 11902049
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r04",
+          "trial_id": "r04-graph-csi",
+          "metrics": {
+            "delivery_s": 0.022792157,
+            "hash_validation_s": 0.002059164,
+            "hash_to_generation_s": 0.19844745,
+            "prompt_to_first_token_s": 0.183492035,
+            "demand_to_first_token_s": 0.406790806,
+            "harness_entry_to_first_token_s": 17.213480736,
+            "excluded_pre_demand_setup_s": 16.80668993
+          },
+          "resources": {
+            "base_ready_rss_kib": 19060376,
+            "base_ready_pss_kib": 19062282,
+            "process_hwm_kib": 20084880,
+            "external_donor_preparation_s": 0.057587212,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 3,
+            "bytes": 1003916,
+            "read_bytes": 235221,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 235221,
+            "reused": 0,
+            "base_best": 224097,
+            "local_bytes": 0,
+            "ranges": 4,
+            "duration_ns": 11527543
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r05",
+          "trial_id": "r05-graph-csi",
+          "metrics": {
+            "delivery_s": 0.023401276,
+            "hash_validation_s": 0.002075603,
+            "hash_to_generation_s": 0.207380467,
+            "prompt_to_first_token_s": 0.183305181,
+            "demand_to_first_token_s": 0.416162527,
+            "harness_entry_to_first_token_s": 17.504399073,
+            "excluded_pre_demand_setup_s": 17.088236546
+          },
+          "resources": {
+            "base_ready_rss_kib": 19067392,
+            "base_ready_pss_kib": 19070279,
+            "process_hwm_kib": 20092664,
+            "external_donor_preparation_s": 0.057815717,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 3,
+            "bytes": 1003916,
+            "read_bytes": 235221,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 235221,
+            "reused": 0,
+            "base_best": 224097,
+            "local_bytes": 0,
+            "ranges": 4,
+            "duration_ns": 11983575
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r06",
+          "trial_id": "r06-graph-csi",
+          "metrics": {
+            "delivery_s": 0.022823785,
+            "hash_validation_s": 0.001930585,
+            "hash_to_generation_s": 0.200133426,
+            "prompt_to_first_token_s": 0.204960271,
+            "demand_to_first_token_s": 0.429848067,
+            "harness_entry_to_first_token_s": 17.465403097,
+            "excluded_pre_demand_setup_s": 17.03555503
+          },
+          "resources": {
+            "base_ready_rss_kib": 19090400,
+            "base_ready_pss_kib": 19094970,
+            "process_hwm_kib": 20115672,
+            "external_donor_preparation_s": 0.058105245,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 3,
+            "bytes": 1003916,
+            "read_bytes": 235221,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 235221,
+            "reused": 0,
+            "base_best": 224097,
+            "local_bytes": 0,
+            "ranges": 4,
+            "duration_ns": 11307891
+          },
+          "native_calls": 510
+        }
+      ],
+      "metrics": {
+        "delivery_s": {
+          "n": 5,
+          "values": [
+            0.023100734,
+            0.024316203,
+            0.022792157,
+            0.023401276,
+            0.022823785
+          ],
+          "median": 0.023100734,
+          "q1": 0.022823785,
+          "q3": 0.023401276,
+          "iqr": 0.0005774909999999994
+        },
+        "demand_to_first_token_s": {
+          "n": 5,
+          "values": [
+            0.414151768,
+            0.416117335,
+            0.406790806,
+            0.416162527,
+            0.429848067
+          ],
+          "median": 0.416117335,
+          "q1": 0.414151768,
+          "q3": 0.416162527,
+          "iqr": 0.0020107590000000286
+        },
+        "excluded_pre_demand_setup_s": {
+          "n": 5,
+          "values": [
+            16.969761805,
+            17.648435346,
+            16.80668993,
+            17.088236546,
+            17.03555503
+          ],
+          "median": 17.03555503,
+          "q1": 16.969761805,
+          "q3": 17.088236546,
+          "iqr": 0.118474741
+        },
+        "harness_entry_to_first_token_s": {
+          "n": 5,
+          "values": [
+            17.383913573,
+            18.064552681,
+            17.213480736,
+            17.504399073,
+            17.465403097
+          ],
+          "median": 17.465403097,
+          "q1": 17.383913573,
+          "q3": 17.504399073,
+          "iqr": 0.12048549999999736
+        },
+        "hash_to_generation_s": {
+          "n": 5,
+          "values": [
+            0.200859254,
+            0.207672185,
+            0.19844745,
+            0.207380467,
+            0.200133426
+          ],
+          "median": 0.200859254,
+          "q1": 0.200133426,
+          "q3": 0.207380467,
+          "iqr": 0.00724704100000001
+        },
+        "hash_validation_s": {
+          "n": 5,
+          "values": [
+            0.001825127,
+            0.001973247,
+            0.002059164,
+            0.002075603,
+            0.001930585
+          ],
+          "median": 0.001973247,
+          "q1": 0.001930585,
+          "q3": 0.002059164,
+          "iqr": 0.00012857899999999998
+        },
+        "prompt_to_first_token_s": {
+          "n": 5,
+          "values": [
+            0.188366653,
+            0.1821557,
+            0.183492035,
+            0.183305181,
+            0.204960271
+          ],
+          "median": 0.183492035,
+          "q1": 0.183305181,
+          "q3": 0.188366653,
+          "iqr": 0.0050614719999999835
+        }
+      },
+      "resources": {
+        "base_ready_rss_kib": {
+          "n": 5,
+          "values": [
+            19090060,
+            19067516,
+            19060376,
+            19067392,
+            19090400
+          ],
+          "median": 19067516,
+          "q1": 19067392.0,
+          "q3": 19090060.0,
+          "iqr": 22668.0
+        },
+        "base_ready_pss_kib": {
+          "n": 5,
+          "values": [
+            19095313,
+            19070430,
+            19062282,
+            19070279,
+            19094970
+          ],
+          "median": 19070430,
+          "q1": 19070279.0,
+          "q3": 19094970.0,
+          "iqr": 24691.0
+        },
+        "process_hwm_kib": {
+          "n": 5,
+          "values": [
+            20114452,
+            20092020,
+            20084880,
+            20092664,
+            20115672
+          ],
+          "median": 20092664,
+          "q1": 20092020.0,
+          "q3": 20114452.0,
+          "iqr": 22432.0
+        },
+        "external_donor_preparation_s": {
+          "n": 5,
+          "values": [
+            0.057359767,
+            0.066364632,
+            0.057587212,
+            0.057815717,
+            0.058105245
+          ],
+          "median": 0.057815717,
+          "q1": 0.057587212,
+          "q3": 0.058105245,
+          "iqr": 0.0005180330000000011
+        },
+        "device_memory_bytes": null
+      }
+    },
+    "full-csi-no-rebase": {
+      "samples": [
+        {
+          "cohort": "r02",
+          "trial_id": "r02-full-csi-no-rebase",
+          "metrics": {
+            "delivery_s": 57.890720523,
+            "hash_validation_s": 9.251678602,
+            "hash_to_generation_s": 0.209702077,
+            "prompt_to_first_token_s": 0.224288293,
+            "demand_to_first_token_s": 67.576389495,
+            "harness_entry_to_first_token_s": 111.77579914,
+            "excluded_pre_demand_setup_s": 44.199409645
+          },
+          "resources": {
+            "base_ready_rss_kib": 19031432,
+            "base_ready_pss_kib": 19037887,
+            "process_hwm_kib": 20056704,
+            "external_donor_preparation_s": 72.389999423,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 9,
+            "bytes": 16061585097,
+            "read_bytes": 10702211666,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 10702211666,
+            "reused": 0,
+            "base_best": 0,
+            "local_bytes": 0,
+            "ranges": 806,
+            "duration_ns": 57877799394
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r03",
+          "trial_id": "r03-full-csi-no-rebase",
+          "metrics": {
+            "delivery_s": 57.316848633,
+            "hash_validation_s": 9.214498434,
+            "hash_to_generation_s": 0.208824981,
+            "prompt_to_first_token_s": 0.211746567,
+            "demand_to_first_token_s": 66.951918615,
+            "harness_entry_to_first_token_s": 117.791552368,
+            "excluded_pre_demand_setup_s": 50.839633753
+          },
+          "resources": {
+            "base_ready_rss_kib": 19119540,
+            "base_ready_pss_kib": 19127745,
+            "process_hwm_kib": 20144812,
+            "external_donor_preparation_s": 67.084136296,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 9,
+            "bytes": 16061585097,
+            "read_bytes": 10702211666,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 10702211666,
+            "reused": 0,
+            "base_best": 0,
+            "local_bytes": 0,
+            "ranges": 806,
+            "duration_ns": 57303468473
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r04",
+          "trial_id": "r04-full-csi-no-rebase",
+          "metrics": {
+            "delivery_s": 58.104979608,
+            "hash_validation_s": 9.317289392,
+            "hash_to_generation_s": 0.196352921,
+            "prompt_to_first_token_s": 0.22062812,
+            "demand_to_first_token_s": 67.839250041,
+            "harness_entry_to_first_token_s": 111.77633509,
+            "excluded_pre_demand_setup_s": 43.937085049
+          },
+          "resources": {
+            "base_ready_rss_kib": 18878896,
+            "base_ready_pss_kib": 18881963,
+            "process_hwm_kib": 19904168,
+            "external_donor_preparation_s": 72.625379034,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 9,
+            "bytes": 16061585097,
+            "read_bytes": 10702211666,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 10702211666,
+            "reused": 0,
+            "base_best": 0,
+            "local_bytes": 0,
+            "ranges": 806,
+            "duration_ns": 58093162230
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r05",
+          "trial_id": "r05-full-csi-no-rebase",
+          "metrics": {
+            "delivery_s": 57.992731967,
+            "hash_validation_s": 9.223252375,
+            "hash_to_generation_s": 0.198176734,
+            "prompt_to_first_token_s": 0.174850918,
+            "demand_to_first_token_s": 67.589011994,
+            "harness_entry_to_first_token_s": 116.519811335,
+            "excluded_pre_demand_setup_s": 48.930799341
+          },
+          "resources": {
+            "base_ready_rss_kib": 19078624,
+            "base_ready_pss_kib": 19086931,
+            "process_hwm_kib": 20103512,
+            "external_donor_preparation_s": 67.147310412,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 9,
+            "bytes": 16061585097,
+            "read_bytes": 10702211666,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 10702211666,
+            "reused": 0,
+            "base_best": 0,
+            "local_bytes": 0,
+            "ranges": 806,
+            "duration_ns": 57980371458
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r06",
+          "trial_id": "r06-full-csi-no-rebase",
+          "metrics": {
+            "delivery_s": 57.411143973,
+            "hash_validation_s": 9.456515803,
+            "hash_to_generation_s": 0.20030928,
+            "prompt_to_first_token_s": 0.213332633,
+            "demand_to_first_token_s": 67.281301689,
+            "harness_entry_to_first_token_s": 110.985191378,
+            "excluded_pre_demand_setup_s": 43.703889689
+          },
+          "resources": {
+            "base_ready_rss_kib": 19114920,
+            "base_ready_pss_kib": 19119789,
+            "process_hwm_kib": 20140192,
+            "external_donor_preparation_s": 72.823609664,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 9,
+            "bytes": 16061585097,
+            "read_bytes": 10702211666,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 10702211666,
+            "reused": 0,
+            "base_best": 0,
+            "local_bytes": 0,
+            "ranges": 806,
+            "duration_ns": 57397359693
+          },
+          "native_calls": 510
+        }
+      ],
+      "metrics": {
+        "delivery_s": {
+          "n": 5,
+          "values": [
+            57.890720523,
+            57.316848633,
+            58.104979608,
+            57.992731967,
+            57.411143973
+          ],
+          "median": 57.890720523,
+          "q1": 57.411143973,
+          "q3": 57.992731967,
+          "iqr": 0.581587993999996
+        },
+        "demand_to_first_token_s": {
+          "n": 5,
+          "values": [
+            67.576389495,
+            66.951918615,
+            67.839250041,
+            67.589011994,
+            67.281301689
+          ],
+          "median": 67.576389495,
+          "q1": 67.281301689,
+          "q3": 67.589011994,
+          "iqr": 0.3077103050000005
+        },
+        "excluded_pre_demand_setup_s": {
+          "n": 5,
+          "values": [
+            44.199409645,
+            50.839633753,
+            43.937085049,
+            48.930799341,
+            43.703889689
+          ],
+          "median": 44.199409645,
+          "q1": 43.937085049,
+          "q3": 48.930799341,
+          "iqr": 4.993714292
+        },
+        "harness_entry_to_first_token_s": {
+          "n": 5,
+          "values": [
+            111.77579914,
+            117.791552368,
+            111.77633509,
+            116.519811335,
+            110.985191378
+          ],
+          "median": 111.77633509,
+          "q1": 111.77579914,
+          "q3": 116.519811335,
+          "iqr": 4.744012194999996
+        },
+        "hash_to_generation_s": {
+          "n": 5,
+          "values": [
+            0.209702077,
+            0.208824981,
+            0.196352921,
+            0.198176734,
+            0.20030928
+          ],
+          "median": 0.20030928,
+          "q1": 0.198176734,
+          "q3": 0.208824981,
+          "iqr": 0.010648247
+        },
+        "hash_validation_s": {
+          "n": 5,
+          "values": [
+            9.251678602,
+            9.214498434,
+            9.317289392,
+            9.223252375,
+            9.456515803
+          ],
+          "median": 9.251678602,
+          "q1": 9.223252375,
+          "q3": 9.317289392,
+          "iqr": 0.09403701699999978
+        },
+        "prompt_to_first_token_s": {
+          "n": 5,
+          "values": [
+            0.224288293,
+            0.211746567,
+            0.22062812,
+            0.174850918,
+            0.213332633
+          ],
+          "median": 0.213332633,
+          "q1": 0.211746567,
+          "q3": 0.22062812,
+          "iqr": 0.008881553000000014
+        }
+      },
+      "resources": {
+        "base_ready_rss_kib": {
+          "n": 5,
+          "values": [
+            19031432,
+            19119540,
+            18878896,
+            19078624,
+            19114920
+          ],
+          "median": 19078624,
+          "q1": 19031432.0,
+          "q3": 19114920.0,
+          "iqr": 83488.0
+        },
+        "base_ready_pss_kib": {
+          "n": 5,
+          "values": [
+            19037887,
+            19127745,
+            18881963,
+            19086931,
+            19119789
+          ],
+          "median": 19086931,
+          "q1": 19037887.0,
+          "q3": 19119789.0,
+          "iqr": 81902.0
+        },
+        "process_hwm_kib": {
+          "n": 5,
+          "values": [
+            20056704,
+            20144812,
+            19904168,
+            20103512,
+            20140192
+          ],
+          "median": 20103512,
+          "q1": 20056704.0,
+          "q3": 20140192.0,
+          "iqr": 83488.0
+        },
+        "external_donor_preparation_s": {
+          "n": 5,
+          "values": [
+            72.389999423,
+            67.084136296,
+            72.625379034,
+            67.147310412,
+            72.823609664
+          ],
+          "median": 72.389999423,
+          "q1": 67.147310412,
+          "q3": 72.625379034,
+          "iqr": 5.478068622000009
+        },
+        "device_memory_bytes": null
+      }
+    },
+    "full-csi-rebase": {
+      "samples": [
+        {
+          "cohort": "r02",
+          "trial_id": "r02-full-csi-rebase",
+          "metrics": {
+            "delivery_s": 0.318025787,
+            "hash_validation_s": 9.028129029,
+            "hash_to_generation_s": 0.1944037,
+            "prompt_to_first_token_s": 0.177870518,
+            "demand_to_first_token_s": 9.718429034,
+            "harness_entry_to_first_token_s": 60.01569192,
+            "excluded_pre_demand_setup_s": 50.297262886
+          },
+          "resources": {
+            "base_ready_rss_kib": 19144960,
+            "base_ready_pss_kib": 19152373,
+            "process_hwm_kib": 20170232,
+            "external_donor_preparation_s": 67.157680748,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 9,
+            "bytes": 16061585097,
+            "read_bytes": 197911,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 197911,
+            "base": "sha256:04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526",
+            "reused": 16060805278,
+            "base_best": 16060805278,
+            "local_bytes": 0,
+            "ranges": 2,
+            "duration_ns": 305993757
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r03",
+          "trial_id": "r03-full-csi-rebase",
+          "metrics": {
+            "delivery_s": 0.286306528,
+            "hash_validation_s": 9.332287169,
+            "hash_to_generation_s": 0.207089712,
+            "prompt_to_first_token_s": 0.182666341,
+            "demand_to_first_token_s": 10.00834975,
+            "harness_entry_to_first_token_s": 53.992730034,
+            "excluded_pre_demand_setup_s": 43.984380284
+          },
+          "resources": {
+            "base_ready_rss_kib": 19090360,
+            "base_ready_pss_kib": 19094956,
+            "process_hwm_kib": 20115632,
+            "external_donor_preparation_s": 71.257103328,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 9,
+            "bytes": 16061585097,
+            "read_bytes": 197911,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 197911,
+            "base": "sha256:04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526",
+            "reused": 16060805278,
+            "base_best": 16060805278,
+            "local_bytes": 0,
+            "ranges": 2,
+            "duration_ns": 272912013
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r04",
+          "trial_id": "r04-full-csi-rebase",
+          "metrics": {
+            "delivery_s": 0.334376079,
+            "hash_validation_s": 9.16520125,
+            "hash_to_generation_s": 0.196525219,
+            "prompt_to_first_token_s": 0.18534958,
+            "demand_to_first_token_s": 9.881452128,
+            "harness_entry_to_first_token_s": 59.981597155,
+            "excluded_pre_demand_setup_s": 50.100145027
+          },
+          "resources": {
+            "base_ready_rss_kib": 18874052,
+            "base_ready_pss_kib": 18882089,
+            "process_hwm_kib": 19899324,
+            "external_donor_preparation_s": 67.2598417,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 9,
+            "bytes": 16061585097,
+            "read_bytes": 197911,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 197911,
+            "base": "sha256:04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526",
+            "reused": 16060805278,
+            "base_best": 16060805278,
+            "local_bytes": 0,
+            "ranges": 2,
+            "duration_ns": 322293936
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r05",
+          "trial_id": "r05-full-csi-rebase",
+          "metrics": {
+            "delivery_s": 0.314539731,
+            "hash_validation_s": 9.829878755,
+            "hash_to_generation_s": 0.207380264,
+            "prompt_to_first_token_s": 0.181894923,
+            "demand_to_first_token_s": 10.533693673,
+            "harness_entry_to_first_token_s": 55.419805289,
+            "excluded_pre_demand_setup_s": 44.886111616
+          },
+          "resources": {
+            "base_ready_rss_kib": 19059248,
+            "base_ready_pss_kib": 19062181,
+            "process_hwm_kib": 20083752,
+            "external_donor_preparation_s": 72.484605854,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 9,
+            "bytes": 16061585097,
+            "read_bytes": 197911,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 197911,
+            "base": "sha256:04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526",
+            "reused": 16060805278,
+            "base_best": 16060805278,
+            "local_bytes": 0,
+            "ranges": 2,
+            "duration_ns": 301786454
+          },
+          "native_calls": 510
+        },
+        {
+          "cohort": "r06",
+          "trial_id": "r06-full-csi-rebase",
+          "metrics": {
+            "delivery_s": 0.267869558,
+            "hash_validation_s": 9.002503247,
+            "hash_to_generation_s": 0.19685412,
+            "prompt_to_first_token_s": 0.176758896,
+            "demand_to_first_token_s": 9.643985821,
+            "harness_entry_to_first_token_s": 59.981893679,
+            "excluded_pre_demand_setup_s": 50.337907858
+          },
+          "resources": {
+            "base_ready_rss_kib": 19071652,
+            "base_ready_pss_kib": 19078610,
+            "process_hwm_kib": 20096160,
+            "external_donor_preparation_s": 67.281569647,
+            "device_memory_bytes": null
+          },
+          "pull_stats": {
+            "files": 9,
+            "bytes": 16061585097,
+            "read_bytes": 197911,
+            "cache_bytes": 0,
+            "peer_bytes": 0,
+            "peer_chunks": 0,
+            "cached": 197911,
+            "base": "sha256:04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526",
+            "reused": 16060805278,
+            "base_best": 16060805278,
+            "local_bytes": 0,
+            "ranges": 2,
+            "duration_ns": 253955128
+          },
+          "native_calls": 510
+        }
+      ],
+      "metrics": {
+        "delivery_s": {
+          "n": 5,
+          "values": [
+            0.318025787,
+            0.286306528,
+            0.334376079,
+            0.314539731,
+            0.267869558
+          ],
+          "median": 0.314539731,
+          "q1": 0.286306528,
+          "q3": 0.318025787,
+          "iqr": 0.031719259
+        },
+        "demand_to_first_token_s": {
+          "n": 5,
+          "values": [
+            9.718429034,
+            10.00834975,
+            9.881452128,
+            10.533693673,
+            9.643985821
+          ],
+          "median": 9.881452128,
+          "q1": 9.718429034,
+          "q3": 10.00834975,
+          "iqr": 0.289920716000001
+        },
+        "excluded_pre_demand_setup_s": {
+          "n": 5,
+          "values": [
+            50.297262886,
+            43.984380284,
+            50.100145027,
+            44.886111616,
+            50.337907858
+          ],
+          "median": 50.100145027,
+          "q1": 44.886111616,
+          "q3": 50.297262886,
+          "iqr": 5.411151269999998
+        },
+        "harness_entry_to_first_token_s": {
+          "n": 5,
+          "values": [
+            60.01569192,
+            53.992730034,
+            59.981597155,
+            55.419805289,
+            59.981893679
+          ],
+          "median": 59.981597155,
+          "q1": 55.419805289,
+          "q3": 59.981893679,
+          "iqr": 4.5620883899999995
+        },
+        "hash_to_generation_s": {
+          "n": 5,
+          "values": [
+            0.1944037,
+            0.207089712,
+            0.196525219,
+            0.207380264,
+            0.19685412
+          ],
+          "median": 0.19685412,
+          "q1": 0.196525219,
+          "q3": 0.207089712,
+          "iqr": 0.010564493000000008
+        },
+        "hash_validation_s": {
+          "n": 5,
+          "values": [
+            9.028129029,
+            9.332287169,
+            9.16520125,
+            9.829878755,
+            9.002503247
+          ],
+          "median": 9.16520125,
+          "q1": 9.028129029,
+          "q3": 9.332287169,
+          "iqr": 0.3041581400000002
+        },
+        "prompt_to_first_token_s": {
+          "n": 5,
+          "values": [
+            0.177870518,
+            0.182666341,
+            0.18534958,
+            0.181894923,
+            0.176758896
+          ],
+          "median": 0.181894923,
+          "q1": 0.177870518,
+          "q3": 0.182666341,
+          "iqr": 0.004795823000000005
+        }
+      },
+      "resources": {
+        "base_ready_rss_kib": {
+          "n": 5,
+          "values": [
+            19144960,
+            19090360,
+            18874052,
+            19059248,
+            19071652
+          ],
+          "median": 19071652,
+          "q1": 19059248.0,
+          "q3": 19090360.0,
+          "iqr": 31112.0
+        },
+        "base_ready_pss_kib": {
+          "n": 5,
+          "values": [
+            19152373,
+            19094956,
+            18882089,
+            19062181,
+            19078610
+          ],
+          "median": 19078610,
+          "q1": 19062181.0,
+          "q3": 19094956.0,
+          "iqr": 32775.0
+        },
+        "process_hwm_kib": {
+          "n": 5,
+          "values": [
+            20170232,
+            20115632,
+            19899324,
+            20083752,
+            20096160
+          ],
+          "median": 20096160,
+          "q1": 20083752.0,
+          "q3": 20115632.0,
+          "iqr": 31880.0
+        },
+        "external_donor_preparation_s": {
+          "n": 5,
+          "values": [
+            67.157680748,
+            71.257103328,
+            67.2598417,
+            72.484605854,
+            67.281569647
+          ],
+          "median": 67.281569647,
+          "q1": 67.2598417,
+          "q3": 71.257103328,
+          "iqr": 3.997261628000004
+        },
+        "device_memory_bytes": null
+      }
+    }
+  },
+  "runtime_baseline": "db2dd2598daffb3d3f722007599b74d00ede61af",
+  "harness_source": "829573e41959a4b0f6daa82e4862f1584367c347",
+  "interval": "demand through full-file SHA validation and reconstructed native first token",
+  "first_token": "generation entry + returned native prompt TTFT; excludes remaining continuation",
+  "conditions": "one card; same resident weights; base-only initial graph cache; first target use; empty chunk cache; no peers; alternating order; shared OS page cache uncontrolled",
+  "scope": "POSIX delivery; graph-copy is colocated copy, not public production FXB or cloud baseline; full-file hash included; setup excluded and retained separately; CLI bytes is target logical size, not writes; no service load",
+  "aggregation": "per-arm median and inclusive IQR of all five observations; do not add marginal component medians",
+  "resource_scope": "Host /proc kB means KiB; HWM is process lifetime, not device memory. External CPU donor preparation includes materialization/hash/unpublish. Missing/not-applicable counters are null. Container memory.peak is shared across sequential arms and is not attributed per arm."
+}

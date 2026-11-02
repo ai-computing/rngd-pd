@@ -1,0 +1,150 @@
+{
+  "original_result_sha256": "974d150b5b8d3e38599819b438ee73e37691702092051dcd460b2b13816f2d56",
+  "exit_code": 0,
+  "control_script_sha256": "c76f465cae9230b53f25268ed920c6de4e89705f3e8a8835f6b29b0db863521d",
+  "control_wrapper_sha256": "796506165ff691b80b8939145717f2c89f5bc62f2821709a3fa42dff5bd79344",
+  "source_revision": "ecfc6c3daa79fc76b9b077e53718dd7ee9e2defb",
+  "source_atom_inputs_sha256": "1bcd895bffaaf4f0c57ca3b13ef34dd997793d9492cc36267886de80c1698995",
+  "start_utc": "2026-10-23T06:05:54Z",
+  "end_utc": "2026-10-23T06:08:47Z",
+  "configuration": {
+    "same_pod_and_allocated_card_as": "llama8b.json",
+    "cpu_limit": 16,
+    "memory_limit_GiB": 128,
+    "flags": {
+      "RBLN_WEIGHT_FREE": "0",
+      "TORCH_RBLN_DISABLE_FALLBACK": "all",
+      "OMP_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "RBLN_NUM_THREADS": "4"
+    },
+    "weight_free_getter_assertion": "off",
+    "host_loadavg_start": [
+      96.0732421875,
+      98.51220703125,
+      96.5634765625
+    ]
+  },
+  "protocol": "Construct existing DeviceWeightDecode; swap B1/S64; generate seed-0 eight-token prompt with eight greedy outputs once for compile warmup, then repeat three times in the same process.",
+  "results": {
+    "revision": "ecfc6c3daa79fc76b9b077e53718dd7ee9e2defb",
+    "backend": "existing-DeviceWeightDecode",
+    "batch": 1,
+    "sequence": 64,
+    "prompt_length": 8,
+    "new_tokens": 8,
+    "strict_fallback": "all",
+    "weight_free": "0",
+    "ok": true,
+    "rows": [
+      {
+        "warmup": true,
+        "prompt_ttft_s": 117.39697357395198,
+        "request_through_generation_s": 120.98375183704775,
+        "median_decode_step_s": 0.5127627149922773,
+        "tokens": [
+          [
+            198,
+            791,
+            1176,
+            3245,
+            430,
+            23170,
+            279,
+            8071
+          ]
+        ],
+        "compiled_dynamo_graphs": 1
+      },
+      {
+        "warmup": false,
+        "prompt_ttft_s": 4.106329092988744,
+        "request_through_generation_s": 7.682312031975016,
+        "median_decode_step_s": 0.5104879889404401,
+        "tokens": [
+          [
+            198,
+            791,
+            1176,
+            3245,
+            430,
+            23170,
+            279,
+            8071
+          ]
+        ],
+        "compiled_dynamo_graphs": 1
+      },
+      {
+        "warmup": false,
+        "prompt_ttft_s": 4.087388526997529,
+        "request_through_generation_s": 7.6556389919715,
+        "median_decode_step_s": 0.5090236500836909,
+        "tokens": [
+          [
+            198,
+            791,
+            1176,
+            3245,
+            430,
+            23170,
+            279,
+            8071
+          ]
+        ],
+        "compiled_dynamo_graphs": 1
+      },
+      {
+        "warmup": false,
+        "prompt_ttft_s": 4.096324849058874,
+        "request_through_generation_s": 7.714504754985683,
+        "median_decode_step_s": 0.5154538359493017,
+        "tokens": [
+          [
+            198,
+            791,
+            1176,
+            3245,
+            430,
+            23170,
+            279,
+            8071
+          ]
+        ],
+        "compiled_dynamo_graphs": 1
+      }
+    ],
+    "init_s": 22.06496598001104,
+    "init_timings": {
+      "host_weights_s": 10.821050414000638,
+      "upload_weights_s": 10.41043205698952
+    },
+    "stage": "generated-3",
+    "swap": {
+      "variant": "B1-S64-g8",
+      "prepared": true,
+      "swap_s": 1.5561003237962723e-05
+    }
+  },
+  "comparison": {
+    "existing_median_decode_step_s": 0.5104879889404401,
+    "constant_median_decode_step_s": 0.06871363148093224,
+    "existing_over_constant_ratio": 7.429209866198071,
+    "constant_result_original_sha256": "3350ae0acc94dbec34287e546985f73d32e8cb8701b390555fb83c2e74563702"
+  },
+  "limitations": [
+    "Execution-path comparison, not an isolated weight-packing experiment: graph/fusion and host versus device KV differ.",
+    "Both paths compile their LM head on the NPU.",
+    "The first old-path prompt TTFT includes compilation and is excluded from steady statistics.",
+    "Old-path control performs no checkpoint update; ratio is not a native-update speedup.",
+    "Single prompt and card on a shared host, with three steady old-path requests and four constant-path post-update requests.",
+    "Same prompt tokens happened to match across paths; partial-update correctness uses the constant path own fresh references."
+  ],
+  "native_device_observation": {
+    "sampler_original_sha256": "456726b48e238f0592f2ab5f0f3d86097962efc4a03f15d9a719cec7c10c77b4",
+    "ownership_filter": "Native context PID must occur in same-sample OWN_PROCESS list and match the allocated Pod cgroup UID.",
+    "distinct_owned_native_context_processes": 1,
+    "maximum_reported_owned_context_memalloc": "14.9GiB",
+    "limitation": "Vendor rbln-stat reports rounded allocation sizes; not a byte-exact peak, physical allocation identity, or DMA counter."
+  }
+}

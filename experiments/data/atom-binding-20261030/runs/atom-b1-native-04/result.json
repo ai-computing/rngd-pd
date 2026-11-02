@@ -1,0 +1,1034 @@
+{
+  "status": "completed",
+  "started_utc": 1793368548.6146834,
+  "scope": "native public ATOM ADR-0010 B1",
+  "pod_uid": "26fadd92-d995-4710-bf34-d0c997fcb6bd",
+  "loads": [
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "kit",
+      "load_including_hash_s": 19.96782935014926,
+      "admission_validation_and_hash_s": 9.130201043793932,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.0740781610365957,
+        0.06786694191396236,
+        0.06813171412795782,
+        0.06779612204991281,
+        0.06782351108267903,
+        0.06778671103529632,
+        0.06790730194188654,
+        0.06785810110159218,
+        0.06780594098381698,
+        0.06775949103757739,
+        0.06778134102933109,
+        0.06781106116250157,
+        0.06781017105095088,
+        0.06781501090154052,
+        0.0678704020101577
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.041994408937171,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.5643643559888005,
+      "median_decode_step_s": 0.0682204959448427,
+      "session_timings": {
+        "parse_s": 10.485066446941346,
+        "create_runtime_s": 0.35174874891526997,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true
+    },
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "kit",
+      "load_including_hash_s": 20.024180547799915,
+      "admission_validation_and_hash_s": 9.112472983077168,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.07377342809922993,
+        0.06729356502182782,
+        0.06753694801591337,
+        0.06746402801945806,
+        0.06777570093981922,
+        0.06770616094581783,
+        0.06772121111862361,
+        0.06813170481473207,
+        0.06807857402600348,
+        0.06845833896659315,
+        0.06789278192445636,
+        0.06794768292456865,
+        0.06797323399223387,
+        0.06791022210381925,
+        0.06789507297798991
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.0422293818555772,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.562498196028173,
+      "median_decode_step_s": 0.0684453179128468,
+      "session_timings": {
+        "parse_s": 10.504544424125925,
+        "create_runtime_s": 0.3519739618059248,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true
+    },
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "repeat",
+      "load_including_hash_s": 20.04621197306551,
+      "admission_validation_and_hash_s": 9.131997994845733,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.06839909800328314,
+        0.06777151091955602,
+        0.06749566807411611,
+        0.06774603109806776,
+        0.0675035179592669,
+        0.0677232698071748,
+        0.0677963919006288,
+        0.06773282098583877,
+        0.06778433104045689,
+        0.06787262205034494,
+        0.06782220094464719,
+        0.06806223397143185,
+        0.0678486421238631,
+        0.06774779106490314,
+        0.06778793106786907
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.0347056679893285,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.556727851042524,
+      "median_decode_step_s": 0.06826181686483324,
+      "session_timings": {
+        "parse_s": 10.494406854035333,
+        "create_runtime_s": 0.3655643449164927,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true
+    },
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "repeat",
+      "load_including_hash_s": 20.089745470089838,
+      "admission_validation_and_hash_s": 9.176842793123797,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.07284888811409473,
+        0.06729973596520722,
+        0.06748883822001517,
+        0.06797524308785796,
+        0.06764561892487109,
+        0.06800166401080787,
+        0.06801943387836218,
+        0.06792287318967283,
+        0.06792609603144228,
+        0.06788229499943554,
+        0.06785221584141254,
+        0.06794703495688736,
+        0.06734855799004436,
+        0.06737373792566359,
+        0.06782883685082197
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.0387347219511867,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.5615980159491301,
+      "median_decode_step_s": 0.06830773898400366,
+      "session_timings": {
+        "parse_s": 10.504222518997267,
+        "create_runtime_s": 0.35220873495563865,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true
+    },
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "repeat",
+      "load_including_hash_s": 20.04815501300618,
+      "admission_validation_and_hash_s": 9.162042880197987,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.0726695351768285,
+        0.0673527040053159,
+        0.06747444393113256,
+        0.06804152205586433,
+        0.0676424028351903,
+        0.06785058206878603,
+        0.06792984204366803,
+        0.06800211081281304,
+        0.06790739204734564,
+        0.06799569306895137,
+        0.06789537402801216,
+        0.06803303305059671,
+        0.067929393844679,
+        0.06789188412949443,
+        0.06790587306022644
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.0403656689450145,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.5614851980935782,
+      "median_decode_step_s": 0.06836920999921858,
+      "session_timings": {
+        "parse_s": 10.476988586131483,
+        "create_runtime_s": 0.35348852491006255,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true
+    },
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "repeat",
+      "load_including_hash_s": 20.060508007882163,
+      "admission_validation_and_hash_s": 9.160045424010605,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.0729331118054688,
+        0.06730324006639421,
+        0.06758524011820555,
+        0.06797065795399249,
+        0.06763276900164783,
+        0.0678019979968667,
+        0.06783564807847142,
+        0.06782434904016554,
+        0.06781186000443995,
+        0.06784093100577593,
+        0.06780419102869928,
+        0.06775218108668923,
+        0.06786779104731977,
+        0.06795971002429724,
+        0.06778074009343982
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.0400973069481552,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.5621068149339408,
+      "median_decode_step_s": 0.06826628907583654,
+      "session_timings": {
+        "parse_s": 10.491921261884272,
+        "create_runtime_s": 0.3548117419704795,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true
+    },
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "repeat",
+      "load_including_hash_s": 20.041723032016307,
+      "admission_validation_and_hash_s": 9.162131191929802,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.07251453003846109,
+        0.06736815487965941,
+        0.06746742501854897,
+        0.06806112313643098,
+        0.06762523506768048,
+        0.06774475402198732,
+        0.06772926403209567,
+        0.06774456496350467,
+        0.0677984650246799,
+        0.0678595348726958,
+        0.06781669496558607,
+        0.068167753983289,
+        0.06805202504619956,
+        0.06781356502324343,
+        0.06785161490552127
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.039721054956317,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.5609718901105225,
+      "median_decode_step_s": 0.0683382039424032,
+      "session_timings": {
+        "parse_s": 10.472950212890282,
+        "create_runtime_s": 0.3530283991713077,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true
+    }
+  ],
+  "repeats": [
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "repeat",
+      "load_including_hash_s": 20.04621197306551,
+      "admission_validation_and_hash_s": 9.131997994845733,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.06839909800328314,
+        0.06777151091955602,
+        0.06749566807411611,
+        0.06774603109806776,
+        0.0675035179592669,
+        0.0677232698071748,
+        0.0677963919006288,
+        0.06773282098583877,
+        0.06778433104045689,
+        0.06787262205034494,
+        0.06782220094464719,
+        0.06806223397143185,
+        0.0678486421238631,
+        0.06774779106490314,
+        0.06778793106786907
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.0347056679893285,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.556727851042524,
+      "median_decode_step_s": 0.06826181686483324,
+      "session_timings": {
+        "parse_s": 10.494406854035333,
+        "create_runtime_s": 0.3655643449164927,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true,
+      "repeat": 0
+    },
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "repeat",
+      "load_including_hash_s": 20.089745470089838,
+      "admission_validation_and_hash_s": 9.176842793123797,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.07284888811409473,
+        0.06729973596520722,
+        0.06748883822001517,
+        0.06797524308785796,
+        0.06764561892487109,
+        0.06800166401080787,
+        0.06801943387836218,
+        0.06792287318967283,
+        0.06792609603144228,
+        0.06788229499943554,
+        0.06785221584141254,
+        0.06794703495688736,
+        0.06734855799004436,
+        0.06737373792566359,
+        0.06782883685082197
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.0387347219511867,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.5615980159491301,
+      "median_decode_step_s": 0.06830773898400366,
+      "session_timings": {
+        "parse_s": 10.504222518997267,
+        "create_runtime_s": 0.35220873495563865,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true,
+      "repeat": 1
+    },
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "repeat",
+      "load_including_hash_s": 20.04815501300618,
+      "admission_validation_and_hash_s": 9.162042880197987,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.0726695351768285,
+        0.0673527040053159,
+        0.06747444393113256,
+        0.06804152205586433,
+        0.0676424028351903,
+        0.06785058206878603,
+        0.06792984204366803,
+        0.06800211081281304,
+        0.06790739204734564,
+        0.06799569306895137,
+        0.06789537402801216,
+        0.06803303305059671,
+        0.067929393844679,
+        0.06789188412949443,
+        0.06790587306022644
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.0403656689450145,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.5614851980935782,
+      "median_decode_step_s": 0.06836920999921858,
+      "session_timings": {
+        "parse_s": 10.476988586131483,
+        "create_runtime_s": 0.35348852491006255,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true,
+      "repeat": 2
+    },
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "repeat",
+      "load_including_hash_s": 20.060508007882163,
+      "admission_validation_and_hash_s": 9.160045424010605,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.0729331118054688,
+        0.06730324006639421,
+        0.06758524011820555,
+        0.06797065795399249,
+        0.06763276900164783,
+        0.0678019979968667,
+        0.06783564807847142,
+        0.06782434904016554,
+        0.06781186000443995,
+        0.06784093100577593,
+        0.06780419102869928,
+        0.06775218108668923,
+        0.06786779104731977,
+        0.06795971002429724,
+        0.06778074009343982
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.0400973069481552,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.5621068149339408,
+      "median_decode_step_s": 0.06826628907583654,
+      "session_timings": {
+        "parse_s": 10.491921261884272,
+        "create_runtime_s": 0.3548117419704795,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true,
+      "repeat": 3
+    },
+    {
+      "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+      "phase": "repeat",
+      "load_including_hash_s": 20.041723032016307,
+      "admission_validation_and_hash_s": 9.162131191929802,
+      "evidence": {
+        "graph": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+        "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+        "runtime_api": "public-AtomSession"
+      },
+      "resident": {
+        "schema": "onggi.resident.v1",
+        "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+        "state": "ready"
+      },
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.07251453003846109,
+        0.06736815487965941,
+        0.06746742501854897,
+        0.06806112313643098,
+        0.06762523506768048,
+        0.06774475402198732,
+        0.06772926403209567,
+        0.06774456496350467,
+        0.0677984650246799,
+        0.0678595348726958,
+        0.06781669496558607,
+        0.068167753983289,
+        0.06805202504619956,
+        0.06781356502324343,
+        0.06785161490552127
+      ],
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "compiled_device_allocation": 15210643456,
+      "generation_s": 1.039721054956317,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "ttft_s": 0.5609718901105225,
+      "median_decode_step_s": 0.0683382039424032,
+      "session_timings": {
+        "parse_s": 10.472950212890282,
+        "create_runtime_s": 0.3530283991713077,
+        "parsed_before": false
+      },
+      "tokens_equal_fresh": true,
+      "repeat": 4
+    }
+  ],
+  "milestones": [
+    {
+      "phase": "initial_before_imports",
+      "utc": 1793368548.6146867
+    },
+    {
+      "phase": "before_torch_import",
+      "utc": 1793368548.6148028
+    },
+    {
+      "phase": "after_torch_before_rebel_import",
+      "utc": 1793368550.1726768
+    },
+    {
+      "phase": "after_rebel_import",
+      "utc": 1793368550.6618907
+    },
+    {
+      "phase": "after_assignment",
+      "utc": 1793368550.671943
+    },
+    {
+      "phase": "before_public_rbln_smi",
+      "utc": 1793368550.6721315
+    },
+    {
+      "phase": "after_public_rbln_smi_before_mapping",
+      "utc": 1793368550.8259335
+    },
+    {
+      "phase": "after_public_device_mapping",
+      "utc": 1793368550.8264909
+    },
+    {
+      "phase": "before_graph_hash",
+      "utc": 1793368550.8279798
+    },
+    {
+      "phase": "after_graph_hash_before_tables",
+      "utc": 1793368559.9354084
+    },
+    {
+      "phase": "after_host_checkpoint_hash",
+      "utc": 1793368568.85261
+    },
+    {
+      "phase": "after_tables",
+      "utc": 1793368569.1394491
+    },
+    {
+      "phase": "before_fresh_session",
+      "utc": 1793368569.1398032
+    },
+    {
+      "phase": "after_fresh_session_before_generation",
+      "utc": 1793368580.0091436
+    },
+    {
+      "phase": "after_fresh_generation_and_close",
+      "utc": 1793368581.2499692
+    },
+    {
+      "phase": "before_kit",
+      "utc": 1793368581.2512698
+    },
+    {
+      "phase": "after_kit",
+      "utc": 1793368675.067807
+    },
+    {
+      "phase": "before_repeats",
+      "utc": 1793368675.0695903
+    },
+    {
+      "phase": "after_repeats_before_final_hash",
+      "utc": 1793368780.5609078
+    },
+    {
+      "phase": "completed",
+      "utc": 1793368789.7387004
+    }
+  ],
+  "phase": "completed",
+  "assignment": {
+    "physical_device_id": 0,
+    "device_semantics": "public rbln-smi logical NPU ID mapped to the init-allocated physical /dev/rblnN filename",
+    "broad_visibility_allowed": false,
+    "broader_devices_exposed": [],
+    "allocated_device_files": [
+      "/dev/rbln0"
+    ],
+    "actual_device_files": [
+      "/dev/rbln0"
+    ],
+    "rbln_environment": {},
+    "sdk_device_id": 0
+  },
+  "torch": "2.11.0+cpu",
+  "rebel": "0.11.0",
+  "rebel_compiler": "0.11.0",
+  "rebel_module": "/home/gspark/.local/lib/python3.10/site-packages/rebel/__init__.py",
+  "native_apis": [
+    "rebel.RBLNCompiledModel",
+    "create_runtime(device=public_smi_logical_id,tensor_type=np)",
+    "Runtime.run"
+  ],
+  "vendor_internal_apis_used": [],
+  "experimental_constant_attachment": false,
+  "public_device_diagnostic": {
+    "command": [
+      "/host-bin/rbln-smi"
+    ],
+    "returncode": 0,
+    "stdout": "Fri Oct 30 13:55:50 2026\n+-------------------------------------------------------------------------------------------------+\n|                                Device Information KMD ver: 3.0.0                                |\n+-----+-----------+---------+---------------+------+---------+------+---------------------+-------+\n| NPU |    Name   | Device  |   PCI BUS ID  | Temp |  Power  | Perf |  Memory(used/total) |  Util |\n+=====+===========+=========+===============+======+=========+======+=====================+=======+\n| 0   | RBLN-CA22 | rbln0   |  0000:83:00.0 |  39C |  19.0W  | P14  |    0.0B / 15.7GiB   |   0.0 |\n+-----+-----------+---------+---------------+------+---------+------+---------------------+-------+\n+-------------------------------------------------------------------------------------------------+\n|                                       Context Information                                       |\n+-----+---------------------+--------------+-----------+----------+------+---------------+--------+\n| NPU | Process             |     PID      |    CTX    | Priority | PTID |      Memalloc | Status |\n+=====+=====================+==============+===========+==========+======+===============+========+\n| N/A | N/A                 |     N/A      |    N/A    |   N/A    | N/A  |           N/A |  N/A   |\n+-----+---------------------+--------------+-----------+----------+------+---------------+--------+\n",
+    "stderr": "",
+    "output_truncated": false
+  },
+  "compile_attempts": [],
+  "guarded_compile_apis": [
+    "rebel.compile",
+    "rebel.compile_from_onnx",
+    "rebel.compile_from_tf_function",
+    "rebel.compile_from_tf_graph_def",
+    "rebel.compile_from_tflite",
+    "rebel.compile_from_torch",
+    "rebel.compile_from_torch_multiple_inputs",
+    "rebel.compile_from_torchscript",
+    "torch.compile"
+  ],
+  "source_hashes": {
+    "/home/gspark/workspace/codex_binding_conformance_20261030/scripts/atom-b1-native-04.py": "b8c4d5f8b296e75c6bd49eebe8e0a719cda1575309cfba477e11c19908262670",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/atom-runtime-source/src/rngd_pd/swap/atom.py": "19b2f4256f0f04f68729628a975ed2c46039321b8524a7a459dfb913259d2c23",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/atom-runtime-source/src/rngd_pd/swap/atom_binding.py": "86b8c20d4acf505df05470035ebb31b23ff55c97dbc4df081bbc563e3ef95037",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/atom-runtime-source/src/rngd_pd/swap/binding_cli.py": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/conformance-source/conformance/binding/conformance.py": "adca5429e40705a8b63925c1ba2a1dd2465e780792f5362593b36e022199d2bf",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/atom-fixtures.json": "872b242fe84c37ae859efdd51b0b5f80a196a69d0d9ac015e979e8dfaa55d7cf"
+  },
+  "graph": {
+    "path": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+    "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+    "bytes": 15176307063,
+    "initial_hash_s": 9.107198371784762,
+    "final_sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+    "final_hash_s": 9.17601645202376
+  },
+  "host_checkpoint": {
+    "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 855,
+        "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+      },
+      {
+        "path": "model-00001-of-00004.safetensors",
+        "bytes": 4976698672,
+        "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668"
+      },
+      {
+        "path": "model-00002-of-00004.safetensors",
+        "bytes": 4999802720,
+        "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15"
+      },
+      {
+        "path": "model-00003-of-00004.safetensors",
+        "bytes": 4915916176,
+        "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa"
+      },
+      {
+        "path": "model-00004-of-00004.safetensors",
+        "bytes": 1168138808,
+        "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b"
+      },
+      {
+        "path": "model.safetensors.index.json",
+        "bytes": 23950,
+        "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+      }
+    ],
+    "hash_s": 8.915862557012588
+  },
+  "host_tables_s": 0.2863621248397976,
+  "prompts": [
+    [
+      1,
+      42,
+      256,
+      1024,
+      7,
+      999,
+      2048,
+      13
+    ]
+  ],
+  "n_new": 8,
+  "fresh_reference": {
+    "load_s": 10.869110385188833,
+    "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+    "run_attempts": 15,
+    "run_completed": 15,
+    "run_seconds": [
+      0.07088868599385023,
+      0.06728499592281878,
+      0.06750521808862686,
+      0.06764278886839747,
+      0.06768343993462622,
+      0.0679670819081366,
+      0.06811393494717777,
+      0.06808924488723278,
+      0.0680483840405941,
+      0.06797177297994494,
+      0.06798729300498962,
+      0.06796865304931998,
+      0.06793486303649843,
+      0.06800336297601461,
+      0.06794402305968106
+    ],
+    "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+    "compiled_device_allocation": 15210643456,
+    "generation_s": 1.0404875399544835,
+    "tokens": [
+      [
+        220,
+        16,
+        13,
+        16,
+        13,
+        16,
+        13,
+        16
+      ]
+    ],
+    "ttft_s": 0.5589702250435948,
+    "median_decode_step_s": 0.06843737792223692,
+    "session_timings": {
+      "parse_s": 10.511827004840598,
+      "create_runtime_s": 0.35701072704978287,
+      "parsed_before": false
+    },
+    "closed_before_binding_load": true
+  },
+  "kit_command": [
+    "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/conformance-source/conformance/binding/conformance.py",
+    "--fixtures",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/atom-fixtures.json",
+    "--report",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/runs/atom-b1-native-04/kit-report.json",
+    "--level",
+    "B1",
+    "--",
+    "/home/gspark/workspace/01_pd_disag/experiments/native_pd_2026_4/p2p_dma/devkit/torch-venv/bin/python",
+    "-m",
+    "rngd_pd.swap.binding_cli",
+    "--socket",
+    "/tmp/atom-b1-1.sock"
+  ],
+  "kit_returncode": 0,
+  "repeat_summary": {
+    "load_including_hash_s": {
+      "n": 5,
+      "median": 20.04815501300618,
+      "q1": 20.04621197306551,
+      "q3": 20.060508007882163,
+      "iqr": 0.014296034816652536
+    },
+    "admission_validation_and_hash_s": {
+      "n": 5,
+      "median": 9.162042880197987,
+      "q1": 9.160045424010605,
+      "q3": 9.162131191929802,
+      "iqr": 0.0020857679191976786
+    },
+    "generation_s": {
+      "n": 5,
+      "median": 1.039721054956317,
+      "q1": 1.0387347219511867,
+      "q3": 1.0400973069481552,
+      "iqr": 0.0013625849969685078
+    },
+    "ttft_s": {
+      "n": 5,
+      "median": 0.5614851980935782,
+      "q1": 0.5609718901105225,
+      "q3": 0.5615980159491301,
+      "iqr": 0.0006261258386075497
+    },
+    "median_decode_step_s": {
+      "n": 5,
+      "median": 0.06830773898400366,
+      "q1": 0.06826628907583654,
+      "q3": 0.0683382039424032,
+      "iqr": 7.191486656665802e-05
+    }
+  },
+  "compiled_source_reused": true,
+  "compile_attempt_count": 0,
+  "native_runtime_calls_completed": 120,
+  "finished_utc": 1793368790.230862
+}

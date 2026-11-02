@@ -1,0 +1,559 @@
+{
+  "schema": "ccgrid-e7-publication-index-v1",
+  "source_commit": "f0f08bfca4409b55226022760cacb789e97a458c",
+  "valid_main_samples": 30,
+  "excluded_smoke_samples": 4,
+  "groups": 6,
+  "verified_export_files": 77,
+  "verified_main_archive_sha256": "5fa9c8b3148e5c05d2d582a3bf664c5d6dbd160995ad9ecbd9f257c1c9cf11f6",
+  "verified_reference_archive_sha256": "d8371e735903ffdc52a0d3a61473703afcd372f9e7e5bf8470ac7087ec028907",
+  "records": [
+    {
+      "path": "e7-matrix-plan.json",
+      "public_sha256": "4788921c627bba2f86590987a6f30a5541d792629120e40e4638e32d56aa482b",
+      "original_private_file": "e7-matrix-plan.json",
+      "original_private_sha256": "9a2d02a0b610af54e10a1e0a0334561867128411a70d97942096d0b0f1e64f77",
+      "original_private_bytes": 15664,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-matrix-job.json",
+      "public_sha256": "b0c588c6c64352ee56949ea066c9ace7e3f4cedd12f31f3854ae872cdb269683",
+      "original_private_file": "e7-matrix-job.json",
+      "original_private_sha256": "13f67f68e3496c76d909cb677894ec26133c736b5f21464583e61683eee72e91",
+      "original_private_bytes": 11429,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-actual-job-policy.json",
+      "public_sha256": "1da424b759a2d9e2aadaed925637e9dddd82e73dd07448d48aac3372dcf2e456",
+      "original_private_file": "e7-actual-job-policy.json",
+      "original_private_sha256": "df9acb518685c35bec1a31feaa811f25c15d23e2a78202e5ab6aefb060f4c6f0",
+      "original_private_bytes": 2405,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-v1-preparation.json",
+      "public_sha256": "b77fede45a2db60a1bbeb9b062009d315223839fa58adb2b38a1a9b294f6f6f1",
+      "original_private_file": "e7-v1-preparation.json",
+      "original_private_sha256": "8bc7fcee68a7daa5a031c5cb2289bef9504793396ccd2e8b2739ddee1efa054c",
+      "original_private_bytes": 7211,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-v1-source.json",
+      "public_sha256": "8e2dd692d380a0c8192806d1da32caf3c2d12b640d497deea628ed1917383f67",
+      "original_private_file": "e7-v1-source.json",
+      "original_private_sha256": "6cc93458628902227b7f2a43acbf57f7a4cfa13771d1405a09fc2312e2bf5da5",
+      "original_private_bytes": 279,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-frozen-source.json",
+      "public_sha256": "a6c117e86310c45f28da97287abc22cd83fa39e16442900b18993c5b69f1cf28",
+      "original_private_file": "e7-frozen-source.json",
+      "original_private_sha256": "d04bf321cdd07beecf7c50ea67633c0cac762f0ced24908063b3874381b16411",
+      "original_private_bytes": 52189,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-result.json",
+      "public_sha256": "2e201924d7a9fa7b67e1e81ae1f7c442e679dafef6d15c35449d9e954b54c30d",
+      "original_private_file": "result.json",
+      "original_private_sha256": "12667ce69e724dcf940191e1d35df29dcbb77f3136c775d7541d81dab0809099",
+      "original_private_bytes": 23794,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-operational.json",
+      "public_sha256": "800d50aa8256fb910f9ad43189ab887b63d1a6c7bc0a6a67ced42bd6223c5b60",
+      "original_private_file": "operational.json",
+      "original_private_sha256": "930300c4956df49e5137a97ff8aeb2f21690abeb2160605665733d4e2b1529c5",
+      "original_private_bytes": 6818,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-export-manifest.json",
+      "public_sha256": "d32644076c7239c5b951db95d3b6c6f757193d8003205992fd1c4f9fbcb0cdc6",
+      "original_private_file": "export-manifest.json",
+      "original_private_sha256": "ab5e8a05141e2b7e4e7119980fb1ee0a7a21dc7c80615965ac2a0109b0720e93",
+      "original_private_bytes": 12139,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-cleanup.json",
+      "public_sha256": "80a084f45d81ca9d678cf3781751aa7507a9412a1e220e95084ebde639f1b5fa",
+      "original_private_file": "cleanup.json",
+      "original_private_sha256": "d9d2599a6e8c55fef7b0fa8b7298782438f82c795a1fc49b45c22c9548fdcb48",
+      "original_private_bytes": 3843,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-root-final-cleanup.json",
+      "public_sha256": "2ec6679f988934c13c2cb8b1576ed74a7fae61c99491060629f46ea48d02f834",
+      "original_private_file": "e7-root-final-cleanup.json",
+      "original_private_sha256": "7a23ada802e1f60f21753b72c368f60e1b19d3f415a9814653557252504d91c0",
+      "original_private_bytes": 94,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-terminal-api.json",
+      "public_sha256": "36047f66ec950b0935d3521a6751240fcb2c9ae9872e8b1c159d418639b730ff",
+      "original_private_file": "terminal-api.json",
+      "original_private_sha256": "3ee6e372aeba6bc606d0f5cebcce317060bd875a4cc53c390756997b1d33c876",
+      "original_private_bytes": 6118,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-create.json",
+      "public_sha256": "f2bcf884ade21ac02b07d853b988b014e5ba23460956099748121f89f0d658e7",
+      "original_private_file": "create.json",
+      "original_private_sha256": "357bfb4bcc7af0f3073813e17f05a951c0c9f2ad695b6ae94904858e96f2280c",
+      "original_private_bytes": 93,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-references-export-manifest.json",
+      "public_sha256": "60dd6f59b32bbb2d62bbab1c451cd82a7d900ee231a9a4cb3fe7d2ea2b63eed4",
+      "original_private_file": "export-manifest.json",
+      "original_private_sha256": "37b80c1d1554474b9b4a9f0d658eb58dd4e1dc23f8783dc6dbd812c3b5ce7745",
+      "original_private_bytes": 1109,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-references-operational.json",
+      "public_sha256": "756d67d51544cfc0d8a5d3a1a9b46513c93c0f5fae1595064446fb47cc6b3da0",
+      "original_private_file": "operational.json",
+      "original_private_sha256": "e8509563b9e1532d2eaea461206548fd4ed6d2867be3cd046d390506a1e7d28a",
+      "original_private_bytes": 1527,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7-references-cleanup.json",
+      "public_sha256": "4b24c22a9d04c45b1b9aab53e4a7d3289ca23d534eb2b2f20525f09265468bea",
+      "original_private_file": "cleanup.json",
+      "original_private_sha256": "27e7e0d70d2befed8200820dda15eba5a74e0ad76a53525d6ce85e99e5c90d37",
+      "original_private_bytes": 3848,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    }
+  ],
+  "scripts": [
+    {
+      "path": "e7/scripts/run_e7_matrix.py",
+      "public_sha256": "e93c49a0430fb79573697d5d539ec492f12f607d5ef21565d09c738534e13f2b",
+      "original_private_file": "run_e7_matrix.py",
+      "original_private_sha256": "e93c49a0430fb79573697d5d539ec492f12f607d5ef21565d09c738534e13f2b",
+      "original_private_bytes": 4992,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7/scripts/run_e7_references.py",
+      "public_sha256": "62c9fea7a0e1c6a9acb716e6d5af58e0047e822dca194f662152cdc9cf08a520",
+      "original_private_file": "run_e7_references.py",
+      "original_private_sha256": "4b8b67b4037cdcf4ab5f12184d5ae66ba518b91cffc9acd9f0a8f393c6a88873",
+      "original_private_bytes": 2838,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    }
+  ],
+  "inputs": {
+    "e7-lm-ranges-v1.json": {
+      "path": "e7/inputs/e7-lm-ranges-v1.json",
+      "public_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84",
+      "original_private_file": "e7-lm-ranges-v1.json",
+      "original_private_sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84",
+      "original_private_bytes": 3063,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    "e7-sparse-ranges-v1.json": {
+      "path": "e7/inputs/e7-sparse-ranges-v1.json",
+      "public_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa",
+      "original_private_file": "e7-sparse-ranges-v1.json",
+      "original_private_sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa",
+      "original_private_bytes": 3078,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    "lm-reference.json": {
+      "path": "e7/inputs/lm-reference.json",
+      "public_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "original_private_file": "lm-reference.json",
+      "original_private_sha256": "364667ebb69401b1f7a531170dc75f922f7467789d6fd66493556d37a05a5161",
+      "original_private_bytes": 1729,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    "sparse-reference.json": {
+      "path": "e7/inputs/sparse-reference.json",
+      "public_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "original_private_file": "sparse-reference.json",
+      "original_private_sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357",
+      "original_private_bytes": 1672,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    }
+  },
+  "independent_target_references": {
+    "sparse": {
+      "path": "e7/references/sparse-B4-S256-g2.json",
+      "public_sha256": "bf80a482739931b3d2d1c3f64c67f9d508fb77d895385bb0eaded69aac273b48",
+      "original_private_file": "sparse-B4-S256-g2.json",
+      "original_private_sha256": "74437837153a81ff3cafcedbc5db7963661332f259af9195920accc46e19408d",
+      "original_private_bytes": 47517,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    "lm": {
+      "path": "e7/references/lm-B4-S256-g2.json",
+      "public_sha256": "6ce1bd97742754661dc74cf7246796302477b3a1d279e7131d88a80d5ca6773b",
+      "original_private_file": "lm-B4-S256-g2.json",
+      "original_private_sha256": "df6a7fbd31fcd0c91ef26f813bb38796efda0a69cb73be735e6c19d18602a864",
+      "original_private_bytes": 47562,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    }
+  },
+  "independent_base_reference": {
+    "path": "references-and-cross-shape-observation.json",
+    "record": "base-B4-S256-g2.json",
+    "original_private_sha256": "d10e5dadc145898b7672ac54f715f17ab95e57d151e0ffca2f68a0d8f1494239"
+  },
+  "samples": [
+    {
+      "trial_id": "e7-smoke-sparse-inplace-01",
+      "headline": false,
+      "path": "e7/smoke/e7-smoke-sparse-inplace-01.json",
+      "public_sha256": "798712310ed808b4c62a278d109337be279e34030fa4e80640d7feb6bf066701",
+      "original_private_file": "e7-smoke-sparse-inplace-01.json",
+      "original_private_sha256": "ade2e57e399557cf421efce11d29ef17869a0308dcc4cc333725f044508d06ea",
+      "original_private_bytes": 10734,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-smoke-sparse-replace-01",
+      "headline": false,
+      "path": "e7/smoke/e7-smoke-sparse-replace-01.json",
+      "public_sha256": "0e4d20553baa0f26cf626a64b208c6d534d343b5ad83bb6a828175d844e6f01e",
+      "original_private_file": "e7-smoke-sparse-replace-01.json",
+      "original_private_sha256": "479818a6131159b3a999afd5cd39b200adbdacd0f34c5eda6a197e4fad34e151",
+      "original_private_bytes": 10776,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-smoke-sparse-restart-01",
+      "headline": false,
+      "path": "e7/smoke/e7-smoke-sparse-restart-01.json",
+      "public_sha256": "fc4f3ff5d2b241f4984cb29593e7887c51f364b80508b3ee85308245e0fa7a30",
+      "original_private_file": "e7-smoke-sparse-restart-01.json",
+      "original_private_sha256": "933cfe3958c5b67d106b8b3d659d63d9532d7a6b9e84cec7d45b362c4edd5fec",
+      "original_private_bytes": 34011,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-smoke-lm-inplace-01",
+      "headline": false,
+      "path": "e7/smoke/e7-smoke-lm-inplace-01.json",
+      "public_sha256": "0eaf45a67e5c9510963b6ae9f881e084e385924af33983792306f9c194f56398",
+      "original_private_file": "e7-smoke-lm-inplace-01.json",
+      "original_private_sha256": "520a13ad3f955151660b07bc48803ecd3db6bd55f617d1ce5cce93cec788e243",
+      "original_private_bytes": 10712,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r01-sparse-inplace",
+      "headline": true,
+      "path": "e7/main/e7-r01-sparse-inplace.json",
+      "public_sha256": "371dfe608ce782e7db501de020226319ba615c63a486f0ea2c20685cc0fcc5cb",
+      "original_private_file": "e7-r01-sparse-inplace.json",
+      "original_private_sha256": "a85f5a991ee98476adbae1cdc73097899fb69c6dfb29147901adeb641e00b95a",
+      "original_private_bytes": 10724,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r01-sparse-replace",
+      "headline": true,
+      "path": "e7/main/e7-r01-sparse-replace.json",
+      "public_sha256": "abc212f126e2a75f820215f83cad1c4eee863ea8bb8a28f479848fecb3123336",
+      "original_private_file": "e7-r01-sparse-replace.json",
+      "original_private_sha256": "4560374c1a71448ec54247deb1babdf5aee9cebe43fc83b8d60aaed49b01b57f",
+      "original_private_bytes": 10765,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r01-sparse-restart",
+      "headline": true,
+      "path": "e7/main/e7-r01-sparse-restart.json",
+      "public_sha256": "e0b6dd23e2b9030c3d75f1d7d1719cfffd857b880ee4ea7d05c674c0d00f4d29",
+      "original_private_file": "e7-r01-sparse-restart.json",
+      "original_private_sha256": "17e518505ea6f495ea8be09ab3bc8e0269fcafab93d10f568ab205a824140633",
+      "original_private_bytes": 34003,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r01-lm-inplace",
+      "headline": true,
+      "path": "e7/main/e7-r01-lm-inplace.json",
+      "public_sha256": "6cbe52ab14f322cfd635c3261e3d8148c620a73c9c2a7a73c889b4955b28b851",
+      "original_private_file": "e7-r01-lm-inplace.json",
+      "original_private_sha256": "7b4f9e9bd13713adca7d9a4d28c9bdd8c97426f4433628f1379d0a4a9a1207f4",
+      "original_private_bytes": 10700,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r01-lm-replace",
+      "headline": true,
+      "path": "e7/main/e7-r01-lm-replace.json",
+      "public_sha256": "9e85ce5be48b863d91b658106a77dec7c93b2a76c6c757c368057037c6ed5ba1",
+      "original_private_file": "e7-r01-lm-replace.json",
+      "original_private_sha256": "95b80107db0cc86567fbefe077fbb096b7611a233fe8976d3170b9cc9c703513",
+      "original_private_bytes": 10739,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r01-lm-restart",
+      "headline": true,
+      "path": "e7/main/e7-r01-lm-restart.json",
+      "public_sha256": "d4863373e61b2ba0dc0cbdf7b9f4d32c45286c617a0e77b4bd31052b7bcaefc1",
+      "original_private_file": "e7-r01-lm-restart.json",
+      "original_private_sha256": "64fb3f2541b57fc6ddb354f28ebb385e1a886b94f6855016fc047b9c6d3ce746",
+      "original_private_bytes": 33942,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r02-sparse-replace",
+      "headline": true,
+      "path": "e7/main/e7-r02-sparse-replace.json",
+      "public_sha256": "cd9a646fd3dcffb099509960bcc1ddfda8acdd0bbeffb10487fef5dee5ba0a48",
+      "original_private_file": "e7-r02-sparse-replace.json",
+      "original_private_sha256": "6ee22f0184d16a756c9e29db5ee68ba2807f30a2fca95eca4829fe9188d6242c",
+      "original_private_bytes": 10762,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r02-sparse-restart",
+      "headline": true,
+      "path": "e7/main/e7-r02-sparse-restart.json",
+      "public_sha256": "07b8e3f3ee82f0c599d78f982af4f929cf85774bd735126a0b7c3404e1d0ec82",
+      "original_private_file": "e7-r02-sparse-restart.json",
+      "original_private_sha256": "b587c91fc8146097c972455fa3290745cbc3301bf28aeb2a61ff2d6a719a3f02",
+      "original_private_bytes": 33999,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r02-lm-inplace",
+      "headline": true,
+      "path": "e7/main/e7-r02-lm-inplace.json",
+      "public_sha256": "c888d2e95080bdd3ebc4bc5b6f60e6ad1f148ea4eb83f6498e4e25df8faa99c5",
+      "original_private_file": "e7-r02-lm-inplace.json",
+      "original_private_sha256": "1149a0cfe8e1f29a5979606173cde9d48ee7b7d4823a787c5ca41662ccbf74a2",
+      "original_private_bytes": 10700,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r02-lm-replace",
+      "headline": true,
+      "path": "e7/main/e7-r02-lm-replace.json",
+      "public_sha256": "e63f02040d04c987df65a3f7b6ecb9a9e8e642e5092b4eabc88f42e8ad176b05",
+      "original_private_file": "e7-r02-lm-replace.json",
+      "original_private_sha256": "7e80296bbbee0db6736c8188f14d048e63124639ffb0aa8ec6a319d4f8e8bbdc",
+      "original_private_bytes": 10745,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r02-lm-restart",
+      "headline": true,
+      "path": "e7/main/e7-r02-lm-restart.json",
+      "public_sha256": "3ba3df7c14c7b17f83871a26ef7c58d3bce1304d27f55e9ea795000e946ff19a",
+      "original_private_file": "e7-r02-lm-restart.json",
+      "original_private_sha256": "231a1b150df59672ced1cd631bd5676915fc1246df4c4c3eea3694ed4f23bd7f",
+      "original_private_bytes": 33942,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r02-sparse-inplace",
+      "headline": true,
+      "path": "e7/main/e7-r02-sparse-inplace.json",
+      "public_sha256": "d5a74bf5d9a62859af1bb21eb3b059ecf7cbd0f2d2b008626bdaa931ba69db83",
+      "original_private_file": "e7-r02-sparse-inplace.json",
+      "original_private_sha256": "45e35c050ed3809ad440d2719c6fc86dc595246a68d79086c94ee014f876a693",
+      "original_private_bytes": 10721,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r03-sparse-restart",
+      "headline": true,
+      "path": "e7/main/e7-r03-sparse-restart.json",
+      "public_sha256": "347d5f05f3156d08da730e807208ed5f21cb97f01cc691e1ca2b40972f303bd1",
+      "original_private_file": "e7-r03-sparse-restart.json",
+      "original_private_sha256": "7921d2816fe154580db90825720b0e9799ce9c76a1e34d22c34e6d4ede7e5ea0",
+      "original_private_bytes": 33998,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r03-lm-inplace",
+      "headline": true,
+      "path": "e7/main/e7-r03-lm-inplace.json",
+      "public_sha256": "dcd2447bec6aa9556c9ade24e9bb05b4901a25cc1809472bfe4e9e307d3c3816",
+      "original_private_file": "e7-r03-lm-inplace.json",
+      "original_private_sha256": "24c9a5acde540b10fc1ed589c131430b366254adafeaebb3a7d40f559dce617a",
+      "original_private_bytes": 10700,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r03-lm-replace",
+      "headline": true,
+      "path": "e7/main/e7-r03-lm-replace.json",
+      "public_sha256": "157fc1c93bc631131541b4be9a1c9734c1e7749b8c1a263956b97a8cc10d64b6",
+      "original_private_file": "e7-r03-lm-replace.json",
+      "original_private_sha256": "f0c91d25eae7cbd99671009d666c2393a3099a20993bede43f16a6d8a10835c0",
+      "original_private_bytes": 10747,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r03-lm-restart",
+      "headline": true,
+      "path": "e7/main/e7-r03-lm-restart.json",
+      "public_sha256": "77f427806be937eec3227f01d4e6fc4ad12aba58958390268f37cda05bbe5a4a",
+      "original_private_file": "e7-r03-lm-restart.json",
+      "original_private_sha256": "37c112323865913467685651dece60aa27ca7162d889bf9c1f84b4e69654c109",
+      "original_private_bytes": 33939,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r03-sparse-inplace",
+      "headline": true,
+      "path": "e7/main/e7-r03-sparse-inplace.json",
+      "public_sha256": "090cf73782ad302844193bc24956ec424013f61a4ecf054e2a85037acd7fcf5a",
+      "original_private_file": "e7-r03-sparse-inplace.json",
+      "original_private_sha256": "ae2d9c88de1c0956c14a369c3e19e801488a6119a5de06f6240be4fa77601d51",
+      "original_private_bytes": 10721,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r03-sparse-replace",
+      "headline": true,
+      "path": "e7/main/e7-r03-sparse-replace.json",
+      "public_sha256": "8456b13014dcac6a055d66575a6738cba37de96863ed241a3c2fa1f88139506c",
+      "original_private_file": "e7-r03-sparse-replace.json",
+      "original_private_sha256": "cc0a8851fac712231933e46160368e75e4996fd96d330c6ac02fa4f0afd0c9bf",
+      "original_private_bytes": 10763,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r04-lm-inplace",
+      "headline": true,
+      "path": "e7/main/e7-r04-lm-inplace.json",
+      "public_sha256": "54f9a3c02172c47abcdd47e30c119f690290ecc5a056a9ed4af9da4babc774ad",
+      "original_private_file": "e7-r04-lm-inplace.json",
+      "original_private_sha256": "166b56305abab8c1d4775ad2c4364779a05eddd8eecc748c5cbfedbfbe63d8ce",
+      "original_private_bytes": 10700,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r04-lm-replace",
+      "headline": true,
+      "path": "e7/main/e7-r04-lm-replace.json",
+      "public_sha256": "91983c13a8db4cd79de54d2090bfd4cfd7e9777de93bcea1381887a5abb4e221",
+      "original_private_file": "e7-r04-lm-replace.json",
+      "original_private_sha256": "9fd4baad1da0548fda44539c00aaa542cb99206efd78424c6a0661a3cbe03573",
+      "original_private_bytes": 10743,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r04-lm-restart",
+      "headline": true,
+      "path": "e7/main/e7-r04-lm-restart.json",
+      "public_sha256": "0258a00f0b2d51490bf1460844960642bc2e24a2bf45c547c529f6318a0485c1",
+      "original_private_file": "e7-r04-lm-restart.json",
+      "original_private_sha256": "0ef8d3477d8d25778605e9b0fc1a62764c18cc4a870ee63c792b02e15cca2e85",
+      "original_private_bytes": 33940,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r04-sparse-inplace",
+      "headline": true,
+      "path": "e7/main/e7-r04-sparse-inplace.json",
+      "public_sha256": "e9b627fb1041094ed978b88b2768ea7d20981755cd3adeadabdaa9cd31d3dca8",
+      "original_private_file": "e7-r04-sparse-inplace.json",
+      "original_private_sha256": "30cf8a5cb87ba0defc3dda47216e3a9db4b0189e723952190881c4124e843d15",
+      "original_private_bytes": 10725,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r04-sparse-replace",
+      "headline": true,
+      "path": "e7/main/e7-r04-sparse-replace.json",
+      "public_sha256": "1e6e92c170d19ccaa323cc5b7d8a2f03d489d69f26db835c76cb14d406f90fdf",
+      "original_private_file": "e7-r04-sparse-replace.json",
+      "original_private_sha256": "f3b25c5c974a4fa4210e6d049ac8189e9961d1adbb078d04d4ce87a46910c09a",
+      "original_private_bytes": 10761,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r04-sparse-restart",
+      "headline": true,
+      "path": "e7/main/e7-r04-sparse-restart.json",
+      "public_sha256": "4ae67e0069ca36183c3eecfbc8b8e105dc203ed5bd1e81c1641c0271f276be86",
+      "original_private_file": "e7-r04-sparse-restart.json",
+      "original_private_sha256": "36845b8c05181c7a0acb562b1b1c1f7fe6de8d31834b38d036746826c31d3f36",
+      "original_private_bytes": 33998,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r05-lm-replace",
+      "headline": true,
+      "path": "e7/main/e7-r05-lm-replace.json",
+      "public_sha256": "677c9ba42327824a25c82dfdbd6f279321dbbcbcdcd399cced6d763dc3664e1a",
+      "original_private_file": "e7-r05-lm-replace.json",
+      "original_private_sha256": "d3549952b8dfbc3c9afb21c784ff98cb9f9b5c2447b8bee295e44748d3c4a74b",
+      "original_private_bytes": 10745,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r05-lm-restart",
+      "headline": true,
+      "path": "e7/main/e7-r05-lm-restart.json",
+      "public_sha256": "a400304512c91a239be67487d3da71c7fcfcd7852b4dfeec9d555de604a4ce34",
+      "original_private_file": "e7-r05-lm-restart.json",
+      "original_private_sha256": "35dbfbec62bdd4f48a8f53726dbed541c2cfe8f656809722ce6f1a9a755f2551",
+      "original_private_bytes": 33936,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r05-sparse-inplace",
+      "headline": true,
+      "path": "e7/main/e7-r05-sparse-inplace.json",
+      "public_sha256": "045126cd7fdb91e6d6231ad723a224f26db6ffa835179fdd246b509cac8eee61",
+      "original_private_file": "e7-r05-sparse-inplace.json",
+      "original_private_sha256": "59237a30bd0107db3c15b9399ef2656764564b711ae35f5163e2ab5dcb7af99e",
+      "original_private_bytes": 10719,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r05-sparse-replace",
+      "headline": true,
+      "path": "e7/main/e7-r05-sparse-replace.json",
+      "public_sha256": "f07c02e9f1c13d096b72e110d3d26243a6286891256f866a216847088b27f1aa",
+      "original_private_file": "e7-r05-sparse-replace.json",
+      "original_private_sha256": "c47261e198441a90bd9479132aeba2a109a057288ab31e9bc515e1dbf945fc7c",
+      "original_private_bytes": 10763,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r05-sparse-restart",
+      "headline": true,
+      "path": "e7/main/e7-r05-sparse-restart.json",
+      "public_sha256": "e0ba753de540d42450057891619a8982772cfa47c946223a3472d58f19676c39",
+      "original_private_file": "e7-r05-sparse-restart.json",
+      "original_private_sha256": "c07eb72d57306dfad25d7ba1135c60ff9b2365de66fb64219813394038923027",
+      "original_private_bytes": 34003,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "trial_id": "e7-r05-lm-inplace",
+      "headline": true,
+      "path": "e7/main/e7-r05-lm-inplace.json",
+      "public_sha256": "f3f6f8e6d271a3a254f4d7b103ba5ae211824e8caa50548bc8b495fa685af96b",
+      "original_private_file": "e7-r05-lm-inplace.json",
+      "original_private_sha256": "04fc1cb617c0e498b1f175d41d126ef1a082f145e82b7f5d7a8b8ed1c889bcf3",
+      "original_private_bytes": 10698,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    }
+  ],
+  "failed_attempts": "No failed attempts in this completed, no-retry frozen matrix. All 34 attempts retained.",
+  "payload_scope": "Original all-file fixture SHA256 retained from preparation; small exports rehashed locally. Native/checkpoint payloads were not downloaded or independently rehashed by publication."
+}

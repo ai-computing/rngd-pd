@@ -1,0 +1,19 @@
+{
+  "schema": "onggi.binding-fixtures.v1",
+  "cases": [
+    {
+      "name": "native-identical",
+      "base_dir": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "target_dir": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "switchplan": "atom-base.switchplan.json",
+      "expect_mode": "reload"
+    },
+    {
+      "name": "native-metadata-revision",
+      "base_dir": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+      "target_dir": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/target",
+      "switchplan": "atom-target.switchplan.json",
+      "expect_mode": "reload"
+    }
+  ]
+}

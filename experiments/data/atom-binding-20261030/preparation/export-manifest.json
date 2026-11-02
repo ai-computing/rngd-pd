@@ -1,0 +1,98 @@
+{
+  "archive": {
+    "sha256": "adf6fabd3d38d991b59d44be713b50b859f41d386376782d06ec23cb56049f97",
+    "bytes": 22886
+  },
+  "files": [
+    {
+      "path": "atom-artifacts/base/atom-binding.json",
+      "bytes": 26,
+      "sha256": "5fe19e9c34cb7ca8cd40594332ceb4696c23b9a022cd61d2de4bdfb6a33f1345"
+    },
+    {
+      "path": "atom-artifacts/base/profile.json",
+      "bytes": 184,
+      "sha256": "080d3c33f0810e8e18073b0bd113087497d0e5156b714d4e11c054fb577708ad"
+    },
+    {
+      "path": "atom-artifacts/base/session.rbln.json",
+      "bytes": 248,
+      "sha256": "b132e8ed7c149bf9e56119b586b8594131fc5614d68c0a0086196af8d6388a28"
+    },
+    {
+      "path": "atom-artifacts/target/atom-binding.json",
+      "bytes": 26,
+      "sha256": "5fe19e9c34cb7ca8cd40594332ceb4696c23b9a022cd61d2de4bdfb6a33f1345"
+    },
+    {
+      "path": "atom-artifacts/target/profile.json",
+      "bytes": 186,
+      "sha256": "3dd7ebe83338ab39ea32ff371e1fa5e05f90954f28d7d58c8e08496d4b321d42"
+    },
+    {
+      "path": "atom-artifacts/target/session.rbln.json",
+      "bytes": 248,
+      "sha256": "b132e8ed7c149bf9e56119b586b8594131fc5614d68c0a0086196af8d6388a28"
+    },
+    {
+      "path": "evidence/atom-artifact-preparation-attempt1.json",
+      "bytes": 3044,
+      "sha256": "c70cfe533654202c0dc892f01e9c07dfae5f463fd7ece43763a61dfa9a31a78a"
+    },
+    {
+      "path": "evidence/atom-artifact-preparation.json",
+      "bytes": 1539,
+      "sha256": "5cdaecb007d6cc67e6c643e653d34999be7b5c25b5a626f9e4ac72c4c44a55df"
+    },
+    {
+      "path": "evidence/atom-public-compile.json",
+      "bytes": 1461,
+      "sha256": "d62365662ddabda737e75b02e86f1fe182195d3e4ce214b9bb86cb1938096a5a"
+    },
+    {
+      "path": "inputs/atom-base.switchplan.json",
+      "bytes": 1804,
+      "sha256": "cfed947240d467360c3ab625497b4e8a67553bd10e79a4bc3577d38e57c5d2cb"
+    },
+    {
+      "path": "inputs/atom-fixtures.json",
+      "bytes": 725,
+      "sha256": "872b242fe84c37ae859efdd51b0b5f80a196a69d0d9ac015e979e8dfaa55d7cf"
+    },
+    {
+      "path": "inputs/atom-target.switchplan.json",
+      "bytes": 1884,
+      "sha256": "9c350aaec6a3b9f9223cd82e7772c05393baf1874a165c876ead9847182e920a"
+    },
+    {
+      "path": "scripts/atom-b1-native-02.py",
+      "bytes": 14651,
+      "sha256": "45c2c2e2376f5277ceedd4723c0e6e18b33e0f3249d3e29f7e8dc054e9816fd3"
+    },
+    {
+      "path": "scripts/atom-b1-native-03.py",
+      "bytes": 14657,
+      "sha256": "faf4149330f45204551f4f3a95233bba91d36c78e8abbedf1d53519e1e9653bf"
+    },
+    {
+      "path": "scripts/atom-b1-native-04.py",
+      "bytes": 16435,
+      "sha256": "b8c4d5f8b296e75c6bd49eebe8e0a719cda1575309cfba477e11c19908262670"
+    },
+    {
+      "path": "scripts/compile_atom_public.py",
+      "bytes": 2301,
+      "sha256": "a0d82c2bdc57d403cf597684a81d53ef472fd6d1637452b23e012b7afdb88733"
+    },
+    {
+      "path": "scripts/prepare_atom_artifacts.py",
+      "bytes": 2998,
+      "sha256": "ceb27ecebe205e537da4652ce250a8915d3d3b058799524e833cd74880796e2f"
+    },
+    {
+      "path": "scripts/run_atom_b1.py",
+      "bytes": 12741,
+      "sha256": "244c51f117c7597540edc89dde8957a9f1e1fdc21bff31015a70ab6b00607cc8"
+    }
+  ]
+}

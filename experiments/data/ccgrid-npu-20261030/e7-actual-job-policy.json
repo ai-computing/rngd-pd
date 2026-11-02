@@ -1,0 +1,95 @@
+{
+  "utc": 1793362560.008537,
+  "job_uid": "f9b1f5d1-a280-4a28-ba4c-21c29dc6fd11",
+  "pod_uid": "9199199b-2726-4501-aad9-f1e5d3f3322d",
+  "node": "node-0",
+  "phase": "Running",
+  "job_policy": {
+    "activeDeadlineSeconds": 3600,
+    "ttlSecondsAfterFinished": 600,
+    "backoffLimit": 0
+  },
+  "job_resources": {
+    "containers": [
+      {
+        "name": "run",
+        "resources": {
+          "limits": {
+            "cpu": "12",
+            "furiosa.ai/rngd": "1",
+            "memory": "128Gi"
+          },
+          "requests": {
+            "cpu": "4",
+            "furiosa.ai/rngd": "1",
+            "memory": "64Gi"
+          }
+        },
+        "image": "ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956"
+      }
+    ],
+    "initContainers": [
+      {
+        "name": "assigned-rngd",
+        "resources": {
+          "limits": {
+            "cpu": "1",
+            "furiosa.ai/rngd": "1",
+            "memory": "128Mi"
+          },
+          "requests": {
+            "cpu": "100m",
+            "furiosa.ai/rngd": "1",
+            "memory": "64Mi"
+          }
+        },
+        "image": "ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956"
+      }
+    ]
+  },
+  "pod_resources": {
+    "containers": [
+      {
+        "name": "run",
+        "resources": {
+          "limits": {
+            "cpu": "12",
+            "furiosa.ai/rngd": "1",
+            "memory": "128Gi"
+          },
+          "requests": {
+            "cpu": "4",
+            "furiosa.ai/rngd": "1",
+            "memory": "64Gi"
+          }
+        },
+        "image": "ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956"
+      }
+    ],
+    "initContainers": [
+      {
+        "name": "assigned-rngd",
+        "resources": {
+          "limits": {
+            "cpu": "1",
+            "furiosa.ai/rngd": "1",
+            "memory": "128Mi"
+          },
+          "requests": {
+            "cpu": "100m",
+            "furiosa.ai/rngd": "1",
+            "memory": "64Mi"
+          }
+        },
+        "image": "ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956"
+      }
+    ]
+  },
+  "scope": "Actual API observation of the one serial E7 measurement Job and its Pod; init/main are sequential, effective RNGD allocation1.",
+  "publication": {
+    "original_private_file": "e7-actual-job-policy.json",
+    "original_private_sha256": "df9acb518685c35bec1a31feaa811f25c15d23e2a78202e5ab6aefb060f4c6f0",
+    "original_private_bytes": 2405,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

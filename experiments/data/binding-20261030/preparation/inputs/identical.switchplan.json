@@ -1,0 +1,123 @@
+{
+  "schema": "onggi.switchplan.v1",
+  "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+  "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+  "files": [
+    {
+      "path": "config.json",
+      "base": "config.json",
+      "size": 855,
+      "same": 855,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 855,
+      "changed_runs": 0,
+      "largest_run": 0,
+      "ranges": [
+        {
+          "offset": 0,
+          "length": 855,
+          "kind": "same"
+        }
+      ]
+    },
+    {
+      "path": "model-00001-of-00004.safetensors",
+      "base": "model-00001-of-00004.safetensors",
+      "size": 4976698672,
+      "same": 4976698672,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 4976698672,
+      "changed_runs": 0,
+      "largest_run": 0,
+      "ranges": [
+        {
+          "offset": 0,
+          "length": 4976698672,
+          "kind": "same"
+        }
+      ]
+    },
+    {
+      "path": "model-00002-of-00004.safetensors",
+      "base": "model-00002-of-00004.safetensors",
+      "size": 4999802720,
+      "same": 4999802720,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 4999802720,
+      "changed_runs": 0,
+      "largest_run": 0,
+      "ranges": [
+        {
+          "offset": 0,
+          "length": 4999802720,
+          "kind": "same"
+        }
+      ]
+    },
+    {
+      "path": "model-00003-of-00004.safetensors",
+      "base": "model-00003-of-00004.safetensors",
+      "size": 4915916176,
+      "same": 4915916176,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 4915916176,
+      "changed_runs": 0,
+      "largest_run": 0,
+      "ranges": [
+        {
+          "offset": 0,
+          "length": 4915916176,
+          "kind": "same"
+        }
+      ]
+    },
+    {
+      "path": "model-00004-of-00004.safetensors",
+      "base": "model-00004-of-00004.safetensors",
+      "size": 1168138808,
+      "same": 1168138808,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 1168138808,
+      "changed_runs": 0,
+      "largest_run": 0,
+      "ranges": [
+        {
+          "offset": 0,
+          "length": 1168138808,
+          "kind": "same"
+        }
+      ]
+    },
+    {
+      "path": "model.safetensors.index.json",
+      "base": "model.safetensors.index.json",
+      "size": 23950,
+      "same": 23950,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 23950,
+      "changed_runs": 0,
+      "largest_run": 0,
+      "ranges": [
+        {
+          "offset": 0,
+          "length": 23950,
+          "kind": "same"
+        }
+      ]
+    }
+  ],
+  "size": 16060581181,
+  "same": 16060581181,
+  "moved": 0,
+  "new": 0,
+  "new_stored": 0,
+  "same_blocks": 16060581181,
+  "changed_runs": 0,
+  "largest_run": 0
+}

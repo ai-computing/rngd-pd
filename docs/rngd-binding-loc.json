@@ -1,0 +1,224 @@
+{
+  "excluded": "SDK/dependency implementations, tests, docs, caches, generated artifacts and this script",
+  "files": {
+    "src/rngd_pd/__init__.py": {
+      "nonblank": 8,
+      "physical": 10,
+      "sha256": "1f5b32e544c4509860aaf607514f70c4f49b2ca28fdc560308d647b2b591b66f"
+    },
+    "src/rngd_pd/_tv_patch.py": {
+      "nonblank": 22,
+      "physical": 30,
+      "sha256": "b86125d124578c55969f0c8b358ba8e0b3ead53d81d61c06c4f2ce62a47dd28c"
+    },
+    "src/rngd_pd/engines/__init__.py": {
+      "nonblank": 1,
+      "physical": 1,
+      "sha256": "71128201bde7aa95964ac9b16215b2c4d5a0025504af6c4af0ea30d05d08eef2"
+    },
+    "src/rngd_pd/engines/artifact_cache.py": {
+      "nonblank": 137,
+      "physical": 165,
+      "sha256": "66a257c15b281c43d36066303a56c30b134816221b5396835ea24bd9faf7621f"
+    },
+    "src/rngd_pd/engines/decode_batch.py": {
+      "nonblank": 429,
+      "physical": 492,
+      "sha256": "c6fbc73635bf2e30403c8095faca47d0ffa73f1b99e73ccd36bee320a23cf268"
+    },
+    "src/rngd_pd/engines/fsdk.py": {
+      "nonblank": 105,
+      "physical": 137,
+      "sha256": "22466221ce176682da1a71c5c42361436c345a7c822d1f2334ba12645b3d1890"
+    },
+    "src/rngd_pd/engines/model.py": {
+      "nonblank": 169,
+      "physical": 193,
+      "sha256": "b767ab40be5182c4a8661f23b1e923762835ac0abb7df47a9874e73cac0830fe"
+    },
+    "src/rngd_pd/kernels/__init__.py": {
+      "nonblank": 1,
+      "physical": 1,
+      "sha256": "23ba752e27c97032c7d78ea28d27a0e613ca3dadf3ab3591d5fb5eafd0cc3bd2"
+    },
+    "src/rngd_pd/kernels/decode_batch.py": {
+      "nonblank": 259,
+      "physical": 298,
+      "sha256": "07674dd3785737070b75db1caaacf4c434aa6c5e66f6769614a962f985d0e973"
+    },
+    "src/rngd_pd/kernels/dsl_batch.py": {
+      "nonblank": 155,
+      "physical": 175,
+      "sha256": "7f9670ee2ab90afe932f27ba96643baefd4c63d76c5ce8c40581931a5280c7ac"
+    },
+    "src/rngd_pd/paths.py": {
+      "nonblank": 16,
+      "physical": 20,
+      "sha256": "13ffda0c3ed4f9bcdbfaf362f2fb7d2635093ed34f116537524bd0e55d539777"
+    },
+    "src/rngd_pd/swap/__init__.py": {
+      "nonblank": 9,
+      "physical": 11,
+      "sha256": "558b5b03e6111a1d3bd0bb301db7f3cab726cc41896a6c1924881c68f395440d"
+    },
+    "src/rngd_pd/swap/atom.py": {
+      "nonblank": 247,
+      "physical": 289,
+      "sha256": "c51fce8bdde47a1b6dec9e5db32a9558f462aa90dfa4255908cdb7b307fe0130"
+    },
+    "src/rngd_pd/swap/atom_bundles.py": {
+      "nonblank": 200,
+      "physical": 229,
+      "sha256": "e62158886887cef33129cf8a0077019608adef77090b73e7ff3b476e2259e15e"
+    },
+    "src/rngd_pd/swap/atom_constants.py": {
+      "nonblank": 258,
+      "physical": 279,
+      "sha256": "c2e642781abe340ae9f6c8f57ffc2121d9b65300af50a56d5a47970c393ed024"
+    },
+    "src/rngd_pd/swap/atom_inputs.py": {
+      "nonblank": 421,
+      "physical": 488,
+      "sha256": "6b1023402f84d51d0a414af51a4c5d7f86f5e89e4ef60003cf20315e282de934"
+    },
+    "src/rngd_pd/swap/bench_atom.py": {
+      "nonblank": 177,
+      "physical": 206,
+      "sha256": "7b8ac387b9f0733a08192fea01a2214eda7cead877ff3c00331d3186b569e882"
+    },
+    "src/rngd_pd/swap/bench_atom_bundles.py": {
+      "nonblank": 105,
+      "physical": 117,
+      "sha256": "6d13a229e91453275936edd36620df17ba23228f737aa81eb8a33cb5f82e8c17"
+    },
+    "src/rngd_pd/swap/bench_rngd.py": {
+      "nonblank": 248,
+      "physical": 281,
+      "sha256": "219002caea9527c87c5eb8032b795733f10ec1a337f6b0c58036360ba663f553"
+    },
+    "src/rngd_pd/swap/binding_cli.py": {
+      "nonblank": 169,
+      "physical": 199,
+      "sha256": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04"
+    },
+    "src/rngd_pd/swap/delta.py": {
+      "nonblank": 362,
+      "physical": 402,
+      "sha256": "da0b1d4a0f28d0e9e7ec061fc66a361dc521350340d35aee2db1417fbe5ac92a"
+    },
+    "src/rngd_pd/swap/load.py": {
+      "nonblank": 45,
+      "physical": 52,
+      "sha256": "5851730bc4e0c96249e0b1a6c8f87a46df694c1564f9fd25a7ebb0aef442c3c0"
+    },
+    "src/rngd_pd/swap/rngd.py": {
+      "nonblank": 571,
+      "physical": 626,
+      "sha256": "96985660773ac262c3418187f754262e6e5007c1c9e6fe72630d139258cd342a"
+    },
+    "src/rngd_pd/swap/rngd_binding.py": {
+      "nonblank": 398,
+      "physical": 435,
+      "sha256": "b26e6b2ec02beb375235e7f797bd0407b279437ad1e495551cc5c49e74c70b47"
+    },
+    "src/rngd_pd/swap/variants.py": {
+      "nonblank": 82,
+      "physical": 96,
+      "sha256": "e8467d7d33b378f17c548855e9c1dd5e0f2dda2e21d9b587598b07f775b3ac26"
+    }
+  },
+  "method": "UTF-8 splitlines; nonblank uses str.strip; comments/docstrings included",
+  "schema": "rngd-binding-loc.v1",
+  "scopes": {
+    "adapter_only": {
+      "file_count": 2,
+      "files": [
+        "src/rngd_pd/swap/rngd_binding.py",
+        "src/rngd_pd/swap/binding_cli.py"
+      ],
+      "nonblank": 567,
+      "physical": 634,
+      "source_sha256": "d122ce5b012583f1c5cef670fe186fb5d8ceef8b97703d895faa14edceb3226b"
+    },
+    "full_rngd_runtime": {
+      "file_count": 18,
+      "files": [
+        "src/rngd_pd/swap/rngd_binding.py",
+        "src/rngd_pd/swap/binding_cli.py",
+        "src/rngd_pd/swap/delta.py",
+        "src/rngd_pd/swap/variants.py",
+        "src/rngd_pd/__init__.py",
+        "src/rngd_pd/_tv_patch.py",
+        "src/rngd_pd/paths.py",
+        "src/rngd_pd/swap/__init__.py",
+        "src/rngd_pd/swap/load.py",
+        "src/rngd_pd/swap/rngd.py",
+        "src/rngd_pd/engines/__init__.py",
+        "src/rngd_pd/engines/artifact_cache.py",
+        "src/rngd_pd/engines/decode_batch.py",
+        "src/rngd_pd/engines/fsdk.py",
+        "src/rngd_pd/engines/model.py",
+        "src/rngd_pd/kernels/__init__.py",
+        "src/rngd_pd/kernels/decode_batch.py",
+        "src/rngd_pd/kernels/dsl_batch.py"
+      ],
+      "nonblank": 2938,
+      "physical": 3343,
+      "source_sha256": "d9b3bc44662bed61e886510f23c598b92bce976026bded28b968fa2efbe67cbc"
+    },
+    "inherited_rngd_runtime": {
+      "file_count": 14,
+      "files": [
+        "src/rngd_pd/__init__.py",
+        "src/rngd_pd/_tv_patch.py",
+        "src/rngd_pd/paths.py",
+        "src/rngd_pd/swap/__init__.py",
+        "src/rngd_pd/swap/load.py",
+        "src/rngd_pd/swap/rngd.py",
+        "src/rngd_pd/engines/__init__.py",
+        "src/rngd_pd/engines/artifact_cache.py",
+        "src/rngd_pd/engines/decode_batch.py",
+        "src/rngd_pd/engines/fsdk.py",
+        "src/rngd_pd/engines/model.py",
+        "src/rngd_pd/kernels/__init__.py",
+        "src/rngd_pd/kernels/decode_batch.py",
+        "src/rngd_pd/kernels/dsl_batch.py"
+      ],
+      "nonblank": 1927,
+      "physical": 2211,
+      "source_sha256": "04e2933e276924094d939f4b9b8156687a113a04b4c29defe3af0985b1273dc3"
+    },
+    "parser_and_policy": {
+      "file_count": 2,
+      "files": [
+        "src/rngd_pd/swap/delta.py",
+        "src/rngd_pd/swap/variants.py"
+      ],
+      "nonblank": 444,
+      "physical": 498,
+      "source_sha256": "832f010dc86e19b99f97e881794fcd64d364c55a6e72382b125ffbe501dce392"
+    },
+    "swap_directory_inventory": {
+      "file_count": 14,
+      "files": [
+        "src/rngd_pd/swap/__init__.py",
+        "src/rngd_pd/swap/atom.py",
+        "src/rngd_pd/swap/atom_bundles.py",
+        "src/rngd_pd/swap/atom_constants.py",
+        "src/rngd_pd/swap/atom_inputs.py",
+        "src/rngd_pd/swap/bench_atom.py",
+        "src/rngd_pd/swap/bench_atom_bundles.py",
+        "src/rngd_pd/swap/bench_rngd.py",
+        "src/rngd_pd/swap/binding_cli.py",
+        "src/rngd_pd/swap/delta.py",
+        "src/rngd_pd/swap/load.py",
+        "src/rngd_pd/swap/rngd.py",
+        "src/rngd_pd/swap/rngd_binding.py",
+        "src/rngd_pd/swap/variants.py"
+      ],
+      "nonblank": 3292,
+      "physical": 3710,
+      "source_sha256": "0aa370439ce8876b4331b3b9e4896d52faf911dc300240cd6e9f46ea0a2045e9"
+    }
+  }
+}

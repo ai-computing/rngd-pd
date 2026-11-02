@@ -1,0 +1,51 @@
+{
+  "argv": [
+    "nice",
+    "-n",
+    "19",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+    "push",
+    "--store",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture/store",
+    "--ref",
+    "a",
+    "--json",
+    "--quiet",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture/source-a"
+  ],
+  "elapsed_s": 0.000615409,
+  "environment": {
+    "GOMAXPROCS": "32",
+    "GOMEMLIMIT": null,
+    "LC_ALL": "C",
+    "TMPDIR": "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture/tmp",
+    "TZ": "UTC"
+  },
+  "error": "FileNotFoundError(2, 'No such file or directory')",
+  "executed_argv": [
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture/push-a.resources",
+    "nice",
+    "-n",
+    "19",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+    "push",
+    "--store",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture/store",
+    "--ref",
+    "a",
+    "--json",
+    "--quiet",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture/source-a"
+  ],
+  "exit_code": null,
+  "monotonic_end_ns": 1563165486310751,
+  "monotonic_start_ns": 1563165485695342,
+  "process_io": null,
+  "process_io_reason": "no validated pre-exit per-process snapshot; unavailable",
+  "status": "failed",
+  "traced": false,
+  "utc_start": "2026-11-02T02:56:30.610523+00:00"
+}

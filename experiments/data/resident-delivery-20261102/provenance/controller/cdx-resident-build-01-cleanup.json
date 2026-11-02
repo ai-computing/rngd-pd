@@ -1,0 +1,42 @@
+{
+  "job_uid": "b8ca8a49-0ea9-4ede-8747-9fdac916eb72",
+  "name": "cdx-resident-build-01",
+  "job_absent": true,
+  "pods_absent": true,
+  "observations": [
+    {
+      "name": "cdx-resident-build-01-4v6v7",
+      "uid": "85f29908-187f-4de8-863b-145ee05d1e4e",
+      "phase": "Failed",
+      "containers": [
+        {
+          "containerID": "containerd://00b7c2d78056e1233fdc42895a969264c22eec730e8f06cdddac26cfbd84a15c",
+          "image": "docker.io/library/golang:1.25.1-bookworm",
+          "imageID": "docker.io/library/golang@sha256:c423747fbd96fd8f0b1102d947f51f9b266060217478e5f9bf86f145969562ee",
+          "lastState": {},
+          "name": "build",
+          "ready": false,
+          "restartCount": 0,
+          "started": false,
+          "state": {
+            "terminated": {
+              "containerID": "containerd://00b7c2d78056e1233fdc42895a969264c22eec730e8f06cdddac26cfbd84a15c",
+              "exitCode": 1,
+              "finishedAt": "2026-11-02T01:52:55Z",
+              "reason": "Error",
+              "startedAt": "2026-11-02T01:52:55Z"
+            }
+          },
+          "volumeMounts": [
+            {
+              "mountPath": "/work",
+              "name": "work"
+            }
+          ]
+        }
+      ],
+      "log": "",
+      "log_stderr": ""
+    }
+  ]
+}

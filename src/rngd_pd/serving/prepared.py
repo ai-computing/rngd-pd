@@ -10,6 +10,8 @@ def read_config(path, S):
         cfg = json.load(f)
     if cfg.get("engine") not in ("rngd", "atom", "atom-inputs"):
         raise ValueError("prepared engine must be rngd, atom or atom-inputs")
+    if type(cfg.get("warmup", False)) is not bool:
+        raise ValueError("warmup must be a boolean")
     if "host_workers" in cfg:
         workers = cfg["host_workers"]
         if cfg["engine"] != "rngd" or type(workers) is not int or workers not in (1, 2):
@@ -104,35 +106,58 @@ class PreparedEngine:
     def discard_kv(self):
         self._K = self._V = None
 
+    def warmup(self):
+        """Run each prepared graph with private KV before admitting requests."""
+        for variant in self.variants:
+            try:
+                self.activate(variant)
+                self.step([0] * variant.B, [0] * variant.B)
+            finally:
+                self.discard_kv()
+
 
 def build_prepared(path, S, chip):
     cfg = read_config(path, S)
-    variants, kind = cfg["variants"], cfg["engine"]
-    if kind == "rngd":
-        from rngd_pd.swap.rngd import SwappableDecode, NKV, HD
-        engine = SwappableDecode(cfg["checkpoint"], group=variants[0].group,
-                                 chip=chip, cache_dir=cfg.get("cache_dir"),
-                                 allow_compile=False, host_workers=cfg.get("host_workers", 1))
-        for v in variants:
-            engine.prepare(v)
-        dims = engine.nl, NKV, HD
-    elif kind == "atom":
-        from rngd_pd.swap.atom import AtomSession, Tables
-        engine = AtomSession(cfg["artifact"], Tables(cfg["checkpoint"]), device=chip)
-        if any(not engine.has(v) for v in variants):
-            raise ValueError("ATOM artifact does not contain every configured variant")
-        if engine.nl != engine.tables.cfg.n_layers:
-            raise ValueError("ATOM artifact layer count does not match the checkpoint")
-        dims = engine.nl, engine.tables.cfg.n_kv, engine.tables.cfg.head_dim
-    else:
-        from rngd_pd.swap.atom_inputs import DeviceWeightDecode
-        if len(variants) > 8:
-            raise ValueError("ATOM device-input startup supports at most eight prepared shapes")
-        if not cfg.get("cache_dir"):
-            raise ValueError("ATOM device-input mode needs cache_dir")
-        engine = DeviceWeightDecode(cfg["checkpoint"], cfg["cache_dir"], device=chip)
-        for v in variants:
-            engine.swap(v)
-            engine.first_step()       # materialize every shape before ready
-        dims = engine.d["nl"], engine.d["NKV"], engine.d["HD"]
-    return PreparedEngine(engine, variants, kind, cfg["checkpoint_id"], *dims)
+    engine = adapter = None
+    try:
+        variants, kind = cfg["variants"], cfg["engine"]
+        if kind == "rngd":
+            from rngd_pd.swap.rngd import SwappableDecode, NKV, HD
+            engine = SwappableDecode(cfg["checkpoint"], group=variants[0].group,
+                                     chip=chip, cache_dir=cfg.get("cache_dir"),
+                                     allow_compile=False, host_workers=cfg.get("host_workers", 1))
+            for v in variants:
+                engine.prepare(v)
+            dims = engine.nl, NKV, HD
+        elif kind == "atom":
+            from rngd_pd.swap.atom import AtomSession, Tables
+            engine = AtomSession(cfg["artifact"], Tables(cfg["checkpoint"]), device=chip)
+            if any(not engine.has(v) for v in variants):
+                raise ValueError("ATOM artifact does not contain every configured variant")
+            if engine.nl != engine.tables.cfg.n_layers:
+                raise ValueError("ATOM artifact layer count does not match the checkpoint")
+            dims = engine.nl, engine.tables.cfg.n_kv, engine.tables.cfg.head_dim
+        else:
+            from rngd_pd.swap.atom_inputs import DeviceWeightDecode
+            if len(variants) > 8:
+                raise ValueError("ATOM device-input startup supports at most eight prepared shapes")
+            if not cfg.get("cache_dir"):
+                raise ValueError("ATOM device-input mode needs cache_dir")
+            engine = DeviceWeightDecode(cfg["checkpoint"], cfg["cache_dir"], device=chip)
+            for v in variants:
+                engine.swap(v)
+                engine.first_step()       # materialize every shape before ready
+            dims = engine.d["nl"], engine.d["NKV"], engine.d["HD"]
+        adapter = PreparedEngine(engine, variants, kind, cfg['checkpoint_id'], *dims)
+        if cfg.get('warmup', False):
+            adapter.warmup()
+        return adapter
+    except BaseException as startup_error:
+        if adapter is not None:
+            adapter.discard_kv()
+        if engine is not None:
+            try:
+                engine.close()
+            except BaseException as cleanup_error:
+                raise startup_error from cleanup_error
+        raise

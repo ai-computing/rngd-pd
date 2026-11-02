@@ -136,6 +136,40 @@ the tested stack. Subsequent requests use those prepared shapes. This opt-in
 path retains the slower device-input decode rate documented in
 [delta-swap.md](delta-swap.md); it is not the default ATOM choice.
 
+## Native warmup and standalone KV
+
+Set `"warmup": true` in any prepared config to execute one actual native step
+for every configured variant before the worker becomes ready. The default is
+false; only JSON booleans are accepted. Warmup uses token/position zero and
+private blank KV, discarded after every attempt. A preparation/warmup error or
+cancellation fails startup and attempts to close the initialized engine. The
+original startup exception is preserved if cleanup also fails, with the cleanup
+failure as its cause. A failed RNGD close synchronization disables further
+serving while retaining potentially live native buffers; retry close only after
+synchronization recovers, or recover through process teardown. RNGD still loads
+only existing cached graphs; ATOM device-input startup retains its existing
+materialization even when optional warmup is disabled. Warmup is kernel execution,
+not prompt prefill or evidence of token quality.
+
+The cluster's whole-request KV path uses
+`rngd_pd.connector.worker.WorkerKVConnector` and `WorkerRole.WORKER` without
+requiring vLLM. The optional `rngd_pd.connector.rngd_kv.RngdKVConnector` plugin
+retains the genuine vLLM base class and shares the same transfer implementation;
+importing that plugin without vLLM raises an actionable error. No vLLM shim is
+installed by production code.
+
+To replay real prefill after its producer exits, publish each layer's full-width
+arrays through the selected shared-memory transport with the worker connector's
+`save_kv_layer` and `wait_for_save`. Preserve the real prefill's `next` token,
+prompt length and immutable checkpoint ID. POST `/decode` with `req_id`, `first`
+(that `next` token), `pos` (prompt length), `max_new` and `checkpoint_id` after
+the consumer is ready. K per layer is `(nkv, hd, wire_S)` and V is
+`(nkv, wire_S, hd)`; use the same `PD_SHM_ROOT` and bf16 serialization on both
+sides. `tokens[0]` echoes the supplied `first`; compare the native-produced
+suffix using `max_new >= 2` against a fresh matching reference. Closing the
+shared-memory producer preserves its published files until the consumer loads
+them. This replay does not establish a live gateway/prefill measurement.
+
 ## Admission, transport and upgrade limits
 
 - `PD_MAX_REQUESTS=32` bounds concurrent POST handlers, including streaming and
@@ -179,6 +213,12 @@ The chart continues to run the same `rngd_pd.serving.cluster` module.
 
 ## Verification and hardware gate
 
+The [2026-10-30 native prepared HTTP record](../experiments/2026-10-30-onggi-prepared-serving.md)
+now verifies real Onggi init preparation, optional prewarm readiness, real prompt
+KV replay and12 HTTP/96 reference-equal tokens on RNGD SDK2026.4 B4/S256/group2.
+It also records the retained failed prefix-KV attempt and completed UID cleanup.
+It does not establish live prefill/gateway handoff or ATOM HTTP startup.
+
 ```bash
 python -m pip install -e .
 python -m pytest -q tests
@@ -197,5 +237,6 @@ record: token equality with a fresh destination load; cold and prepared TTFT;
 across repeated B/S switches; mixed context/output lengths; overload and stream
 disconnects. Repeat on the site's SDK versions. Real UCX error/DMA recovery,
 container builds and Kubernetes rollout have not been validated by these CPU
-tests. Existing [hardware results](../experiments/2026-10-23-npu-delta-load.md)
-cover the underlying loaders, not a new end-to-end serving measurement.
+tests. Earlier [hardware results](../experiments/2026-10-23-npu-delta-load.md)
+cover the underlying loaders; the native HTTP record above adds a bounded
+decode replay, with broader deployment gates still required.

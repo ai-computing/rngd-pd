@@ -1,0 +1,87 @@
+{
+  "schema": "onggi.switchplan.v1",
+  "base_manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+  "manifest": "sha256:57633693fad638eb03028e99655f2fc0264c23d914fdb8ec4b95157d19c253b7",
+  "files": [
+    {
+      "path": "atom-binding.json",
+      "base": "atom-binding.json",
+      "size": 26,
+      "same": 26,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 26,
+      "changed_runs": 0,
+      "largest_run": 0,
+      "ranges": [
+        {
+          "offset": 0,
+          "length": 26,
+          "kind": "same"
+        }
+      ]
+    },
+    {
+      "path": "profile.json",
+      "base": "profile.json",
+      "size": 184,
+      "same": 184,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 184,
+      "changed_runs": 0,
+      "largest_run": 0,
+      "ranges": [
+        {
+          "offset": 0,
+          "length": 184,
+          "kind": "same"
+        }
+      ]
+    },
+    {
+      "path": "session.rbln",
+      "base": "session.rbln",
+      "size": 15176307063,
+      "same": 15176307063,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 15176307063,
+      "changed_runs": 0,
+      "largest_run": 0,
+      "ranges": [
+        {
+          "offset": 0,
+          "length": 15176307063,
+          "kind": "same"
+        }
+      ]
+    },
+    {
+      "path": "session.rbln.json",
+      "base": "session.rbln.json",
+      "size": 248,
+      "same": 248,
+      "moved": 0,
+      "new": 0,
+      "same_blocks": 248,
+      "changed_runs": 0,
+      "largest_run": 0,
+      "ranges": [
+        {
+          "offset": 0,
+          "length": 248,
+          "kind": "same"
+        }
+      ]
+    }
+  ],
+  "size": 15176307521,
+  "same": 15176307521,
+  "moved": 0,
+  "new": 0,
+  "new_stored": 0,
+  "same_blocks": 15176307521,
+  "changed_runs": 0,
+  "largest_run": 0
+}

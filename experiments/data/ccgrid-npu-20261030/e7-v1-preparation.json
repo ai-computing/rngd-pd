@@ -1,0 +1,202 @@
+{
+  "status": "completed",
+  "utc": 1793361456.6907325,
+  "source_commit": "2d84ac39374d71086436e65b967a4f718876a2f3",
+  "commands": [
+    {
+      "argv": [
+        "$RUN_ROOT/tools/onggi-v1",
+        "diff",
+        "--store",
+        "<private-path>",
+        "--ranges",
+        "--json",
+        "base",
+        "sparse"
+      ],
+      "exit": 0,
+      "sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa",
+      "bytes": 3078,
+      "schema": "onggi.switchplan.v1",
+      "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+      "manifest": "sha256:fab1cc99fa82cc7ac986dd482e163b01568e62c2971f30c11895aeaa928e8457"
+    },
+    {
+      "argv": [
+        "$RUN_ROOT/tools/onggi-v1",
+        "diff",
+        "--store",
+        "<private-path>",
+        "--ranges",
+        "--json",
+        "base",
+        "lm"
+      ],
+      "exit": 0,
+      "sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84",
+      "bytes": 3063,
+      "schema": "onggi.switchplan.v1",
+      "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+      "manifest": "sha256:ababa06bb5a897b4fcde8c8aba53fe705fc8423fd0427c6e8359fddfab46fafd"
+    }
+  ],
+  "scope": "CPU only, no runtime imports/device operations; read-only original checkpoint/store",
+  "build_argv": [
+    "nice",
+    "-n",
+    "19",
+    "<private-path>",
+    "build",
+    "-p",
+    "2",
+    "-o",
+    "$RUN_ROOT/tools/onggi-v1",
+    "./cmd/onggi"
+  ],
+  "build_exit": 0,
+  "build_stdout": "",
+  "build_stderr": "go: downloading github.com/minio/minio-go/v7 v7.0.95\ngo: downloading github.com/klauspost/compress v1.18.0\ngo: downloading github.com/container-storage-interface/spec v1.12.0\ngo: downloading golang.org/x/sys v0.33.0\ngo: downloading google.golang.org/grpc v1.75.1\ngo: downloading github.com/go-ini/ini v1.67.0\ngo: downloading github.com/dustin/go-humanize v1.0.1\ngo: downloading github.com/google/uuid v1.6.0\ngo: downloading github.com/minio/crc64nvme v1.0.2\ngo: downloading github.com/minio/md5-simd v1.1.2\ngo: downloading golang.org/x/net v0.41.0\ngo: downloading google.golang.org/protobuf v1.36.6\ngo: downloading google.golang.org/genproto/googleapis/rpc v0.0.0-20250707201910-8d1bb00bc6a7\ngo: downloading github.com/goccy/go-json v0.10.5\ngo: downloading github.com/klauspost/cpuid/v2 v2.2.11\ngo: downloading golang.org/x/crypto v0.39.0\ngo: downloading github.com/rs/xid v1.6.0\ngo: downloading github.com/tinylib/msgp v1.3.0\ngo: downloading golang.org/x/text v0.26.0\ngo: downloading github.com/philhofer/fwd v1.2.0\n",
+  "binary_sha256": "47bfaae6bace003bc29c9223521a80b44526c25835dc36d350b2979585abc114",
+  "go_version": "go version go1.27.3 linux/amd64",
+  "fixtures": {
+    "base": [
+      {
+        "path": "config.json",
+        "size": 855,
+        "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+        "device": 64512,
+        "inode": 24520436
+      },
+      {
+        "path": "model-00001-of-00004.safetensors",
+        "size": 4976698672,
+        "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668",
+        "device": 64512,
+        "inode": 400366
+      },
+      {
+        "path": "model-00002-of-00004.safetensors",
+        "size": 4999802720,
+        "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+        "device": 64512,
+        "inode": 400363
+      },
+      {
+        "path": "model-00003-of-00004.safetensors",
+        "size": 4915916176,
+        "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+        "device": 64512,
+        "inode": 400367
+      },
+      {
+        "path": "model-00004-of-00004.safetensors",
+        "size": 1168138808,
+        "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+        "device": 64512,
+        "inode": 400365
+      },
+      {
+        "path": "model.safetensors.index.json",
+        "size": 23950,
+        "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+        "device": 64512,
+        "inode": 24520435
+      }
+    ],
+    "sparse": [
+      {
+        "path": "config.json",
+        "size": 855,
+        "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+        "device": 64512,
+        "inode": 24521032
+      },
+      {
+        "path": "model-00001-of-00004.safetensors",
+        "size": 4976698672,
+        "sha256": "fdc4447dd4d988bd308cab138965a2c5d41e88b83395d31216730c274770169b",
+        "device": 64512,
+        "inode": 24521030
+      },
+      {
+        "path": "model-00002-of-00004.safetensors",
+        "size": 4999802720,
+        "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+        "device": 64512,
+        "inode": 400363
+      },
+      {
+        "path": "model-00003-of-00004.safetensors",
+        "size": 4915916176,
+        "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+        "device": 64512,
+        "inode": 400367
+      },
+      {
+        "path": "model-00004-of-00004.safetensors",
+        "size": 1168138808,
+        "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+        "device": 64512,
+        "inode": 400365
+      },
+      {
+        "path": "model.safetensors.index.json",
+        "size": 23950,
+        "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+        "device": 64512,
+        "inode": 24521031
+      }
+    ],
+    "lm": [
+      {
+        "path": "config.json",
+        "size": 855,
+        "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+        "device": 64512,
+        "inode": 24521463
+      },
+      {
+        "path": "model-00001-of-00004.safetensors",
+        "size": 4976698672,
+        "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668",
+        "device": 64512,
+        "inode": 400366
+      },
+      {
+        "path": "model-00002-of-00004.safetensors",
+        "size": 4999802720,
+        "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+        "device": 64512,
+        "inode": 400363
+      },
+      {
+        "path": "model-00003-of-00004.safetensors",
+        "size": 4915916176,
+        "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+        "device": 64512,
+        "inode": 400367
+      },
+      {
+        "path": "model-00004-of-00004.safetensors",
+        "size": 1168138808,
+        "sha256": "5fb282528bf39e968753c1e9af445fbc1f8c3ef39880f3d4ff25069ca9f874e3",
+        "device": 64512,
+        "inode": 24521438
+      },
+      {
+        "path": "model.safetensors.index.json",
+        "size": 23950,
+        "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+        "device": 64512,
+        "inode": 24521439
+      }
+    ]
+  },
+  "finished_utc": 1793361510.3511493,
+  "publication": {
+    "original_private_file": "e7-v1-preparation.json",
+    "original_private_sha256": "8bc7fcee68a7daa5a031c5cb2289bef9504793396ccd2e8b2739ddee1efa054c",
+    "original_private_bytes": 7211,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

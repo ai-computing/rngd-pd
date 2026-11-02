@@ -1,0 +1,1431 @@
+{
+  "argv": [
+    "--level",
+    "B2",
+    "--fixtures",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/rngd-fixtures.json",
+    "--report",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/kit-report.json",
+    "--",
+    "/home/gspark/venvs/furiosa-2026.4/bin/python",
+    "-m",
+    "rngd_pd.swap.binding_cli",
+    "--socket",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock"
+  ],
+  "binding_command": [
+    "/home/gspark/venvs/furiosa-2026.4/bin/python",
+    "-m",
+    "rngd_pd.swap.binding_cli",
+    "--socket",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock"
+  ],
+  "cases": [
+    {
+      "base_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "base_files": {
+        "config.json": {
+          "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+          "size": 855
+        },
+        "model-00001-of-00004.safetensors": {
+          "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668",
+          "size": 4976698672
+        },
+        "model-00002-of-00004.safetensors": {
+          "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+          "size": 4999802720
+        },
+        "model-00003-of-00004.safetensors": {
+          "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+          "size": 4915916176
+        },
+        "model-00004-of-00004.safetensors": {
+          "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+          "size": 1168138808
+        },
+        "model.safetensors.index.json": {
+          "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+          "size": 23950
+        }
+      },
+      "expect_mode": "units",
+      "failures": [],
+      "name": "native-identical",
+      "results": [
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "describe",
+            "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "batch": 4,
+            "device": "rngd",
+            "format": "safetensors",
+            "layout": "lossless-bf16-rows",
+            "runtime": "furiosa-torch",
+            "schema": "onggi.profile.v1"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "conformance-load",
+            "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+            "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "diagnostics": {
+              "initial_load_s": 15.140148140955716,
+              "readback_calls": 0,
+              "readback_payload_bytes": 0,
+              "readback_s": 0,
+              "readback_source": "actual-serving-allocation.cpu()",
+              "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+            },
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "resident"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "diagnostics": {
+              "initial_load_s": 15.140148140955716,
+              "readback_calls": 0,
+              "readback_payload_bytes": 0,
+              "readback_s": 0,
+              "readback_source": "actual-serving-allocation.cpu()",
+              "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+            },
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "changed_runs": 0,
+            "files": [
+              {
+                "base": "config.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "config.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 855,
+                    "offset": 0
+                  }
+                ],
+                "same": 855,
+                "same_blocks": 855,
+                "size": 855
+              },
+              {
+                "base": "model-00001-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00001-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4976698672,
+                    "offset": 0
+                  }
+                ],
+                "same": 4976698672,
+                "same_blocks": 4976698672,
+                "size": 4976698672
+              },
+              {
+                "base": "model-00002-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00002-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4999802720,
+                    "offset": 0
+                  }
+                ],
+                "same": 4999802720,
+                "same_blocks": 4999802720,
+                "size": 4999802720
+              },
+              {
+                "base": "model-00003-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00003-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4915916176,
+                    "offset": 0
+                  }
+                ],
+                "same": 4915916176,
+                "same_blocks": 4915916176,
+                "size": 4915916176
+              },
+              {
+                "base": "model-00004-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00004-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 1168138808,
+                    "offset": 0
+                  }
+                ],
+                "same": 1168138808,
+                "same_blocks": 1168138808,
+                "size": 1168138808
+              },
+              {
+                "base": "model.safetensors.index.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model.safetensors.index.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 23950,
+                    "offset": 0
+                  }
+                ],
+                "same": 23950,
+                "same_blocks": 23950,
+                "size": 23950
+              }
+            ],
+            "largest_run": 0,
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "moved": 0,
+            "new": 0,
+            "new_stored": 0,
+            "same": 16060581181,
+            "same_blocks": 16060581181,
+            "schema": "onggi.switchplan.v1",
+            "size": 16060581181
+          },
+          "stdout": {
+            "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "bytes": 0,
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "mode": "units",
+            "proof": "9c94c1e264fe450f6309df911e27563b30e4908787ad8daa27ffd7eb0dcfd755",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "changed_runs": 0,
+            "files": [
+              {
+                "base": "config.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "config.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 855,
+                    "offset": 0
+                  }
+                ],
+                "same": 855,
+                "same_blocks": 855,
+                "size": 855
+              },
+              {
+                "base": "model-00001-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00001-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4976698672,
+                    "offset": 0
+                  }
+                ],
+                "same": 4976698672,
+                "same_blocks": 4976698672,
+                "size": 4976698672
+              },
+              {
+                "base": "model-00002-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00002-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4999802720,
+                    "offset": 0
+                  }
+                ],
+                "same": 4999802720,
+                "same_blocks": 4999802720,
+                "size": 4999802720
+              },
+              {
+                "base": "model-00003-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00003-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4915916176,
+                    "offset": 0
+                  }
+                ],
+                "same": 4915916176,
+                "same_blocks": 4915916176,
+                "size": 4915916176
+              },
+              {
+                "base": "model-00004-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00004-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 1168138808,
+                    "offset": 0
+                  }
+                ],
+                "same": 1168138808,
+                "same_blocks": 1168138808,
+                "size": 1168138808
+              },
+              {
+                "base": "model.safetensors.index.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model.safetensors.index.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 23950,
+                    "offset": 0
+                  }
+                ],
+                "same": 23950,
+                "same_blocks": 23950,
+                "size": 23950
+              }
+            ],
+            "largest_run": 0,
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "moved": 0,
+            "new": 0,
+            "new_stored": 0,
+            "same": 16060581181,
+            "same_blocks": 16060581181,
+            "schema": "onggi.switchplan.v1",
+            "size": 16060581181
+          },
+          "stdout": {
+            "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "bytes": 0,
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "mode": "units",
+            "proof": "9c94c1e264fe450f6309df911e27563b30e4908787ad8daa27ffd7eb0dcfd755",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "resident"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "diagnostics": {
+              "initial_load_s": 15.140148140955716,
+              "readback_calls": 0,
+              "readback_payload_bytes": 0,
+              "readback_s": 0,
+              "readback_source": "actual-serving-allocation.cpu()",
+              "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+            },
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "changed_runs": 0,
+            "files": [
+              {
+                "base": "config.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "config.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 855,
+                    "offset": 0
+                  }
+                ],
+                "same": 855,
+                "same_blocks": 855,
+                "size": 855
+              },
+              {
+                "base": "model-00001-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00001-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4976698672,
+                    "offset": 0
+                  }
+                ],
+                "same": 4976698672,
+                "same_blocks": 4976698672,
+                "size": 4976698672
+              },
+              {
+                "base": "model-00002-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00002-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4999802720,
+                    "offset": 0
+                  }
+                ],
+                "same": 4999802720,
+                "same_blocks": 4999802720,
+                "size": 4999802720
+              },
+              {
+                "base": "model-00003-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00003-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4915916176,
+                    "offset": 0
+                  }
+                ],
+                "same": 4915916176,
+                "same_blocks": 4915916176,
+                "size": 4915916176
+              },
+              {
+                "base": "model-00004-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00004-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 1168138808,
+                    "offset": 0
+                  }
+                ],
+                "same": 1168138808,
+                "same_blocks": 1168138808,
+                "size": 1168138808
+              },
+              {
+                "base": "model.safetensors.index.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model.safetensors.index.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 23950,
+                    "offset": 0
+                  }
+                ],
+                "same": 23950,
+                "same_blocks": 23950,
+                "size": 23950
+              }
+            ],
+            "largest_run": 0,
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "moved": 0,
+            "new": 0,
+            "new_stored": 0,
+            "same": 16060581181,
+            "same_blocks": 16060581181,
+            "schema": "onggi.switchplan.v1",
+            "size": 16060581181
+          },
+          "stdout": {
+            "base_manifest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "bytes": 16060581181,
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "mode": "reload",
+            "proof": "0a21087eef24057195170c6f568b3f00eee74e5d1d14b0450866341770110ed6",
+            "reason": "base manifest is not resident",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "apply",
+            "--target",
+            "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "bytes": 0,
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "mode": "units",
+            "proof": "9c94c1e264fe450f6309df911e27563b30e4908787ad8daa27ffd7eb0dcfd755",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          },
+          "stdout": {
+            "bytes_written": 0,
+            "bytes_written_scope": "logical bytes copied into serving units; excludes temporary staging and D2H, not DMA",
+            "diagnostics": {
+              "initial_load_s": 15.140148140955716,
+              "readback_calls": 0,
+              "readback_payload_bytes": 0,
+              "readback_s": 0,
+              "readback_source": "actual-serving-allocation.cpu()",
+              "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+            },
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "mode": "units",
+            "ok": true,
+            "op": "apply",
+            "schema": "onggi.verification.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "resident"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "diagnostics": {
+              "initial_load_s": 15.140148140955716,
+              "readback_calls": 0,
+              "readback_payload_bytes": 0,
+              "readback_s": 0,
+              "readback_source": "actual-serving-allocation.cpu()",
+              "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+            },
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "rollback"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "bytes_written": 0,
+            "bytes_written_scope": "logical bytes copied into serving units; excludes temporary staging and D2H, not DMA",
+            "diagnostics": {
+              "initial_load_s": 15.140148140955716,
+              "readback_calls": 0,
+              "readback_payload_bytes": 0,
+              "readback_s": 0,
+              "readback_source": "actual-serving-allocation.cpu()",
+              "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+            },
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "mode": "units",
+            "ok": true,
+            "op": "rollback",
+            "schema": "onggi.verification.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "resident"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "diagnostics": {
+              "initial_load_s": 15.140148140955716,
+              "readback_calls": 0,
+              "readback_payload_bytes": 0,
+              "readback_s": 0,
+              "readback_source": "actual-serving-allocation.cpu()",
+              "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+            },
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "rollback"
+          ],
+          "returncode": 1,
+          "stdin": null,
+          "stdout": {
+            "error": {
+              "message": "no successful update journal is available",
+              "type": "RuntimeError"
+            },
+            "ok": false
+          }
+        }
+      ],
+      "switchplan_sha256": "ae82bc7a40f44d48eeb714d967a03f415abfcefb01f8323add932eb244768fbd",
+      "target_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "target_files": {
+        "config.json": {
+          "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+          "size": 855
+        },
+        "model-00001-of-00004.safetensors": {
+          "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668",
+          "size": 4976698672
+        },
+        "model-00002-of-00004.safetensors": {
+          "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+          "size": 4999802720
+        },
+        "model-00003-of-00004.safetensors": {
+          "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+          "size": 4915916176
+        },
+        "model-00004-of-00004.safetensors": {
+          "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+          "size": 1168138808
+        },
+        "model.safetensors.index.json": {
+          "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+          "size": 23950
+        }
+      }
+    },
+    {
+      "base_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "base_files": {
+        "config.json": {
+          "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+          "size": 855
+        },
+        "model-00001-of-00004.safetensors": {
+          "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668",
+          "size": 4976698672
+        },
+        "model-00002-of-00004.safetensors": {
+          "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+          "size": 4999802720
+        },
+        "model-00003-of-00004.safetensors": {
+          "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+          "size": 4915916176
+        },
+        "model-00004-of-00004.safetensors": {
+          "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+          "size": 1168138808
+        },
+        "model.safetensors.index.json": {
+          "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+          "size": 23950
+        }
+      },
+      "expect_mode": "units",
+      "failures": [
+        "B2: expected mode units"
+      ],
+      "name": "native-sparse",
+      "results": [
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "describe",
+            "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "batch": 4,
+            "device": "rngd",
+            "format": "safetensors",
+            "layout": "lossless-bf16-rows",
+            "runtime": "furiosa-torch",
+            "schema": "onggi.profile.v1"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "conformance-load",
+            "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+            "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "diagnostics": {
+              "initial_load_s": 15.380278469063342,
+              "readback_calls": 0,
+              "readback_payload_bytes": 0,
+              "readback_s": 0,
+              "readback_source": "actual-serving-allocation.cpu()",
+              "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+            },
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "resident"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "diagnostics": {
+              "initial_load_s": 15.380278469063342,
+              "readback_calls": 0,
+              "readback_payload_bytes": 0,
+              "readback_s": 0,
+              "readback_source": "actual-serving-allocation.cpu()",
+              "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+            },
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "changed_runs": 1,
+            "files": [
+              {
+                "base": "config.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "config.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 855,
+                    "offset": 0
+                  }
+                ],
+                "same": 855,
+                "same_blocks": 855,
+                "size": 855
+              },
+              {
+                "base": "model-00001-of-00004.safetensors",
+                "changed": [
+                  [
+                    1050641786,
+                    2018387
+                  ]
+                ],
+                "changed_runs": 1,
+                "largest_run": 2018387,
+                "moved": 0,
+                "new": 2018387,
+                "path": "model-00001-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 1050641786,
+                    "offset": 0
+                  },
+                  {
+                    "kind": "new",
+                    "length": 2018387,
+                    "offset": 1050641786
+                  },
+                  {
+                    "kind": "same",
+                    "length": 3924038499,
+                    "offset": 1052660173
+                  }
+                ],
+                "same": 4974680285,
+                "same_blocks": 4974675248,
+                "size": 4976698672
+              },
+              {
+                "base": "model-00002-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00002-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4999802720,
+                    "offset": 0
+                  }
+                ],
+                "same": 4999802720,
+                "same_blocks": 4999802720,
+                "size": 4999802720
+              },
+              {
+                "base": "model-00003-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00003-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4915916176,
+                    "offset": 0
+                  }
+                ],
+                "same": 4915916176,
+                "same_blocks": 4915916176,
+                "size": 4915916176
+              },
+              {
+                "base": "model-00004-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00004-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 1168138808,
+                    "offset": 0
+                  }
+                ],
+                "same": 1168138808,
+                "same_blocks": 1168138808,
+                "size": 1168138808
+              },
+              {
+                "base": "model.safetensors.index.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model.safetensors.index.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 23950,
+                    "offset": 0
+                  }
+                ],
+                "same": 23950,
+                "same_blocks": 23950,
+                "size": 23950
+              }
+            ],
+            "largest_run": 2018387,
+            "manifest": "sha256:fab1cc99fa82cc7ac986dd482e163b01568e62c2971f30c11895aeaa928e8457",
+            "moved": 0,
+            "new": 2018387,
+            "new_stored": 1356643,
+            "same": 16058562794,
+            "same_blocks": 16058557757,
+            "schema": "onggi.switchplan.v1",
+            "size": 16060581181
+          },
+          "stdout": {
+            "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "bytes": 16060581181,
+            "manifest": "sha256:fab1cc99fa82cc7ac986dd482e163b01568e62c2971f30c11895aeaa928e8457",
+            "mode": "reload",
+            "proof": "db4a21144e142c31b9a6e7814bfe0d242c1056539e20c2078bd8bc26ba245691",
+            "reason": "changed header, gap, host, scaled or unsupported tensor bytes",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "changed_runs": 1,
+            "files": [
+              {
+                "base": "config.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "config.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 855,
+                    "offset": 0
+                  }
+                ],
+                "same": 855,
+                "same_blocks": 855,
+                "size": 855
+              },
+              {
+                "base": "model-00001-of-00004.safetensors",
+                "changed": [
+                  [
+                    1050641786,
+                    2018387
+                  ]
+                ],
+                "changed_runs": 1,
+                "largest_run": 2018387,
+                "moved": 0,
+                "new": 2018387,
+                "path": "model-00001-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 1050641786,
+                    "offset": 0
+                  },
+                  {
+                    "kind": "new",
+                    "length": 2018387,
+                    "offset": 1050641786
+                  },
+                  {
+                    "kind": "same",
+                    "length": 3924038499,
+                    "offset": 1052660173
+                  }
+                ],
+                "same": 4974680285,
+                "same_blocks": 4974675248,
+                "size": 4976698672
+              },
+              {
+                "base": "model-00002-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00002-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4999802720,
+                    "offset": 0
+                  }
+                ],
+                "same": 4999802720,
+                "same_blocks": 4999802720,
+                "size": 4999802720
+              },
+              {
+                "base": "model-00003-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00003-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4915916176,
+                    "offset": 0
+                  }
+                ],
+                "same": 4915916176,
+                "same_blocks": 4915916176,
+                "size": 4915916176
+              },
+              {
+                "base": "model-00004-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00004-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 1168138808,
+                    "offset": 0
+                  }
+                ],
+                "same": 1168138808,
+                "same_blocks": 1168138808,
+                "size": 1168138808
+              },
+              {
+                "base": "model.safetensors.index.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model.safetensors.index.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 23950,
+                    "offset": 0
+                  }
+                ],
+                "same": 23950,
+                "same_blocks": 23950,
+                "size": 23950
+              }
+            ],
+            "largest_run": 2018387,
+            "manifest": "sha256:fab1cc99fa82cc7ac986dd482e163b01568e62c2971f30c11895aeaa928e8457",
+            "moved": 0,
+            "new": 2018387,
+            "new_stored": 1356643,
+            "same": 16058562794,
+            "same_blocks": 16058557757,
+            "schema": "onggi.switchplan.v1",
+            "size": 16060581181
+          },
+          "stdout": {
+            "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "bytes": 16060581181,
+            "manifest": "sha256:fab1cc99fa82cc7ac986dd482e163b01568e62c2971f30c11895aeaa928e8457",
+            "mode": "reload",
+            "proof": "db4a21144e142c31b9a6e7814bfe0d242c1056539e20c2078bd8bc26ba245691",
+            "reason": "changed header, gap, host, scaled or unsupported tensor bytes",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "resident"
+          ],
+          "returncode": 0,
+          "stdin": null,
+          "stdout": {
+            "diagnostics": {
+              "initial_load_s": 15.380278469063342,
+              "readback_calls": 0,
+              "readback_payload_bytes": 0,
+              "readback_s": 0,
+              "readback_source": "actual-serving-allocation.cpu()",
+              "runtime_dependencies": "inherited SwappableDecode graph/cache SDK internals"
+            },
+            "manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "schema": "onggi.resident.v1",
+            "state": "ready"
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "plan"
+          ],
+          "returncode": 0,
+          "stdin": {
+            "base_manifest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "changed_runs": 1,
+            "files": [
+              {
+                "base": "config.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "config.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 855,
+                    "offset": 0
+                  }
+                ],
+                "same": 855,
+                "same_blocks": 855,
+                "size": 855
+              },
+              {
+                "base": "model-00001-of-00004.safetensors",
+                "changed": [
+                  [
+                    1050641786,
+                    2018387
+                  ]
+                ],
+                "changed_runs": 1,
+                "largest_run": 2018387,
+                "moved": 0,
+                "new": 2018387,
+                "path": "model-00001-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 1050641786,
+                    "offset": 0
+                  },
+                  {
+                    "kind": "new",
+                    "length": 2018387,
+                    "offset": 1050641786
+                  },
+                  {
+                    "kind": "same",
+                    "length": 3924038499,
+                    "offset": 1052660173
+                  }
+                ],
+                "same": 4974680285,
+                "same_blocks": 4974675248,
+                "size": 4976698672
+              },
+              {
+                "base": "model-00002-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00002-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4999802720,
+                    "offset": 0
+                  }
+                ],
+                "same": 4999802720,
+                "same_blocks": 4999802720,
+                "size": 4999802720
+              },
+              {
+                "base": "model-00003-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00003-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 4915916176,
+                    "offset": 0
+                  }
+                ],
+                "same": 4915916176,
+                "same_blocks": 4915916176,
+                "size": 4915916176
+              },
+              {
+                "base": "model-00004-of-00004.safetensors",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model-00004-of-00004.safetensors",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 1168138808,
+                    "offset": 0
+                  }
+                ],
+                "same": 1168138808,
+                "same_blocks": 1168138808,
+                "size": 1168138808
+              },
+              {
+                "base": "model.safetensors.index.json",
+                "changed_runs": 0,
+                "largest_run": 0,
+                "moved": 0,
+                "new": 0,
+                "path": "model.safetensors.index.json",
+                "ranges": [
+                  {
+                    "kind": "same",
+                    "length": 23950,
+                    "offset": 0
+                  }
+                ],
+                "same": 23950,
+                "same_blocks": 23950,
+                "size": 23950
+              }
+            ],
+            "largest_run": 2018387,
+            "manifest": "sha256:fab1cc99fa82cc7ac986dd482e163b01568e62c2971f30c11895aeaa928e8457",
+            "moved": 0,
+            "new": 2018387,
+            "new_stored": 1356643,
+            "same": 16058562794,
+            "same_blocks": 16058557757,
+            "schema": "onggi.switchplan.v1",
+            "size": 16060581181
+          },
+          "stdout": {
+            "base_manifest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "bytes": 16060581181,
+            "manifest": "sha256:fab1cc99fa82cc7ac986dd482e163b01568e62c2971f30c11895aeaa928e8457",
+            "mode": "reload",
+            "proof": "b36f64491d99887feaf0208d2b6e2b17ec7b3ecd284e3c15a6924d65848524ac",
+            "reason": "base manifest is not resident",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        },
+        {
+          "command": [
+            "/home/gspark/venvs/furiosa-2026.4/bin/python",
+            "-m",
+            "rngd_pd.swap.binding_cli",
+            "--socket",
+            "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-01/work/binding.sock",
+            "apply",
+            "--target",
+            "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new"
+          ],
+          "error": "apply --target /home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new: exit 1: ",
+          "stdin": {
+            "base_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+            "bytes": 16060581181,
+            "manifest": "sha256:fab1cc99fa82cc7ac986dd482e163b01568e62c2971f30c11895aeaa928e8457",
+            "mode": "reload",
+            "proof": "db4a21144e142c31b9a6e7814bfe0d242c1056539e20c2078bd8bc26ba245691",
+            "reason": "changed header, gap, host, scaled or unsupported tensor bytes",
+            "schema": "onggi.updateplan.v1",
+            "units": []
+          }
+        }
+      ],
+      "switchplan_sha256": "e9abb9845b8292861e60bb62f4f7b1342d15b1dbee60c5861ced1748f5f699f9",
+      "target_dir": "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new",
+      "target_files": {
+        "config.json": {
+          "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+          "size": 855
+        },
+        "model-00001-of-00004.safetensors": {
+          "sha256": "fdc4447dd4d988bd308cab138965a2c5d41e88b83395d31216730c274770169b",
+          "size": 4976698672
+        },
+        "model-00002-of-00004.safetensors": {
+          "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+          "size": 4999802720
+        },
+        "model-00003-of-00004.safetensors": {
+          "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+          "size": 4915916176
+        },
+        "model-00004-of-00004.safetensors": {
+          "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+          "size": 1168138808
+        },
+        "model.safetensors.index.json": {
+          "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+          "size": 23950
+        }
+      }
+    }
+  ],
+  "error": "apply --target /home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new: exit 1: ",
+  "failures": [
+    "B2: expected mode units",
+    "apply --target /home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new: exit 1: "
+  ],
+  "fixtures": {
+    "path": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/rngd-fixtures.json",
+    "sha256": "0951e11cfbb7c2071641adad809b63316c65a866fd754444109a9027ba1fa83e"
+  },
+  "level": "B2",
+  "ok": false,
+  "schema": "onggi.binding-report.v1"
+}

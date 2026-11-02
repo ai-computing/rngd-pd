@@ -1,0 +1,10 @@
+{
+  "log": "Traceback (most recent call last):\n  File \"/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal/causal.py\", line 676, in <module>\n    sys.exit(main())\n  File \"/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal/causal.py\", line 629, in main\n    result = fixture(pathlib.Path(args.onggi).resolve(strict=True), root)\n  File \"/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal/causal.py\", line 585, in fixture\n    checked(command(cfg, argv, root, 'push-' + ref))\n  File \"/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal/causal.py\", line 358, in checked\n    raise RuntimeError('command failed; retained raw logs')\nRuntimeError: command failed; retained raw logs\n",
+  "fixture_files": [
+    "cpu-causal-fixture/push-a.stderr",
+    "cpu-causal-fixture/push-a.json",
+    "cpu-causal-fixture/push-a.stdout",
+    "cpu-causal-fixture/source-a/decode_S256_B2_lm.rbln",
+    "cpu-causal-fixture/source-b/decode_S256_B8_lm.rbln"
+  ]
+}

@@ -1,0 +1,1 @@
+{"batch": 1, "device": "RBLN-CA22", "format": "rbln", "layout": "public-embedded-weight-session", "revision": "base", "runtime": "rebel-compiler-0.11.0", "schema": "onggi.profile.v1"}

@@ -1,0 +1,18 @@
+{
+  "source_commit": "2d84ac39374d71086436e65b967a4f718876a2f3",
+  "go_version": "go version go1.27.3 linux/amd64",
+  "go_mod": [
+    "module github.com/ai-computing/onggi",
+    "",
+    "go 1.24",
+    "",
+    "require ("
+  ],
+  "source": "$RUN_ROOT/onggi-binding-source",
+  "publication": {
+    "original_private_file": "e7-v1-source.json",
+    "original_private_sha256": "6cc93458628902227b7f2a43acbf57f7a4cfa13771d1405a09fc2312e2bf5da5",
+    "original_private_bytes": 279,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

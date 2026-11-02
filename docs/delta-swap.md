@@ -249,6 +249,64 @@ not a device weight map.
 
 ## Reproduce latency and correctness
 
+### Experimental ATOM constant-pool refresh
+
+`rngd_pd.swap.atom_constants.ConstantWeightDecode` adds a separate fast-constant
+path on the validated rebel 0.11.0 stack. Launch the dedicated worker with
+`RBLN_WEIGHT_FREE=1` **before importing rebel**. Compile shapes in that process;
+existing ordinary `.rbln` bundles lack the required meta-load mapping.
+
+```python
+from rngd_pd.swap.atom_constants import ConstantWeightDecode
+
+engine = ConstantWeightDecode(base_checkpoint_dir, cache_dir=private_cache, device=0)
+small = Variant(1, 64, 0)
+engine.prepare(small)                 # compilation/materialization before admission
+engine.swap(small)
+tokens, ttft = engine.generate([prompt_ids], n_new=8)
+result = engine.load_delta(new_checkpoint_dir, store=onggi_store,
+                           base_ref="base", new_ref="new")
+engine.close()
+```
+
+The updater maps checkpoint tensors to retained CPU buffers and their compiled
+meta-load keys. It stages complete affected transform dependency groups,
+resets the native already-applied bookkeeping, and writes those groups into
+the existing runtime's constants. Original parameter identities and compiled
+programs remain alive. Failed writes restore old groups; failed or interrupted
+rollback disables the engine. Updates are serialized and invalidate old KV.
+
+`changed_weight_bytes` counts changed converted tensors; `transform_input_bytes`
+also includes companion tensors required by a complete transform group. The
+compatibility field `uploaded_bytes` equals `transform_input_bytes` here: these
+are logical host transform inputs, **not measured PCIe or network bytes**.
+`delta_s` is call wall time; the verification harness separately measures the
+subsequent synchronous prompt through its first token.
+
+This uses a version-sensitive internal weight-free ABI and a global eager
+compile context. Only one owning engine per device per process is allowed,
+including after `close()`; replace its worker process for another owning model.
+KV is host-resident. Initial compilation has substantial host-memory and time
+costs. There is no `atom-constants` HTTP/prepared-config factory yet. See the
+[REA and device evidence](../experiments/2026-10-23-resident-constant-update.md)
+for the exact tested scope; this is not arbitrary byte patching of compiled files.
+
+The full Llama-3.1-8B B1/S64 test changed one 117 MB group four times, with all
+generated tokens equal to fresh checkpoint loads and the same native runtime
+and program retained. Decode steps measured 68.7 ms; live onggi analysis through
+the first updated token took 2.66–2.74 s. Initial compilation/loading took
+151–168 s. B1/B4 constant sharing was additionally checked on a bounded matrix
+stack; the full 8B update test used B1 only.
+
+```bash
+RBLN_WEIGHT_FREE=1 PYTHONPATH=src python experiments/verify_npu_delta.py \
+  --backend atom-constants --base "$BASE" --new "$NEW" --store "$STORE" \
+  --onggi "$ONGGI" --cache "$PRIVATE_CACHE" --batch 1 --sequence 64 \
+  --tokens 8 --rounds 2 --out atom-constants.json
+```
+
+### Existing device-input and bundle paths
+
 ```bash
 PYTHONPATH=src python -m pytest -q tests/swap
 

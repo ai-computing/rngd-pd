@@ -1,0 +1,29 @@
+{
+  "schema": "onggi.binding-fixtures.v1",
+  "cases": [
+    {
+      "name": "native-identical",
+      "reference_role": "base",
+      "base_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "target_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "switchplan": "identical.switchplan.json",
+      "expect_mode": "units"
+    },
+    {
+      "name": "native-sparse",
+      "reference_role": "sparse",
+      "base_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "target_dir": "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new",
+      "switchplan": "sparse.switchplan.json",
+      "expect_mode": "units"
+    },
+    {
+      "name": "native-lm",
+      "reference_role": "lm",
+      "base_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "target_dir": "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/lm-new",
+      "switchplan": "lm.switchplan.json",
+      "expect_mode": "units"
+    }
+  ]
+}

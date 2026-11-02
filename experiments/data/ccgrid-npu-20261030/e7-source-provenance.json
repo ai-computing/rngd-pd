@@ -1,0 +1,64 @@
+{
+  "benchmark_source": {
+    "commit": "f0f08bfca4409b55226022760cacb789e97a458c",
+    "dirty": "",
+    "script_sha256": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+    "sha256": {
+      "bench/ccgrid_e7.py": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+      "src/rngd_pd/swap/rngd.py": "c04984c53e109097bef2bd840e730d0b1a56f966c4f9847b8f5fc2385fb5ac9f",
+      "src/rngd_pd/swap/delta.py": "a91f5011348c408214da4ddeb3d06dbedd2b7c0eed48c909889ce875a1e691ed",
+      "src/rngd_pd/swap/variants.py": "a1e772221226b042b97ea1b046e067a72709f94886db5610a5b2a9732ce6e744",
+      "src/rngd_pd/swap/bench_rngd.py": "a18035bc56bbbeb4bc8e00cdc167005dda5697ddade499e65497f0905096c0a6"
+    }
+  },
+  "matrix_adapter_sha256": "e93c49a0430fb79573697d5d539ec492f12f607d5ef21565d09c738534e13f2b",
+  "onggi_source_commit": "2d84ac39374d71086436e65b967a4f718876a2f3",
+  "frozen_source": "e7-frozen-source.json",
+  "frozen_source_original_sha256": "d04bf321cdd07beecf7c50ea67633c0cac762f0ced24908063b3874381b16411",
+  "actual_job_policy": "e7-actual-job-policy.json",
+  "actual_job_policy_original_sha256": "df9acb518685c35bec1a31feaa811f25c15d23e2a78202e5ab6aefb060f4c6f0",
+  "public_adapter_code": [
+    {
+      "path": "e7/scripts/run_e7_matrix.py",
+      "public_sha256": "e93c49a0430fb79573697d5d539ec492f12f607d5ef21565d09c738534e13f2b",
+      "original_private_file": "run_e7_matrix.py",
+      "original_private_sha256": "e93c49a0430fb79573697d5d539ec492f12f607d5ef21565d09c738534e13f2b",
+      "original_private_bytes": 4992,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    {
+      "path": "e7/scripts/run_e7_references.py",
+      "public_sha256": "62c9fea7a0e1c6a9acb716e6d5af58e0047e822dca194f662152cdc9cf08a520",
+      "original_private_file": "run_e7_references.py",
+      "original_private_sha256": "4b8b67b4037cdcf4ab5f12184d5ae66ba518b91cffc9acd9f0a8f393c6a88873",
+      "original_private_bytes": 2838,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    }
+  ],
+  "onggi_binary_sha256": "47bfaae6bace003bc29c9223521a80b44526c25835dc36d350b2979585abc114",
+  "input_preparation_sha256": "8bc7fcee68a7daa5a031c5cb2289bef9504793396ccd2e8b2739ddee1efa054c",
+  "fresh_reference_source_commit": "f5fa13377a3d967ba3d4022fb73ae59b1c87441c",
+  "independent_target_references": {
+    "sparse": {
+      "path": "e7/references/sparse-B4-S256-g2.json",
+      "public_sha256": "bf80a482739931b3d2d1c3f64c67f9d508fb77d895385bb0eaded69aac273b48",
+      "original_private_file": "sparse-B4-S256-g2.json",
+      "original_private_sha256": "74437837153a81ff3cafcedbc5db7963661332f259af9195920accc46e19408d",
+      "original_private_bytes": 47517,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    },
+    "lm": {
+      "path": "e7/references/lm-B4-S256-g2.json",
+      "public_sha256": "6ce1bd97742754661dc74cf7246796302477b3a1d279e7131d88a80d5ca6773b",
+      "original_private_file": "lm-B4-S256-g2.json",
+      "original_private_sha256": "df6a7fbd31fcd0c91ef26f813bb38796efda0a69cb73be735e6c19d18602a864",
+      "original_private_bytes": 47562,
+      "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+    }
+  },
+  "independent_base_reference": {
+    "path": "references-and-cross-shape-observation.json",
+    "record": "base-B4-S256-g2.json",
+    "original_private_sha256": "d10e5dadc145898b7672ac54f715f17ab95e57d151e0ffca2f68a0d8f1494239"
+  }
+}

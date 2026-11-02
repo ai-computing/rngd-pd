@@ -1,0 +1,13 @@
+{
+ "model": "resident-base",
+ "layers": 32,
+ "variants": [
+  "B1-S64"
+ ],
+ "compiler": "0.11.0",
+ "load_s": 20.21648438903503,
+ "compile_s": 89.33515704213642,
+ "save_s": 9.744808402843773,
+ "device_alloc": 15210643456,
+ "file_bytes": 15176307063
+}

@@ -246,7 +246,8 @@ def test_native_atom_factory_uses_one_session_for_all_requests(tmp_path, monkeyp
 
 
 @pytest.mark.parametrize("host_workers", [1, 2])
-def test_rngd_factory_imports_kv_into_real_engine_without_reuploading_weights(tmp_path, monkeypatch, host_workers):
+@pytest.mark.parametrize("warmup", [False, True])
+def test_rngd_factory_imports_kv_into_real_engine_without_reuploading_weights(tmp_path, monkeypatch, host_workers, warmup):
     import sys
     import torch
     from rngd_pd.swap import rngd
@@ -273,7 +274,8 @@ def test_rngd_factory_imports_kv_into_real_engine_without_reuploading_weights(tm
                         (Decoder(), Head(), ["cache", "cache"]))
     cfg = tmp_path / "prepared.json"
     cfg.write_text(json.dumps(dict(engine="rngd", checkpoint="ck", checkpoint_id="immutable",
-                                  host_workers=host_workers, variants=["B1-S8-g1", "B2-S16-g1"])))
+                                  host_workers=host_workers, warmup=warmup,
+                                  variants=["B1-S8-g1", "B2-S16-g1"])))
     adapter = build_prepared(cfg, 16, 0)
     assert adapter.engine.host_workers == host_workers
     resident_weight = adapter.engine.shared[0]["wq"]
@@ -283,7 +285,7 @@ def test_rngd_factory_imports_kv_into_real_engine_without_reuploading_weights(tm
     assert w.run("a", 2, 2, 2, checkpoint_id="immutable")["tokens"] == [2, 1]
     assert w.run("b", 3, 10, 2, checkpoint_id="immutable")["tokens"] == [3, 1]
     assert adapter.engine.shared[0]["wq"] is resident_weight
-    assert observed == [11., 11.]
+    assert observed == ([0., 0., 11., 11.] if warmup else [11., 11.])
 
 
 def test_atom_device_input_factory_and_worker_delta_use_real_cpu_tensors(tmp_path, monkeypatch):

@@ -1,0 +1,41 @@
+{
+  "status": "completed",
+  "utc": 1793366738.6723206,
+  "resumes": "/home/gspark/workspace/codex_binding_conformance_20261030/evidence/atom-artifact-preparation-attempt1.json",
+  "scope": "retain successful pushes; write only missing actual CLI diff plans",
+  "commands": [
+    {
+      "argv": [
+        "/home/gspark/workspace/codex_ccgrid_npu_20261030/tools/onggi-v1",
+        "diff",
+        "--store",
+        "/home/gspark/workspace/codex_binding_conformance_20261030/atom-store",
+        "--ranges",
+        "--json",
+        "base",
+        "base"
+      ],
+      "returncode": 0,
+      "output": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/atom-base.switchplan.json",
+      "sha256": "cfed947240d467360c3ab625497b4e8a67553bd10e79a4bc3577d38e57c5d2cb"
+    },
+    {
+      "argv": [
+        "/home/gspark/workspace/codex_ccgrid_npu_20261030/tools/onggi-v1",
+        "diff",
+        "--store",
+        "/home/gspark/workspace/codex_binding_conformance_20261030/atom-store",
+        "--ranges",
+        "--json",
+        "base",
+        "target"
+      ],
+      "returncode": 0,
+      "output": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/atom-target.switchplan.json",
+      "sha256": "9c350aaec6a3b9f9223cd82e7772c05393baf1874a165c876ead9847182e920a"
+    }
+  ],
+  "provider": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/atom-fixtures.json",
+  "provider_sha256": "872b242fe84c37ae859efdd51b0b5f80a196a69d0d9ac015e979e8dfaa55d7cf",
+  "finished_utc": 1793366739.3745143
+}

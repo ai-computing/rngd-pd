@@ -1,0 +1,124 @@
+{
+  "job_uid": "a9301e7c-8bf3-4f3c-beed-a88f4978256a",
+  "pod_uid": "d1d7eec0-0a3e-4bd0-90d4-4cb5cf8adf34",
+  "job_absent": true,
+  "pod_absent": true,
+  "terminal_phase": "Succeeded",
+  "containers": [
+    {
+      "containerID": "containerd://834151d3a75f5395a59e4e44f3c469d6fc9397bbe34c33c7e2f3460e032db40c",
+      "image": "sha256:cee13550f97b8a595506e8e4ca74263ba44924248779a4ba4f942e197652acff",
+      "imageID": "docker.io/library/ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+      "lastState": {},
+      "name": "run",
+      "ready": false,
+      "restartCount": 0,
+      "started": false,
+      "state": {
+        "terminated": {
+          "containerID": "containerd://834151d3a75f5395a59e4e44f3c469d6fc9397bbe34c33c7e2f3460e032db40c",
+          "exitCode": 0,
+          "finishedAt": "2026-10-30T13:02:38Z",
+          "reason": "Completed",
+          "startedAt": "2026-10-30T13:02:16Z"
+        }
+      },
+      "volumeMounts": [
+        {
+          "mountPath": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures",
+          "name": "source-views",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/host-libs",
+          "name": "host-libs",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/host-usrlib",
+          "name": "host-usrlib",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/host-bin",
+          "name": "host-bin",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/usr/lib/python3/dist-packages",
+          "name": "dist",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/usr/local/lib/python3.10/dist-packages",
+          "name": "local-dist",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/home/gspark/venvs/furiosa-2026.4",
+          "name": "rngd-sdk",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/run/swap",
+          "name": "assigned"
+        },
+        {
+          "mountPath": "/dev/shm",
+          "name": "shm"
+        },
+        {
+          "mountPath": "/home/gspark/workspace/codex_rngd_opt_20261023",
+          "name": "prior-opt",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/home/gspark/workspace/codex_onggi_integration_20261030",
+          "name": "onggi-build",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030",
+          "name": "work"
+        },
+        {
+          "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache",
+          "name": "own-cache",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source",
+          "name": "source",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2",
+          "name": "published",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/var/lib/kubelet/device-plugins",
+          "name": "device-checkpoint",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        },
+        {
+          "mountPath": "/home/gspark/workspace/codex_binding_conformance_20261030",
+          "name": "binding-work"
+        }
+      ]
+    }
+  ]
+}

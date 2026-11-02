@@ -1,0 +1,331 @@
+{
+  "schema": "rngd-binding-evidence-package.v1",
+  "native_runtime_commit": "a2ebc3281df4173a886bc6a035f2483eaa360bf5",
+  "neutral_kit_commit": "71c37d26f3ec9bedc20c93b27c2cfde9dfd64d53",
+  "independent_reference_commit": "f5fa13377a3d967ba3d4022fb73ae59b1c87441c",
+  "scope": "Exact local copies of exported small evidence only; no model/checkpoint/graph payloads",
+  "source_identity_note": "Native result source_files hash device-run LF bytes. The Windows working tree/LOC snapshot may use CRLF; the comparison below records both without altering raw evidence.",
+  "source_identity_comparison": {
+    "src/rngd_pd/swap/rngd_binding.py": {
+      "native_sha256": "b26e6b2ec02beb375235e7f797bd0407b279437ad1e495551cc5c49e74c70b47",
+      "workspace_sha256": "b26e6b2ec02beb375235e7f797bd0407b279437ad1e495551cc5c49e74c70b47",
+      "workspace_lf_sha256": "b26e6b2ec02beb375235e7f797bd0407b279437ad1e495551cc5c49e74c70b47",
+      "crlf_count": 0,
+      "native_exact_match": true,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": "b26e6b2ec02beb375235e7f797bd0407b279437ad1e495551cc5c49e74c70b47"
+    },
+    "src/rngd_pd/swap/binding_cli.py": {
+      "native_sha256": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04",
+      "workspace_sha256": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04",
+      "workspace_lf_sha256": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04",
+      "crlf_count": 0,
+      "native_exact_match": true,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04"
+    },
+    "src/rngd_pd/swap/rngd.py": {
+      "native_sha256": "c04984c53e109097bef2bd840e730d0b1a56f966c4f9847b8f5fc2385fb5ac9f",
+      "workspace_sha256": "96985660773ac262c3418187f754262e6e5007c1c9e6fe72630d139258cd342a",
+      "workspace_lf_sha256": "c04984c53e109097bef2bd840e730d0b1a56f966c4f9847b8f5fc2385fb5ac9f",
+      "crlf_count": 626,
+      "native_exact_match": false,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": "96985660773ac262c3418187f754262e6e5007c1c9e6fe72630d139258cd342a"
+    },
+    "src/rngd_pd/swap/delta.py": {
+      "native_sha256": "a91f5011348c408214da4ddeb3d06dbedd2b7c0eed48c909889ce875a1e691ed",
+      "workspace_sha256": "da0b1d4a0f28d0e9e7ec061fc66a361dc521350340d35aee2db1417fbe5ac92a",
+      "workspace_lf_sha256": "a91f5011348c408214da4ddeb3d06dbedd2b7c0eed48c909889ce875a1e691ed",
+      "crlf_count": 402,
+      "native_exact_match": false,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": "da0b1d4a0f28d0e9e7ec061fc66a361dc521350340d35aee2db1417fbe5ac92a"
+    },
+    "src/rngd_pd/swap/variants.py": {
+      "native_sha256": "a1e772221226b042b97ea1b046e067a72709f94886db5610a5b2a9732ce6e744",
+      "workspace_sha256": "e8467d7d33b378f17c548855e9c1dd5e0f2dda2e21d9b587598b07f775b3ac26",
+      "workspace_lf_sha256": "a1e772221226b042b97ea1b046e067a72709f94886db5610a5b2a9732ce6e744",
+      "crlf_count": 96,
+      "native_exact_match": false,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": "e8467d7d33b378f17c548855e9c1dd5e0f2dda2e21d9b587598b07f775b3ac26"
+    },
+    "src/rngd_pd/devices.py": {
+      "native_sha256": "4bb8873dc27eaa15dad903b334b1337303d7df49691c96b547eab1db965ab4af",
+      "workspace_sha256": "cf637d2d49d37ae19b9d914f1ddc2229953e9168e535ef7a4860be23ab4511ec",
+      "workspace_lf_sha256": "4bb8873dc27eaa15dad903b334b1337303d7df49691c96b547eab1db965ab4af",
+      "crlf_count": 103,
+      "native_exact_match": false,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": null
+    },
+    "src/rngd_pd/engines/fsdk.py": {
+      "native_sha256": "742feb682c98e1f98df04137c4f8ceb65332ea1ec659e97deba8cb2bc3c012af",
+      "workspace_sha256": "22466221ce176682da1a71c5c42361436c345a7c822d1f2334ba12645b3d1890",
+      "workspace_lf_sha256": "742feb682c98e1f98df04137c4f8ceb65332ea1ec659e97deba8cb2bc3c012af",
+      "crlf_count": 137,
+      "native_exact_match": false,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": "22466221ce176682da1a71c5c42361436c345a7c822d1f2334ba12645b3d1890"
+    },
+    "bench/ccgrid_e7.py": {
+      "native_sha256": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+      "workspace_sha256": "fa778342027ec034e434e12f8525fc134dd03d361438e5afe4465972205a512a",
+      "workspace_lf_sha256": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+      "crlf_count": 380,
+      "native_exact_match": false,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": null
+    }
+  },
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "harness/prepare_rngd_interior.py",
+      "bytes": 10790,
+      "sha256": "e91c1e6f7a61bf4d0ccb953fc5b84b0b3b033199af422490d8a811fa6e6ec035"
+    },
+    {
+      "path": "harness/run_rngd_b2.py",
+      "bytes": 21817,
+      "sha256": "925a46dcbb39482b8b8fe62af3369fe4360fbc126bdd28e5805f3c2e95f13589"
+    },
+    {
+      "path": "preparation/evidence/rngd-interior-preparation.json",
+      "bytes": 16023,
+      "sha256": "b6850bca0c3edb86f9388bef01416178d43e5aaa26e6c98001cfaa816c9fae35"
+    },
+    {
+      "path": "preparation/export-manifest.json",
+      "bytes": 4076,
+      "sha256": "8a370179cd5377844a9ae8dcbc599946af2b46578eaed73eed1c71a220f953b4"
+    },
+    {
+      "path": "preparation/inputs/identical.switchplan.json",
+      "bytes": 2744,
+      "sha256": "a93db349c86447efa5333503319a3379af3a3f278f33213336ab12ab2341de1c"
+    },
+    {
+      "path": "preparation/inputs/interior.switchplan.json",
+      "bytes": 3078,
+      "sha256": "e7cc12dbd0e7b6ffdd000d841019daf49b9d7a57eb774c4fc694d913d4bee1e9"
+    },
+    {
+      "path": "preparation/inputs/lm.switchplan.json",
+      "bytes": 3063,
+      "sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "path": "preparation/inputs/references.json",
+      "bytes": 146641,
+      "sha256": "916437c498d7234890ef022f969cf5247dade888a6d154d2545e90a6a63c51c0"
+    },
+    {
+      "path": "preparation/inputs/rngd-fixtures.json",
+      "bytes": 1078,
+      "sha256": "0951e11cfbb7c2071641adad809b63316c65a866fd754444109a9027ba1fa83e"
+    },
+    {
+      "path": "preparation/inputs/rngd-interior-fixtures.json",
+      "bytes": 1303,
+      "sha256": "298eaeea76e9a945c53822142ce7f0ebab9d93e0d200359d6cccd642383f9d52"
+    },
+    {
+      "path": "preparation/inputs/sparse.switchplan.json",
+      "bytes": 3078,
+      "sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "path": "preparation/scripts/prepare_rngd_interior.py",
+      "bytes": 10790,
+      "sha256": "e91c1e6f7a61bf4d0ccb953fc5b84b0b3b033199af422490d8a811fa6e6ec035"
+    },
+    {
+      "path": "preparation/scripts/probe_readback.py",
+      "bytes": 2621,
+      "sha256": "1084aa4b90869e2f7c6461bafbb6c3d2751649dc8664f31cf4d7daa0f8f2b9fd"
+    },
+    {
+      "path": "preparation/scripts/rngd-b2-native-02.py",
+      "bytes": 21817,
+      "sha256": "925a46dcbb39482b8b8fe62af3369fe4360fbc126bdd28e5805f3c2e95f13589"
+    },
+    {
+      "path": "preparation/scripts/run_rngd_b2.py",
+      "bytes": 18254,
+      "sha256": "25b8891dfa2d55b8dcc667092316f0744919953598243a037f314014d2d5b3cc"
+    },
+    {
+      "path": "preparation/selection-manifest.json",
+      "bytes": 2302,
+      "sha256": "61b829b553f08608dd5ac9b15e07d682c520897867bdae37848f67df8ce35707"
+    },
+    {
+      "path": "runs/b2-readback-probe-01/cleanup.json",
+      "bytes": 3990,
+      "sha256": "47a8ed208e899094377bec9df037357203a999424e9d4ecf1236f49434dfc000"
+    },
+    {
+      "path": "runs/b2-readback-probe-01/create.json",
+      "bytes": 93,
+      "sha256": "d25ff70dc383f951a599b46b3bf41c8eeb6332002c1bb66ef1245783bcef2842"
+    },
+    {
+      "path": "runs/b2-readback-probe-01/readonly-export-manifest.json",
+      "bytes": 174,
+      "sha256": "522bc722d6c36c0b699203ab435f7c8c5563c3758376f96fc9ca38fc95f02957"
+    },
+    {
+      "path": "runs/b2-readback-probe-01/result.json",
+      "bytes": 856,
+      "sha256": "3db268c25deb080209539832d3655a368251f22b34fd7009d2af3d0abc56fa88"
+    },
+    {
+      "path": "runs/b2-readback-probe-01/terminal-api.json",
+      "bytes": 6339,
+      "sha256": "4a91d058284e563c278ef1a95f7b0d5fec401dc55b161d106685daf016edc12c"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/cleanup.json",
+      "bytes": 4521,
+      "sha256": "1a639189d3adc69b22c98bf60492f12d83ab40dddb39e070dc85cbc408fdd724"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/create.json",
+      "bytes": 93,
+      "sha256": "384129ea7f9e6327e98398a0c16e42f8f0541c5af9845aad64deb0292ce9af68"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/export-manifest.json",
+      "bytes": 954,
+      "sha256": "871d35a1a272b3d47a832fb21126478150d39e8dc5d365b5ffc32768a99d18cf"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/job.json",
+      "bytes": 14093,
+      "sha256": "f31732844ae5e8d7868e3d011e7fd44ef29a69495b634577029625dbbaf4502c"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/latest-api.json",
+      "bytes": 6862,
+      "sha256": "a44d3be3fb4a56db90152bf0531c3cfb36dc4d020dee0d73d373c200e64927c1"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/operational.json",
+      "bytes": 387615,
+      "sha256": "7917c4a8cb89e40b6d708b933731ace4e4366ada7be725cb02aa4807111b0d32"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/result.json",
+      "bytes": 387615,
+      "sha256": "7917c4a8cb89e40b6d708b933731ace4e4366ada7be725cb02aa4807111b0d32"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/small-evidence.json.gz",
+      "bytes": 228295,
+      "sha256": "d6e9ff4f42f4c66d1ac34c293716aeaac94f1ec55b366342ab652ef48bb792fc"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/terminal-api.json",
+      "bytes": 6862,
+      "sha256": "a44d3be3fb4a56db90152bf0531c3cfb36dc4d020dee0d73d373c200e64927c1"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/work/kit-report.json",
+      "bytes": 50957,
+      "sha256": "44290091cb16df839c78cb2efe8e64a31b43594f2900af9d35cc7891446dcb12"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/work/kit.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/rngd-b2-native-01/work/kit.stdout.log",
+      "bytes": 1201,
+      "sha256": "33c9a0ff3ecf6a55c8eb0b3b9e49dd2a2217a2583f6fd04c9de1333e839e81a9"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/cleanup.json",
+      "bytes": 4528,
+      "sha256": "98804d99d45871ff5a7c1359736c1cc2b459135daff6d05fc778bc45c0b44aed"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/create.json",
+      "bytes": 93,
+      "sha256": "9e18938232be30ac5bdf1c54541c73483adc11d003606de1f4369688f34ffa30"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/export-manifest.json",
+      "bytes": 1443,
+      "sha256": "b87a00cd96921985d410cf4206e8689178e78e50e1d2f0cc9a074c1ade00f701"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/job.json",
+      "bytes": 14108,
+      "sha256": "15a63f949255ed4317ed7c5ca2ca57b8f0bc7663b3372bd83fcd02bef0a42a2b"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/latest-api.json",
+      "bytes": 6920,
+      "sha256": "d6043379bb5b0c289ddf8476fe054cdc4706b92b669fe9b4ab488bc72062f659"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/operational.json",
+      "bytes": 845528,
+      "sha256": "0ff48929ab38f413d2877a84ece5b52c28759174b9991be40e2a13f9755ab34c"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/result.json",
+      "bytes": 845528,
+      "sha256": "0ff48929ab38f413d2877a84ece5b52c28759174b9991be40e2a13f9755ab34c"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/small-evidence.json.gz",
+      "bytes": 481457,
+      "sha256": "8077972213907ffb51e0d9b332debfb299868be42536957b0502982b126a99a2"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/terminal-api.json",
+      "bytes": 6920,
+      "sha256": "d6043379bb5b0c289ddf8476fe054cdc4706b92b669fe9b4ab488bc72062f659"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/work/interior-fresh.json",
+      "bytes": 47597,
+      "sha256": "be567e93968e787ff31d79d7887012623755fa48fc0a0dfa95f1958be4cffded"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/work/interior-fresh.log",
+      "bytes": 303,
+      "sha256": "24a6f6fe3683aea149b4aa38caebea7979ec7557fdb96893ae0b31df787ec1e7"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/work/kit-report.json",
+      "bytes": 85466,
+      "sha256": "582b7f84973e1efe14749927920102089b5bea1498abcad9c66b404c7d1f0589"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/work/kit.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/work/kit.stdout.log",
+      "bytes": 2152,
+      "sha256": "6f8bb61bf80ce207dc4d8958e78d889bb30fde07e325b6d01d04de66165936ef"
+    },
+    {
+      "path": "runs/rngd-b2-native-02/work/refsactual.json",
+      "bytes": 146721,
+      "sha256": "6738d1bcbec444513163599c33b6146c9d317f1253d900b3cf196ff82a0672c7"
+    }
+  ],
+  "preparation_selection_note": "Exact RNGD-only selection from original preparation export; original mixed RNGD/ATOM archive and ATOM entries are intentionally not duplicated",
+  "probe_harness_note": "Probe result.json has no adapter_sha256/harness_sha256 field; script provenance is the exact preparation export-manifest entry, not an invented result-field match."
+}

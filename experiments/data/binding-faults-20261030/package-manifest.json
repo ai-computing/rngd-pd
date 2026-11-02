@@ -1,0 +1,83 @@
+{
+  "schema": "rngd-fault-evidence-package.v1",
+  "runtime_commit": "a2ebc3281df4173a886bc6a035f2483eaa360bf5",
+  "measured_harness": {
+    "path": "harness/run_rngd_faults.py",
+    "bytes": 17447,
+    "sha256": "3e4da7803b4b2db1c4a4f6b81eb4ce20db4cf99249244aea5e1c3ad4389664bd"
+  },
+  "harness_note": "Only recovered measured staged bytes are packaged; the later UID-only local draft edit was not executed and is excluded.",
+  "source_check": "Current repository source is compared to native LF bytes with CRLF-to-LF canonicalization; packaged raw evidence and measured harness are exact bytes.",
+  "reused_inputs": {
+    "plan": {
+      "path": "experiments/data/binding-20261030/preparation/inputs/interior.switchplan.json",
+      "sha256": "e7cc12dbd0e7b6ffdd000d841019daf49b9d7a57eb774c4fc694d913d4bee1e9"
+    },
+    "references": {
+      "path": "experiments/data/binding-20261030/runs/rngd-b2-native-02/work/refsactual.json",
+      "sha256": "6738d1bcbec444513163599c33b6146c9d317f1253d900b3cf196ff82a0672c7"
+    }
+  },
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "harness/run_rngd_faults.provenance.json",
+      "bytes": 105,
+      "sha256": "0f4e5e332d5597afcbf22f466ab8b8a378db509f101adda11e4056c65996a841"
+    },
+    {
+      "path": "harness/run_rngd_faults.py",
+      "bytes": 17447,
+      "sha256": "3e4da7803b4b2db1c4a4f6b81eb4ce20db4cf99249244aea5e1c3ad4389664bd"
+    },
+    {
+      "path": "runs/rngd-faults-native-01/cleanup.json",
+      "bytes": 4528,
+      "sha256": "6f96e6f6c6ac58ed7d91b8d46a05dc4ff53cc66c663d4448efea6f47d1290359"
+    },
+    {
+      "path": "runs/rngd-faults-native-01/create.json",
+      "bytes": 93,
+      "sha256": "c11f33e316d13ef23dd1198a34c1aad518a60564bedee086e41da082fe029ca5"
+    },
+    {
+      "path": "runs/rngd-faults-native-01/export-manifest.json",
+      "bytes": 478,
+      "sha256": "fbc1eeacffd2bda8f2a0cc268f2102edc75882e2effa4ff946e5bd332df52074"
+    },
+    {
+      "path": "runs/rngd-faults-native-01/job.json",
+      "bytes": 14334,
+      "sha256": "623f73c9e035633a574f5b316db6b5ebecaa8f4c4825f997a2f4c99895fc8956"
+    },
+    {
+      "path": "runs/rngd-faults-native-01/latest-api.json",
+      "bytes": 6940,
+      "sha256": "938631e7f1b7aaef4aed419a011bb3d611644f7df870d4b3b2db0fb92173a2ab"
+    },
+    {
+      "path": "runs/rngd-faults-native-01/operational.json",
+      "bytes": 421292,
+      "sha256": "a3ed8950d2ea53cf8d731907da2a07051f2a636085ab4fed8c3f511c7677c31f"
+    },
+    {
+      "path": "runs/rngd-faults-native-01/result.json",
+      "bytes": 421292,
+      "sha256": "a3ed8950d2ea53cf8d731907da2a07051f2a636085ab4fed8c3f511c7677c31f"
+    },
+    {
+      "path": "runs/rngd-faults-native-01/small-evidence.json.gz",
+      "bytes": 182265,
+      "sha256": "8db8fe8e44d413d21809df5c0abf491d20e5de3246543152662d170d005d551c"
+    },
+    {
+      "path": "runs/rngd-faults-native-01/terminal-api.json",
+      "bytes": 6940,
+      "sha256": "938631e7f1b7aaef4aed419a011bb3d611644f7df870d4b3b2db0fb92173a2ab"
+    }
+  ]
+}

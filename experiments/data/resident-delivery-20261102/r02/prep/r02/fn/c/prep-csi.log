@@ -1,0 +1,7 @@
+2026/11/02 03:01:24.380254 node cache /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/c/prep-cache: 0 chunks in 0 packs
+2026/11/02 03:01:24.381151 onggi dev CSI node plugin onggi.ai-computing.github.io on unix:///home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/c/csi.sock, node cdx-exp, data /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m
+2026/11/02 03:01:24.400979 materializing sha256:04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526
+2026/11/02 03:02:27.042862 materialized sha256:04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526 in 1m2.642s: {"files":9,"bytes":16061566829,"read_bytes":10702195134,"cache_bytes":0,"peer_bytes":0,"peer_chunks":0,"cached":10702195134,"reused":0,"base_best":0,"local_bytes":0,"ranges":798,"duration_ns":62641191831}
+2026/11/02 03:02:27.043481 published base ref sha256:04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526 manifest sha256:04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526 at /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/c/base (1 volumes use it)
+2026/11/02 03:02:36.695415 unpublished base manifest sha256:04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526 from /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/c/base (0 volumes use it)
+2026/11/02 03:02:36.697171 stopping

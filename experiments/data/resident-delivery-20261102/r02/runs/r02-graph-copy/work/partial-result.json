@@ -1,0 +1,4187 @@
+{
+  "schema": "resident-delivery-v1",
+  "status": "failed",
+  "validity": "invalid",
+  "metrics": {
+    "delivery_s": 0.00664809,
+    "hash_validation_s": 0.001902847,
+    "hash_to_generation_s": 0.196668633,
+    "prompt_to_first_token_s": 0.200288548,
+    "demand_to_first_token_s": 0.405508118,
+    "harness_entry_to_first_token_s": 16.689856253,
+    "excluded_pre_demand_setup_s": 16.284348135
+  },
+  "started": {
+    "perf_ns": 1563759924350428,
+    "wall_ns": 1793588785049173138
+  },
+  "script": {
+    "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_resident_delivery.py",
+    "sha256": "d8278dae9833edf2ed2f7f47adfafd99f6bf6bb57e1c0a86b8d9eea5b1c9bb21"
+  },
+  "pid": 197,
+  "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+  "hostname": "cdx-resident-native-r02-tnt4d",
+  "perf_counter_implementation": "clock_gettime(CLOCK_MONOTONIC)",
+  "config": {
+    "trial_id": "r02-graph-copy",
+    "phase": "measure",
+    "arm": "graph-copy",
+    "chip": 0,
+    "host_workers": 2,
+    "intra_op": 4,
+    "immutable_checkpoint": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+    "base_cache_dir": "/home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2/base-B4-S256-g2/cache/graphs",
+    "base_bundle_source": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-base",
+    "target_bundle_source": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-target",
+    "base_ref": "sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444",
+    "target_ref": "sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93",
+    "store": "/home/gspark/workspace/codex_resident_delivery_20261102/graph-store",
+    "onggi_binary": "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+    "csi_client": "/home/gspark/workspace/codex_resident_delivery_20261102/bin/csi-call",
+    "reference_file": "/home/gspark/workspace/codex_ccgrid_npu_20261030/inputs/e6-base-to-target-reference.json",
+    "base_variant": "B4-S256-g2",
+    "target_variant": "B4-S512-g2",
+    "work_dir": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work",
+    "provenance": {
+      "runtime_baseline": "db2dd2598daffb3d3f722007599b74d00ede61af",
+      "harness_source": "829573e41959a4b0f6daa82e4862f1584367c347",
+      "onggi_source": "05c9760",
+      "preparation_sha256": "de9d95c8a7835fbb00b2ce9c2acca3522582f33f013f369caff9d6e704e6f544",
+      "cohort": "r02",
+      "cache_state": "empty_application_chunk_cache",
+      "peers": false,
+      "template_sha256": "d1acf0cf861d529eddcc02564769589a7d524254f099cbbe5d1a104a009f0757",
+      "pod_uid": "e4d8f55d-3be3-48b2-9da9-cf366a18f847",
+      "pod_name": "cdx-resident-native-r02-tnt4d"
+    }
+  },
+  "config_file": {
+    "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/config.json",
+    "sha256": "1ddaaca959d8bd47d178311f8f6081f69aff708e2f862b7e66ea42c8dec586a0"
+  },
+  "events": {
+    "started": {
+      "perf_ns": 1563759924350428,
+      "wall_ns": 1793588785049173138
+    },
+    "expected_hashes_finished": {
+      "perf_ns": 1563759934344632,
+      "wall_ns": 1793588785059164482
+    },
+    "construct_started": {
+      "perf_ns": 1563762196057147,
+      "wall_ns": 1793588787320877217
+    },
+    "constructed": {
+      "perf_ns": 1563775710083381,
+      "wall_ns": 1793588800834904141
+    },
+    "zero_inflight_drain_barrier": {
+      "perf_ns": 1563776208696173,
+      "wall_ns": 1793588801333516943
+    },
+    "demand": {
+      "perf_ns": 1563776208698563,
+      "wall_ns": 1793588801333518253
+    },
+    "delivery_finished": {
+      "perf_ns": 1563776215346653,
+      "wall_ns": 1793588801340166333
+    },
+    "hash_finished": {
+      "perf_ns": 1563776217249500,
+      "wall_ns": 1793588801342069290
+    },
+    "target_generation_finished": {
+      "perf_ns": 1563776736874790,
+      "wall_ns": 1793588801861695310
+    },
+    "close_started": {
+      "perf_ns": 1563776924898736,
+      "wall_ns": 1793588802049719046
+    },
+    "engine_closed": {
+      "perf_ns": 1563777367613546,
+      "wall_ns": 1793588802492434946
+    },
+    "cleanup_finished": {
+      "perf_ns": 1563777444262307,
+      "wall_ns": 1793588802569082317
+    }
+  },
+  "reference": {
+    "base_prompts": [
+      [
+        102089,
+        76471,
+        61385,
+        32447,
+        37008,
+        5012,
+        9121,
+        2081
+      ],
+      [
+        21114,
+        97611,
+        77964,
+        109539,
+        60484,
+        72835,
+        116492,
+        87566
+      ],
+      [
+        75909,
+        65280,
+        67234,
+        112215,
+        33353,
+        97920,
+        80538,
+        428
+      ],
+      [
+        47358,
+        102902,
+        66562,
+        4126,
+        91810,
+        87585,
+        101604,
+        21161
+      ]
+    ],
+    "prompts": [
+      [
+        102089,
+        76471,
+        61385,
+        32447,
+        37008,
+        5012,
+        9121,
+        2081
+      ],
+      [
+        21114,
+        97611,
+        77964,
+        109539,
+        60484,
+        72835,
+        116492,
+        87566
+      ],
+      [
+        75909,
+        65280,
+        67234,
+        112215,
+        33353,
+        97920,
+        80538,
+        428
+      ],
+      [
+        47358,
+        102902,
+        66562,
+        4126,
+        91810,
+        87585,
+        101604,
+        21161
+      ]
+    ],
+    "base_tokens": [
+      [
+        198,
+        791,
+        1176,
+        1403,
+        5238,
+        315,
+        279,
+        33894
+      ],
+      [
+        29,
+        946,
+        946,
+        946,
+        946,
+        946,
+        946,
+        946
+      ],
+      [
+        9831,
+        19954,
+        13094,
+        66965,
+        29726,
+        13094,
+        33390,
+        33353
+      ],
+      [
+        198,
+        220,
+        482,
+        220,
+        16,
+        13,
+        15,
+        13
+      ]
+    ],
+    "tokens": [
+      [
+        198,
+        791,
+        1176,
+        1403,
+        5238,
+        315,
+        279,
+        33894
+      ],
+      [
+        29,
+        946,
+        946,
+        946,
+        946,
+        946,
+        946,
+        946
+      ],
+      [
+        9831,
+        19954,
+        13094,
+        66965,
+        29726,
+        13094,
+        33390,
+        33353
+      ],
+      [
+        198,
+        220,
+        482,
+        220,
+        16,
+        13,
+        15,
+        13
+      ]
+    ],
+    "base_variant": "B4-S256-g2",
+    "target_variant": "B4-S512-g2",
+    "provenance": "independent fresh native processes; both separately matched prior public golden; raw records reference-smoke-01"
+  },
+  "reference_file": {
+    "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/inputs/e6-base-to-target-reference.json",
+    "sha256": "a3520e738005f7ea64d27ffce6f95f5785bf3ee29be97f01c9cfabeb9a8d8a04"
+  },
+  "os_page_cache": "uncontrolled/shared",
+  "allow_compile": false,
+  "allocator_retries": 0,
+  "counter_scope": "file metadata describes logical bytes and filesystem blocks; no DMA/write counter claim",
+  "expected_inventory": {
+    "base": {
+      "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+        "size": 224097,
+        "inode": 23613441,
+        "device": 64512,
+        "blocks": 440,
+        "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-base/cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable",
+        "nlink": 1,
+        "mode": 33152,
+        "sha256": "405001f45f4676a134738a2d340dd453f17e9ccc60ba026e05ab285b39261c70"
+      },
+      "cache/graphs/2026.4.0/2.10.0+cpu/42100dcbf68bbc6aa86e92b0.runnable": {
+        "size": 760632,
+        "inode": 23613442,
+        "device": 64512,
+        "blocks": 1488,
+        "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-base/cache/graphs/2026.4.0/2.10.0+cpu/42100dcbf68bbc6aa86e92b0.runnable",
+        "nlink": 1,
+        "mode": 33152,
+        "sha256": "5e8aaff08c16606163a52e9d517dc2e1fc0b58aabb03740559af38ca4bba7bb1"
+      },
+      "variant.json": {
+        "size": 919,
+        "inode": 23613443,
+        "device": 64512,
+        "blocks": 8,
+        "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-base/variant.json",
+        "nlink": 1,
+        "mode": 33152,
+        "sha256": "cdc74a5ae3eda7e24736b3d0268dc68c54dca92ed277d4217b5906f1cf46d6dc"
+      }
+    },
+    "target": {
+      "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+        "size": 224097,
+        "inode": 23866845,
+        "device": 64512,
+        "blocks": 440,
+        "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-target/cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable",
+        "nlink": 1,
+        "mode": 33152,
+        "sha256": "405001f45f4676a134738a2d340dd453f17e9ccc60ba026e05ab285b39261c70"
+      },
+      "cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable": {
+        "size": 778900,
+        "inode": 23866846,
+        "device": 64512,
+        "blocks": 1528,
+        "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-target/cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable",
+        "nlink": 1,
+        "mode": 33152,
+        "sha256": "f06c3bf73e93e964a9a2f575e6a73c0960aea0cae02b63f43b5cce5182f0f756"
+      },
+      "variant.json": {
+        "size": 919,
+        "inode": 23866847,
+        "device": 64512,
+        "blocks": 8,
+        "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-target/variant.json",
+        "nlink": 1,
+        "mode": 33152,
+        "sha256": "951365e6659a39ad9e143202034e2bf986ff5863f9bd0638b211604a82b08fcd"
+      }
+    }
+  },
+  "snapshots": {
+    "base_ready": {
+      "at": {
+        "perf_ns": 1563776021211946,
+        "wall_ns": 1793588801146031966
+      },
+      "pid": 197,
+      "files": {
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/materializer/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444": null,
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/base-mount": null
+      },
+      "disk_totals": {},
+      "status": "Name:\tpython\nUmask:\t0022\nState:\tR (running)\nTgid:\t197\nNgid:\t2989093\nPid:\t197\nPPid:\t1\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t128\nGroups:\t0 \nNStgid:\t197\nNSpid:\t197\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t23947892 kB\nVmSize:\t20937580 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t20049132 kB\nVmRSS:\t19024628 kB\nRssAnon:\t 3165428 kB\nRssFile:\t15859200 kB\nRssShmem:\t       0 kB\nVmData:\t19096284 kB\nVmStk:\t     144 kB\nVmExe:\t    2776 kB\nVmLib:\t  608880 kB\nVmPTE:\t   37972 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t15\nSigQ:\t0/6190886\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000100000002\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffffff,ffffffff,ffffffff\nCpus_allowed_list:\t0-95\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t698\nnonvoluntary_ctxt_switches:\t123\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "smaps_rollup": "5c276012a000-7ffcfab2b000 ---p 00000000 00:00 0                          [rollup]\nRss:            19039912 kB\nPss:            19029367 kB\nPss_Dirty:       3173348 kB\nPss_Anon:        3173348 kB\nPss_File:       15856019 kB\nPss_Shmem:             0 kB\nShared_Clean:      12900 kB\nShared_Dirty:          0 kB\nPrivate_Clean:  15853664 kB\nPrivate_Dirty:   3173348 kB\nReferenced:     19039912 kB\nAnonymous:       3173348 kB\nKSM:                   0 kB\nLazyFree:              0 kB\nAnonHugePages:     14336 kB\nShmemPmdMapped:        0 kB\nFilePmdMapped:         0 kB\nShared_Hugetlb:        0 kB\nPrivate_Hugetlb:       0 kB\nSwap:                  0 kB\nSwapPss:               0 kB\nLocked:                0 kB\n",
+      "mountinfo": "8910 3420 0:597 / / rw,relatime - overlay overlay rw,lowerdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10165/fs,upperdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10175/fs,workdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10175/work,uuid=on,nouserxattr\n8912 8910 0:703 / /proc rw,nosuid,nodev,noexec,relatime - proc proc rw\n8913 8910 0:704 / /dev rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755,inode64\n8914 8913 0:705 / /dev/pts rw,nosuid,noexec,relatime - devpts devpts rw,gid=5,mode=620,ptmxmode=666\n8915 8913 0:691 / /dev/mqueue rw,nosuid,nodev,noexec,relatime - mqueue mqueue rw\n8916 8910 0:696 / /sys rw,nosuid,nodev,noexec,relatime - sysfs sysfs rw\n8917 8916 0:30 / /sys/fs/cgroup rw,nosuid,nodev,noexec,relatime - cgroup2 cgroup rw\n8918 8910 252:0 /usr/lib/x86_64-linux-gnu /host-libs ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8919 8910 252:0 /usr/lib /host-usrlib ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8920 8910 252:0 /usr/bin /host-bin ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8922 8910 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/volumes/kubernetes.io~empty-dir/assigned /run/swap rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8935 8913 0:55 / /dev/shm rw,relatime - tmpfs tmpfs rw,size=16777216k,inode64,noswap\n8936 8910 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/etc-hosts /etc/hosts rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8937 8913 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/containers/run/7e9645c3 /dev/termination-log rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8939 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/4de72918f8ee67659dd5bbbcecddec69d7ad87585f3fe95b67b014637a04c0d4/hostname /etc/hostname rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8953 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/4de72918f8ee67659dd5bbbcecddec69d7ad87585f3fe95b67b014637a04c0d4/resolv.conf /etc/resolv.conf rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8966 8910 252:0 /usr/bin/python3.10 /usr/bin/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8967 8910 252:0 /usr/lib/python3.10 /usr/lib/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8972 8910 252:0 /usr/lib/python3/dist-packages /usr/lib/python3/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8973 8910 252:0 /home/gspark/venvs/furiosa-2026.4 /home/gspark/venvs/furiosa-2026.4 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9023 8910 252:0 /home/gspark/workspace/codex_rngd_opt_20261023 /home/gspark/workspace/codex_rngd_opt_20261023 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9024 8910 252:0 /home/gspark/workspace/codex_onggi_integration_20261030 /home/gspark/workspace/codex_onggi_integration_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9062 8910 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030 /home/gspark/workspace/codex_ccgrid_npu_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9063 8910 252:0 /var/lib/kubelet/device-plugins /var/lib/kubelet/device-plugins ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9099 8910 252:0 /home/gspark/workspace/codex_binding_conformance_20261030 /home/gspark/workspace/codex_binding_conformance_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9101 8910 252:0 /home/gspark/workspace/codex_ccgrid_b2_20261102 /home/gspark/workspace/codex_ccgrid_b2_20261102 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9102 8910 252:0 /home/gspark/workspace/codex_resident_delivery_20261102 /home/gspark/workspace/codex_resident_delivery_20261102 rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9103 8910 252:0 /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9104 8910 252:0 /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9105 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/cache /home/gspark/workspace/codex_ccgrid_npu_20261030/cache ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9106 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9107 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9108 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9109 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9110 9101 252:0 /home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source /home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3259 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3372 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3373 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n",
+      "cgroup": {
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.current": "43557638144\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.peak": "44678688768\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.stat": "anon 3257270272\nfile 39462498304\nkernel 836317184\nkernel_stack 262144\npagetables 38969344\nsec_pagetables 0\npercpu 3136\nsock 0\nvmalloc 0\nshmem 0\nzswap 0\nzswapped 0\nfile_mapped 0\nfile_dirty 4096\nfile_writeback 0\nswapcached 0\nanon_thp 14680064\nfile_thp 0\nshmem_thp 0\ninactive_anon 0\nactive_anon 3257221120\ninactive_file 39462498304\nactive_file 0\nunevictable 0\nslab_reclaimable 795509632\nslab_unreclaimable 989704\nslab 796499336\nworkingset_refault_anon 0\nworkingset_refault_file 1454370\nworkingset_activate_anon 0\nworkingset_activate_file 0\nworkingset_restore_anon 0\nworkingset_restore_file 0\nworkingset_nodereclaim 0\npgscan 0\npgsteal 0\npgscan_kswapd 0\npgscan_direct 0\npgscan_khugepaged 0\npgsteal_kswapd 0\npgsteal_direct 0\npgsteal_khugepaged 0\npgfault 39305476\npgmajfault 0\npgrefill 0\npgactivate 0\npgdeactivate 0\npglazyfree 0\npglazyfreed 0\nzswpin 0\nzswpout 0\nzswpwb 0\nthp_fault_alloc 30\nthp_collapse_alloc 29\nthp_swpout 0\nthp_swpout_fallback 0\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.max": "137438953472\n"
+      },
+      "cgroup_membership": "0::/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope\n",
+      "materializer_state": {}
+    },
+    "delivery": {
+      "at": {
+        "perf_ns": 1563776217251860,
+        "wall_ns": 1793588801342071550
+      },
+      "pid": 197,
+      "files": {
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/materializer/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444": null,
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/base-mount": null,
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount": {
+          "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+            "size": 224097,
+            "inode": 25171252,
+            "device": 64512,
+            "blocks": 440,
+            "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable",
+            "nlink": 1,
+            "mode": 33152
+          },
+          "cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable": {
+            "size": 778900,
+            "inode": 25171253,
+            "device": 64512,
+            "blocks": 1528,
+            "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable",
+            "nlink": 1,
+            "mode": 33152
+          },
+          "variant.json": {
+            "size": 919,
+            "inode": 25171254,
+            "device": 64512,
+            "blocks": 8,
+            "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/variant.json",
+            "nlink": 1,
+            "mode": 33152
+          }
+        }
+      },
+      "disk_totals": {
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount": {
+          "logical_file_entry_bytes": 1003916,
+          "unique_inode_allocated_bytes": 1011712,
+          "scope": "files only; directory/metadata allocation excluded; roots may share inodes"
+        }
+      },
+      "status": "Name:\tpython\nUmask:\t0022\nState:\tR (running)\nTgid:\t197\nNgid:\t2989093\nPid:\t197\nPPid:\t1\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t128\nGroups:\t0 \nNStgid:\t197\nNSpid:\t197\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t23947892 kB\nVmSize:\t20937580 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t20049132 kB\nVmRSS:\t19024628 kB\nRssAnon:\t 3165428 kB\nRssFile:\t15859200 kB\nRssShmem:\t       0 kB\nVmData:\t19096284 kB\nVmStk:\t     144 kB\nVmExe:\t    2776 kB\nVmLib:\t  608880 kB\nVmPTE:\t   37972 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t15\nSigQ:\t0/6190886\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000100000002\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffffff,ffffffff,ffffffff\nCpus_allowed_list:\t0-95\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t703\nnonvoluntary_ctxt_switches:\t123\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "smaps_rollup": "5c276012a000-7ffcfab2b000 ---p 00000000 00:00 0                          [rollup]\nRss:            19039928 kB\nPss:            19029383 kB\nPss_Dirty:       3173364 kB\nPss_Anon:        3173364 kB\nPss_File:       15856019 kB\nPss_Shmem:             0 kB\nShared_Clean:      12900 kB\nShared_Dirty:          0 kB\nPrivate_Clean:  15853664 kB\nPrivate_Dirty:   3173364 kB\nReferenced:     19039928 kB\nAnonymous:       3173364 kB\nKSM:                   0 kB\nLazyFree:              0 kB\nAnonHugePages:     14336 kB\nShmemPmdMapped:        0 kB\nFilePmdMapped:         0 kB\nShared_Hugetlb:        0 kB\nPrivate_Hugetlb:       0 kB\nSwap:                  0 kB\nSwapPss:               0 kB\nLocked:                0 kB\n",
+      "mountinfo": "8910 3420 0:597 / / rw,relatime - overlay overlay rw,lowerdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10165/fs,upperdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10175/fs,workdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10175/work,uuid=on,nouserxattr\n8912 8910 0:703 / /proc rw,nosuid,nodev,noexec,relatime - proc proc rw\n8913 8910 0:704 / /dev rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755,inode64\n8914 8913 0:705 / /dev/pts rw,nosuid,noexec,relatime - devpts devpts rw,gid=5,mode=620,ptmxmode=666\n8915 8913 0:691 / /dev/mqueue rw,nosuid,nodev,noexec,relatime - mqueue mqueue rw\n8916 8910 0:696 / /sys rw,nosuid,nodev,noexec,relatime - sysfs sysfs rw\n8917 8916 0:30 / /sys/fs/cgroup rw,nosuid,nodev,noexec,relatime - cgroup2 cgroup rw\n8918 8910 252:0 /usr/lib/x86_64-linux-gnu /host-libs ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8919 8910 252:0 /usr/lib /host-usrlib ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8920 8910 252:0 /usr/bin /host-bin ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8922 8910 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/volumes/kubernetes.io~empty-dir/assigned /run/swap rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8935 8913 0:55 / /dev/shm rw,relatime - tmpfs tmpfs rw,size=16777216k,inode64,noswap\n8936 8910 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/etc-hosts /etc/hosts rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8937 8913 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/containers/run/7e9645c3 /dev/termination-log rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8939 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/4de72918f8ee67659dd5bbbcecddec69d7ad87585f3fe95b67b014637a04c0d4/hostname /etc/hostname rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8953 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/4de72918f8ee67659dd5bbbcecddec69d7ad87585f3fe95b67b014637a04c0d4/resolv.conf /etc/resolv.conf rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8966 8910 252:0 /usr/bin/python3.10 /usr/bin/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8967 8910 252:0 /usr/lib/python3.10 /usr/lib/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8972 8910 252:0 /usr/lib/python3/dist-packages /usr/lib/python3/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8973 8910 252:0 /home/gspark/venvs/furiosa-2026.4 /home/gspark/venvs/furiosa-2026.4 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9023 8910 252:0 /home/gspark/workspace/codex_rngd_opt_20261023 /home/gspark/workspace/codex_rngd_opt_20261023 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9024 8910 252:0 /home/gspark/workspace/codex_onggi_integration_20261030 /home/gspark/workspace/codex_onggi_integration_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9062 8910 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030 /home/gspark/workspace/codex_ccgrid_npu_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9063 8910 252:0 /var/lib/kubelet/device-plugins /var/lib/kubelet/device-plugins ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9099 8910 252:0 /home/gspark/workspace/codex_binding_conformance_20261030 /home/gspark/workspace/codex_binding_conformance_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9101 8910 252:0 /home/gspark/workspace/codex_ccgrid_b2_20261102 /home/gspark/workspace/codex_ccgrid_b2_20261102 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9102 8910 252:0 /home/gspark/workspace/codex_resident_delivery_20261102 /home/gspark/workspace/codex_resident_delivery_20261102 rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9103 8910 252:0 /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9104 8910 252:0 /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9105 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/cache /home/gspark/workspace/codex_ccgrid_npu_20261030/cache ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9106 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9107 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9108 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9109 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9110 9101 252:0 /home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source /home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3259 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3372 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3373 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3419 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-copy /home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n",
+      "cgroup": {
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.current": "43558830080\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.peak": "44678688768\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.stat": "anon 3257286656\nfile 39463510016\nkernel 836554752\nkernel_stack 262144\npagetables 38969344\nsec_pagetables 0\npercpu 4704\nsock 0\nvmalloc 0\nshmem 0\nzswap 0\nzswapped 0\nfile_mapped 0\nfile_dirty 1015808\nfile_writeback 0\nswapcached 0\nanon_thp 14680064\nfile_thp 0\nshmem_thp 0\ninactive_anon 0\nactive_anon 3257241600\ninactive_file 39463505920\nactive_file 0\nunevictable 0\nslab_reclaimable 795702920\nslab_unreclaimable 1032232\nslab 796735152\nworkingset_refault_anon 0\nworkingset_refault_file 1454370\nworkingset_activate_anon 0\nworkingset_activate_file 0\nworkingset_restore_anon 0\nworkingset_restore_file 0\nworkingset_nodereclaim 0\npgscan 0\npgsteal 0\npgscan_kswapd 0\npgscan_direct 0\npgscan_khugepaged 0\npgsteal_kswapd 0\npgsteal_direct 0\npgsteal_khugepaged 0\npgfault 39305970\npgmajfault 0\npgrefill 0\npgactivate 0\npgdeactivate 0\npglazyfree 0\npglazyfreed 0\nzswpin 0\nzswpout 0\nzswpwb 0\nthp_fault_alloc 30\nthp_collapse_alloc 29\nthp_swpout 0\nthp_swpout_fallback 0\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.max": "137438953472\n"
+      },
+      "cgroup_membership": "0::/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope\n",
+      "materializer_state": {}
+    },
+    "target_ready": {
+      "at": {
+        "perf_ns": 1563776736878460,
+        "wall_ns": 1793588801861698270
+      },
+      "pid": 197,
+      "files": {
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/materializer/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444": null,
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/base-mount": null,
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount": {
+          "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+            "size": 224097,
+            "inode": 25171252,
+            "device": 64512,
+            "blocks": 440,
+            "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable",
+            "nlink": 1,
+            "mode": 33152
+          },
+          "cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable": {
+            "size": 778900,
+            "inode": 25171253,
+            "device": 64512,
+            "blocks": 1528,
+            "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable",
+            "nlink": 1,
+            "mode": 33152
+          },
+          "variant.json": {
+            "size": 919,
+            "inode": 25171254,
+            "device": 64512,
+            "blocks": 8,
+            "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/variant.json",
+            "nlink": 1,
+            "mode": 33152
+          }
+        }
+      },
+      "disk_totals": {
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount": {
+          "logical_file_entry_bytes": 1003916,
+          "unique_inode_allocated_bytes": 1011712,
+          "scope": "files only; directory/metadata allocation excluded; roots may share inodes"
+        }
+      },
+      "status": "Name:\tpython\nUmask:\t0022\nState:\tR (running)\nTgid:\t197\nNgid:\t2989093\nPid:\t197\nPPid:\t1\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t128\nGroups:\t0 \nNStgid:\t197\nNSpid:\t197\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t23947892 kB\nVmSize:\t20986740 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t20049132 kB\nVmRSS:\t19074756 kB\nRssAnon:\t 3215556 kB\nRssFile:\t15859200 kB\nRssShmem:\t       0 kB\nVmData:\t19145444 kB\nVmStk:\t     144 kB\nVmExe:\t    2776 kB\nVmLib:\t  608880 kB\nVmPTE:\t   38072 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t15\nSigQ:\t0/6190886\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000100000002\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffffff,ffffffff,ffffffff\nCpus_allowed_list:\t0-95\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t954\nnonvoluntary_ctxt_switches:\t124\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "smaps_rollup": "5c276012a000-7ffcfab2b000 ---p 00000000 00:00 0                          [rollup]\nRss:            19089428 kB\nPss:            19078883 kB\nPss_Dirty:       3222864 kB\nPss_Anon:        3222864 kB\nPss_File:       15856019 kB\nPss_Shmem:             0 kB\nShared_Clean:      12900 kB\nShared_Dirty:          0 kB\nPrivate_Clean:  15853664 kB\nPrivate_Dirty:   3222864 kB\nReferenced:     19089428 kB\nAnonymous:       3222864 kB\nKSM:                   0 kB\nLazyFree:              0 kB\nAnonHugePages:     45056 kB\nShmemPmdMapped:        0 kB\nFilePmdMapped:         0 kB\nShared_Hugetlb:        0 kB\nPrivate_Hugetlb:       0 kB\nSwap:                  0 kB\nSwapPss:               0 kB\nLocked:                0 kB\n",
+      "mountinfo": "8910 3420 0:597 / / rw,relatime - overlay overlay rw,lowerdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10165/fs,upperdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10175/fs,workdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10175/work,uuid=on,nouserxattr\n8912 8910 0:703 / /proc rw,nosuid,nodev,noexec,relatime - proc proc rw\n8913 8910 0:704 / /dev rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755,inode64\n8914 8913 0:705 / /dev/pts rw,nosuid,noexec,relatime - devpts devpts rw,gid=5,mode=620,ptmxmode=666\n8915 8913 0:691 / /dev/mqueue rw,nosuid,nodev,noexec,relatime - mqueue mqueue rw\n8916 8910 0:696 / /sys rw,nosuid,nodev,noexec,relatime - sysfs sysfs rw\n8917 8916 0:30 / /sys/fs/cgroup rw,nosuid,nodev,noexec,relatime - cgroup2 cgroup rw\n8918 8910 252:0 /usr/lib/x86_64-linux-gnu /host-libs ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8919 8910 252:0 /usr/lib /host-usrlib ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8920 8910 252:0 /usr/bin /host-bin ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8922 8910 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/volumes/kubernetes.io~empty-dir/assigned /run/swap rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8935 8913 0:55 / /dev/shm rw,relatime - tmpfs tmpfs rw,size=16777216k,inode64,noswap\n8936 8910 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/etc-hosts /etc/hosts rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8937 8913 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/containers/run/7e9645c3 /dev/termination-log rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8939 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/4de72918f8ee67659dd5bbbcecddec69d7ad87585f3fe95b67b014637a04c0d4/hostname /etc/hostname rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8953 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/4de72918f8ee67659dd5bbbcecddec69d7ad87585f3fe95b67b014637a04c0d4/resolv.conf /etc/resolv.conf rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8966 8910 252:0 /usr/bin/python3.10 /usr/bin/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8967 8910 252:0 /usr/lib/python3.10 /usr/lib/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8972 8910 252:0 /usr/lib/python3/dist-packages /usr/lib/python3/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8973 8910 252:0 /home/gspark/venvs/furiosa-2026.4 /home/gspark/venvs/furiosa-2026.4 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9023 8910 252:0 /home/gspark/workspace/codex_rngd_opt_20261023 /home/gspark/workspace/codex_rngd_opt_20261023 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9024 8910 252:0 /home/gspark/workspace/codex_onggi_integration_20261030 /home/gspark/workspace/codex_onggi_integration_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9062 8910 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030 /home/gspark/workspace/codex_ccgrid_npu_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9063 8910 252:0 /var/lib/kubelet/device-plugins /var/lib/kubelet/device-plugins ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9099 8910 252:0 /home/gspark/workspace/codex_binding_conformance_20261030 /home/gspark/workspace/codex_binding_conformance_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9101 8910 252:0 /home/gspark/workspace/codex_ccgrid_b2_20261102 /home/gspark/workspace/codex_ccgrid_b2_20261102 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9102 8910 252:0 /home/gspark/workspace/codex_resident_delivery_20261102 /home/gspark/workspace/codex_resident_delivery_20261102 rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9103 8910 252:0 /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9104 8910 252:0 /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9105 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/cache /home/gspark/workspace/codex_ccgrid_npu_20261030/cache ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9106 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9107 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9108 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9109 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9110 9101 252:0 /home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source /home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3259 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3372 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3373 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3419 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-copy /home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n",
+      "cgroup": {
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.current": "43609645056\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.peak": "44678688768\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.stat": "anon 3307974656\nfile 39463510016\nkernel 836460544\nkernel_stack 262144\npagetables 39071744\nsec_pagetables 0\npercpu 3136\nsock 0\nvmalloc 0\nshmem 0\nzswap 0\nzswapped 0\nfile_mapped 0\nfile_dirty 1015808\nfile_writeback 0\nswapcached 0\nanon_thp 46137344\nfile_thp 0\nshmem_thp 0\ninactive_anon 0\nactive_anon 3307909120\ninactive_file 39463505920\nactive_file 0\nunevictable 0\nslab_reclaimable 795564000\nslab_unreclaimable 980056\nslab 796544056\nworkingset_refault_anon 0\nworkingset_refault_file 1454370\nworkingset_activate_anon 0\nworkingset_activate_file 0\nworkingset_restore_anon 0\nworkingset_restore_file 0\nworkingset_nodereclaim 0\npgscan 0\npgsteal 0\npgscan_kswapd 0\npgscan_direct 0\npgscan_khugepaged 0\npgsteal_kswapd 0\npgsteal_direct 0\npgsteal_khugepaged 0\npgfault 39345480\npgmajfault 0\npgrefill 0\npgactivate 0\npgdeactivate 0\npglazyfree 0\npglazyfreed 0\nzswpin 0\nzswpout 0\nzswpwb 0\nthp_fault_alloc 45\nthp_collapse_alloc 29\nthp_swpout 0\nthp_swpout_fallback 0\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.max": "137438953472\n"
+      },
+      "cgroup_membership": "0::/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope\n",
+      "materializer_state": {}
+    },
+    "close": {
+      "at": {
+        "perf_ns": 1563777367621856,
+        "wall_ns": 1793588802492441616
+      },
+      "pid": 197,
+      "files": {
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/materializer/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444": null,
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/base-mount": null,
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount": {
+          "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+            "size": 224097,
+            "inode": 25171252,
+            "device": 64512,
+            "blocks": 440,
+            "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable",
+            "nlink": 1,
+            "mode": 33152
+          },
+          "cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable": {
+            "size": 778900,
+            "inode": 25171253,
+            "device": 64512,
+            "blocks": 1528,
+            "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable",
+            "nlink": 1,
+            "mode": 33152
+          },
+          "variant.json": {
+            "size": 919,
+            "inode": 25171254,
+            "device": 64512,
+            "blocks": 8,
+            "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/variant.json",
+            "nlink": 1,
+            "mode": 33152
+          }
+        }
+      },
+      "disk_totals": {
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount": {
+          "logical_file_entry_bytes": 1003916,
+          "unique_inode_allocated_bytes": 1011712,
+          "scope": "files only; directory/metadata allocation excluded; roots may share inodes"
+        }
+      },
+      "status": "Name:\tpython\nUmask:\t0022\nState:\tR (running)\nTgid:\t197\nNgid:\t2989093\nPid:\t197\nPPid:\t1\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t128\nGroups:\t0 \nNStgid:\t197\nNSpid:\t197\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t23947892 kB\nVmSize:\t 5269824 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t20049132 kB\nVmRSS:\t 3358180 kB\nRssAnon:\t 3182936 kB\nRssFile:\t  175244 kB\nRssShmem:\t       0 kB\nVmData:\t 3428528 kB\nVmStk:\t     144 kB\nVmExe:\t    2776 kB\nVmLib:\t  608880 kB\nVmPTE:\t    7292 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t15\nSigQ:\t0/6190886\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000100000002\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffffff,ffffffff,ffffffff\nCpus_allowed_list:\t0-95\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t955\nnonvoluntary_ctxt_switches:\t124\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "smaps_rollup": "5c276012a000-7ffcfab2b000 ---p 00000000 00:00 0                          [rollup]\nRss:             3372520 kB\nPss:             3361975 kB\nPss_Dirty:       3190100 kB\nPss_Anon:        3190100 kB\nPss_File:         171875 kB\nPss_Shmem:             0 kB\nShared_Clean:      12900 kB\nShared_Dirty:          0 kB\nPrivate_Clean:    169520 kB\nPrivate_Dirty:   3190100 kB\nReferenced:      3372520 kB\nAnonymous:       3190100 kB\nKSM:                   0 kB\nLazyFree:              0 kB\nAnonHugePages:     14336 kB\nShmemPmdMapped:        0 kB\nFilePmdMapped:         0 kB\nShared_Hugetlb:        0 kB\nPrivate_Hugetlb:       0 kB\nSwap:                  0 kB\nSwapPss:               0 kB\nLocked:                0 kB\n",
+      "mountinfo": "8910 3420 0:597 / / rw,relatime - overlay overlay rw,lowerdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10165/fs,upperdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10175/fs,workdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10175/work,uuid=on,nouserxattr\n8912 8910 0:703 / /proc rw,nosuid,nodev,noexec,relatime - proc proc rw\n8913 8910 0:704 / /dev rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755,inode64\n8914 8913 0:705 / /dev/pts rw,nosuid,noexec,relatime - devpts devpts rw,gid=5,mode=620,ptmxmode=666\n8915 8913 0:691 / /dev/mqueue rw,nosuid,nodev,noexec,relatime - mqueue mqueue rw\n8916 8910 0:696 / /sys rw,nosuid,nodev,noexec,relatime - sysfs sysfs rw\n8917 8916 0:30 / /sys/fs/cgroup rw,nosuid,nodev,noexec,relatime - cgroup2 cgroup rw\n8918 8910 252:0 /usr/lib/x86_64-linux-gnu /host-libs ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8919 8910 252:0 /usr/lib /host-usrlib ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8920 8910 252:0 /usr/bin /host-bin ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8922 8910 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/volumes/kubernetes.io~empty-dir/assigned /run/swap rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8935 8913 0:55 / /dev/shm rw,relatime - tmpfs tmpfs rw,size=16777216k,inode64,noswap\n8936 8910 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/etc-hosts /etc/hosts rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8937 8913 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/containers/run/7e9645c3 /dev/termination-log rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8939 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/4de72918f8ee67659dd5bbbcecddec69d7ad87585f3fe95b67b014637a04c0d4/hostname /etc/hostname rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8953 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/4de72918f8ee67659dd5bbbcecddec69d7ad87585f3fe95b67b014637a04c0d4/resolv.conf /etc/resolv.conf rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8966 8910 252:0 /usr/bin/python3.10 /usr/bin/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8967 8910 252:0 /usr/lib/python3.10 /usr/lib/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8972 8910 252:0 /usr/lib/python3/dist-packages /usr/lib/python3/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8973 8910 252:0 /home/gspark/venvs/furiosa-2026.4 /home/gspark/venvs/furiosa-2026.4 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9023 8910 252:0 /home/gspark/workspace/codex_rngd_opt_20261023 /home/gspark/workspace/codex_rngd_opt_20261023 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9024 8910 252:0 /home/gspark/workspace/codex_onggi_integration_20261030 /home/gspark/workspace/codex_onggi_integration_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9062 8910 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030 /home/gspark/workspace/codex_ccgrid_npu_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9063 8910 252:0 /var/lib/kubelet/device-plugins /var/lib/kubelet/device-plugins ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9099 8910 252:0 /home/gspark/workspace/codex_binding_conformance_20261030 /home/gspark/workspace/codex_binding_conformance_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9101 8910 252:0 /home/gspark/workspace/codex_ccgrid_b2_20261102 /home/gspark/workspace/codex_ccgrid_b2_20261102 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9102 8910 252:0 /home/gspark/workspace/codex_resident_delivery_20261102 /home/gspark/workspace/codex_resident_delivery_20261102 rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9103 8910 252:0 /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9104 8910 252:0 /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9105 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/cache /home/gspark/workspace/codex_ccgrid_npu_20261030/cache ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9106 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9107 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9108 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9109 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9110 9101 252:0 /home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source /home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3259 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3372 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3373 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3419 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-copy /home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n",
+      "cgroup": {
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.current": "43543801856\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.peak": "44678688768\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.stat": "anon 3274424320\nfile 39463510016\nkernel 804941824\nkernel_stack 262144\npagetables 7553024\nsec_pagetables 0\npercpu 3136\nsock 0\nvmalloc 0\nshmem 0\nzswap 0\nzswapped 0\nfile_mapped 0\nfile_dirty 1015808\nfile_writeback 0\nswapcached 0\nanon_thp 14680064\nfile_thp 0\nshmem_thp 0\ninactive_anon 0\nactive_anon 3274379264\ninactive_file 39463505920\nactive_file 0\nunevictable 0\nslab_reclaimable 795562800\nslab_unreclaimable 978872\nslab 796541672\nworkingset_refault_anon 0\nworkingset_refault_file 1454370\nworkingset_activate_anon 0\nworkingset_activate_file 0\nworkingset_restore_anon 0\nworkingset_restore_file 0\nworkingset_nodereclaim 0\npgscan 0\npgsteal 0\npgscan_kswapd 0\npgscan_direct 0\npgscan_khugepaged 0\npgsteal_kswapd 0\npgsteal_direct 0\npgsteal_khugepaged 0\npgfault 39345613\npgmajfault 0\npgrefill 0\npgactivate 0\npgdeactivate 0\npglazyfree 0\npglazyfreed 0\nzswpin 0\nzswpout 0\nzswpwb 0\nthp_fault_alloc 45\nthp_collapse_alloc 29\nthp_swpout 0\nthp_swpout_fallback 0\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.max": "137438953472\n"
+      },
+      "cgroup_membership": "0::/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope\n",
+      "materializer_state": {}
+    },
+    "cleanup": {
+      "at": {
+        "perf_ns": 1563777409734241,
+        "wall_ns": 1793588802534553981
+      },
+      "pid": 197,
+      "files": {
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/materializer/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444": null,
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/base-mount": null,
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount": {}
+      },
+      "disk_totals": {
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount": {
+          "logical_file_entry_bytes": 0,
+          "unique_inode_allocated_bytes": 0,
+          "scope": "files only; directory/metadata allocation excluded; roots may share inodes"
+        }
+      },
+      "status": "Name:\tpython\nUmask:\t0022\nState:\tR (running)\nTgid:\t197\nNgid:\t2989093\nPid:\t197\nPPid:\t1\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t128\nGroups:\t0 \nNStgid:\t197\nNSpid:\t197\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t23947892 kB\nVmSize:\t 5237052 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t20049132 kB\nVmRSS:\t 3325404 kB\nRssAnon:\t 3150160 kB\nRssFile:\t  175244 kB\nRssShmem:\t       0 kB\nVmData:\t 3395756 kB\nVmStk:\t     144 kB\nVmExe:\t    2776 kB\nVmLib:\t  608880 kB\nVmPTE:\t    7228 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t15\nSigQ:\t0/6190886\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000100000002\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffffff,ffffffff,ffffffff\nCpus_allowed_list:\t0-95\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t957\nnonvoluntary_ctxt_switches:\t124\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "smaps_rollup": "5c276012a000-7ffcfab2b000 ---p 00000000 00:00 0                          [rollup]\nRss:             3339748 kB\nPss:             3329203 kB\nPss_Dirty:       3157328 kB\nPss_Anon:        3157328 kB\nPss_File:         171875 kB\nPss_Shmem:             0 kB\nShared_Clean:      12900 kB\nShared_Dirty:          0 kB\nPrivate_Clean:    169520 kB\nPrivate_Dirty:   3157328 kB\nReferenced:      3339748 kB\nAnonymous:       3157328 kB\nKSM:                   0 kB\nLazyFree:              0 kB\nAnonHugePages:         0 kB\nShmemPmdMapped:        0 kB\nFilePmdMapped:         0 kB\nShared_Hugetlb:        0 kB\nPrivate_Hugetlb:       0 kB\nSwap:                  0 kB\nSwapPss:               0 kB\nLocked:                0 kB\n",
+      "mountinfo": "8910 3420 0:597 / / rw,relatime - overlay overlay rw,lowerdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10165/fs,upperdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10175/fs,workdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10175/work,uuid=on,nouserxattr\n8912 8910 0:703 / /proc rw,nosuid,nodev,noexec,relatime - proc proc rw\n8913 8910 0:704 / /dev rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755,inode64\n8914 8913 0:705 / /dev/pts rw,nosuid,noexec,relatime - devpts devpts rw,gid=5,mode=620,ptmxmode=666\n8915 8913 0:691 / /dev/mqueue rw,nosuid,nodev,noexec,relatime - mqueue mqueue rw\n8916 8910 0:696 / /sys rw,nosuid,nodev,noexec,relatime - sysfs sysfs rw\n8917 8916 0:30 / /sys/fs/cgroup rw,nosuid,nodev,noexec,relatime - cgroup2 cgroup rw\n8918 8910 252:0 /usr/lib/x86_64-linux-gnu /host-libs ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8919 8910 252:0 /usr/lib /host-usrlib ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8920 8910 252:0 /usr/bin /host-bin ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8922 8910 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/volumes/kubernetes.io~empty-dir/assigned /run/swap rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8935 8913 0:55 / /dev/shm rw,relatime - tmpfs tmpfs rw,size=16777216k,inode64,noswap\n8936 8910 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/etc-hosts /etc/hosts rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8937 8913 252:0 /var/lib/kubelet/pods/e4d8f55d-3be3-48b2-9da9-cf366a18f847/containers/run/7e9645c3 /dev/termination-log rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8939 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/4de72918f8ee67659dd5bbbcecddec69d7ad87585f3fe95b67b014637a04c0d4/hostname /etc/hostname rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8953 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/4de72918f8ee67659dd5bbbcecddec69d7ad87585f3fe95b67b014637a04c0d4/resolv.conf /etc/resolv.conf rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8966 8910 252:0 /usr/bin/python3.10 /usr/bin/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8967 8910 252:0 /usr/lib/python3.10 /usr/lib/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8972 8910 252:0 /usr/lib/python3/dist-packages /usr/lib/python3/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8973 8910 252:0 /home/gspark/venvs/furiosa-2026.4 /home/gspark/venvs/furiosa-2026.4 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9023 8910 252:0 /home/gspark/workspace/codex_rngd_opt_20261023 /home/gspark/workspace/codex_rngd_opt_20261023 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9024 8910 252:0 /home/gspark/workspace/codex_onggi_integration_20261030 /home/gspark/workspace/codex_onggi_integration_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9062 8910 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030 /home/gspark/workspace/codex_ccgrid_npu_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9063 8910 252:0 /var/lib/kubelet/device-plugins /var/lib/kubelet/device-plugins ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9099 8910 252:0 /home/gspark/workspace/codex_binding_conformance_20261030 /home/gspark/workspace/codex_binding_conformance_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9101 8910 252:0 /home/gspark/workspace/codex_ccgrid_b2_20261102 /home/gspark/workspace/codex_ccgrid_b2_20261102 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9102 8910 252:0 /home/gspark/workspace/codex_resident_delivery_20261102 /home/gspark/workspace/codex_resident_delivery_20261102 rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9103 8910 252:0 /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9104 8910 252:0 /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9105 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/cache /home/gspark/workspace/codex_ccgrid_npu_20261030/cache ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9106 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9107 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9108 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9109 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9110 9101 252:0 /home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source /home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3259 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3372 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3373 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n",
+      "cgroup": {
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.current": "43510484992\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.peak": "44678688768\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.stat": "anon 3240869888\nfile 39463510016\nkernel 804962304\nkernel_stack 262144\npagetables 7487488\nsec_pagetables 0\npercpu 3136\nsock 0\nvmalloc 0\nshmem 0\nzswap 0\nzswapped 0\nfile_mapped 0\nfile_dirty 1015808\nfile_writeback 0\nswapcached 0\nanon_thp 0\nfile_thp 0\nshmem_thp 0\ninactive_anon 0\nactive_anon 3240820736\ninactive_file 39463505920\nactive_file 0\nunevictable 0\nslab_reclaimable 795636456\nslab_unreclaimable 996912\nslab 796633368\nworkingset_refault_anon 0\nworkingset_refault_file 1454370\nworkingset_activate_anon 0\nworkingset_activate_file 0\nworkingset_restore_anon 0\nworkingset_restore_file 0\nworkingset_nodereclaim 0\npgscan 0\npgsteal 0\npgscan_kswapd 0\npgscan_direct 0\npgscan_khugepaged 0\npgsteal_kswapd 0\npgsteal_direct 0\npgsteal_khugepaged 0\npgfault 39345725\npgmajfault 0\npgrefill 0\npgactivate 0\npgdeactivate 0\npglazyfree 0\npglazyfreed 0\nzswpin 0\nzswpout 0\nzswpwb 0\nthp_fault_alloc 45\nthp_collapse_alloc 29\nthp_swpout 0\nthp_swpout_fallback 0\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+        "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope/memory.max": "137438953472\n"
+      },
+      "cgroup_membership": "0::/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pode4d8f55d_3be3_48b2_9da9_cf366a18f847.slice/cri-containerd-5210e5ee6a23bb32a0c474cdc5d72c9e129c779e01dc9a5f3a7ef601fe9cb452.scope\n",
+      "materializer_state": {}
+    }
+  },
+  "assignment": {
+    "pod_uid": "e4d8f55d-3be3-48b2-9da9-cf366a18f847",
+    "host_index": 0,
+    "torch_ordinal": 0,
+    "visible_cards": [
+      0,
+      1,
+      3
+    ],
+    "allocation_uuid": [
+      "C0413086-0708-4606-8242-4947484F4646"
+    ]
+  },
+  "donor_setup": "skipped for local graph copy; lower setup cost recorded",
+  "source_files": {
+    "bench/ccgrid_resident_delivery.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_resident_delivery.py",
+      "sha256": "d8278dae9833edf2ed2f7f47adfafd99f6bf6bb57e1c0a86b8d9eea5b1c9bb21"
+    },
+    "bench/ccgrid_e6.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_e6.py",
+      "sha256": "9e05dcb3615d7c0673464213d94a6b8d76b92812a657fd3b2b7df73bbad2afbb"
+    },
+    "src/rngd_pd/__init__.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/__init__.py",
+      "sha256": "c75dc2ea438ba2f931728325e28fdfe882e8b71dd6b4ec68c2ad01d2613319e4"
+    },
+    "src/rngd_pd/_tv_patch.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/_tv_patch.py",
+      "sha256": "50cfd85acc9e9ed678efd3b76ac05ce66d0d709d0dbf238a42b0cb65a12dfdf7"
+    },
+    "src/rngd_pd/airm.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/airm.py",
+      "sha256": "f842d208627e3d7a77cba36da43fa37effd9040d136131f79f319cfb6033b03d"
+    },
+    "src/rngd_pd/connector/__init__.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/connector/__init__.py",
+      "sha256": "4594e03bd4d3e5626f277440ecc5bfe8c878b224b31d57dd68a683854f52f7c4"
+    },
+    "src/rngd_pd/connector/base.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/connector/base.py",
+      "sha256": "c08fe8a1a08710e24801fc2b0998bc1e155dadf894957658b99255e9cd9f3fcd"
+    },
+    "src/rngd_pd/connector/rngd_kv.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/connector/rngd_kv.py",
+      "sha256": "1611ff82ef3971df42685aa7e6d8b415a3b5a0a3a91cd352cf49b5b4fb789757"
+    },
+    "src/rngd_pd/connector/tcpkv.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/connector/tcpkv.py",
+      "sha256": "b8137487ea843017270f1a1f6c3ab04a13b5bca820e809c84ecf70f6569f82aa"
+    },
+    "src/rngd_pd/connector/transport.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/connector/transport.py",
+      "sha256": "40cdf6bf635916ec0460d0f44b8a6a77e987c80d09595fe3a6c52f8746d7490f"
+    },
+    "src/rngd_pd/connector/ucxkv.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/connector/ucxkv.py",
+      "sha256": "d8b1c72fcbe62d14a79a3623a61d3790e58121f03ff07c25be1c8a279c221f69"
+    },
+    "src/rngd_pd/connector/worker.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/connector/worker.py",
+      "sha256": "f570fa55148db3917092eadc5a01b7e08f98007663a33e585bf7b5bc6e311bcd"
+    },
+    "src/rngd_pd/devices.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/devices.py",
+      "sha256": "4bb8873dc27eaa15dad903b334b1337303d7df49691c96b547eab1db965ab4af"
+    },
+    "src/rngd_pd/engines/__init__.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/engines/__init__.py",
+      "sha256": "e3ba109f5a41f8d38ed636803dce1e72ca96a842721498b48a6458e1de887854"
+    },
+    "src/rngd_pd/engines/artifact_cache.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/engines/artifact_cache.py",
+      "sha256": "f7946062a6770e8ad0c5e362bcb8554a8831e8e87fbd8e38af00dbf20b40ebb9"
+    },
+    "src/rngd_pd/engines/decode_batch.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/engines/decode_batch.py",
+      "sha256": "ed04766be268b0ba1a03f6b08d5b12f74252c99022447cd3034113bdaab53070"
+    },
+    "src/rngd_pd/engines/decode_resident.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/engines/decode_resident.py",
+      "sha256": "7d84159439edcb2e2c7c8b3c5468db936185dcba38532bc312de1dc679251f4a"
+    },
+    "src/rngd_pd/engines/fsdk.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/engines/fsdk.py",
+      "sha256": "742feb682c98e1f98df04137c4f8ceb65332ea1ec659e97deba8cb2bc3c012af"
+    },
+    "src/rngd_pd/engines/model.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/engines/model.py",
+      "sha256": "e9f89d5bde73015d6f630a14cf498a34cab9c753367d7afe2d0ec93e81fdc547"
+    },
+    "src/rngd_pd/engines/model_wired.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/engines/model_wired.py",
+      "sha256": "843062ae87928cb70ee7d5c046c22c0e222b01c3148d649f442685dbd35384a9"
+    },
+    "src/rngd_pd/engines/prefill_chunk.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/engines/prefill_chunk.py",
+      "sha256": "1f3eaf7a31da7225c0d18e3b656c9d056437ea99be4b33d891376c749c7c1e9e"
+    },
+    "src/rngd_pd/engines/prefill_full.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/engines/prefill_full.py",
+      "sha256": "3786daf83209a917a42b58a07a2714ef1ffd5ddc3b3f577421eda057674a2ae4"
+    },
+    "src/rngd_pd/engines/tiers.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/engines/tiers.py",
+      "sha256": "b9ff8a4df0aef7ac452092b78a52705e248cc7be0efc22a02de3037dd4afddaa"
+    },
+    "src/rngd_pd/kernels/__init__.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/kernels/__init__.py",
+      "sha256": "7c8e099136e584d383257fb4a2b34b9eef6a42ba846117b4a52f312c0510bb46"
+    },
+    "src/rngd_pd/kernels/decode_batch.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/kernels/decode_batch.py",
+      "sha256": "3dd12946056f787dd4545bf52cfbd8fc4d8bfe68e6bd37beb24f2636c1300b2f"
+    },
+    "src/rngd_pd/kernels/decode_resident.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/kernels/decode_resident.py",
+      "sha256": "49361e31a26e6926ef0c45f86edeb5ecc75f5328d3fa92930981755488c10042"
+    },
+    "src/rngd_pd/kernels/dsl_b1.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/kernels/dsl_b1.py",
+      "sha256": "34555fd3f80f7fa6eff5ef508280000ef37de690e03fa95271b7d76c55fee695"
+    },
+    "src/rngd_pd/kernels/dsl_batch.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/kernels/dsl_batch.py",
+      "sha256": "9234cf3a0a738d3f8b0e1c44efed1cbbd3954325e5714a85e3c2b9bf1ce995ca"
+    },
+    "src/rngd_pd/kernels/prefill_chunk.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/kernels/prefill_chunk.py",
+      "sha256": "51cd5cd927efaa3cdaccb5a1e7971dc3b8944f02d0ef7c9c01d000f76a5cdd24"
+    },
+    "src/rngd_pd/kernels/prefill_full.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/kernels/prefill_full.py",
+      "sha256": "4fb91421d5501e6f103fd6f8cf9bd26f481a275ecfd60516f8e9b4d9bf569807"
+    },
+    "src/rngd_pd/kernels/prefill_full_chained.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/kernels/prefill_full_chained.py",
+      "sha256": "89ad6cd2a1b080e5a2ffbdf27d80a49aabbf5b2351a0c7bcbce34684202fe30f"
+    },
+    "src/rngd_pd/kv_nixl.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/kv_nixl.py",
+      "sha256": "35595fb0bc3adeb37422ab26bcfb58267980162cec9ccbc6950fb3c415c81fd9"
+    },
+    "src/rngd_pd/native_v4/__init__.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/__init__.py",
+      "sha256": "2497c0ecf20d5f4778fa5663eececfe943ea7d0e0fd6a7a2930e469f8d70e735"
+    },
+    "src/rngd_pd/native_v4/affinity.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/affinity.py",
+      "sha256": "3633a50efd2191d2fd0fa18f3fd377b1a287701d5ce338d1b5a1b916404516c1"
+    },
+    "src/rngd_pd/native_v4/atom.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/atom.py",
+      "sha256": "35e5dfaf4b82f3a73de6e981af1456c676e17d0e92d8c2a23d1f3ce06d5b9e89"
+    },
+    "src/rngd_pd/native_v4/atom_external.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/atom_external.py",
+      "sha256": "e2934e203b66da23a05e2fa002b71fd3ed0e889887071187383b12668eef2ece"
+    },
+    "src/rngd_pd/native_v4/atom_resident.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/atom_resident.py",
+      "sha256": "0c9d113138d363f1b24123919ab6a415a7996f6812a28fd1cbbb00d395445c3e"
+    },
+    "src/rngd_pd/native_v4/build_resident.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/build_resident.py",
+      "sha256": "dd8ccbcee7c218be1ff893ad0fab226fe69cd4e5d28eda2b329fe1b7c04aacd8"
+    },
+    "src/rngd_pd/native_v4/continuous.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/continuous.py",
+      "sha256": "83a26110872d2ed6e289628cb7a8efe0f9007951b415fab6c656790fd257c269"
+    },
+    "src/rngd_pd/native_v4/coordinator.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/coordinator.py",
+      "sha256": "fc40faa221c96262413dd76319ed5df972b709d19a6c243cb8e5827bd9c189cc"
+    },
+    "src/rngd_pd/native_v4/dlfloat.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/dlfloat.py",
+      "sha256": "9636a1ed210411f7c21448404fa840e31c9ff4b16576a19e8cbb29459563eb09"
+    },
+    "src/rngd_pd/native_v4/host_memory.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/host_memory.py",
+      "sha256": "c3f80a538f0c9137be6f68bbfdde3cbeb3bca725b379d1c5aef0945192b27f1a"
+    },
+    "src/rngd_pd/native_v4/kpi.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/kpi.py",
+      "sha256": "131df1e618b1bb2c4ec1fa1bc3569cc55eb3bbf16bffc958d24335cdc29acb14"
+    },
+    "src/rngd_pd/native_v4/kv.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/kv.py",
+      "sha256": "078796e4204931b62926e77973972037e5ea8c7c6436ca0ea0e80824ecafa5d4"
+    },
+    "src/rngd_pd/native_v4/native_conversion.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/native_conversion.py",
+      "sha256": "58307b5af2fa6c1d88ec3993ae1ae6505aab806081e030dd5df0c02e97f762a0"
+    },
+    "src/rngd_pd/native_v4/native_worker.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/native_worker.py",
+      "sha256": "419653fce8ef05fecdd41a1d0d209149d18cb3c29afb811f929d957db3759d27"
+    },
+    "src/rngd_pd/native_v4/packed_kv.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/packed_kv.py",
+      "sha256": "6fdfbdf754c24e4488b87322ec13acdafe7078385ae2f8d2cdf7e836f286010a"
+    },
+    "src/rngd_pd/native_v4/power.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/power.py",
+      "sha256": "7011b2b8111adf660d01ec02cc367f0581451c480dc7e3a8dac2d7e9b0031604"
+    },
+    "src/rngd_pd/native_v4/replica_lease.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/replica_lease.py",
+      "sha256": "80d0910fc66f82e39ebe93ec84845f0bb86cba0e49e4c959d41230f0c06405a1"
+    },
+    "src/rngd_pd/native_v4/rngd_payload.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/rngd_payload.py",
+      "sha256": "ef1e57c5897eff8d63f4f70aec23951911294f567f10f0fbdff2fb989f89ff9f"
+    },
+    "src/rngd_pd/native_v4/run.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/run.py",
+      "sha256": "8552b2fc1011e6a6cb89d9122b93bec4e9c38315abf40ba419a53b255fe252c2"
+    },
+    "src/rngd_pd/native_v4/scheduling.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/scheduling.py",
+      "sha256": "408f9fc7dc634c6cbd8c90919c8a99704f1702718d10934ed077db7d8fdf5e57"
+    },
+    "src/rngd_pd/native_v4/serve.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/serve.py",
+      "sha256": "096f5fbc792e1a44a553dc7c0d4219f7541b24e3dbd46fccc79b1e0b8cea2b4e"
+    },
+    "src/rngd_pd/native_v4/service_engine.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/service_engine.py",
+      "sha256": "ab187ed529be1def3d413a5bfa761ae16c9f05f7b745418ab8929c6da402ad4d"
+    },
+    "src/rngd_pd/native_v4/wire.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/native_v4/wire.py",
+      "sha256": "1d7a7cd3b68814397a3b6e0051811f8a5f1fd6ea1e8f2c8b02f88c7c57173f78"
+    },
+    "src/rngd_pd/paths.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/paths.py",
+      "sha256": "11c1261fc8e5bd18ce5aca57968ae173d781175485d06d4beabe3f0bf5a3306f"
+    },
+    "src/rngd_pd/serving/__init__.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/serving/__init__.py",
+      "sha256": "ab24adf0d3c570b33871cd8ed89e8d836f35ee3894dcb7a2bb1a7f954e631e71"
+    },
+    "src/rngd_pd/serving/cluster.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/serving/cluster.py",
+      "sha256": "a517625d65f56b6e8068dd4aee6fd4eee5e1c85cdbfc52104fdf3a0de98d6f64"
+    },
+    "src/rngd_pd/serving/prepared.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/serving/prepared.py",
+      "sha256": "9520e66132ab9411d04c83b1ed76e1b45f08ec97e2365805636ecd0613854b14"
+    },
+    "src/rngd_pd/serving/proxy.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/serving/proxy.py",
+      "sha256": "073b63f66927ebc0f764f96c75b66ec2b9ea62e07dafc6b2a1fd6e6501ef3857"
+    },
+    "src/rngd_pd/swap/__init__.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/__init__.py",
+      "sha256": "f2a74d6cd155c265a81369a73ce750b0991979ab43ab08c7c353bbd143814597"
+    },
+    "src/rngd_pd/swap/atom.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/atom.py",
+      "sha256": "19b2f4256f0f04f68729628a975ed2c46039321b8524a7a459dfb913259d2c23"
+    },
+    "src/rngd_pd/swap/atom_binding.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/atom_binding.py",
+      "sha256": "86b8c20d4acf505df05470035ebb31b23ff55c97dbc4df081bbc563e3ef95037"
+    },
+    "src/rngd_pd/swap/atom_bundles.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/atom_bundles.py",
+      "sha256": "7e5216625f33470dfbddcbd41cb8b154488a7573a5661ca757037cb30c70aabb"
+    },
+    "src/rngd_pd/swap/atom_constants.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/atom_constants.py",
+      "sha256": "b43fc9257fe6defba63a2642dbf7ab4f3435c3b32dc3da21e55c2684329647cc"
+    },
+    "src/rngd_pd/swap/atom_inputs.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/atom_inputs.py",
+      "sha256": "1bcd895bffaaf4f0c57ca3b13ef34dd997793d9492cc36267886de80c1698995"
+    },
+    "src/rngd_pd/swap/bench_atom.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/bench_atom.py",
+      "sha256": "326b9ee18839db53be70b19c0bbae4dab2f454d7e31fcc4805777033dc92ad0f"
+    },
+    "src/rngd_pd/swap/bench_atom_bundles.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/bench_atom_bundles.py",
+      "sha256": "05091e57e43fe6121babef2e53ebf23f7838741da7e2b27db220c762ff3d316c"
+    },
+    "src/rngd_pd/swap/bench_rngd.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/bench_rngd.py",
+      "sha256": "a18035bc56bbbeb4bc8e00cdc167005dda5697ddade499e65497f0905096c0a6"
+    },
+    "src/rngd_pd/swap/binding_cli.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/binding_cli.py",
+      "sha256": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04"
+    },
+    "src/rngd_pd/swap/delta.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/delta.py",
+      "sha256": "a91f5011348c408214da4ddeb3d06dbedd2b7c0eed48c909889ce875a1e691ed"
+    },
+    "src/rngd_pd/swap/load.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/load.py",
+      "sha256": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1"
+    },
+    "src/rngd_pd/swap/rngd.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/rngd.py",
+      "sha256": "c04984c53e109097bef2bd840e730d0b1a56f966c4f9847b8f5fc2385fb5ac9f"
+    },
+    "src/rngd_pd/swap/rngd_binding.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/rngd_binding.py",
+      "sha256": "b26e6b2ec02beb375235e7f797bd0407b279437ad1e495551cc5c49e74c70b47"
+    },
+    "src/rngd_pd/swap/variants.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/swap/variants.py",
+      "sha256": "a1e772221226b042b97ea1b046e067a72709f94886db5610a5b2a9732ce6e744"
+    },
+    "src/rngd_pd/vendors/__init__.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/vendors/__init__.py",
+      "sha256": "c6820db86ce65d0935153410d800d51e4ea4835b81377a377bd79aec9f9207e9"
+    },
+    "src/rngd_pd/vendors/rbln_decode.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/vendors/rbln_decode.py",
+      "sha256": "447cf791ab3c2c89032b2836837ebe5b6c7f8e7f3f32b172d12ad20c6cbc0405"
+    },
+    "src/rngd_pd/vendors/rbln_decode_batch.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/vendors/rbln_decode_batch.py",
+      "sha256": "eee03b4e1f48a0b7dffe315fd5dd693f77d59d1de132d1fcad9412914bbb3656"
+    },
+    "src/rngd_pd/vendors/rbln_prefill.py": {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/src/rngd_pd/vendors/rbln_prefill.py",
+      "sha256": "fece715c246a1833762c7d0ae68fd4f45d7790d88c0dd7ecb9240598c350ddfd"
+    }
+  },
+  "packages": {
+    "torch": "2.10.0+cpu",
+    "numpy": "2.2.6",
+    "furiosa-torch": "2026.4.0",
+    "furiosa-tcc": "2026.4.0"
+  },
+  "sdk": "2026.4.0",
+  "torch": "2.10.0+cpu",
+  "counts": {
+    "compilation_attempts": 0,
+    "native_calls": 510,
+    "graph_loads": 4,
+    "shared_uploads": 1,
+    "native_output_devices": [
+      "furiosa:0"
+    ]
+  },
+  "live_checkpoint": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+  "live_base_graph_cache": "/home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2/base-B4-S256-g2/cache/graphs",
+  "base_graph": {
+    "prepared": true,
+    "graph_source": [
+      "cache",
+      "cache"
+    ],
+    "graph_read_s": 0.012320580892264843,
+    "graph_to_device_s": 0.0012254079338163137,
+    "tables_s": 0.02526767016388476,
+    "swap_s": 0.038834989070892334,
+    "variant": "B4-S256-g2"
+  },
+  "base_generation": {
+    "tokens": [
+      [
+        198,
+        791,
+        1176,
+        1403,
+        5238,
+        315,
+        279,
+        33894
+      ],
+      [
+        29,
+        946,
+        946,
+        946,
+        946,
+        946,
+        946,
+        946
+      ],
+      [
+        9831,
+        19954,
+        13094,
+        66965,
+        29726,
+        13094,
+        33390,
+        33353
+      ],
+      [
+        198,
+        220,
+        482,
+        220,
+        16,
+        13,
+        15,
+        13
+      ]
+    ],
+    "tokens_equal_reference": true,
+    "native_calls": 255,
+    "expected_native_calls": 255,
+    "ttft_s": 0.15110913501121104,
+    "finished": {
+      "perf_ns": 1563776020583607,
+      "wall_ns": 1793588801145404417
+    }
+  },
+  "weight_buffers_before": [
+    {
+      "name": "group0/wd",
+      "object_id": 138187409205072,
+      "data_ptr": 50130321408,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group0/wg",
+      "object_id": 138187408884736,
+      "data_ptr": 50600083456,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group0/wk",
+      "object_id": 138187409129536,
+      "data_ptr": 50918850560,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group0/wo",
+      "object_id": 138187409088384,
+      "data_ptr": 50834964480,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group0/wq",
+      "object_id": 138187409059456,
+      "data_ptr": 50935627776,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group0/wu",
+      "object_id": 138187409095664,
+      "data_ptr": 50365202432,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group0/wv",
+      "object_id": 138187408847584,
+      "data_ptr": 50902073344,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group1/wd",
+      "object_id": 138187408656400,
+      "data_ptr": 49257906176,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group1/wg",
+      "object_id": 138187407699104,
+      "data_ptr": 49727668224,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group1/wk",
+      "object_id": 138187408951872,
+      "data_ptr": 50046435328,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group1/wo",
+      "object_id": 138187408657440,
+      "data_ptr": 49962549248,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group1/wq",
+      "object_id": 138187409009104,
+      "data_ptr": 50063212544,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group1/wu",
+      "object_id": 138187407699504,
+      "data_ptr": 49492787200,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group1/wv",
+      "object_id": 138188458044736,
+      "data_ptr": 50029658112,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group2/wd",
+      "object_id": 138187409001744,
+      "data_ptr": 48385490944,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group2/wg",
+      "object_id": 138187435754336,
+      "data_ptr": 48855252992,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group2/wk",
+      "object_id": 138187407316112,
+      "data_ptr": 49174020096,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group2/wo",
+      "object_id": 138187409050816,
+      "data_ptr": 49090134016,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group2/wq",
+      "object_id": 138187409075280,
+      "data_ptr": 49190797312,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group2/wu",
+      "object_id": 138187409141136,
+      "data_ptr": 48620371968,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group2/wv",
+      "object_id": 138187407700464,
+      "data_ptr": 49157242880,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group3/wd",
+      "object_id": 138187407698464,
+      "data_ptr": 47513075712,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group3/wg",
+      "object_id": 138187407700384,
+      "data_ptr": 47982837760,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group3/wk",
+      "object_id": 138187409176304,
+      "data_ptr": 48301604864,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group3/wo",
+      "object_id": 138187407700624,
+      "data_ptr": 48217718784,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group3/wq",
+      "object_id": 138187407695024,
+      "data_ptr": 48318382080,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group3/wu",
+      "object_id": 138187409078160,
+      "data_ptr": 47747956736,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group3/wv",
+      "object_id": 138187409200912,
+      "data_ptr": 48284827648,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group4/wd",
+      "object_id": 138187407697584,
+      "data_ptr": 46640660480,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group4/wg",
+      "object_id": 138187407698944,
+      "data_ptr": 47110422528,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group4/wk",
+      "object_id": 138187407699984,
+      "data_ptr": 47429189632,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group4/wo",
+      "object_id": 138187407700944,
+      "data_ptr": 47345303552,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group4/wq",
+      "object_id": 138187407701184,
+      "data_ptr": 47445966848,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group4/wu",
+      "object_id": 138187408456688,
+      "data_ptr": 46875541504,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group4/wv",
+      "object_id": 138187409079040,
+      "data_ptr": 47412412416,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group5/wd",
+      "object_id": 138187407702544,
+      "data_ptr": 45768245248,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group5/wg",
+      "object_id": 138187409076720,
+      "data_ptr": 46238007296,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group5/wk",
+      "object_id": 138187409079920,
+      "data_ptr": 46556774400,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group5/wo",
+      "object_id": 138187408846864,
+      "data_ptr": 46472888320,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group5/wq",
+      "object_id": 138187409064080,
+      "data_ptr": 46573551616,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group5/wu",
+      "object_id": 138187407700224,
+      "data_ptr": 46003126272,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group5/wv",
+      "object_id": 138187409079440,
+      "data_ptr": 46539997184,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group6/wd",
+      "object_id": 138187407131968,
+      "data_ptr": 44895830016,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group6/wg",
+      "object_id": 138187407703344,
+      "data_ptr": 45365592064,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group6/wk",
+      "object_id": 138187407701984,
+      "data_ptr": 45684359168,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group6/wo",
+      "object_id": 138187407696944,
+      "data_ptr": 45600473088,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group6/wq",
+      "object_id": 138187409145056,
+      "data_ptr": 45701136384,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group6/wu",
+      "object_id": 138187407702064,
+      "data_ptr": 45130711040,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group6/wv",
+      "object_id": 138187407703824,
+      "data_ptr": 45667581952,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group7/wd",
+      "object_id": 138187407327536,
+      "data_ptr": 44023414784,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group7/wg",
+      "object_id": 138187409014624,
+      "data_ptr": 44493176832,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group7/wk",
+      "object_id": 138187409079760,
+      "data_ptr": 44811943936,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group7/wo",
+      "object_id": 138187407131728,
+      "data_ptr": 44728057856,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group7/wq",
+      "object_id": 138187408999344,
+      "data_ptr": 44828721152,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group7/wu",
+      "object_id": 138187407130848,
+      "data_ptr": 44258295808,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group7/wv",
+      "object_id": 138187407132048,
+      "data_ptr": 44795166720,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group8/wd",
+      "object_id": 138187409054096,
+      "data_ptr": 43150999552,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group8/wg",
+      "object_id": 138187407131008,
+      "data_ptr": 43620761600,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group8/wk",
+      "object_id": 138187407131808,
+      "data_ptr": 43939528704,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group8/wo",
+      "object_id": 138187409134656,
+      "data_ptr": 43855642624,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group8/wq",
+      "object_id": 138187407131888,
+      "data_ptr": 43956305920,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group8/wu",
+      "object_id": 138187407133168,
+      "data_ptr": 43385880576,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group8/wv",
+      "object_id": 138187408846624,
+      "data_ptr": 43922751488,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group9/wd",
+      "object_id": 138187407134848,
+      "data_ptr": 42278584320,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group9/wg",
+      "object_id": 138187408842784,
+      "data_ptr": 42748346368,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group9/wk",
+      "object_id": 138187409196352,
+      "data_ptr": 43067113472,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group9/wo",
+      "object_id": 138187407313872,
+      "data_ptr": 42983227392,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group9/wq",
+      "object_id": 138187407702704,
+      "data_ptr": 43083890688,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group9/wu",
+      "object_id": 138187407132368,
+      "data_ptr": 42513465344,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group9/wv",
+      "object_id": 138187407133808,
+      "data_ptr": 43050336256,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group10/wd",
+      "object_id": 138187407131168,
+      "data_ptr": 41406169088,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group10/wg",
+      "object_id": 138187407135568,
+      "data_ptr": 41875931136,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group10/wk",
+      "object_id": 138187407134608,
+      "data_ptr": 42194698240,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group10/wo",
+      "object_id": 138187407132768,
+      "data_ptr": 42110812160,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group10/wq",
+      "object_id": 138187407135328,
+      "data_ptr": 42211475456,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group10/wu",
+      "object_id": 138187407136448,
+      "data_ptr": 41641050112,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group10/wv",
+      "object_id": 138187407131088,
+      "data_ptr": 42177921024,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group11/wd",
+      "object_id": 138187409005184,
+      "data_ptr": 40533753856,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group11/wg",
+      "object_id": 138187407701264,
+      "data_ptr": 41003515904,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group11/wk",
+      "object_id": 138187407136608,
+      "data_ptr": 41322283008,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group11/wo",
+      "object_id": 138187407136048,
+      "data_ptr": 41238396928,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group11/wq",
+      "object_id": 138187407134928,
+      "data_ptr": 41339060224,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group11/wu",
+      "object_id": 138187407136128,
+      "data_ptr": 40768634880,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group11/wv",
+      "object_id": 138187407136528,
+      "data_ptr": 41305505792,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group12/wd",
+      "object_id": 138187407135408,
+      "data_ptr": 39661338624,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group12/wg",
+      "object_id": 138187407136368,
+      "data_ptr": 40131100672,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group12/wk",
+      "object_id": 138187409071040,
+      "data_ptr": 40449867776,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group12/wo",
+      "object_id": 138187409136976,
+      "data_ptr": 40365981696,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group12/wq",
+      "object_id": 138187409068720,
+      "data_ptr": 40466644992,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group12/wu",
+      "object_id": 138187407135968,
+      "data_ptr": 39896219648,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group12/wv",
+      "object_id": 138187407137168,
+      "data_ptr": 40433090560,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group13/wd",
+      "object_id": 138187407132128,
+      "data_ptr": 38788923392,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group13/wg",
+      "object_id": 138187407137648,
+      "data_ptr": 39258685440,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group13/wk",
+      "object_id": 138187407133968,
+      "data_ptr": 39577452544,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group13/wo",
+      "object_id": 138187409074320,
+      "data_ptr": 39493566464,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group13/wq",
+      "object_id": 138187407133408,
+      "data_ptr": 39594229760,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group13/wu",
+      "object_id": 138187408839904,
+      "data_ptr": 39023804416,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group13/wv",
+      "object_id": 138187407133328,
+      "data_ptr": 39560675328,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group14/wd",
+      "object_id": 138187407139168,
+      "data_ptr": 37916508160,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group14/wg",
+      "object_id": 138187407137888,
+      "data_ptr": 38386270208,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group14/wk",
+      "object_id": 138187407138528,
+      "data_ptr": 38705037312,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group14/wo",
+      "object_id": 138187409073360,
+      "data_ptr": 38621151232,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group14/wq",
+      "object_id": 138187409073040,
+      "data_ptr": 38721814528,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group14/wu",
+      "object_id": 138187407133728,
+      "data_ptr": 38151389184,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group14/wv",
+      "object_id": 138187407135648,
+      "data_ptr": 38688260096,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group15/wd",
+      "object_id": 138187407135728,
+      "data_ptr": 37044092928,
+      "shape": [
+        2,
+        14336,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group15/wg",
+      "object_id": 138187407134768,
+      "data_ptr": 37513854976,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group15/wk",
+      "object_id": 138187407140848,
+      "data_ptr": 37832622080,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "group15/wo",
+      "object_id": 138187408887456,
+      "data_ptr": 37748736000,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group15/wq",
+      "object_id": 138187407139008,
+      "data_ptr": 37849399296,
+      "shape": [
+        2,
+        4096,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 67108864
+    },
+    {
+      "name": "group15/wu",
+      "object_id": 138187407141008,
+      "data_ptr": 37278973952,
+      "shape": [
+        2,
+        4096,
+        14336
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 234881024
+    },
+    {
+      "name": "group15/wv",
+      "object_id": 138187407140288,
+      "data_ptr": 37815844864,
+      "shape": [
+        2,
+        4096,
+        1024
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 16777216
+    },
+    {
+      "name": "lm_head",
+      "object_id": 138187409003504,
+      "data_ptr": 35993419776,
+      "shape": [
+        32,
+        4008,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "device": "furiosa:0",
+      "bytes": 1050673152
+    }
+  ],
+  "graph_buffers_before": {
+    "B4-S256-g2": {
+      "m": 138187407220000,
+      "lmh": 138187407220768
+    }
+  },
+  "base_counts": {
+    "compilation_attempts": 0,
+    "native_calls": 255,
+    "graph_loads": 2,
+    "shared_uploads": 1,
+    "native_output_devices": [
+      "furiosa:0"
+    ]
+  },
+  "weights": {
+    "host_weights_s": 0.24711194215342402,
+    "upload_weights_s": 13.265010884962976
+  },
+  "local_copy_bind": {
+    "copy_started": {
+      "perf_ns": 1563776208702103,
+      "wall_ns": 1793588801333521783
+    },
+    "copy_finished": {
+      "perf_ns": 1563776210365661,
+      "wall_ns": 1793588801335185461
+    },
+    "bind": {
+      "argv": [
+        "mount",
+        "--bind",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-copy",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount"
+      ],
+      "started": {
+        "perf_ns": 1563776210460541,
+        "wall_ns": 1793588801335280241
+      },
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "finished": {
+        "perf_ns": 1563776213899195,
+        "wall_ns": 1793588801338719095
+      }
+    },
+    "readonly": {
+      "argv": [
+        "mount",
+        "-o",
+        "remount,bind,ro",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount"
+      ],
+      "started": {
+        "perf_ns": 1563776213903055,
+        "wall_ns": 1793588801338722755
+      },
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "finished": {
+        "perf_ns": 1563776215345663,
+        "wall_ns": 1793588801340165433
+      }
+    }
+  },
+  "target_mount_evidence": {
+    "mount_id": "3419",
+    "mountinfo": "3419 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-copy /home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64",
+    "options": [
+      "ro",
+      "relatime"
+    ]
+  },
+  "delivered_inventory": {
+    "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+      "size": 224097,
+      "inode": 25171252,
+      "device": 64512,
+      "blocks": 440,
+      "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable",
+      "nlink": 1,
+      "mode": 33152,
+      "sha256": "405001f45f4676a134738a2d340dd453f17e9ccc60ba026e05ab285b39261c70"
+    },
+    "cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable": {
+      "size": 778900,
+      "inode": 25171253,
+      "device": 64512,
+      "blocks": 1528,
+      "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable",
+      "nlink": 1,
+      "mode": 33152,
+      "sha256": "f06c3bf73e93e964a9a2f575e6a73c0960aea0cae02b63f43b5cce5182f0f756"
+    },
+    "variant.json": {
+      "size": 919,
+      "inode": 25171254,
+      "device": 64512,
+      "blocks": 8,
+      "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount/variant.json",
+      "nlink": 1,
+      "mode": 33152,
+      "sha256": "951365e6659a39ad9e143202034e2bf986ff5863f9bd0638b211604a82b08fcd"
+    }
+  },
+  "target": {
+    "target_prepare_started": {
+      "perf_ns": 1563776385032158,
+      "wall_ns": 1793588801509852538
+    },
+    "graph": {
+      "prepared": true,
+      "graph_source": [
+        "cache",
+        "cache"
+      ],
+      "graph_read_s": 0.003208894981071353,
+      "graph_to_device_s": 0.0012931379023939371,
+      "tables_s": 0.024321122094988823,
+      "swap_s": 0.028835585108026862,
+      "variant": "B4-S512-g2"
+    },
+    "target_prepared": {
+      "perf_ns": 1563776413916693,
+      "wall_ns": 1793588801538736993
+    },
+    "generation_started": {
+      "perf_ns": 1563776413918133,
+      "wall_ns": 1793588801538737823
+    },
+    "generation_done_perf_ns": 1563776736341611,
+    "generation_start_perf_ns": 1563776413918133,
+    "first_token_perf_ns": 1563776614206681,
+    "first_token_wall_ns": 1793588801739026371,
+    "tokens": [
+      [
+        198,
+        791,
+        1176,
+        1403,
+        5238,
+        315,
+        279,
+        33894
+      ],
+      [
+        29,
+        946,
+        946,
+        946,
+        946,
+        946,
+        946,
+        946
+      ],
+      [
+        9831,
+        19954,
+        13094,
+        66965,
+        29726,
+        13094,
+        33390,
+        33353
+      ],
+      [
+        198,
+        220,
+        482,
+        220,
+        16,
+        13,
+        15,
+        13
+      ]
+    ],
+    "tokens_equal_reference": true,
+    "prompt_ttft_s": 0.2002885479014367,
+    "counts": {
+      "compilation_attempts": 0,
+      "native_calls": 510,
+      "graph_loads": 4,
+      "shared_uploads": 1,
+      "native_output_devices": [
+        "furiosa:0"
+      ]
+    },
+    "weights": {
+      "host_weights_s": 0.24711194215342402,
+      "upload_weights_s": 13.265010884962976
+    },
+    "weight_buffers_after": [
+      {
+        "name": "group0/wd",
+        "object_id": 138187409205072,
+        "data_ptr": 50130321408,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group0/wg",
+        "object_id": 138187408884736,
+        "data_ptr": 50600083456,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group0/wk",
+        "object_id": 138187409129536,
+        "data_ptr": 50918850560,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group0/wo",
+        "object_id": 138187409088384,
+        "data_ptr": 50834964480,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group0/wq",
+        "object_id": 138187409059456,
+        "data_ptr": 50935627776,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group0/wu",
+        "object_id": 138187409095664,
+        "data_ptr": 50365202432,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group0/wv",
+        "object_id": 138187408847584,
+        "data_ptr": 50902073344,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group1/wd",
+        "object_id": 138187408656400,
+        "data_ptr": 49257906176,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group1/wg",
+        "object_id": 138187407699104,
+        "data_ptr": 49727668224,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group1/wk",
+        "object_id": 138187408951872,
+        "data_ptr": 50046435328,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group1/wo",
+        "object_id": 138187408657440,
+        "data_ptr": 49962549248,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group1/wq",
+        "object_id": 138187409009104,
+        "data_ptr": 50063212544,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group1/wu",
+        "object_id": 138187407699504,
+        "data_ptr": 49492787200,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group1/wv",
+        "object_id": 138188458044736,
+        "data_ptr": 50029658112,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group2/wd",
+        "object_id": 138187409001744,
+        "data_ptr": 48385490944,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group2/wg",
+        "object_id": 138187435754336,
+        "data_ptr": 48855252992,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group2/wk",
+        "object_id": 138187407316112,
+        "data_ptr": 49174020096,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group2/wo",
+        "object_id": 138187409050816,
+        "data_ptr": 49090134016,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group2/wq",
+        "object_id": 138187409075280,
+        "data_ptr": 49190797312,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group2/wu",
+        "object_id": 138187409141136,
+        "data_ptr": 48620371968,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group2/wv",
+        "object_id": 138187407700464,
+        "data_ptr": 49157242880,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group3/wd",
+        "object_id": 138187407698464,
+        "data_ptr": 47513075712,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group3/wg",
+        "object_id": 138187407700384,
+        "data_ptr": 47982837760,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group3/wk",
+        "object_id": 138187409176304,
+        "data_ptr": 48301604864,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group3/wo",
+        "object_id": 138187407700624,
+        "data_ptr": 48217718784,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group3/wq",
+        "object_id": 138187407695024,
+        "data_ptr": 48318382080,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group3/wu",
+        "object_id": 138187409078160,
+        "data_ptr": 47747956736,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group3/wv",
+        "object_id": 138187409200912,
+        "data_ptr": 48284827648,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group4/wd",
+        "object_id": 138187407697584,
+        "data_ptr": 46640660480,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group4/wg",
+        "object_id": 138187407698944,
+        "data_ptr": 47110422528,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group4/wk",
+        "object_id": 138187407699984,
+        "data_ptr": 47429189632,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group4/wo",
+        "object_id": 138187407700944,
+        "data_ptr": 47345303552,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group4/wq",
+        "object_id": 138187407701184,
+        "data_ptr": 47445966848,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group4/wu",
+        "object_id": 138187408456688,
+        "data_ptr": 46875541504,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group4/wv",
+        "object_id": 138187409079040,
+        "data_ptr": 47412412416,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group5/wd",
+        "object_id": 138187407702544,
+        "data_ptr": 45768245248,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group5/wg",
+        "object_id": 138187409076720,
+        "data_ptr": 46238007296,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group5/wk",
+        "object_id": 138187409079920,
+        "data_ptr": 46556774400,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group5/wo",
+        "object_id": 138187408846864,
+        "data_ptr": 46472888320,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group5/wq",
+        "object_id": 138187409064080,
+        "data_ptr": 46573551616,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group5/wu",
+        "object_id": 138187407700224,
+        "data_ptr": 46003126272,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group5/wv",
+        "object_id": 138187409079440,
+        "data_ptr": 46539997184,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group6/wd",
+        "object_id": 138187407131968,
+        "data_ptr": 44895830016,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group6/wg",
+        "object_id": 138187407703344,
+        "data_ptr": 45365592064,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group6/wk",
+        "object_id": 138187407701984,
+        "data_ptr": 45684359168,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group6/wo",
+        "object_id": 138187407696944,
+        "data_ptr": 45600473088,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group6/wq",
+        "object_id": 138187409145056,
+        "data_ptr": 45701136384,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group6/wu",
+        "object_id": 138187407702064,
+        "data_ptr": 45130711040,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group6/wv",
+        "object_id": 138187407703824,
+        "data_ptr": 45667581952,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group7/wd",
+        "object_id": 138187407327536,
+        "data_ptr": 44023414784,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group7/wg",
+        "object_id": 138187409014624,
+        "data_ptr": 44493176832,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group7/wk",
+        "object_id": 138187409079760,
+        "data_ptr": 44811943936,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group7/wo",
+        "object_id": 138187407131728,
+        "data_ptr": 44728057856,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group7/wq",
+        "object_id": 138187408999344,
+        "data_ptr": 44828721152,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group7/wu",
+        "object_id": 138187407130848,
+        "data_ptr": 44258295808,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group7/wv",
+        "object_id": 138187407132048,
+        "data_ptr": 44795166720,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group8/wd",
+        "object_id": 138187409054096,
+        "data_ptr": 43150999552,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group8/wg",
+        "object_id": 138187407131008,
+        "data_ptr": 43620761600,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group8/wk",
+        "object_id": 138187407131808,
+        "data_ptr": 43939528704,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group8/wo",
+        "object_id": 138187409134656,
+        "data_ptr": 43855642624,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group8/wq",
+        "object_id": 138187407131888,
+        "data_ptr": 43956305920,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group8/wu",
+        "object_id": 138187407133168,
+        "data_ptr": 43385880576,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group8/wv",
+        "object_id": 138187408846624,
+        "data_ptr": 43922751488,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group9/wd",
+        "object_id": 138187407134848,
+        "data_ptr": 42278584320,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group9/wg",
+        "object_id": 138187408842784,
+        "data_ptr": 42748346368,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group9/wk",
+        "object_id": 138187409196352,
+        "data_ptr": 43067113472,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group9/wo",
+        "object_id": 138187407313872,
+        "data_ptr": 42983227392,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group9/wq",
+        "object_id": 138187407702704,
+        "data_ptr": 43083890688,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group9/wu",
+        "object_id": 138187407132368,
+        "data_ptr": 42513465344,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group9/wv",
+        "object_id": 138187407133808,
+        "data_ptr": 43050336256,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group10/wd",
+        "object_id": 138187407131168,
+        "data_ptr": 41406169088,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group10/wg",
+        "object_id": 138187407135568,
+        "data_ptr": 41875931136,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group10/wk",
+        "object_id": 138187407134608,
+        "data_ptr": 42194698240,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group10/wo",
+        "object_id": 138187407132768,
+        "data_ptr": 42110812160,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group10/wq",
+        "object_id": 138187407135328,
+        "data_ptr": 42211475456,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group10/wu",
+        "object_id": 138187407136448,
+        "data_ptr": 41641050112,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group10/wv",
+        "object_id": 138187407131088,
+        "data_ptr": 42177921024,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group11/wd",
+        "object_id": 138187409005184,
+        "data_ptr": 40533753856,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group11/wg",
+        "object_id": 138187407701264,
+        "data_ptr": 41003515904,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group11/wk",
+        "object_id": 138187407136608,
+        "data_ptr": 41322283008,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group11/wo",
+        "object_id": 138187407136048,
+        "data_ptr": 41238396928,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group11/wq",
+        "object_id": 138187407134928,
+        "data_ptr": 41339060224,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group11/wu",
+        "object_id": 138187407136128,
+        "data_ptr": 40768634880,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group11/wv",
+        "object_id": 138187407136528,
+        "data_ptr": 41305505792,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group12/wd",
+        "object_id": 138187407135408,
+        "data_ptr": 39661338624,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group12/wg",
+        "object_id": 138187407136368,
+        "data_ptr": 40131100672,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group12/wk",
+        "object_id": 138187409071040,
+        "data_ptr": 40449867776,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group12/wo",
+        "object_id": 138187409136976,
+        "data_ptr": 40365981696,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group12/wq",
+        "object_id": 138187409068720,
+        "data_ptr": 40466644992,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group12/wu",
+        "object_id": 138187407135968,
+        "data_ptr": 39896219648,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group12/wv",
+        "object_id": 138187407137168,
+        "data_ptr": 40433090560,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group13/wd",
+        "object_id": 138187407132128,
+        "data_ptr": 38788923392,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group13/wg",
+        "object_id": 138187407137648,
+        "data_ptr": 39258685440,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group13/wk",
+        "object_id": 138187407133968,
+        "data_ptr": 39577452544,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group13/wo",
+        "object_id": 138187409074320,
+        "data_ptr": 39493566464,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group13/wq",
+        "object_id": 138187407133408,
+        "data_ptr": 39594229760,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group13/wu",
+        "object_id": 138187408839904,
+        "data_ptr": 39023804416,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group13/wv",
+        "object_id": 138187407133328,
+        "data_ptr": 39560675328,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group14/wd",
+        "object_id": 138187407139168,
+        "data_ptr": 37916508160,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group14/wg",
+        "object_id": 138187407137888,
+        "data_ptr": 38386270208,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group14/wk",
+        "object_id": 138187407138528,
+        "data_ptr": 38705037312,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group14/wo",
+        "object_id": 138187409073360,
+        "data_ptr": 38621151232,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group14/wq",
+        "object_id": 138187409073040,
+        "data_ptr": 38721814528,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group14/wu",
+        "object_id": 138187407133728,
+        "data_ptr": 38151389184,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group14/wv",
+        "object_id": 138187407135648,
+        "data_ptr": 38688260096,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group15/wd",
+        "object_id": 138187407135728,
+        "data_ptr": 37044092928,
+        "shape": [
+          2,
+          14336,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group15/wg",
+        "object_id": 138187407134768,
+        "data_ptr": 37513854976,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group15/wk",
+        "object_id": 138187407140848,
+        "data_ptr": 37832622080,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "group15/wo",
+        "object_id": 138187408887456,
+        "data_ptr": 37748736000,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group15/wq",
+        "object_id": 138187407139008,
+        "data_ptr": 37849399296,
+        "shape": [
+          2,
+          4096,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 67108864
+      },
+      {
+        "name": "group15/wu",
+        "object_id": 138187407141008,
+        "data_ptr": 37278973952,
+        "shape": [
+          2,
+          4096,
+          14336
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 234881024
+      },
+      {
+        "name": "group15/wv",
+        "object_id": 138187407140288,
+        "data_ptr": 37815844864,
+        "shape": [
+          2,
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 16777216
+      },
+      {
+        "name": "lm_head",
+        "object_id": 138187409003504,
+        "data_ptr": 35993419776,
+        "shape": [
+          32,
+          4008,
+          4096
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "furiosa:0",
+        "bytes": 1050673152
+      }
+    ],
+    "graph_buffers_after": {
+      "B4-S256-g2": {
+        "m": 138187407220000,
+        "lmh": 138187407220768
+      },
+      "B4-S512-g2": {
+        "m": 138187407228016,
+        "lmh": 138187407220048
+      }
+    },
+    "active_variant": "B4-S512-g2",
+    "first_token_timing_method": "generate start + native engine-reported prompt TTFT",
+    "target_native_calls": 255,
+    "expected_target_native_calls": 255
+  },
+  "resident_weights_preserved": true,
+  "base_graphs_preserved": true,
+  "claim_witness": {
+    "donor_removed": true,
+    "inode_continuity_files": [],
+    "donor_path": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/materializer/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444",
+    "logs": []
+  },
+  "native_gates_passed": true,
+  "local_unmount": {
+    "argv": [
+      "umount",
+      "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work/target-mount"
+    ],
+    "started": {
+      "perf_ns": 1563777405884277,
+      "wall_ns": 1793588802530704567
+    },
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "finished": {
+      "perf_ns": 1563777409337031,
+      "wall_ns": 1793588802534156841
+    }
+  },
+  "cleanup_errors": [],
+  "cleanup_passed": true
+}

@@ -1,0 +1,25 @@
+== native-identical (B2)
+ok    describe returns onggi.profile.v1
+ok    resident names the loaded base
+ok    plan is pure: same answer twice, resident state unchanged
+ok    plan returns onggi.updateplan.v1 with mode units or reload
+ok    update plan names the switch plan's base and target
+ok    B2: expected mode units
+ok    units cover every byte that is not at the same offset
+ok    plan against a base that is not resident refuses (reload)
+ok    apply verifies: every planned unit matches the target bytes
+ok    after apply the target is resident
+ok    rollback restores: every planned unit matches the base bytes
+ok    after rollback the base is resident
+ok    a second rollback has nothing to undo and fails
+== native-sparse (B2)
+ok    describe returns onggi.profile.v1
+ok    resident names the loaded base
+ok    plan is pure: same answer twice, resident state unchanged
+ok    plan returns onggi.updateplan.v1 with mode units or reload
+ok    update plan names the switch plan's base and target
+FAIL  B2: expected mode units
+ok    plan against a base that is not resident refuses (reload)
+FAIL  apply --target /home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new: exit 1: 
+
+2 failed

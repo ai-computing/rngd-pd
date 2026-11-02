@@ -1,0 +1,399 @@
+{
+  "schema": "atom-binding-evidence-package.v1",
+  "native_runtime_commit": "fbfdb8bb9aa86750f144fa4ead276fe17f6db537",
+  "native_runtime_commit_provenance": "provenance/controller-freeze-atom-source-01.stdout; read-only source commit checked by provenance/native_job.py before launch",
+  "graph_producer_commit": "f5fa13377a3d967ba3d4022fb73ae59b1c87441c",
+  "neutral_kit_commit": "71c37d26f3ec9bedc20c93b27c2cfde9dfd64d53",
+  "scope": "Exact copies of all four exported ATOM attempts and preparation; no graph/checkpoint payloads",
+  "kit_copy_note": "harness/conformance.py and golden_data.py use canonical LF bytes from the frozen kit checkout; conformance.py matches the native-recorded SHA. All run/preparation export bytes are copied unchanged.",
+  "source_identity_note": "Raw native LF source hashes compared to exact Windows snapshot and canonical LF without altering either",
+  "source_identity_comparison": {
+    "src/rngd_pd/engines/model.py": {
+      "native_sha256": "e9f89d5bde73015d6f630a14cf498a34cab9c753367d7afe2d0ec93e81fdc547",
+      "workspace_sha256": "b767ab40be5182c4a8661f23b1e923762835ac0abb7df47a9874e73cac0830fe",
+      "workspace_lf_sha256": "e9f89d5bde73015d6f630a14cf498a34cab9c753367d7afe2d0ec93e81fdc547",
+      "crlf_count": 193,
+      "native_exact_match": false,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": "b767ab40be5182c4a8661f23b1e923762835ac0abb7df47a9874e73cac0830fe"
+    },
+    "src/rngd_pd/swap/atom.py": {
+      "native_sha256": "19b2f4256f0f04f68729628a975ed2c46039321b8524a7a459dfb913259d2c23",
+      "workspace_sha256": "c51fce8bdde47a1b6dec9e5db32a9558f462aa90dfa4255908cdb7b307fe0130",
+      "workspace_lf_sha256": "19b2f4256f0f04f68729628a975ed2c46039321b8524a7a459dfb913259d2c23",
+      "crlf_count": 289,
+      "native_exact_match": false,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": "c51fce8bdde47a1b6dec9e5db32a9558f462aa90dfa4255908cdb7b307fe0130"
+    },
+    "src/rngd_pd/swap/atom_binding.py": {
+      "native_sha256": "86b8c20d4acf505df05470035ebb31b23ff55c97dbc4df081bbc563e3ef95037",
+      "workspace_sha256": "86b8c20d4acf505df05470035ebb31b23ff55c97dbc4df081bbc563e3ef95037",
+      "workspace_lf_sha256": "86b8c20d4acf505df05470035ebb31b23ff55c97dbc4df081bbc563e3ef95037",
+      "crlf_count": 0,
+      "native_exact_match": true,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": "86b8c20d4acf505df05470035ebb31b23ff55c97dbc4df081bbc563e3ef95037"
+    },
+    "src/rngd_pd/swap/binding_cli.py": {
+      "native_sha256": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04",
+      "workspace_sha256": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04",
+      "workspace_lf_sha256": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04",
+      "crlf_count": 0,
+      "native_exact_match": true,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04"
+    },
+    "src/rngd_pd/vendors/rbln_decode_batch.py": {
+      "native_sha256": "eee03b4e1f48a0b7dffe315fd5dd693f77d59d1de132d1fcad9412914bbb3656",
+      "workspace_sha256": "96ab031a171fdace0daff555331eaca5d6294680793ce541c0f00263ec836587",
+      "workspace_lf_sha256": "eee03b4e1f48a0b7dffe315fd5dd693f77d59d1de132d1fcad9412914bbb3656",
+      "crlf_count": 211,
+      "native_exact_match": false,
+      "lf_equivalent": true,
+      "loc_snapshot_sha256": "96ab031a171fdace0daff555331eaca5d6294680793ce541c0f00263ec836587"
+    }
+  },
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "derived-summary.json",
+      "bytes": 4160,
+      "sha256": "ed3466aaeaadac727a60526103996e45061257ed29deb65bb208865dc965fe17"
+    },
+    {
+      "path": "harness/compile_atom_public.py",
+      "bytes": 2301,
+      "sha256": "a0d82c2bdc57d403cf597684a81d53ef472fd6d1637452b23e012b7afdb88733"
+    },
+    {
+      "path": "harness/conformance.py",
+      "bytes": 18444,
+      "sha256": "adca5429e40705a8b63925c1ba2a1dd2465e780792f5362593b36e022199d2bf"
+    },
+    {
+      "path": "harness/golden_data.py",
+      "bytes": 1884,
+      "sha256": "83bbfa35c19eadfc1d4e3916d83fa117fcf8a4c65a20678dd004174bed604450"
+    },
+    {
+      "path": "harness/prepare_atom_artifacts.py",
+      "bytes": 2998,
+      "sha256": "ceb27ecebe205e537da4652ce250a8915d3d3b058799524e833cd74880796e2f"
+    },
+    {
+      "path": "harness/run_atom_b1.py",
+      "bytes": 16435,
+      "sha256": "b8c4d5f8b296e75c6bd49eebe8e0a719cda1575309cfba477e11c19908262670"
+    },
+    {
+      "path": "preparation/atom-artifacts/base/atom-binding.json",
+      "bytes": 26,
+      "sha256": "5fe19e9c34cb7ca8cd40594332ceb4696c23b9a022cd61d2de4bdfb6a33f1345"
+    },
+    {
+      "path": "preparation/atom-artifacts/base/profile.json",
+      "bytes": 184,
+      "sha256": "080d3c33f0810e8e18073b0bd113087497d0e5156b714d4e11c054fb577708ad"
+    },
+    {
+      "path": "preparation/atom-artifacts/base/session.rbln.json",
+      "bytes": 248,
+      "sha256": "b132e8ed7c149bf9e56119b586b8594131fc5614d68c0a0086196af8d6388a28"
+    },
+    {
+      "path": "preparation/atom-artifacts/target/atom-binding.json",
+      "bytes": 26,
+      "sha256": "5fe19e9c34cb7ca8cd40594332ceb4696c23b9a022cd61d2de4bdfb6a33f1345"
+    },
+    {
+      "path": "preparation/atom-artifacts/target/profile.json",
+      "bytes": 186,
+      "sha256": "3dd7ebe83338ab39ea32ff371e1fa5e05f90954f28d7d58c8e08496d4b321d42"
+    },
+    {
+      "path": "preparation/atom-artifacts/target/session.rbln.json",
+      "bytes": 248,
+      "sha256": "b132e8ed7c149bf9e56119b586b8594131fc5614d68c0a0086196af8d6388a28"
+    },
+    {
+      "path": "preparation/evidence/atom-artifact-preparation-attempt1.json",
+      "bytes": 3044,
+      "sha256": "c70cfe533654202c0dc892f01e9c07dfae5f463fd7ece43763a61dfa9a31a78a"
+    },
+    {
+      "path": "preparation/evidence/atom-artifact-preparation.json",
+      "bytes": 1539,
+      "sha256": "5cdaecb007d6cc67e6c643e653d34999be7b5c25b5a626f9e4ac72c4c44a55df"
+    },
+    {
+      "path": "preparation/evidence/atom-public-compile.json",
+      "bytes": 1461,
+      "sha256": "d62365662ddabda737e75b02e86f1fe182195d3e4ce214b9bb86cb1938096a5a"
+    },
+    {
+      "path": "preparation/export-manifest.json",
+      "bytes": 3262,
+      "sha256": "09398a880c3817635749d8ab5d20e895c35fb6f7629252e01deee01ce97e05f1"
+    },
+    {
+      "path": "preparation/inputs/atom-base.switchplan.json",
+      "bytes": 1804,
+      "sha256": "cfed947240d467360c3ab625497b4e8a67553bd10e79a4bc3577d38e57c5d2cb"
+    },
+    {
+      "path": "preparation/inputs/atom-fixtures.json",
+      "bytes": 725,
+      "sha256": "872b242fe84c37ae859efdd51b0b5f80a196a69d0d9ac015e979e8dfaa55d7cf"
+    },
+    {
+      "path": "preparation/inputs/atom-target.switchplan.json",
+      "bytes": 1884,
+      "sha256": "9c350aaec6a3b9f9223cd82e7772c05393baf1874a165c876ead9847182e920a"
+    },
+    {
+      "path": "preparation/scripts/atom-b1-native-02.py",
+      "bytes": 14651,
+      "sha256": "45c2c2e2376f5277ceedd4723c0e6e18b33e0f3249d3e29f7e8dc054e9816fd3"
+    },
+    {
+      "path": "preparation/scripts/atom-b1-native-03.py",
+      "bytes": 14657,
+      "sha256": "faf4149330f45204551f4f3a95233bba91d36c78e8abbedf1d53519e1e9653bf"
+    },
+    {
+      "path": "preparation/scripts/atom-b1-native-04.py",
+      "bytes": 16435,
+      "sha256": "b8c4d5f8b296e75c6bd49eebe8e0a719cda1575309cfba477e11c19908262670"
+    },
+    {
+      "path": "preparation/scripts/compile_atom_public.py",
+      "bytes": 2301,
+      "sha256": "a0d82c2bdc57d403cf597684a81d53ef472fd6d1637452b23e012b7afdb88733"
+    },
+    {
+      "path": "preparation/scripts/prepare_atom_artifacts.py",
+      "bytes": 2998,
+      "sha256": "ceb27ecebe205e537da4652ce250a8915d3d3b058799524e833cd74880796e2f"
+    },
+    {
+      "path": "preparation/scripts/run_atom_b1.py",
+      "bytes": 12741,
+      "sha256": "244c51f117c7597540edc89dde8957a9f1e1fdc21bff31015a70ab6b00607cc8"
+    },
+    {
+      "path": "preparation/small-atom-preparation.json.gz",
+      "bytes": 22886,
+      "sha256": "adf6fabd3d38d991b59d44be713b50b859f41d386376782d06ec23cb56049f97"
+    },
+    {
+      "path": "provenance/controller-freeze-atom-source-01.sh",
+      "bytes": 676,
+      "sha256": "73596a698eb49c52cf4bb5797a74d287ae2641eecc99253441bb5205faaaeb3f"
+    },
+    {
+      "path": "provenance/controller-freeze-atom-source-01.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "provenance/controller-freeze-atom-source-01.stdout",
+      "bytes": 54,
+      "sha256": "0fd033035c2207ca99fedd0971f5400370da49a35a46da66553163aa475bcd82"
+    },
+    {
+      "path": "provenance/native_job.py",
+      "bytes": 6700,
+      "sha256": "b0fbadf3e2d8e0298527ec387b2c865fe017ff56c399f9386fbce066fa4e6708"
+    },
+    {
+      "path": "runs/atom-b1-native-01/cleanup.json",
+      "bytes": 4973,
+      "sha256": "2ad9c6d460cbcbabbf7ad37435a54906f989565710b9e11833cd323fd227ba37"
+    },
+    {
+      "path": "runs/atom-b1-native-01/create.json",
+      "bytes": 93,
+      "sha256": "6abe71b6a40e53be5bf8dd4d61e79b2c9fabd0c90b4a9f6ff17fdaec7f40e2a3"
+    },
+    {
+      "path": "runs/atom-b1-native-01/export-manifest.json",
+      "bytes": 316,
+      "sha256": "6152ec25a690d028896eb796c3c874099dc0d86cd4a1575cbef685f5f78b049e"
+    },
+    {
+      "path": "runs/atom-b1-native-01/job.json",
+      "bytes": 15319,
+      "sha256": "688a74b86fddbdb25d7ebf7942cbfe50d9fbd8cbf86bcd2812ee9ebc47026c07"
+    },
+    {
+      "path": "runs/atom-b1-native-01/latest-api.json",
+      "bytes": 7362,
+      "sha256": "478ba817b5f91bf7a4ac067c28173cd8e60c93900028a3518c012c4995f92654"
+    },
+    {
+      "path": "runs/atom-b1-native-01/pod-logs.json",
+      "bytes": 386,
+      "sha256": "04be60a8829b2168a1aa8645f8cd7b24e5049affee7e9fab3ae36c76f9ed3cfa"
+    },
+    {
+      "path": "runs/atom-b1-native-01/result.json",
+      "bytes": 3804,
+      "sha256": "e74f1e9f80ac85ccad237a87cab2e2c0a48c5864523920264d346b5826e4ba5c"
+    },
+    {
+      "path": "runs/atom-b1-native-01/small-evidence.json.gz",
+      "bytes": 2570,
+      "sha256": "46be7f7475776f086d67445155e8c625c7021e3c5abc69247f658bb9a1ee98d0"
+    },
+    {
+      "path": "runs/atom-b1-native-01/terminal-api.json",
+      "bytes": 7362,
+      "sha256": "478ba817b5f91bf7a4ac067c28173cd8e60c93900028a3518c012c4995f92654"
+    },
+    {
+      "path": "runs/atom-b1-native-02/cleanup.json",
+      "bytes": 5137,
+      "sha256": "dae0584ddac7b25aa6114947cd811f9ee2e2eec833c9d29638ef0c19604b70c7"
+    },
+    {
+      "path": "runs/atom-b1-native-02/create.json",
+      "bytes": 93,
+      "sha256": "60f8f06618b7a390744ce547705a25cdc979d60cc1e353316f08c1003ecb2453"
+    },
+    {
+      "path": "runs/atom-b1-native-02/export-manifest.json",
+      "bytes": 316,
+      "sha256": "3f8d1fe0582ae7bca324678fc6e9c6b3041c8b07c0f193c8e480c9454c7371e2"
+    },
+    {
+      "path": "runs/atom-b1-native-02/job.json",
+      "bytes": 15769,
+      "sha256": "6c988526b695bc6f520a0711b87d354eb0c38397ec24111f387970e9bde4dbb2"
+    },
+    {
+      "path": "runs/atom-b1-native-02/latest-api.json",
+      "bytes": 7550,
+      "sha256": "9aaf8d92de5b7711f22e0a9cb3ba3326f0882965cd83379c290c07fe1788c163"
+    },
+    {
+      "path": "runs/atom-b1-native-02/result.json",
+      "bytes": 5559,
+      "sha256": "b7f94fe493b7cd27e6806eb4ff6f772679080a8e733f1cc3d74c4a14b1d3e928"
+    },
+    {
+      "path": "runs/atom-b1-native-02/small-evidence.json.gz",
+      "bytes": 3342,
+      "sha256": "af51e82fa455e41075fa9d3fcbe4e355669ac88db20193650c28344bb280c972"
+    },
+    {
+      "path": "runs/atom-b1-native-02/terminal-api.json",
+      "bytes": 7550,
+      "sha256": "9aaf8d92de5b7711f22e0a9cb3ba3326f0882965cd83379c290c07fe1788c163"
+    },
+    {
+      "path": "runs/atom-b1-native-03/cleanup.json",
+      "bytes": 5898,
+      "sha256": "4e6b06ea4af7664dfef13fb91f5767cf6129df96485ed189a87c676cc9fa47fc"
+    },
+    {
+      "path": "runs/atom-b1-native-03/create.json",
+      "bytes": 93,
+      "sha256": "240dc6959058b553d81d1db46d5163f4d0600485c2e5257c91338358f6c80756"
+    },
+    {
+      "path": "runs/atom-b1-native-03/export-manifest.json",
+      "bytes": 316,
+      "sha256": "22b3513a4e3517ba393ea845be502fb3549efb5fadffc0bacffa4df2f0fc6024"
+    },
+    {
+      "path": "runs/atom-b1-native-03/job.json",
+      "bytes": 17256,
+      "sha256": "51000d1b4205a4e1ca5221504be99ba96fba0b21bb10f9391561b68efdcacf80"
+    },
+    {
+      "path": "runs/atom-b1-native-03/latest-api.json",
+      "bytes": 8407,
+      "sha256": "3c9e0d9500175022b3f00f7dfb37c27b792d17dd37bd7ddc5d39ec6b060c8ce6"
+    },
+    {
+      "path": "runs/atom-b1-native-03/result.json",
+      "bytes": 6521,
+      "sha256": "ba6ad592ae313c83b4615e82101f6dfdc169a75528161baafbaf01b521169469"
+    },
+    {
+      "path": "runs/atom-b1-native-03/small-evidence.json.gz",
+      "bytes": 3542,
+      "sha256": "ac1fdcba0fb3f4aa190af9c34b2bb07e9c5d85c1a823a459187557c625cedf72"
+    },
+    {
+      "path": "runs/atom-b1-native-03/terminal-api.json",
+      "bytes": 8407,
+      "sha256": "3c9e0d9500175022b3f00f7dfb37c27b792d17dd37bd7ddc5d39ec6b060c8ce6"
+    },
+    {
+      "path": "runs/atom-b1-native-04/cleanup.json",
+      "bytes": 5905,
+      "sha256": "fe26a9371ed8a13add9ef2e7eb115bd2cf2c489bfa2a5891c9dcbc9ded1927fe"
+    },
+    {
+      "path": "runs/atom-b1-native-04/create.json",
+      "bytes": 93,
+      "sha256": "ae89f3455e5c7c86097550dee8a68756609430aac3da19641b0b93a0857609cd"
+    },
+    {
+      "path": "runs/atom-b1-native-04/export-manifest.json",
+      "bytes": 474,
+      "sha256": "75fc955f1766d7e97f851076eaf7d76dafd6440c2502d0f61db3edc9131b00b8"
+    },
+    {
+      "path": "runs/atom-b1-native-04/job.json",
+      "bytes": 17256,
+      "sha256": "a9e49628976da46c5b08ce6530db419675b48fb9e0639223ae3db71d97997225"
+    },
+    {
+      "path": "runs/atom-b1-native-04/kit-report.json",
+      "bytes": 30872,
+      "sha256": "21665c010b2f9ed27a72bc963d32f6071311fc8b7ab12747a3aab84352b0bc8e"
+    },
+    {
+      "path": "runs/atom-b1-native-04/kit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/atom-b1-native-04/kit.stdout",
+      "bytes": 786,
+      "sha256": "cc1598ab77d2e224f5a62041a07f36f5612a94031bb76092b45837d8abfef09b"
+    },
+    {
+      "path": "runs/atom-b1-native-04/latest-api.json",
+      "bytes": 8465,
+      "sha256": "144c96660ca79d04eb30a9b064913ecfe8df632620778f62172ab16b2f65d6d9"
+    },
+    {
+      "path": "runs/atom-b1-native-04/log-export-manifest.json",
+      "bytes": 320,
+      "sha256": "97260bbf74c7b91a42161b5895281b59de37b04abb2a3ab6b62bc274f5687465"
+    },
+    {
+      "path": "runs/atom-b1-native-04/result.json",
+      "bytes": 34258,
+      "sha256": "2a78e60e434661acf6d31504441216f48d4e84a9c45a12e526aa86568ddba696"
+    },
+    {
+      "path": "runs/atom-b1-native-04/small-evidence.json.gz",
+      "bytes": 13912,
+      "sha256": "b31f205409f983d141d18029e75013315df041d8ca007089778a5b516e2e9390"
+    },
+    {
+      "path": "runs/atom-b1-native-04/terminal-api.json",
+      "bytes": 8465,
+      "sha256": "144c96660ca79d04eb30a9b064913ecfe8df632620778f62172ab16b2f65d6d9"
+    }
+  ]
+}

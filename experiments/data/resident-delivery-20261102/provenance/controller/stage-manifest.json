@@ -1,0 +1,25 @@
+{
+  "files": [
+    {
+      "name": "onggi-source.tar.gz",
+      "bytes": 106433,
+      "sha256": "94777fdd3847db4d8ca77ae7cb463731538c720a4f32ba445b9f3c1b90f231e8"
+    },
+    {
+      "name": "runtime-source.tar.gz",
+      "bytes": 209796,
+      "sha256": "7374c48fce6f888e2be9e9a285744c7fd948ee7bc87108c3b2f5f2cf0a0b7934"
+    },
+    {
+      "name": "csi_call.go",
+      "bytes": 4916,
+      "sha256": "fae400aec918eb712a077c3280db16eba74d0ecd69df2aabf0276f2fedb3ce25"
+    },
+    {
+      "name": "csi_call_test.go",
+      "bytes": 2921,
+      "sha256": "3b45abdb09aae92c98d99931f1f1e96d641808fd37723da40104ddf832dad0ed"
+    }
+  ],
+  "source_archives_extracted": true
+}

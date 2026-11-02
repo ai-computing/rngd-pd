@@ -1,0 +1,194 @@
+{
+  "schema": "ccgrid-b2-inputs-v1",
+  "prepared_utc": 1793580151.9485207,
+  "off_card": true,
+  "source_commit": "4482faef87dabef8f586c6e7dff382b889cca115",
+  "case": {
+    "name": "native-interior-projection",
+    "reference_role": "sparse",
+    "base_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+    "target_dir": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior",
+    "switchplan": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/interior.switchplan.json",
+    "expect_mode": "units"
+  },
+  "cache": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs",
+  "files": [
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/config.json",
+      "bytes": 855,
+      "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+      "role": "base",
+      "mtime_ns": 1792733529673292140
+    },
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00001-of-00004.safetensors",
+      "bytes": 4976698672,
+      "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668",
+      "role": "base",
+      "mtime_ns": 1773634882816711071
+    },
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00002-of-00004.safetensors",
+      "bytes": 4999802720,
+      "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+      "role": "base",
+      "mtime_ns": 1773634884507729476
+    },
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00003-of-00004.safetensors",
+      "bytes": 4915916176,
+      "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+      "role": "base",
+      "mtime_ns": 1773634882856711506
+    },
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00004-of-00004.safetensors",
+      "bytes": 1168138808,
+      "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+      "role": "base",
+      "mtime_ns": 1773634794331758639
+    },
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model.safetensors.index.json",
+      "bytes": 23950,
+      "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+      "role": "base",
+      "mtime_ns": 1792733529673292140
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/config.json",
+      "bytes": 855,
+      "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+      "role": "target",
+      "mtime_ns": 1792733529673292140
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00001-of-00004.safetensors",
+      "bytes": 4976698672,
+      "sha256": "3c2a83de67d5b8f814414f7a2df4367cf678b4eee8393fc8b0372d220440210b",
+      "role": "target",
+      "mtime_ns": 1793367470689686310
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00002-of-00004.safetensors",
+      "bytes": 4999802720,
+      "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+      "role": "target",
+      "mtime_ns": 1773634884507729476
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00003-of-00004.safetensors",
+      "bytes": 4915916176,
+      "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+      "role": "target",
+      "mtime_ns": 1773634882856711506
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00004-of-00004.safetensors",
+      "bytes": 1168138808,
+      "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+      "role": "target",
+      "mtime_ns": 1773634794331758639
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model.safetensors.index.json",
+      "bytes": 23950,
+      "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+      "role": "target",
+      "mtime_ns": 1792733529673292140
+    },
+    {
+      "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable",
+      "bytes": 224097,
+      "sha256": "405001f45f4676a134738a2d340dd453f17e9ccc60ba026e05ab285b39261c70",
+      "role": "cache-or-input",
+      "mtime_ns": 1793341641939575604
+    },
+    {
+      "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs/2026.4.0/2.10.0+cpu/42100dcbf68bbc6aa86e92b0.runnable",
+      "bytes": 760632,
+      "sha256": "5e8aaff08c16606163a52e9d517dc2e1fc0b58aabb03740559af38ca4bba7bb1",
+      "role": "cache-or-input",
+      "mtime_ns": 1793341641939575604
+    },
+    {
+      "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs/2026.4.0/2.10.0+cpu/4d933693c0786da2c9f5f8e4.runnable",
+      "bytes": 745164,
+      "sha256": "f6048c67a0321bc5c83fddd8041fdc7284314957f6b4e126e7df25553027c0e4",
+      "role": "cache-or-input",
+      "mtime_ns": 1793342041131479066
+    },
+    {
+      "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs/2026.4.0/2.10.0+cpu/53378f7f15c231ec17770d12.runnable",
+      "bytes": 92916,
+      "sha256": "57dc6c488fb70d3ff966e78e8c89882c505c6beb4517a19418a09fc9771c5fa8",
+      "role": "cache-or-input",
+      "mtime_ns": 1793342067386063365
+    },
+    {
+      "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable",
+      "bytes": 778900,
+      "sha256": "f06c3bf73e93e964a9a2f575e6a73c0960aea0cae02b63f43b5cce5182f0f756",
+      "role": "cache-or-input",
+      "mtime_ns": 1793341887001046211
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/interior.switchplan.json",
+      "bytes": 3078,
+      "sha256": "e7cc12dbd0e7b6ffdd000d841019daf49b9d7a57eb774c4fc694d913d4bee1e9",
+      "role": "cache-or-input",
+      "mtime_ns": 1793367509342076872
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/rngd-interior-fixtures.json",
+      "bytes": 1303,
+      "sha256": "298eaeea76e9a945c53822142ce7f0ebab9d93e0d200359d6cccd642383f9d52",
+      "role": "cache-or-input",
+      "mtime_ns": 1793367509342076872
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-02/work/kit-report.json",
+      "bytes": 85466,
+      "sha256": "582b7f84973e1efe14749927920102089b5bea1498abcad9c66b404c7d1f0589",
+      "role": "cache-or-input",
+      "mtime_ns": 1793367757920594466
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/runs/rngd-b2-native-02/work/refsactual.json",
+      "bytes": 146721,
+      "sha256": "6738d1bcbec444513163599c33b6146c9d317f1253d900b3cf196ff82a0672c7",
+      "role": "cache-or-input",
+      "mtime_ns": 1793367628961287242
+    },
+    {
+      "path": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/fixtures.json",
+      "bytes": 1303,
+      "sha256": "298eaeea76e9a945c53822142ce7f0ebab9d93e0d200359d6cccd642383f9d52",
+      "role": "cache-or-input",
+      "mtime_ns": 1793579979467180334
+    },
+    {
+      "path": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/interior.switchplan.json",
+      "bytes": 3078,
+      "sha256": "e7cc12dbd0e7b6ffdd000d841019daf49b9d7a57eb774c4fc694d913d4bee1e9",
+      "role": "cache-or-input",
+      "mtime_ns": 1793579979468180259
+    },
+    {
+      "path": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/prior-kit-report.json",
+      "bytes": 85466,
+      "sha256": "582b7f84973e1efe14749927920102089b5bea1498abcad9c66b404c7d1f0589",
+      "role": "cache-or-input",
+      "mtime_ns": 1793579979468180259
+    },
+    {
+      "path": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/references.json",
+      "bytes": 146721,
+      "sha256": "6738d1bcbec444513163599c33b6146c9d317f1253d900b3cf196ff82a0672c7",
+      "role": "cache-or-input",
+      "mtime_ns": 1793579979467180334
+    }
+  ],
+  "full_hash_elapsed_s": 17.924112647073343,
+  "scope": "Full checkpoint hashes verified against prior native kit before allocation; old roots read-only"
+}

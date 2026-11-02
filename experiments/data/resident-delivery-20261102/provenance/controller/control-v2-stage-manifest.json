@@ -1,0 +1,14 @@
+{
+  "harness_commit": "829573e41959a4b0f6daa82e4862f1584367c347",
+  "harness_sha256": "d8278dae9833edf2ed2f7f47adfafd99f6bf6bb57e1c0a86b8d9eea5b1c9bb21",
+  "files": [
+    {
+      "name": "prepare_donors_v2.py",
+      "sha256": "fb3e07ae0e11b156b186b1d2e4d2735fac09394884f061e3e4f07069dcfdc7ef"
+    },
+    {
+      "name": "cleanup_payload.py",
+      "sha256": "4bb805f7baf62088fc3aa148922010130f53ba4a9a7288059247adc2b7698772"
+    }
+  ]
+}

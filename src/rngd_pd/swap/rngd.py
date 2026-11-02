@@ -617,10 +617,10 @@ class SwappableDecode:
 
     def close(self):
         with self._lock:
+            self._failed = True
             self._sync()
             self.variants.clear()
             self.shared.clear()
             self.wlm_d = None
             self.active = None
-            self._failed = True
             self.ck.close()

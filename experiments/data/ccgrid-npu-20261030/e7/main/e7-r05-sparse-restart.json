@@ -1,0 +1,1086 @@
+{
+  "schema": "ccgrid-e7-sample-v1",
+  "mode": "restart",
+  "variant": "B4-S256-g2",
+  "chip": 0,
+  "cache": "$RUN_ROOT/cache/graphs",
+  "metadata": {
+    "utc": "2026-10-30T12:16:56.386705+00:00",
+    "pid": 3987,
+    "ppid": 1,
+    "executable": "<private-path>",
+    "invocation_argv": [
+      "<private-path>",
+      "$RUN_ROOT/e7-source/bench/ccgrid_e7.py",
+      "sample",
+      "--ckpt",
+      "<private-path>",
+      "--target",
+      "<private-path>",
+      "--ranges",
+      "$RUN_ROOT/runs/e7-main-v1/inputs/e7-sparse-ranges-v1.json",
+      "--cache",
+      "$RUN_ROOT/cache/graphs",
+      "--chip",
+      "0",
+      "--reference",
+      "$RUN_ROOT/runs/e7-main-v1/inputs/sparse-reference.json",
+      "--variant",
+      "B4-S256-g2",
+      "--host-workers",
+      "2",
+      "--intra-op",
+      "4",
+      "--mode",
+      "restart",
+      "--out",
+      "$RUN_ROOT/runs/e7-main-v1/work/e7-r05-sparse-restart.json"
+    ],
+    "actual_sys_argv": [
+      "$RUN_ROOT/e7-source/bench/ccgrid_e7.py",
+      "sample",
+      "--ckpt",
+      "<private-path>",
+      "--target",
+      "<private-path>",
+      "--ranges",
+      "$RUN_ROOT/runs/e7-main-v1/inputs/e7-sparse-ranges-v1.json",
+      "--cache",
+      "$RUN_ROOT/cache/graphs",
+      "--chip",
+      "0",
+      "--reference",
+      "$RUN_ROOT/runs/e7-main-v1/inputs/sparse-reference.json",
+      "--variant",
+      "B4-S256-g2",
+      "--host-workers",
+      "2",
+      "--intra-op",
+      "4",
+      "--mode",
+      "restart",
+      "--out",
+      "$RUN_ROOT/runs/e7-main-v1/work/e7-r05-sparse-restart.json"
+    ],
+    "cwd": "/",
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.35",
+    "packages": {
+      "numpy": "2.2.6",
+      "torch": "2.10.0+cpu",
+      "safetensors": "0.8.0",
+      "furiosa-torch": "2026.4.0",
+      "furiosa-llm": "2026.4.0",
+      "furiosa-runtime": null
+    },
+    "environment": {
+      "PYTHONPATH": "$RUN_ROOT/e7-source/src",
+      "OMP_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "RNGD_MAX_SHAPES": "8",
+      "KUBERNETES_SERVICE_HOST": "10.96.0.1"
+    },
+    "script_entry_perf_ns": 1337591256227183,
+    "source": {
+      "commit": "f0f08bfca4409b55226022760cacb789e97a458c",
+      "dirty": "",
+      "script_sha256": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+      "sha256": {
+        "bench/ccgrid_e7.py": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+        "src/rngd_pd/swap/rngd.py": "c04984c53e109097bef2bd840e730d0b1a56f966c4f9847b8f5fc2385fb5ac9f",
+        "src/rngd_pd/swap/delta.py": "a91f5011348c408214da4ddeb3d06dbedd2b7c0eed48c909889ce875a1e691ed",
+        "src/rngd_pd/swap/variants.py": "a1e772221226b042b97ea1b046e067a72709f94886db5610a5b2a9732ce6e744",
+        "src/rngd_pd/swap/bench_rngd.py": "a18035bc56bbbeb4bc8e00cdc167005dda5697ddade499e65497f0905096c0a6"
+      }
+    }
+  },
+  "allow_compile": false,
+  "allocator_retries": 0,
+  "host_workers": 2,
+  "intra_op": 4,
+  "logical_device_written_bytes_note": "logical weight payload; not physical DMA",
+  "replacement_unit": null,
+  "reference": {
+    "path": "$RUN_ROOT/runs/e7-main-v1/inputs/sparse-reference.json",
+    "sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357"
+  },
+  "ranges": {
+    "path": "$RUN_ROOT/runs/e7-main-v1/inputs/e7-sparse-ranges-v1.json",
+    "sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+  },
+  "checkpoints": {
+    "ckpt": {
+      "path": "<private-path>",
+      "files": [
+        {
+          "name": "config.json",
+          "size": 855,
+          "mtime_ns": 1792733529673292140,
+          "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+        },
+        {
+          "name": "model-00001-of-00004.safetensors",
+          "size": 4976698672,
+          "mtime_ns": 1773634882816711071,
+          "sha256": null
+        },
+        {
+          "name": "model-00002-of-00004.safetensors",
+          "size": 4999802720,
+          "mtime_ns": 1773634884507729476,
+          "sha256": null
+        },
+        {
+          "name": "model-00003-of-00004.safetensors",
+          "size": 4915916176,
+          "mtime_ns": 1773634882856711506,
+          "sha256": null
+        },
+        {
+          "name": "model-00004-of-00004.safetensors",
+          "size": 1168138808,
+          "mtime_ns": 1773634794331758639,
+          "sha256": null
+        },
+        {
+          "name": "model.safetensors.index.json",
+          "size": 23950,
+          "mtime_ns": 1792733529673292140,
+          "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+        }
+      ]
+    },
+    "target": {
+      "path": "<private-path>",
+      "files": [
+        {
+          "name": "config.json",
+          "size": 855,
+          "mtime_ns": 1792740221619147651,
+          "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+        },
+        {
+          "name": "model-00001-of-00004.safetensors",
+          "size": 4976698672,
+          "mtime_ns": 1792740221635148221,
+          "sha256": null
+        },
+        {
+          "name": "model-00002-of-00004.safetensors",
+          "size": 4999802720,
+          "mtime_ns": 1773634884507729476,
+          "sha256": null
+        },
+        {
+          "name": "model-00003-of-00004.safetensors",
+          "size": 4915916176,
+          "mtime_ns": 1773634882856711506,
+          "sha256": null
+        },
+        {
+          "name": "model-00004-of-00004.safetensors",
+          "size": 1168138808,
+          "mtime_ns": 1773634794331758639,
+          "sha256": null
+        },
+        {
+          "name": "model.safetensors.index.json",
+          "size": 23950,
+          "mtime_ns": 1792740221619147651,
+          "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+        }
+      ]
+    }
+  },
+  "plan": {
+    "tensors": 1,
+    "upload_bytes": 117440512,
+    "changed_bytes": 2018387,
+    "total_bytes": 16060522496,
+    "header_changes": [],
+    "removed": [],
+    "names": [
+      "model.layers.0.mlp.down_proj.weight"
+    ]
+  },
+  "plan_tensors": {
+    "model.layers.0.mlp.down_proj.weight": {
+      "file": "model-00001-of-00004.safetensors",
+      "rows": [
+        [
+          0,
+          64
+        ]
+      ],
+      "bytes": 117440512
+    }
+  },
+  "plan_s": 0.00477288,
+  "plan_phase": "before base engine load; excluded from update interval",
+  "tokens": [
+    [
+      374,
+      285,
+      285,
+      285,
+      374,
+      374,
+      374,
+      374
+    ],
+    [
+      678,
+      4076,
+      4076,
+      4076,
+      4076,
+      4076,
+      4076,
+      4076
+    ],
+    [
+      374,
+      374,
+      374,
+      374,
+      374,
+      374,
+      374,
+      374
+    ],
+    [
+      374,
+      374,
+      374,
+      374,
+      374,
+      374,
+      374,
+      374
+    ]
+  ],
+  "base_tokens": [
+    [
+      198,
+      791,
+      1176,
+      1403,
+      5238,
+      315,
+      279,
+      33894
+    ],
+    [
+      29,
+      946,
+      946,
+      946,
+      946,
+      946,
+      946,
+      946
+    ],
+    [
+      9831,
+      19954,
+      13094,
+      66965,
+      29726,
+      13094,
+      33390,
+      33353
+    ],
+    [
+      198,
+      220,
+      482,
+      220,
+      16,
+      13,
+      15,
+      13
+    ]
+  ],
+  "base_tokens_equal_reference": true,
+  "prompts": [
+    [
+      102089,
+      76471,
+      61385,
+      32447,
+      37008,
+      5012,
+      9121,
+      2081
+    ],
+    [
+      21114,
+      97611,
+      77964,
+      109539,
+      60484,
+      72835,
+      116492,
+      87566
+    ],
+    [
+      75909,
+      65280,
+      67234,
+      112215,
+      33353,
+      97920,
+      80538,
+      428
+    ],
+    [
+      47358,
+      102902,
+      66562,
+      4126,
+      91810,
+      87585,
+      101604,
+      21161
+    ]
+  ],
+  "tokens_equal_reference": true,
+  "logical_device_written_bytes": 15011577856,
+  "timings": {
+    "engine_load_s": 15.721727409,
+    "variant_load_s": 0.038067327,
+    "prompt_ttft_s": 0.16810785606503487,
+    "script_entry_to_first_token_s": 18.374690568,
+    "generation_s": 0.285631567,
+    "update_to_first_token_s": 19.683208275,
+    "base_ready_to_observed_exit_s": 1.266179776,
+    "parent_launch_to_first_token_s": 18.416459584
+  },
+  "workers": {
+    "base": {
+      "argv": [
+        "<private-path>",
+        "$RUN_ROOT/e7-source/bench/ccgrid_e7.py",
+        "sample",
+        "--ckpt",
+        "<private-path>",
+        "--target",
+        "<private-path>",
+        "--ranges",
+        "$RUN_ROOT/runs/e7-main-v1/inputs/e7-sparse-ranges-v1.json",
+        "--variant",
+        "B4-S256-g2",
+        "--cache",
+        "$RUN_ROOT/cache/graphs",
+        "--chip",
+        "0",
+        "--reference",
+        "$RUN_ROOT/runs/e7-main-v1/inputs/sparse-reference.json",
+        "--mode",
+        "restart",
+        "--out",
+        "$RUN_ROOT/tmp/ccgrid-e7-do_3mhno/base.json",
+        "--host-workers",
+        "2",
+        "--intra-op",
+        "4",
+        "--_phase",
+        "base"
+      ],
+      "parent_launch_perf_ns": 1337591307488895,
+      "utc": "2026-10-30T12:16:56.432310+00:00",
+      "parent_observed_exit_perf_ns": 1337610605820167,
+      "returncode": 0,
+      "result": {
+        "schema": "ccgrid-e7-sample-v1",
+        "mode": "restart",
+        "variant": "B4-S256-g2",
+        "chip": 0,
+        "cache": "$RUN_ROOT/cache/graphs",
+        "metadata": {
+          "utc": "2026-10-30T12:16:56.477454+00:00",
+          "pid": 3991,
+          "ppid": 3987,
+          "executable": "<private-path>",
+          "invocation_argv": [
+            "<private-path>",
+            "$RUN_ROOT/e7-source/bench/ccgrid_e7.py",
+            "sample",
+            "--ckpt",
+            "<private-path>",
+            "--target",
+            "<private-path>",
+            "--ranges",
+            "$RUN_ROOT/runs/e7-main-v1/inputs/e7-sparse-ranges-v1.json",
+            "--variant",
+            "B4-S256-g2",
+            "--cache",
+            "$RUN_ROOT/cache/graphs",
+            "--chip",
+            "0",
+            "--reference",
+            "$RUN_ROOT/runs/e7-main-v1/inputs/sparse-reference.json",
+            "--mode",
+            "restart",
+            "--out",
+            "$RUN_ROOT/tmp/ccgrid-e7-do_3mhno/base.json",
+            "--host-workers",
+            "2",
+            "--intra-op",
+            "4",
+            "--_phase",
+            "base"
+          ],
+          "actual_sys_argv": [
+            "$RUN_ROOT/e7-source/bench/ccgrid_e7.py",
+            "sample",
+            "--ckpt",
+            "<private-path>",
+            "--target",
+            "<private-path>",
+            "--ranges",
+            "$RUN_ROOT/runs/e7-main-v1/inputs/e7-sparse-ranges-v1.json",
+            "--variant",
+            "B4-S256-g2",
+            "--cache",
+            "$RUN_ROOT/cache/graphs",
+            "--chip",
+            "0",
+            "--reference",
+            "$RUN_ROOT/runs/e7-main-v1/inputs/sparse-reference.json",
+            "--mode",
+            "restart",
+            "--out",
+            "$RUN_ROOT/tmp/ccgrid-e7-do_3mhno/base.json",
+            "--host-workers",
+            "2",
+            "--intra-op",
+            "4",
+            "--_phase",
+            "base"
+          ],
+          "cwd": "/",
+          "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+          "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "numpy": "2.2.6",
+            "torch": "2.10.0+cpu",
+            "safetensors": "0.8.0",
+            "furiosa-torch": "2026.4.0",
+            "furiosa-llm": "2026.4.0",
+            "furiosa-runtime": null
+          },
+          "environment": {
+            "PYTHONPATH": "$RUN_ROOT/e7-source/src",
+            "OMP_NUM_THREADS": "4",
+            "MKL_NUM_THREADS": "4",
+            "RNGD_MAX_SHAPES": "8",
+            "KUBERNETES_SERVICE_HOST": "10.96.0.1"
+          },
+          "script_entry_perf_ns": 1337591346851066,
+          "source": {
+            "commit": "f0f08bfca4409b55226022760cacb789e97a458c",
+            "dirty": "",
+            "script_sha256": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+            "sha256": {
+              "bench/ccgrid_e7.py": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+              "src/rngd_pd/swap/rngd.py": "c04984c53e109097bef2bd840e730d0b1a56f966c4f9847b8f5fc2385fb5ac9f",
+              "src/rngd_pd/swap/delta.py": "a91f5011348c408214da4ddeb3d06dbedd2b7c0eed48c909889ce875a1e691ed",
+              "src/rngd_pd/swap/variants.py": "a1e772221226b042b97ea1b046e067a72709f94886db5610a5b2a9732ce6e744",
+              "src/rngd_pd/swap/bench_rngd.py": "a18035bc56bbbeb4bc8e00cdc167005dda5697ddade499e65497f0905096c0a6"
+            }
+          }
+        },
+        "allow_compile": false,
+        "allocator_retries": 0,
+        "host_workers": 2,
+        "intra_op": 4,
+        "logical_device_written_bytes_note": "logical weight payload; not physical DMA",
+        "replacement_unit": null,
+        "reference": {
+          "path": "$RUN_ROOT/runs/e7-main-v1/inputs/sparse-reference.json",
+          "sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357"
+        },
+        "ranges": {
+          "path": "$RUN_ROOT/runs/e7-main-v1/inputs/e7-sparse-ranges-v1.json",
+          "sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+        },
+        "checkpoints": {
+          "ckpt": {
+            "path": "<private-path>",
+            "files": [
+              {
+                "name": "config.json",
+                "size": 855,
+                "mtime_ns": 1792733529673292140,
+                "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+              },
+              {
+                "name": "model-00001-of-00004.safetensors",
+                "size": 4976698672,
+                "mtime_ns": 1773634882816711071,
+                "sha256": null
+              },
+              {
+                "name": "model-00002-of-00004.safetensors",
+                "size": 4999802720,
+                "mtime_ns": 1773634884507729476,
+                "sha256": null
+              },
+              {
+                "name": "model-00003-of-00004.safetensors",
+                "size": 4915916176,
+                "mtime_ns": 1773634882856711506,
+                "sha256": null
+              },
+              {
+                "name": "model-00004-of-00004.safetensors",
+                "size": 1168138808,
+                "mtime_ns": 1773634794331758639,
+                "sha256": null
+              },
+              {
+                "name": "model.safetensors.index.json",
+                "size": 23950,
+                "mtime_ns": 1792733529673292140,
+                "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+              }
+            ]
+          },
+          "target": {
+            "path": "<private-path>",
+            "files": [
+              {
+                "name": "config.json",
+                "size": 855,
+                "mtime_ns": 1792740221619147651,
+                "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+              },
+              {
+                "name": "model-00001-of-00004.safetensors",
+                "size": 4976698672,
+                "mtime_ns": 1792740221635148221,
+                "sha256": null
+              },
+              {
+                "name": "model-00002-of-00004.safetensors",
+                "size": 4999802720,
+                "mtime_ns": 1773634884507729476,
+                "sha256": null
+              },
+              {
+                "name": "model-00003-of-00004.safetensors",
+                "size": 4915916176,
+                "mtime_ns": 1773634882856711506,
+                "sha256": null
+              },
+              {
+                "name": "model-00004-of-00004.safetensors",
+                "size": 1168138808,
+                "mtime_ns": 1773634794331758639,
+                "sha256": null
+              },
+              {
+                "name": "model.safetensors.index.json",
+                "size": 23950,
+                "mtime_ns": 1792740221619147651,
+                "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+              }
+            ]
+          }
+        },
+        "timings": {
+          "engine_load_s": 15.217057888,
+          "variant_load_s": 0.038926991,
+          "base_prompt_ttft_s": 0.16317198891192675,
+          "base_generation_s": 0.282472064
+        },
+        "phase": "base",
+        "prompts": [
+          [
+            102089,
+            76471,
+            61385,
+            32447,
+            37008,
+            5012,
+            9121,
+            2081
+          ],
+          [
+            21114,
+            97611,
+            77964,
+            109539,
+            60484,
+            72835,
+            116492,
+            87566
+          ],
+          [
+            75909,
+            65280,
+            67234,
+            112215,
+            33353,
+            97920,
+            80538,
+            428
+          ],
+          [
+            47358,
+            102902,
+            66562,
+            4126,
+            91810,
+            87585,
+            101604,
+            21161
+          ]
+        ],
+        "native_counts": {
+          "compilation_attempts": 0,
+          "native_calls": 255,
+          "native_output_checks": 255
+        },
+        "sdk": "2026.4.0",
+        "expected_native_device": {
+          "type": "furiosa",
+          "index": 0
+        },
+        "native_outputs_verified": true,
+        "native_observation": "original compiled calls and device type/index checks; overhead included",
+        "weights": {
+          "host_weights_s": 0.27578717609867454,
+          "upload_weights_s": 14.939212594879791
+        },
+        "graph": {
+          "prepared": true,
+          "graph_source": [
+            "cache",
+            "cache"
+          ],
+          "graph_read_s": 0.013373562833294272,
+          "graph_to_device_s": 0.0012083910405635834,
+          "tables_s": 0.024237646022811532,
+          "swap_s": 0.038858690997585654,
+          "variant": "B4-S256-g2"
+        },
+        "base_tokens": [
+          [
+            198,
+            791,
+            1176,
+            1403,
+            5238,
+            315,
+            279,
+            33894
+          ],
+          [
+            29,
+            946,
+            946,
+            946,
+            946,
+            946,
+            946,
+            946
+          ],
+          [
+            9831,
+            19954,
+            13094,
+            66965,
+            29726,
+            13094,
+            33390,
+            33353
+          ],
+          [
+            198,
+            220,
+            482,
+            220,
+            16,
+            13,
+            15,
+            13
+          ]
+        ],
+        "base_tokens_equal_reference": true,
+        "base_ready_perf_ns": 1337609339640391,
+        "status": "ok",
+        "completed_utc": "2026-10-30T12:17:15.131866+00:00"
+      }
+    },
+    "target": {
+      "argv": [
+        "<private-path>",
+        "$RUN_ROOT/e7-source/bench/ccgrid_e7.py",
+        "sample",
+        "--ckpt",
+        "<private-path>",
+        "--target",
+        "<private-path>",
+        "--ranges",
+        "$RUN_ROOT/runs/e7-main-v1/inputs/e7-sparse-ranges-v1.json",
+        "--variant",
+        "B4-S256-g2",
+        "--cache",
+        "$RUN_ROOT/cache/graphs",
+        "--chip",
+        "0",
+        "--reference",
+        "$RUN_ROOT/runs/e7-main-v1/inputs/sparse-reference.json",
+        "--mode",
+        "restart",
+        "--out",
+        "$RUN_ROOT/tmp/ccgrid-e7-do_3mhno/target.json",
+        "--host-workers",
+        "2",
+        "--intra-op",
+        "4",
+        "--_phase",
+        "target"
+      ],
+      "parent_launch_perf_ns": 1337610606389082,
+      "utc": "2026-10-30T12:17:15.731212+00:00",
+      "parent_observed_exit_perf_ns": 1337630410227782,
+      "returncode": 0,
+      "result": {
+        "schema": "ccgrid-e7-sample-v1",
+        "mode": "restart",
+        "variant": "B4-S256-g2",
+        "chip": 0,
+        "cache": "$RUN_ROOT/cache/graphs",
+        "metadata": {
+          "utc": "2026-10-30T12:17:15.778763+00:00",
+          "pid": 4020,
+          "ppid": 3987,
+          "executable": "<private-path>",
+          "invocation_argv": [
+            "<private-path>",
+            "$RUN_ROOT/e7-source/bench/ccgrid_e7.py",
+            "sample",
+            "--ckpt",
+            "<private-path>",
+            "--target",
+            "<private-path>",
+            "--ranges",
+            "$RUN_ROOT/runs/e7-main-v1/inputs/e7-sparse-ranges-v1.json",
+            "--variant",
+            "B4-S256-g2",
+            "--cache",
+            "$RUN_ROOT/cache/graphs",
+            "--chip",
+            "0",
+            "--reference",
+            "$RUN_ROOT/runs/e7-main-v1/inputs/sparse-reference.json",
+            "--mode",
+            "restart",
+            "--out",
+            "$RUN_ROOT/tmp/ccgrid-e7-do_3mhno/target.json",
+            "--host-workers",
+            "2",
+            "--intra-op",
+            "4",
+            "--_phase",
+            "target"
+          ],
+          "actual_sys_argv": [
+            "$RUN_ROOT/e7-source/bench/ccgrid_e7.py",
+            "sample",
+            "--ckpt",
+            "<private-path>",
+            "--target",
+            "<private-path>",
+            "--ranges",
+            "$RUN_ROOT/runs/e7-main-v1/inputs/e7-sparse-ranges-v1.json",
+            "--variant",
+            "B4-S256-g2",
+            "--cache",
+            "$RUN_ROOT/cache/graphs",
+            "--chip",
+            "0",
+            "--reference",
+            "$RUN_ROOT/runs/e7-main-v1/inputs/sparse-reference.json",
+            "--mode",
+            "restart",
+            "--out",
+            "$RUN_ROOT/tmp/ccgrid-e7-do_3mhno/target.json",
+            "--host-workers",
+            "2",
+            "--intra-op",
+            "4",
+            "--_phase",
+            "target"
+          ],
+          "cwd": "/",
+          "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+          "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "numpy": "2.2.6",
+            "torch": "2.10.0+cpu",
+            "safetensors": "0.8.0",
+            "furiosa-torch": "2026.4.0",
+            "furiosa-llm": "2026.4.0",
+            "furiosa-runtime": null
+          },
+          "environment": {
+            "PYTHONPATH": "$RUN_ROOT/e7-source/src",
+            "OMP_NUM_THREADS": "4",
+            "MKL_NUM_THREADS": "4",
+            "RNGD_MAX_SHAPES": "8",
+            "KUBERNETES_SERVICE_HOST": "10.96.0.1"
+          },
+          "script_entry_perf_ns": 1337610648158098,
+          "source": {
+            "commit": "f0f08bfca4409b55226022760cacb789e97a458c",
+            "dirty": "",
+            "script_sha256": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+            "sha256": {
+              "bench/ccgrid_e7.py": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+              "src/rngd_pd/swap/rngd.py": "c04984c53e109097bef2bd840e730d0b1a56f966c4f9847b8f5fc2385fb5ac9f",
+              "src/rngd_pd/swap/delta.py": "a91f5011348c408214da4ddeb3d06dbedd2b7c0eed48c909889ce875a1e691ed",
+              "src/rngd_pd/swap/variants.py": "a1e772221226b042b97ea1b046e067a72709f94886db5610a5b2a9732ce6e744",
+              "src/rngd_pd/swap/bench_rngd.py": "a18035bc56bbbeb4bc8e00cdc167005dda5697ddade499e65497f0905096c0a6"
+            }
+          }
+        },
+        "allow_compile": false,
+        "allocator_retries": 0,
+        "host_workers": 2,
+        "intra_op": 4,
+        "logical_device_written_bytes_note": "logical weight payload; not physical DMA",
+        "replacement_unit": null,
+        "reference": {
+          "path": "$RUN_ROOT/runs/e7-main-v1/inputs/sparse-reference.json",
+          "sha256": "3e87ad3fb510a78451c65b59a9804cad95f4e5cd41ec1c0d89168c33f4a5d357"
+        },
+        "ranges": {
+          "path": "$RUN_ROOT/runs/e7-main-v1/inputs/e7-sparse-ranges-v1.json",
+          "sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+        },
+        "checkpoints": {
+          "ckpt": {
+            "path": "<private-path>",
+            "files": [
+              {
+                "name": "config.json",
+                "size": 855,
+                "mtime_ns": 1792733529673292140,
+                "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+              },
+              {
+                "name": "model-00001-of-00004.safetensors",
+                "size": 4976698672,
+                "mtime_ns": 1773634882816711071,
+                "sha256": null
+              },
+              {
+                "name": "model-00002-of-00004.safetensors",
+                "size": 4999802720,
+                "mtime_ns": 1773634884507729476,
+                "sha256": null
+              },
+              {
+                "name": "model-00003-of-00004.safetensors",
+                "size": 4915916176,
+                "mtime_ns": 1773634882856711506,
+                "sha256": null
+              },
+              {
+                "name": "model-00004-of-00004.safetensors",
+                "size": 1168138808,
+                "mtime_ns": 1773634794331758639,
+                "sha256": null
+              },
+              {
+                "name": "model.safetensors.index.json",
+                "size": 23950,
+                "mtime_ns": 1792733529673292140,
+                "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+              }
+            ]
+          },
+          "target": {
+            "path": "<private-path>",
+            "files": [
+              {
+                "name": "config.json",
+                "size": 855,
+                "mtime_ns": 1792740221619147651,
+                "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+              },
+              {
+                "name": "model-00001-of-00004.safetensors",
+                "size": 4976698672,
+                "mtime_ns": 1792740221635148221,
+                "sha256": null
+              },
+              {
+                "name": "model-00002-of-00004.safetensors",
+                "size": 4999802720,
+                "mtime_ns": 1773634884507729476,
+                "sha256": null
+              },
+              {
+                "name": "model-00003-of-00004.safetensors",
+                "size": 4915916176,
+                "mtime_ns": 1773634882856711506,
+                "sha256": null
+              },
+              {
+                "name": "model-00004-of-00004.safetensors",
+                "size": 1168138808,
+                "mtime_ns": 1773634794331758639,
+                "sha256": null
+              },
+              {
+                "name": "model.safetensors.index.json",
+                "size": 23950,
+                "mtime_ns": 1792740221619147651,
+                "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+              }
+            ]
+          }
+        },
+        "timings": {
+          "engine_load_s": 15.721727409,
+          "variant_load_s": 0.038067327,
+          "prompt_ttft_s": 0.16810785606503487,
+          "script_entry_to_first_token_s": 18.374690568,
+          "generation_s": 0.285631567
+        },
+        "phase": "target",
+        "prompts": [
+          [
+            102089,
+            76471,
+            61385,
+            32447,
+            37008,
+            5012,
+            9121,
+            2081
+          ],
+          [
+            21114,
+            97611,
+            77964,
+            109539,
+            60484,
+            72835,
+            116492,
+            87566
+          ],
+          [
+            75909,
+            65280,
+            67234,
+            112215,
+            33353,
+            97920,
+            80538,
+            428
+          ],
+          [
+            47358,
+            102902,
+            66562,
+            4126,
+            91810,
+            87585,
+            101604,
+            21161
+          ]
+        ],
+        "native_counts": {
+          "compilation_attempts": 0,
+          "native_calls": 255,
+          "native_output_checks": 255
+        },
+        "sdk": "2026.4.0",
+        "expected_native_device": {
+          "type": "furiosa",
+          "index": 0
+        },
+        "native_outputs_verified": true,
+        "native_observation": "original compiled calls and device type/index checks; overhead included",
+        "weights": {
+          "host_weights_s": 0.2650669610593468,
+          "upload_weights_s": 15.454614470014349
+        },
+        "graph": {
+          "prepared": true,
+          "graph_source": [
+            "cache",
+            "cache"
+          ],
+          "graph_read_s": 0.013625307008624077,
+          "graph_to_device_s": 0.001476053148508072,
+          "tables_s": 0.022850765846669674,
+          "swap_s": 0.03799240617081523,
+          "variant": "B4-S256-g2"
+        },
+        "logical_device_written_bytes": 15011577856,
+        "tokens": [
+          [
+            374,
+            285,
+            285,
+            285,
+            374,
+            374,
+            374,
+            374
+          ],
+          [
+            678,
+            4076,
+            4076,
+            4076,
+            4076,
+            4076,
+            4076,
+            4076
+          ],
+          [
+            374,
+            374,
+            374,
+            374,
+            374,
+            374,
+            374,
+            374
+          ],
+          [
+            374,
+            374,
+            374,
+            374,
+            374,
+            374,
+            374,
+            374
+          ]
+        ],
+        "tokens_equal_reference": true,
+        "first_token_timing_method": "generate call start + engine-reported prompt TTFT",
+        "first_token_perf_ns": 1337629022848666,
+        "status": "ok",
+        "completed_utc": "2026-10-30T12:17:34.946446+00:00"
+      }
+    }
+  },
+  "status": "ok",
+  "completed_utc": "2026-10-30T12:17:35.535740+00:00",
+  "publication": {
+    "original_private_file": "e7-r05-sparse-restart.json",
+    "original_private_sha256": "c07eb72d57306dfad25d7ba1135c60ff9b2365de66fb64219813394038923027",
+    "original_private_bytes": 34003,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

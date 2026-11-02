@@ -1,0 +1,12 @@
+{
+  "source": "/home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source",
+  "cache": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs",
+  "fixtures": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/fixtures.json",
+  "references": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/references.json",
+  "input_manifest": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/input-manifest.json",
+  "source_manifest": "/home/gspark/workspace/codex_ccgrid_b2_20261102/inputs/source-manifest.json",
+  "source_commit": "4482faef87dabef8f586c6e7dff382b889cca115",
+  "variant": "B4-S256-g2",
+  "phase": "measure",
+  "run": "/home/gspark/workspace/codex_ccgrid_b2_20261102/runs/main-01"
+}

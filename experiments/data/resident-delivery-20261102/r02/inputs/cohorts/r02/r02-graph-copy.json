@@ -1,0 +1,30 @@
+{
+  "trial_id": "r02-graph-copy",
+  "phase": "measure",
+  "arm": "graph-copy",
+  "chip": 0,
+  "host_workers": 2,
+  "intra_op": 4,
+  "immutable_checkpoint": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+  "base_cache_dir": "/home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2/base-B4-S256-g2/cache/graphs",
+  "base_bundle_source": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-base",
+  "target_bundle_source": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-target",
+  "base_ref": "sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444",
+  "target_ref": "sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93",
+  "store": "/home/gspark/workspace/codex_resident_delivery_20261102/graph-store",
+  "onggi_binary": "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+  "csi_client": "/home/gspark/workspace/codex_resident_delivery_20261102/bin/csi-call",
+  "reference_file": "/home/gspark/workspace/codex_ccgrid_npu_20261030/inputs/e6-base-to-target-reference.json",
+  "base_variant": "B4-S256-g2",
+  "target_variant": "B4-S512-g2",
+  "work_dir": "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r02-graph-copy/work",
+  "provenance": {
+    "runtime_baseline": "db2dd2598daffb3d3f722007599b74d00ede61af",
+    "harness_source": "829573e41959a4b0f6daa82e4862f1584367c347",
+    "onggi_source": "05c9760",
+    "preparation_sha256": "de9d95c8a7835fbb00b2ce9c2acca3522582f33f013f369caff9d6e704e6f544",
+    "cohort": "r02",
+    "cache_state": "empty_application_chunk_cache",
+    "peers": false
+  }
+}

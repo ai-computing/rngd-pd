@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "scope": "Supplementary static weight-free flag investigation; no device execution.",
+  "artifact": "librbln.so",
+  "artifact_sha256": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+  "confirmed_facts": [
+    {
+      "claim": "The RBLN_WEIGHT_FREE string normalizer maps literal 0 to off and literal 1 to on. Other strings pass through this normalizer unchanged; later semantic validation is not established.",
+      "function": "kRblnWeightFree normalizer lambda",
+      "function_address": "0xa4f6b60",
+      "zero_comparison_literal_address": "0x2195cfc",
+      "off_construction_addresses": [
+        "0xa4f6bc5",
+        "0xa4f6bcd",
+        "0xa4f6bd1"
+      ],
+      "one_comparison_literal_address": "0x2172a49",
+      "on_construction_address": "0xa4f6c36",
+      "evidence_id": "ev_7802f7f810fa26173316c1f310cfb319e2c19073fef7377c5d73fbc01e61cf68"
+    },
+    {
+      "claim": "GetWeightFreeMode returns a stored string from UnitInfo at +0x110, rather than directly reading the environment on each invocation.",
+      "function": "tvm::target_info::GetWeightFreeMode",
+      "function_address": "0x6270590",
+      "load_addresses": [
+        "0x62705d4",
+        "0x62705db"
+      ],
+      "evidence_id": "ev_6aca8a4a2b48e3744f0d37457fbe2c6a7d79eef5853405d28c3a5b4fab3a6121"
+    },
+    {
+      "claim": "Config::InitUnitInfo copies Config +0x248 into UnitInfo +0x110. Getter timing can therefore differ from environment configuration timing.",
+      "function_address": "0x62756a0",
+      "copy_addresses": [
+        "0x62757d8",
+        "0x62757df",
+        "0x62757f9"
+      ],
+      "evidence_id": "ev_c8965d382056171471e0c05a61f980e9c426fec8d47650beed2ae1baaf0bfeb6"
+    }
+  ],
+  "candidate_configuration": "Set RBLN_WEIGHT_FREE=1 before SDK target configuration and compilation in the isolated test process; this is a normal SDK environment flag, not a binary patch.",
+  "unknowns": [
+    "Default flag value was not established by this static investigation.",
+    "The required compile-time target initialization sequence and resulting nonempty metadata require active SDK/device verification.",
+    "The normalizer accepting on or other strings does not by itself establish all legal downstream enum values."
+  ],
+  "evidence": [
+    {
+      "file": "Flagtarget_info17GetWeightFreeMode.json",
+      "original_json_sha256": "3af7899d606c2127c0bae958c552ab98b5b11378693b578e2cd834030f2775ae",
+      "evidence_id": "ev_6aca8a4a2b48e3744f0d37457fbe2c6a7d79eef5853405d28c3a5b4fab3a6121",
+      "subject_sha256": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "artifact_changed": false,
+      "artifact_sha256_after": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "wrapper": {
+        "basename": "objdump-flag-target_info17GetWeightFreeMode",
+        "sha256": "da2f8bb83493cc802f6580aedcecf939f138f96227fffdadff901587e7a6077d",
+        "source_rule": "exec /usr/bin/objdump \"$@\" --disassemble=_ZN3tvm11target_info17GetWeightFreeModeB5cxx11Ev"
+      }
+    },
+    {
+      "file": "FlagkRblnWeightFreeMUlS7_E_EE9_M_invoke.json",
+      "original_json_sha256": "31b4107caa7ca3adef5b9b24fd3c37b46aa97a0ce609cb9ea63a18adf8965597",
+      "evidence_id": "ev_7802f7f810fa26173316c1f310cfb319e2c19073fef7377c5d73fbc01e61cf68",
+      "subject_sha256": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "artifact_changed": false,
+      "artifact_sha256_after": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "wrapper": {
+        "basename": "objdump-flag-kRblnWeightFreeMUlS7_E_EE9_M_invoke",
+        "sha256": "c57fa466b87d1eb7d75206797591c5a7796d015e440dca4bce756b5675677774",
+        "source_rule": "exec /usr/bin/objdump \"$@\" --disassemble=_ZNSt17_Function_handlerIFNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKS5_EN4rbln15kRblnWeightFreeMUlS7_E_EE9_M_invokeERKSt9_Any_dataS7_"
+      }
+    },
+    {
+      "file": "FlagInitUnitInfo.json",
+      "original_json_sha256": "9c7e0babb5d641a7a0c50c042626929af73bd4de60557bae39f662f66c24f5a7",
+      "evidence_id": "ev_c8965d382056171471e0c05a61f980e9c426fec8d47650beed2ae1baaf0bfeb6",
+      "subject_sha256": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "provider": "gnu.objdump",
+      "operation": "inspect_with_objdump",
+      "exit_code": 0,
+      "output_truncated": false,
+      "artifact_changed": false,
+      "artifact_sha256_after": "e87089530721b82ed4f0a83806fe0ee6c4346c70bae79f913a3efe947921a581",
+      "wrapper": {
+        "basename": "objdump-flag-InitUnitInfo",
+        "sha256": "7c40b202bae5665f1a3cc1194d3c46536ad15a755afebbc5a380d2a70a471c9d",
+        "source_rule": "exec /usr/bin/objdump \"$@\" --disassemble=_ZN3tvm11target_info6Config12InitUnitInfoEv"
+      }
+    },
+    {
+      "file": "Flagtarget_info16UpdateWeightMode.json",
+      "original_json_sha256": "ef0fcd0efb3f40906582779d2ae3152134df7441c4b5aa0c946cc33d5cc570e0",
+      "failed": true,
+      "code": "cleanup_incomplete",
+      "category": "execution_failure",
+      "reason": "process ownership token could not be read for 1 live process(es): environment_errno_EACCES=1; live candidates 1916231=environment_errno_EACCES",
+      "owned_processes_absent_on_followup": true
+    }
+  ],
+  "limits": [
+    "Three supplementary REA observations completed successfully with unchanged artifact digests.",
+    "One UpdateWeightMode observation failed with cleanup_incomplete after REA could not read a process ownership token (EACCES); it was not repeated. Read-only ps followup found both reported owned PIDs absent. No binary or provider configuration was changed.",
+    "Addresses of string literals were checked directly in the same hashed artifact; no raw assembly or vendor source is included here."
+  ]
+}

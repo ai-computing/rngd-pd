@@ -1,0 +1,67 @@
+{
+  "schema": "rngd-binding-selected-preparation.v1",
+  "source_export_manifest_sha256": "8a370179cd5377844a9ae8dcbc599946af2b46578eaed73eed1c71a220f953b4",
+  "scope": "Exact RNGD-only selection from original preparation export; original mixed RNGD/ATOM archive and ATOM entries are intentionally not duplicated",
+  "files": [
+    {
+      "path": "evidence/rngd-interior-preparation.json",
+      "bytes": 16023,
+      "sha256": "b6850bca0c3edb86f9388bef01416178d43e5aaa26e6c98001cfaa816c9fae35"
+    },
+    {
+      "path": "inputs/rngd-fixtures.json",
+      "bytes": 1078,
+      "sha256": "0951e11cfbb7c2071641adad809b63316c65a866fd754444109a9027ba1fa83e"
+    },
+    {
+      "path": "inputs/rngd-interior-fixtures.json",
+      "bytes": 1303,
+      "sha256": "298eaeea76e9a945c53822142ce7f0ebab9d93e0d200359d6cccd642383f9d52"
+    },
+    {
+      "path": "inputs/identical.switchplan.json",
+      "bytes": 2744,
+      "sha256": "a93db349c86447efa5333503319a3379af3a3f278f33213336ab12ab2341de1c"
+    },
+    {
+      "path": "inputs/interior.switchplan.json",
+      "bytes": 3078,
+      "sha256": "e7cc12dbd0e7b6ffdd000d841019daf49b9d7a57eb774c4fc694d913d4bee1e9"
+    },
+    {
+      "path": "inputs/sparse.switchplan.json",
+      "bytes": 3078,
+      "sha256": "fb7a3fb870044efb25fc1b0e369ebc6dea607c4eff746f61d574184d4dc8beaa"
+    },
+    {
+      "path": "inputs/lm.switchplan.json",
+      "bytes": 3063,
+      "sha256": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+    },
+    {
+      "path": "inputs/references.json",
+      "bytes": 146641,
+      "sha256": "916437c498d7234890ef022f969cf5247dade888a6d154d2545e90a6a63c51c0"
+    },
+    {
+      "path": "scripts/run_rngd_b2.py",
+      "bytes": 18254,
+      "sha256": "25b8891dfa2d55b8dcc667092316f0744919953598243a037f314014d2d5b3cc"
+    },
+    {
+      "path": "scripts/rngd-b2-native-02.py",
+      "bytes": 21817,
+      "sha256": "925a46dcbb39482b8b8fe62af3369fe4360fbc126bdd28e5805f3c2e95f13589"
+    },
+    {
+      "path": "scripts/prepare_rngd_interior.py",
+      "bytes": 10790,
+      "sha256": "e91c1e6f7a61bf4d0ccb953fc5b84b0b3b033199af422490d8a811fa6e6ec035"
+    },
+    {
+      "path": "scripts/probe_readback.py",
+      "bytes": 2621,
+      "sha256": "1084aa4b90869e2f7c6461bafbb6c3d2751649dc8664f31cf4d7daa0f8f2b9fd"
+    }
+  ]
+}

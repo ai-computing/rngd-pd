@@ -1,0 +1,249 @@
+{
+  "schema": "rngd-b2-timing-package-v1",
+  "runtime_source_commit": "4482faef87dabef8f586c6e7dff382b889cca115",
+  "benchmark_source_commit": "6349df767832872fa9559c487579cea77358d4bf",
+  "raw_copy_policy": "Exact stored native/export bytes; no newline conversions or rewrites",
+  "native_attempts": {
+    "smoke": 1,
+    "measure": 1,
+    "failed": 0
+  },
+  "scope": "One smoke pair and five main pairs; preserved control/inputs exclude model and runnable payloads",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "configs/main-01.json",
+      "bytes": 716,
+      "sha256": "220f83d9719abb6f04cf9d60b12c7eb14d851527d8d1b9fd02e784fd70a38c71"
+    },
+    {
+      "path": "configs/smoke-01.json",
+      "bytes": 715,
+      "sha256": "360430a60aee448b4433805b930557d9481621d5e8f3e471ce0fc199dc64c45f"
+    },
+    {
+      "path": "control/cdx-b2-cpu-probe-01-cleanup.json",
+      "bytes": 6037,
+      "sha256": "9fb11b686b38662afebd704e81a9e4d837833dec12e1c8e5a2200a6e16503ce0"
+    },
+    {
+      "path": "control/cdx-b2-main-01-cleanup.json",
+      "bytes": 6385,
+      "sha256": "eab7ce0d1c4532c67ae34ba5d26355622dd50931fe3cbcd6a3046cae1161343e"
+    },
+    {
+      "path": "control/cdx-b2-main-01-create.json",
+      "bytes": 197,
+      "sha256": "ac2aa9e8a9be4963ae8841d68c6206ea7ecf41fcc9fbf2d92b4aaaa3d2e968a4"
+    },
+    {
+      "path": "control/cdx-b2-main-01-job.json",
+      "bytes": 13898,
+      "sha256": "ea42c0abe70fc1417753eb8582e8631e456aae45f3a554c6a8c063f52e4cc585"
+    },
+    {
+      "path": "control/cdx-b2-main-01-latest-status.json",
+      "bytes": 1992,
+      "sha256": "bd908fc652c528b1ffeecdbc07d7e4a1c807a3c4c12ea6a3efb69e71eaa684ca"
+    },
+    {
+      "path": "control/cdx-b2-smoke-01-cleanup.json",
+      "bytes": 6387,
+      "sha256": "51a90dd6b4189fe652e9d463f783134f1fadab57cdb18f4e759f71e5e5656374"
+    },
+    {
+      "path": "control/cdx-b2-smoke-01-create.json",
+      "bytes": 198,
+      "sha256": "7e694d95b748194f2cbdc58f4f1feffe8d206a27b03d61feb081eb6e3094341b"
+    },
+    {
+      "path": "control/cdx-b2-smoke-01-job.json",
+      "bytes": 13901,
+      "sha256": "5475c42aa91ed6c991bbaab805ce246eb8820b235dde3f39edda07a34db85fd7"
+    },
+    {
+      "path": "control/cdx-b2-smoke-01-latest-status.json",
+      "bytes": 8169,
+      "sha256": "ed524fc55e0f8387c3c04bbcfd9ea893735fed66a6ff38525eac6d13a0f5f1b8"
+    },
+    {
+      "path": "control/post-input-verification.json",
+      "bytes": 6393,
+      "sha256": "9baefc26fbcf08a8c05ac3cd2a9bef287e0d3b7ae4abdab89bcd66023dd5d420"
+    },
+    {
+      "path": "control/preflight-after.json",
+      "bytes": 622,
+      "sha256": "0fba83bba6dca792c2a1afb4b19d9d2bb039594fbaed2ddd6e0d177f114e4b8c"
+    },
+    {
+      "path": "control/preflight-before.json",
+      "bytes": 622,
+      "sha256": "0fba83bba6dca792c2a1afb4b19d9d2bb039594fbaed2ddd6e0d177f114e4b8c"
+    },
+    {
+      "path": "control/preparation-completed.json",
+      "bytes": 222,
+      "sha256": "91a9de58501ccb22540969cd51cb1fcc525241019e5e94cda9c7492c9f1cf5a0"
+    },
+    {
+      "path": "control/preparation-executed.sh",
+      "bytes": 3358,
+      "sha256": "089545173cf867225ce5eb2bd4d690e0f40fbe0e57500b10e1b0a4a15924a64e"
+    },
+    {
+      "path": "control/source-reconciliation.json",
+      "bytes": 40487,
+      "sha256": "cdb117b2301073962bcb36b0bfbea5635adf327d6d1be9400c4df515becae876"
+    },
+    {
+      "path": "harness/ccgrid_b2.py",
+      "bytes": 22741,
+      "sha256": "faf52c5dfa3d6a4bae231d5de2654e6a00ca7e43de128504e7c5f7bc7500b44c"
+    },
+    {
+      "path": "harness/prepare_inputs.py",
+      "bytes": 3269,
+      "sha256": "ded9cacb4b20a4b68fd7764eb56e221c80d6c6baeafc1fdfe1396e4c6f3e83dd"
+    },
+    {
+      "path": "inputs/export-manifest.json",
+      "bytes": 1422,
+      "sha256": "157469ad285db5f48bad8b860aad0a5c06eef4e21233e82340c964d1a1969ec1"
+    },
+    {
+      "path": "inputs/fixtures.json",
+      "bytes": 1303,
+      "sha256": "298eaeea76e9a945c53822142ce7f0ebab9d93e0d200359d6cccd642383f9d52"
+    },
+    {
+      "path": "inputs/input-manifest.json",
+      "bytes": 8472,
+      "sha256": "728a63c32a5d06b9c179e0911eb3b3aef98ad36dd1b72b6cdd3c7fbe46753197"
+    },
+    {
+      "path": "inputs/interior.switchplan.json",
+      "bytes": 3078,
+      "sha256": "e7cc12dbd0e7b6ffdd000d841019daf49b9d7a57eb774c4fc694d913d4bee1e9"
+    },
+    {
+      "path": "inputs/prior-kit-report.json",
+      "bytes": 85466,
+      "sha256": "582b7f84973e1efe14749927920102089b5bea1498abcad9c66b404c7d1f0589"
+    },
+    {
+      "path": "inputs/references.json",
+      "bytes": 146721,
+      "sha256": "6738d1bcbec444513163599c33b6146c9d317f1253d900b3cf196ff82a0672c7"
+    },
+    {
+      "path": "inputs/source-manifest.json",
+      "bytes": 8885,
+      "sha256": "9a8ac6a20f0e54ef90cef9ba04e732b32962635fff11c78ee3b2f8ec9c98584c"
+    },
+    {
+      "path": "runs/main-01/events.jsonl",
+      "bytes": 1232609,
+      "sha256": "9def967d46e65fc85d3a05e5e453b90bd74a894367de12af9232b70853a5f307"
+    },
+    {
+      "path": "runs/main-01/export-manifest.json",
+      "bytes": 2133,
+      "sha256": "5238d9ec84597b21d162ad12aaf42846e58e2ae39d73253ec65a3023b5439cc5"
+    },
+    {
+      "path": "runs/main-01/pair-01-b2.json",
+      "bytes": 67651,
+      "sha256": "d1e09caa7ac7f7cdeacb3c1377c9749bb0e7387fe78f3771a6df4930cab47f33"
+    },
+    {
+      "path": "runs/main-01/pair-01-reload.json",
+      "bytes": 66986,
+      "sha256": "b2550cc237a2f2837fc41e7faf2d7058b704c7d979c55eb6b1750e163efa40ab"
+    },
+    {
+      "path": "runs/main-01/pair-02-b2.json",
+      "bytes": 67650,
+      "sha256": "e896a188c666a4406793be337f99e963541977f3515804cefde1f5df4c29c885"
+    },
+    {
+      "path": "runs/main-01/pair-02-reload.json",
+      "bytes": 66975,
+      "sha256": "95f5171b1590333b1b028277f42310263e1e29b75e4f572adfe55d33129648e4"
+    },
+    {
+      "path": "runs/main-01/pair-03-b2.json",
+      "bytes": 67651,
+      "sha256": "463376c0ba74326279138836be2df4a4ec78bfd5452dca650380ddb5ea6107e9"
+    },
+    {
+      "path": "runs/main-01/pair-03-reload.json",
+      "bytes": 66981,
+      "sha256": "acaf72fc7623e08071b9f47fa32f4f9b4d187b32a51fb8fa6c44f906ec03d6f5"
+    },
+    {
+      "path": "runs/main-01/pair-04-b2.json",
+      "bytes": 67650,
+      "sha256": "1aa0521e5ea0eb650beebaa00b9fb1a3b16ff17bd6de7916da7d1c386eb91109"
+    },
+    {
+      "path": "runs/main-01/pair-04-reload.json",
+      "bytes": 66975,
+      "sha256": "32fb299db60c6c16e3da645710f3fa9f68a0abf8848f9b33b575b0fe7333ec01"
+    },
+    {
+      "path": "runs/main-01/pair-05-b2.json",
+      "bytes": 67641,
+      "sha256": "73a5a1a9867cb4f7bef35d1cc1a1edb37eae12fc4bdaf1c9cfb26cf571d09787"
+    },
+    {
+      "path": "runs/main-01/pair-05-reload.json",
+      "bytes": 66987,
+      "sha256": "67646dedf80def9c8725526d0a6ab7a60d0cd64ce1d78defa0669dccd3f0247a"
+    },
+    {
+      "path": "runs/main-01/result.json",
+      "bytes": 800415,
+      "sha256": "b8182be464d9665c17f65860f3dca171aab2e0fa64fb4adfa054c5ca5f11c952"
+    },
+    {
+      "path": "runs/main-01/small-evidence.json.gz",
+      "bytes": 570983,
+      "sha256": "44f4db08d2007be55bc26710299220cee89a5058937194f32095b3ddb794dd88"
+    },
+    {
+      "path": "runs/smoke-01/events.jsonl",
+      "bytes": 256524,
+      "sha256": "55d7f2ba3a0bb91c902615b58ccea95ce3971cf4a518aab5d3d53aa9fb502391"
+    },
+    {
+      "path": "runs/smoke-01/export-manifest.json",
+      "bytes": 868,
+      "sha256": "105e38129fa6dcca34fb54c8174a511df82248175e7829362564d8592f61f932"
+    },
+    {
+      "path": "runs/smoke-01/pair-01-b2.json",
+      "bytes": 67629,
+      "sha256": "880062cfc7e88de49e239e68c6bad27c8834660c372bfb1028599a3f76d54712"
+    },
+    {
+      "path": "runs/smoke-01/pair-01-reload.json",
+      "bytes": 66978,
+      "sha256": "de4ee18a5ccbea8cd18cc844bb8fdac5561500904328457b79f0b7c465b4009c"
+    },
+    {
+      "path": "runs/smoke-01/result.json",
+      "bytes": 170565,
+      "sha256": "a70c9e457dbf41b671ae62ebf09e46b4c3f24049b5481c2ab21e4c11f68cafd0"
+    },
+    {
+      "path": "runs/smoke-01/small-evidence.json.gz",
+      "bytes": 127572,
+      "sha256": "967c1ee5761ffb00ec3addbc9012439bdf5199f029764547028caf508bd94b5a"
+    }
+  ]
+}

@@ -1,0 +1,311 @@
+{
+  "status": "completed",
+  "utc": 1793367455.6762347,
+  "scope": "CPU-only new fixture/store; no existing artifact mutations",
+  "script_sha256": "e91c1e6f7a61bf4d0ccb953fc5b84b0b3b033199af422490d8a811fa6e6ec035",
+  "base": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+  "payload_source": "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new",
+  "artifact": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior",
+  "store": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-interior-store",
+  "commands": [
+    {
+      "argv": [
+        "/home/gspark/workspace/codex_ccgrid_npu_20261030/tools/onggi-v1",
+        "push",
+        "--store",
+        "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-interior-store",
+        "--sub",
+        "0",
+        "--compress",
+        "none",
+        "--workers",
+        "2",
+        "--uploads",
+        "2",
+        "--quiet",
+        "--json",
+        "--ref",
+        "base",
+        "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base"
+      ],
+      "returncode": 0,
+      "elapsed_s": 24.30108168697916,
+      "stdout": "{\n  \"manifest\": \"sha256:60a23d7ae5fd589640602d23170dcb7a57c51be16b5789ffa45046324d703f4d\",\n  \"ref\": \"base\",\n  \"stats\": {\n    \"files\": 6,\n    \"bytes\": 16060581181,\n    \"new_bytes\": 16060581181,\n    \"packs\": 240,\n    \"pack_bytes\": 16060581181,\n    \"skipped\": null,\n    \"duration_ns\": 24284204969,\n    \"files_total\": 6,\n    \"bytes_total\": 16060581181\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/gspark/workspace/codex_ccgrid_npu_20261030/tools/onggi-v1",
+        "push",
+        "--store",
+        "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-interior-store",
+        "--sub",
+        "0",
+        "--compress",
+        "none",
+        "--workers",
+        "2",
+        "--uploads",
+        "2",
+        "--quiet",
+        "--json",
+        "--ref",
+        "interior",
+        "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior"
+      ],
+      "returncode": 0,
+      "elapsed_s": 9.686160960001871,
+      "stdout": "{\n  \"manifest\": \"sha256:78520f73d9daba182924e1549401ecc51097f00ecdac5a6e57a004d49244d1ab\",\n  \"ref\": \"interior\",\n  \"stats\": {\n    \"files\": 6,\n    \"bytes\": 16060581181,\n    \"new_bytes\": 1912871,\n    \"packs\": 1,\n    \"pack_bytes\": 1912871,\n    \"skipped\": null,\n    \"duration_ns\": 9662779079,\n    \"files_total\": 6,\n    \"bytes_total\": 16060581181\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/gspark/workspace/codex_ccgrid_npu_20261030/tools/onggi-v1",
+        "diff",
+        "--store",
+        "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-interior-store",
+        "--ranges",
+        "--json",
+        "base",
+        "interior"
+      ],
+      "returncode": 0,
+      "elapsed_s": 0.25765812094323337,
+      "stdout": "{\n  \"schema\": \"onggi.switchplan.v1\",\n  \"base_manifest\": \"sha256:60a23d7ae5fd589640602d23170dcb7a57c51be16b5789ffa45046324d703f4d\",\n  \"manifest\": \"sha256:78520f73d9daba182924e1549401ecc51097f00ecdac5a6e57a004d49244d1ab\",\n  \"files\": [\n    {\n      \"path\": \"config.json\",\n      \"base\": \"config.json\",\n      \"size\": 855,\n      \"same\": 855,\n      \"moved\": 0,\n      \"new\": 0,\n      \"same_blocks\": 855,\n      \"changed_runs\": 0,\n      \"largest_run\": 0,\n      \"ranges\": [\n        {\n          \"offset\": 0,\n          \"length\": 855,\n          \"kind\": \"same\"\n        }\n      ]\n    },\n    {\n      \"path\": \"model-00001-of-00004.safetensors\",\n      \"base\": \"model-00001-of-00004.safetensors\",\n      \"size\": 4976698672,\n      \"same\": 4974785801,\n      \"moved\": 0,\n      \"new\": 1912871,\n      \"same_blocks\": 4974781744,\n      \"changed_runs\": 1,\n      \"largest_run\": 1912871,\n      \"changed\": [\n        [\n          1054285190,\n          1912871\n        ]\n      ],\n      \"ranges\": [\n        {\n          \"offset\": 0,\n          \"length\": 1054285190,\n          \"kind\": \"same\"\n        },\n        {\n          \"offset\": 1054285190,\n          \"length\": 1912871,\n          \"kind\": \"new\"\n        },\n        {\n          \"offset\": 1056198061,\n          \"length\": 3920500611,\n          \"kind\": \"same\"\n        }\n      ]\n    },\n    {\n      \"path\": \"model-00002-of-00004.safetensors\",\n      \"base\": \"model-00002-of-00004.safetensors\",\n      \"size\": 4999802720,\n      \"same\": 4999802720,\n      \"moved\": 0,\n      \"new\": 0,\n      \"same_blocks\": 4999802720,\n      \"changed_runs\": 0,\n      \"largest_run\": 0,\n      \"ranges\": [\n        {\n          \"offset\": 0,\n          \"length\": 4999802720,\n          \"kind\": \"same\"\n        }\n      ]\n    },\n    {\n      \"path\": \"model-00003-of-00004.safetensors\",\n      \"base\": \"model-00003-of-00004.safetensors\",\n      \"size\": 4915916176,\n      \"same\": 4915916176,\n      \"moved\": 0,\n      \"new\": 0,\n      \"same_blocks\": 4915916176,\n      \"changed_runs\": 0,\n      \"largest_run\": 0,\n      \"ranges\": [\n        {\n          \"offset\": 0,\n          \"length\": 4915916176,\n          \"kind\": \"same\"\n        }\n      ]\n    },\n    {\n      \"path\": \"model-00004-of-00004.safetensors\",\n      \"base\": \"model-00004-of-00004.safetensors\",\n      \"size\": 1168138808,\n      \"same\": 1168138808,\n      \"moved\": 0,\n      \"new\": 0,\n      \"same_blocks\": 1168138808,\n      \"changed_runs\": 0,\n      \"largest_run\": 0,\n      \"ranges\": [\n        {\n          \"offset\": 0,\n          \"length\": 1168138808,\n          \"kind\": \"same\"\n        }\n      ]\n    },\n    {\n      \"path\": \"model.safetensors.index.json\",\n      \"base\": \"model.safetensors.index.json\",\n      \"size\": 23950,\n      \"same\": 23950,\n      \"moved\": 0,\n      \"new\": 0,\n      \"same_blocks\": 23950,\n      \"changed_runs\": 0,\n      \"largest_run\": 0,\n      \"ranges\": [\n        {\n          \"offset\": 0,\n          \"length\": 23950,\n          \"kind\": \"same\"\n        }\n      ]\n    }\n  ],\n  \"size\": 16060581181,\n  \"same\": 16058668310,\n  \"moved\": 0,\n  \"new\": 1912871,\n  \"new_stored\": 1912871,\n  \"same_blocks\": 16058664253,\n  \"changed_runs\": 1,\n  \"largest_run\": 1912871\n}\n",
+      "stderr": ""
+    }
+  ],
+  "binary": {
+    "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/tools/onggi-v1",
+    "sha256": "47bfaae6bace003bc29c9223521a80b44526c25835dc36d350b2979585abc114"
+  },
+  "base_files": [
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/config.json",
+      "name": "config.json",
+      "bytes": 855,
+      "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+      "device": 64512,
+      "inode": 24520436,
+      "mtime_ns": 1792733529673292140
+    },
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00001-of-00004.safetensors",
+      "name": "model-00001-of-00004.safetensors",
+      "bytes": 4976698672,
+      "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668",
+      "device": 64512,
+      "inode": 400366,
+      "mtime_ns": 1773634882816711071
+    },
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00002-of-00004.safetensors",
+      "name": "model-00002-of-00004.safetensors",
+      "bytes": 4999802720,
+      "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+      "device": 64512,
+      "inode": 400363,
+      "mtime_ns": 1773634884507729476
+    },
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00003-of-00004.safetensors",
+      "name": "model-00003-of-00004.safetensors",
+      "bytes": 4915916176,
+      "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+      "device": 64512,
+      "inode": 400367,
+      "mtime_ns": 1773634882856711506
+    },
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00004-of-00004.safetensors",
+      "name": "model-00004-of-00004.safetensors",
+      "bytes": 1168138808,
+      "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+      "device": 64512,
+      "inode": 400365,
+      "mtime_ns": 1773634794331758639
+    },
+    {
+      "path": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model.safetensors.index.json",
+      "name": "model.safetensors.index.json",
+      "bytes": 23950,
+      "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+      "device": 64512,
+      "inode": 24520435,
+      "mtime_ns": 1792733529673292140
+    }
+  ],
+  "payload_source_files": [
+    {
+      "path": "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new/config.json",
+      "name": "config.json",
+      "bytes": 855,
+      "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+      "device": 64512,
+      "inode": 24521032,
+      "mtime_ns": 1792740221619147651
+    },
+    {
+      "path": "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new/model-00001-of-00004.safetensors",
+      "name": "model-00001-of-00004.safetensors",
+      "bytes": 4976698672,
+      "sha256": "fdc4447dd4d988bd308cab138965a2c5d41e88b83395d31216730c274770169b",
+      "device": 64512,
+      "inode": 24521030,
+      "mtime_ns": 1792740221635148221
+    },
+    {
+      "path": "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new/model-00002-of-00004.safetensors",
+      "name": "model-00002-of-00004.safetensors",
+      "bytes": 4999802720,
+      "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+      "device": 64512,
+      "inode": 400363,
+      "mtime_ns": 1773634884507729476
+    },
+    {
+      "path": "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new/model-00003-of-00004.safetensors",
+      "name": "model-00003-of-00004.safetensors",
+      "bytes": 4915916176,
+      "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+      "device": 64512,
+      "inode": 400367,
+      "mtime_ns": 1773634882856711506
+    },
+    {
+      "path": "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new/model-00004-of-00004.safetensors",
+      "name": "model-00004-of-00004.safetensors",
+      "bytes": 1168138808,
+      "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+      "device": 64512,
+      "inode": 400365,
+      "mtime_ns": 1773634794331758639
+    },
+    {
+      "path": "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/sparse-new/model.safetensors.index.json",
+      "name": "model.safetensors.index.json",
+      "bytes": 23950,
+      "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+      "device": 64512,
+      "inode": 24521031,
+      "mtime_ns": 1792740221619147651
+    }
+  ],
+  "shard_copy": {
+    "source": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base/model-00001-of-00004.safetensors",
+    "target": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00001-of-00004.safetensors",
+    "bytes": 4976698672,
+    "elapsed_s": 2.963722881162539
+  },
+  "patch": {
+    "tensor": "model.layers.0.mlp.down_proj.weight",
+    "file": "model-00001-of-00004.safetensors",
+    "source_rows": [
+      0,
+      64
+    ],
+    "target_rows": [
+      128,
+      192
+    ],
+    "source_offset": 1050690864,
+    "target_offset": 1054360880,
+    "bytes": 1835008,
+    "payload_sha256": "62989871d7d7f599e5de524704263279d2095cdd4b74e6d7d1ebab74ccba75a9",
+    "replaced_base_rows_sha256": "fc6dcdf39cbbbf570e2a18beded71ff811d03f376bd925f0992aa83405d7dbd7",
+    "tensor_info": {
+      "start": 1050690864,
+      "end": 1168131376,
+      "shape": [
+        4096,
+        14336
+      ],
+      "row_bytes": 28672
+    }
+  },
+  "interior_files": [
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/config.json",
+      "name": "config.json",
+      "bytes": 855,
+      "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+      "device": 64512,
+      "inode": 24520436,
+      "mtime_ns": 1792733529673292140
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00001-of-00004.safetensors",
+      "name": "model-00001-of-00004.safetensors",
+      "bytes": 4976698672,
+      "sha256": "3c2a83de67d5b8f814414f7a2df4367cf678b4eee8393fc8b0372d220440210b",
+      "device": 64512,
+      "inode": 24918780,
+      "mtime_ns": 1793367470689686310
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00002-of-00004.safetensors",
+      "name": "model-00002-of-00004.safetensors",
+      "bytes": 4999802720,
+      "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15",
+      "device": 64512,
+      "inode": 400363,
+      "mtime_ns": 1773634884507729476
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00003-of-00004.safetensors",
+      "name": "model-00003-of-00004.safetensors",
+      "bytes": 4915916176,
+      "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa",
+      "device": 64512,
+      "inode": 400367,
+      "mtime_ns": 1773634882856711506
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model-00004-of-00004.safetensors",
+      "name": "model-00004-of-00004.safetensors",
+      "bytes": 1168138808,
+      "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b",
+      "device": 64512,
+      "inode": 400365,
+      "mtime_ns": 1773634794331758639
+    },
+    {
+      "path": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior/model.safetensors.index.json",
+      "name": "model.safetensors.index.json",
+      "bytes": 23950,
+      "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+      "device": 64512,
+      "inode": 24520435,
+      "mtime_ns": 1792733529673292140
+    }
+  ],
+  "finished_utc": 1793367509.3437276,
+  "changed_ranges": [
+    {
+      "offset": 1054285190,
+      "length": 1912871,
+      "kind": "new"
+    }
+  ],
+  "provider": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/rngd-interior-fixtures.json",
+  "provider_sha256": "298eaeea76e9a945c53822142ce7f0ebab9d93e0d200359d6cccd642383f9d52",
+  "plan": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/interior.switchplan.json",
+  "plan_sha256": "e7cc12dbd0e7b6ffdd000d841019daf49b9d7a57eb774c4fc694d913d4bee1e9",
+  "reused_plans": {
+    "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/identical.switchplan.json": "a93db349c86447efa5333503319a3379af3a3f278f33213336ab12ab2341de1c",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/lm.switchplan.json": "06c8f666a833d4e56d65d417aea3a0e286285c654813761e9f8c894bec19fa84"
+  },
+  "base_identity_evidence": {
+    "old_store_manifest": "sha256:fd0c9319e62fe7e91d67cb315353eeec784d2ba6b37e9dc460cd0354a2abb4ae",
+    "new_store_manifest": "sha256:60a23d7ae5fd589640602d23170dcb7a57c51be16b5789ffa45046324d703f4d",
+    "same_base_bytes": "all cases use the exact same base directory/files inventoried above",
+    "new_store_parameters": {
+      "sub": 0,
+      "compress": "none",
+      "workers": 2,
+      "uploads": 2
+    }
+  },
+  "base_manifest": "sha256:60a23d7ae5fd589640602d23170dcb7a57c51be16b5789ffa45046324d703f4d",
+  "manifest": "sha256:78520f73d9daba182924e1549401ecc51097f00ecdac5a6e57a004d49244d1ab"
+}

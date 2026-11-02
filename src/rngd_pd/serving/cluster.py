@@ -118,11 +118,10 @@ def _conn(n_layers):
     from rngd_pd.connector import transport as kv_transport
     kv_transport.WIRE = "bf16"                    # bit-exact for bf16-valued KV
     from rngd_pd.connector.transport import select_transport
-    from rngd_pd.connector.rngd_kv import RngdKVConnector
-    from vllm.distributed.kv_transfer.kv_connector.v1.base import KVConnectorRole
+    from rngd_pd.connector.worker import WorkerKVConnector, WorkerRole
     os.makedirs(SHM_ROOT, exist_ok=True)
     # The KV path is named by $AIRM_KV_TRANSPORT (default "shm": /dev/shm under PD_SHM_ROOT).
-    return RngdKVConnector, KVConnectorRole, select_transport
+    return WorkerKVConnector, WorkerRole, select_transport
 
 
 # --------------------------------------------------------------------------

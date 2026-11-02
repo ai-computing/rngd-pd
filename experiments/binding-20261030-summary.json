@@ -1,0 +1,58 @@
+{
+  "schema": "rngd-binding-evidence-summary.v1",
+  "verified": true,
+  "n": 1,
+  "conformance_attempts": 2,
+  "passing_attempts": 1,
+  "latency": {
+    "median": null,
+    "IQR": null,
+    "reason": "conformance only; no repeated latency measurement"
+  },
+  "native_cases": 3,
+  "generation_gates": 11,
+  "native_counts": {
+    "compilation_attempts": 0,
+    "native_calls": 2805,
+    "native_output_checks": 2805
+  },
+  "independent_fresh_reference_native_calls": 255,
+  "units": {
+    "native-identical": {
+      "logical_bytes": 0,
+      "units": []
+    },
+    "native-interior-projection": {
+      "logical_bytes": 1949696,
+      "units": [
+        {
+          "file": "model-00001-of-00004.safetensors",
+          "length": 1949696,
+          "offset": 1054274864,
+          "source": "target",
+          "unit": "model.layers.0.mlp.down_proj.weight@125:193"
+        }
+      ]
+    },
+    "native-lm": {
+      "logical_bytes": 262144,
+      "units": [
+        {
+          "file": "model-00004-of-00004.safetensors",
+          "length": 262144,
+          "offset": 98607672,
+          "source": "target",
+          "unit": "lm_head.weight@12037:12069"
+        }
+      ]
+    }
+  },
+  "readback_calls": 9,
+  "readback_payload_bytes": 4561305600,
+  "byte_scope": "logical serving writes and whole-parent readback payload; not physical DMA",
+  "failed_attempt_retained": true,
+  "runtime_source_unchanged_between_attempts": true,
+  "preparation_provider_plans_verified": true,
+  "measured_harnesses_verified": true,
+  "probe_result_records_harness_hash": false
+}

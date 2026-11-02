@@ -1,0 +1,140 @@
+{
+  "status": "failed",
+  "started_utc": 1793367972.6089365,
+  "scope": "native public ATOM ADR-0010 B1",
+  "pod_uid": "b45bf99c-10d0-4d43-91ff-33c7e0c133b5",
+  "loads": [],
+  "repeats": [],
+  "milestones": [
+    {
+      "phase": "initial_before_imports",
+      "utc": 1793367972.6089392
+    },
+    {
+      "phase": "before_torch_import",
+      "utc": 1793367972.6090622
+    },
+    {
+      "phase": "after_torch_before_rebel_import",
+      "utc": 1793367974.1294582
+    },
+    {
+      "phase": "after_rebel_import",
+      "utc": 1793367974.5943367
+    },
+    {
+      "phase": "after_assignment",
+      "utc": 1793367974.6045704
+    },
+    {
+      "phase": "before_graph_hash",
+      "utc": 1793367974.6058373
+    },
+    {
+      "phase": "after_graph_hash_before_tables",
+      "utc": 1793367983.6945033
+    },
+    {
+      "phase": "after_tables",
+      "utc": 1793367983.9802873
+    },
+    {
+      "phase": "before_public_rbln_smi",
+      "utc": 1793367983.9806716
+    },
+    {
+      "phase": "after_public_rbln_smi",
+      "utc": 1793367984.1240342
+    },
+    {
+      "phase": "before_fresh_session",
+      "utc": 1793367984.124406
+    }
+  ],
+  "phase": "before_fresh_session",
+  "assignment": {
+    "sdk_device_id": 3,
+    "device_semantics": "public create_runtime NPU device ID derived from the one allocated /dev/rblnN filename; no ordinal remapping assumed",
+    "broad_visibility_allowed": true,
+    "broader_devices_exposed": [
+      "/dev/rbln0",
+      "/dev/rbln1",
+      "/dev/rbln2"
+    ],
+    "allocated_device_files": [
+      "/dev/rbln3"
+    ],
+    "actual_device_files": [
+      "/dev/rbln0",
+      "/dev/rbln1",
+      "/dev/rbln2",
+      "/dev/rbln3"
+    ],
+    "rbln_environment": {}
+  },
+  "torch": "2.11.0+cpu",
+  "rebel": "0.11.0",
+  "rebel_compiler": "0.11.0",
+  "rebel_module": "/home/gspark/.local/lib/python3.10/site-packages/rebel/__init__.py",
+  "native_apis": [
+    "rebel.RBLNCompiledModel",
+    "create_runtime(device=allocated_device_id,tensor_type=np)",
+    "Runtime.run"
+  ],
+  "vendor_internal_apis_used": [],
+  "experimental_constant_attachment": false,
+  "compile_attempts": [],
+  "guarded_compile_apis": [
+    "rebel.compile",
+    "rebel.compile_from_onnx",
+    "rebel.compile_from_tf_function",
+    "rebel.compile_from_tf_graph_def",
+    "rebel.compile_from_tflite",
+    "rebel.compile_from_torch",
+    "rebel.compile_from_torch_multiple_inputs",
+    "rebel.compile_from_torchscript",
+    "torch.compile"
+  ],
+  "source_hashes": {
+    "/home/gspark/workspace/codex_binding_conformance_20261030/scripts/atom-b1-native-02.py": "45c2c2e2376f5277ceedd4723c0e6e18b33e0f3249d3e29f7e8dc054e9816fd3",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/atom-runtime-source/src/rngd_pd/swap/atom.py": "19b2f4256f0f04f68729628a975ed2c46039321b8524a7a459dfb913259d2c23",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/atom-runtime-source/src/rngd_pd/swap/atom_binding.py": "86b8c20d4acf505df05470035ebb31b23ff55c97dbc4df081bbc563e3ef95037",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/atom-runtime-source/src/rngd_pd/swap/binding_cli.py": "6fb5730b36df86d18ef8f878e1155e6c1f3c5f0dd9bd72b5c2ab39e6a2c8ba04",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/conformance-source/conformance/binding/conformance.py": "adca5429e40705a8b63925c1ba2a1dd2465e780792f5362593b36e022199d2bf",
+    "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/atom-fixtures.json": "872b242fe84c37ae859efdd51b0b5f80a196a69d0d9ac015e979e8dfaa55d7cf"
+  },
+  "graph": {
+    "path": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base/session.rbln",
+    "sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+    "bytes": 15176307063,
+    "initial_hash_s": 9.088468639180064
+  },
+  "host_tables_s": 0.2847865289077163,
+  "prompts": [
+    [
+      1,
+      42,
+      256,
+      1024,
+      7,
+      999,
+      2048,
+      13
+    ]
+  ],
+  "n_new": 8,
+  "public_device_diagnostic": {
+    "command": [
+      "/host-bin/rbln-smi",
+      "-i",
+      "3"
+    ],
+    "returncode": 2,
+    "stdout": "",
+    "stderr": "usage: rbln-smi\n   rbln-smi [-h] [--byte-format] [--json] [--query] [--query-device QUERY_DEVICE]\n            [--query-context QUERY_CONTEXT] [--topo] [--list] [--device DEVICE] [--group]\n            [--version]\n   rbln-smi subcommands\nrbln-smi: error: argument rbln-smi [subcommands]: invalid choice: '3' (choose from 'group', 'tdr', 'timeout', 'sort')\n",
+    "output_truncated": false
+  },
+  "fresh_reference": {},
+  "error": "Traceback (most recent call last):\n  File \"/home/gspark/workspace/codex_binding_conformance_20261030/scripts/atom-b1-native-02.py\", line 190, in main\n    fresh = AtomSession(str(graph), tables, device=device)\n  File \"/home/gspark/workspace/codex_binding_conformance_20261030/atom-runtime-source/src/rngd_pd/swap/atom.py\", line 157, in __init__\n    self.rt = self.compiled.create_runtime(device=device, tensor_type=\"np\")\n  File \"/home/gspark/.local/lib/python3.10/site-packages/rebel/compiled_model.py\", line 149, in create_runtime\n    context, activate_profiler, timeout, process_group = self._default_args(\n  File \"/home/gspark/.local/lib/python3.10/site-packages/rebel/compiled_model.py\", line 376, in _default_args\n    raise RBLNRuntimeError(msg)\nrebel.core.exception.RBLNRuntimeError: Failed to retrieve information for the requested NPU device (3). Please use the '$rbln-smi' command to check available devices on your system.\n",
+  "finished_utc": 1793367994.7026973
+}

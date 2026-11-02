@@ -1,0 +1,269 @@
+{
+  "schema": "ccgrid-e8-matrix-plan-v1",
+  "benchmark_source_commit": "bbceb1759ae0522c65921512f3dd2b8ca95b24dd",
+  "n": 5,
+  "trials": [
+    {
+      "trial_id": "e8-r01-first-use-B4-S256-g2--B4-S512-g2",
+      "base_variant": "B4-S256-g2",
+      "target_variant": "B4-S512-g2",
+      "graph_state": "first-use",
+      "reference_file": "B4-S256-g2--B4-S512-g2.json",
+      "reference_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3"
+    },
+    {
+      "trial_id": "e8-r01-first-use-B4-S512-g2--B8-S256-g2",
+      "base_variant": "B4-S512-g2",
+      "target_variant": "B8-S256-g2",
+      "graph_state": "first-use",
+      "reference_file": "B4-S512-g2--B8-S256-g2.json",
+      "reference_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c"
+    },
+    {
+      "trial_id": "e8-r01-first-use-B8-S256-g2--B4-S256-g2",
+      "base_variant": "B8-S256-g2",
+      "target_variant": "B4-S256-g2",
+      "graph_state": "first-use",
+      "reference_file": "B8-S256-g2--B4-S256-g2.json",
+      "reference_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe"
+    },
+    {
+      "trial_id": "e8-r01-prepared-B4-S256-g2--B4-S512-g2",
+      "base_variant": "B4-S256-g2",
+      "target_variant": "B4-S512-g2",
+      "graph_state": "prepared",
+      "reference_file": "B4-S256-g2--B4-S512-g2.json",
+      "reference_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3"
+    },
+    {
+      "trial_id": "e8-r01-prepared-B4-S512-g2--B8-S256-g2",
+      "base_variant": "B4-S512-g2",
+      "target_variant": "B8-S256-g2",
+      "graph_state": "prepared",
+      "reference_file": "B4-S512-g2--B8-S256-g2.json",
+      "reference_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c"
+    },
+    {
+      "trial_id": "e8-r01-prepared-B8-S256-g2--B4-S256-g2",
+      "base_variant": "B8-S256-g2",
+      "target_variant": "B4-S256-g2",
+      "graph_state": "prepared",
+      "reference_file": "B8-S256-g2--B4-S256-g2.json",
+      "reference_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe"
+    },
+    {
+      "trial_id": "e8-r02-prepared-B4-S512-g2--B8-S256-g2",
+      "base_variant": "B4-S512-g2",
+      "target_variant": "B8-S256-g2",
+      "graph_state": "prepared",
+      "reference_file": "B4-S512-g2--B8-S256-g2.json",
+      "reference_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c"
+    },
+    {
+      "trial_id": "e8-r02-prepared-B8-S256-g2--B4-S256-g2",
+      "base_variant": "B8-S256-g2",
+      "target_variant": "B4-S256-g2",
+      "graph_state": "prepared",
+      "reference_file": "B8-S256-g2--B4-S256-g2.json",
+      "reference_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe"
+    },
+    {
+      "trial_id": "e8-r02-prepared-B4-S256-g2--B4-S512-g2",
+      "base_variant": "B4-S256-g2",
+      "target_variant": "B4-S512-g2",
+      "graph_state": "prepared",
+      "reference_file": "B4-S256-g2--B4-S512-g2.json",
+      "reference_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3"
+    },
+    {
+      "trial_id": "e8-r02-first-use-B4-S512-g2--B8-S256-g2",
+      "base_variant": "B4-S512-g2",
+      "target_variant": "B8-S256-g2",
+      "graph_state": "first-use",
+      "reference_file": "B4-S512-g2--B8-S256-g2.json",
+      "reference_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c"
+    },
+    {
+      "trial_id": "e8-r02-first-use-B8-S256-g2--B4-S256-g2",
+      "base_variant": "B8-S256-g2",
+      "target_variant": "B4-S256-g2",
+      "graph_state": "first-use",
+      "reference_file": "B8-S256-g2--B4-S256-g2.json",
+      "reference_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe"
+    },
+    {
+      "trial_id": "e8-r02-first-use-B4-S256-g2--B4-S512-g2",
+      "base_variant": "B4-S256-g2",
+      "target_variant": "B4-S512-g2",
+      "graph_state": "first-use",
+      "reference_file": "B4-S256-g2--B4-S512-g2.json",
+      "reference_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3"
+    },
+    {
+      "trial_id": "e8-r03-first-use-B8-S256-g2--B4-S256-g2",
+      "base_variant": "B8-S256-g2",
+      "target_variant": "B4-S256-g2",
+      "graph_state": "first-use",
+      "reference_file": "B8-S256-g2--B4-S256-g2.json",
+      "reference_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe"
+    },
+    {
+      "trial_id": "e8-r03-first-use-B4-S256-g2--B4-S512-g2",
+      "base_variant": "B4-S256-g2",
+      "target_variant": "B4-S512-g2",
+      "graph_state": "first-use",
+      "reference_file": "B4-S256-g2--B4-S512-g2.json",
+      "reference_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3"
+    },
+    {
+      "trial_id": "e8-r03-first-use-B4-S512-g2--B8-S256-g2",
+      "base_variant": "B4-S512-g2",
+      "target_variant": "B8-S256-g2",
+      "graph_state": "first-use",
+      "reference_file": "B4-S512-g2--B8-S256-g2.json",
+      "reference_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c"
+    },
+    {
+      "trial_id": "e8-r03-prepared-B8-S256-g2--B4-S256-g2",
+      "base_variant": "B8-S256-g2",
+      "target_variant": "B4-S256-g2",
+      "graph_state": "prepared",
+      "reference_file": "B8-S256-g2--B4-S256-g2.json",
+      "reference_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe"
+    },
+    {
+      "trial_id": "e8-r03-prepared-B4-S256-g2--B4-S512-g2",
+      "base_variant": "B4-S256-g2",
+      "target_variant": "B4-S512-g2",
+      "graph_state": "prepared",
+      "reference_file": "B4-S256-g2--B4-S512-g2.json",
+      "reference_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3"
+    },
+    {
+      "trial_id": "e8-r03-prepared-B4-S512-g2--B8-S256-g2",
+      "base_variant": "B4-S512-g2",
+      "target_variant": "B8-S256-g2",
+      "graph_state": "prepared",
+      "reference_file": "B4-S512-g2--B8-S256-g2.json",
+      "reference_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c"
+    },
+    {
+      "trial_id": "e8-r04-prepared-B4-S256-g2--B4-S512-g2",
+      "base_variant": "B4-S256-g2",
+      "target_variant": "B4-S512-g2",
+      "graph_state": "prepared",
+      "reference_file": "B4-S256-g2--B4-S512-g2.json",
+      "reference_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3"
+    },
+    {
+      "trial_id": "e8-r04-prepared-B4-S512-g2--B8-S256-g2",
+      "base_variant": "B4-S512-g2",
+      "target_variant": "B8-S256-g2",
+      "graph_state": "prepared",
+      "reference_file": "B4-S512-g2--B8-S256-g2.json",
+      "reference_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c"
+    },
+    {
+      "trial_id": "e8-r04-prepared-B8-S256-g2--B4-S256-g2",
+      "base_variant": "B8-S256-g2",
+      "target_variant": "B4-S256-g2",
+      "graph_state": "prepared",
+      "reference_file": "B8-S256-g2--B4-S256-g2.json",
+      "reference_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe"
+    },
+    {
+      "trial_id": "e8-r04-first-use-B4-S256-g2--B4-S512-g2",
+      "base_variant": "B4-S256-g2",
+      "target_variant": "B4-S512-g2",
+      "graph_state": "first-use",
+      "reference_file": "B4-S256-g2--B4-S512-g2.json",
+      "reference_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3"
+    },
+    {
+      "trial_id": "e8-r04-first-use-B4-S512-g2--B8-S256-g2",
+      "base_variant": "B4-S512-g2",
+      "target_variant": "B8-S256-g2",
+      "graph_state": "first-use",
+      "reference_file": "B4-S512-g2--B8-S256-g2.json",
+      "reference_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c"
+    },
+    {
+      "trial_id": "e8-r04-first-use-B8-S256-g2--B4-S256-g2",
+      "base_variant": "B8-S256-g2",
+      "target_variant": "B4-S256-g2",
+      "graph_state": "first-use",
+      "reference_file": "B8-S256-g2--B4-S256-g2.json",
+      "reference_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe"
+    },
+    {
+      "trial_id": "e8-r05-first-use-B4-S512-g2--B8-S256-g2",
+      "base_variant": "B4-S512-g2",
+      "target_variant": "B8-S256-g2",
+      "graph_state": "first-use",
+      "reference_file": "B4-S512-g2--B8-S256-g2.json",
+      "reference_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c"
+    },
+    {
+      "trial_id": "e8-r05-first-use-B8-S256-g2--B4-S256-g2",
+      "base_variant": "B8-S256-g2",
+      "target_variant": "B4-S256-g2",
+      "graph_state": "first-use",
+      "reference_file": "B8-S256-g2--B4-S256-g2.json",
+      "reference_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe"
+    },
+    {
+      "trial_id": "e8-r05-first-use-B4-S256-g2--B4-S512-g2",
+      "base_variant": "B4-S256-g2",
+      "target_variant": "B4-S512-g2",
+      "graph_state": "first-use",
+      "reference_file": "B4-S256-g2--B4-S512-g2.json",
+      "reference_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3"
+    },
+    {
+      "trial_id": "e8-r05-prepared-B4-S512-g2--B8-S256-g2",
+      "base_variant": "B4-S512-g2",
+      "target_variant": "B8-S256-g2",
+      "graph_state": "prepared",
+      "reference_file": "B4-S512-g2--B8-S256-g2.json",
+      "reference_sha256": "e561c2eb3f2ce451820d57e834609a2cae6dfd7b2c673279879d1ac55dfa4a7c"
+    },
+    {
+      "trial_id": "e8-r05-prepared-B8-S256-g2--B4-S256-g2",
+      "base_variant": "B8-S256-g2",
+      "target_variant": "B4-S256-g2",
+      "graph_state": "prepared",
+      "reference_file": "B8-S256-g2--B4-S256-g2.json",
+      "reference_sha256": "6e88c1b2675d2d9a989587885e31a196ee8e24b110a23e63df088f4f837c07fe"
+    },
+    {
+      "trial_id": "e8-r05-prepared-B4-S256-g2--B4-S512-g2",
+      "base_variant": "B4-S256-g2",
+      "target_variant": "B4-S512-g2",
+      "graph_state": "prepared",
+      "reference_file": "B4-S256-g2--B4-S512-g2.json",
+      "reference_sha256": "1a293ca2e86af94441f9f27a1024ca3caa6b0a554c7eaf687e5b6f3d56f1c4d3"
+    }
+  ],
+  "physical_host_index": 0,
+  "checkpoint": "<private-path>",
+  "cache": "$RUN_ROOT/cache/graphs",
+  "reference_criterion": "Exact integer token IDs equal independently fresh load of same target variant.",
+  "preserves_legacy_failed_cross_shape_gate": true,
+  "scope": "Native resident B/S switches; precompiled cache, no artifact delivery or HTTP gateway.",
+  "os_cache": "uncontrolled/shared",
+  "compiled_cache": "existing SDK2026.4/Torch2.10 graphs; allow_compile=False",
+  "checkpoint_payload_manifest_sha256": "2b6e92c792503258f3d9f13633a0d94a69387b31964cd54f17f857d52965c6c8",
+  "source_files_sha256": {
+    "bench/ccgrid_e8.py": "5ee6d26d6b7d9f453cfa3fcdaa764f2f02ee494c49656f9349ed2ac3dde23dd6",
+    "bench/ccgrid_e7.py": "fcff96dd3258b367f0fbd7d092ee3efb64204950500a7969a99e8ab6329f9789",
+    "src/rngd_pd/swap/rngd.py": "c04984c53e109097bef2bd840e730d0b1a56f966c4f9847b8f5fc2385fb5ac9f",
+    "src/rngd_pd/engines/fsdk.py": "742feb682c98e1f98df04137c4f8ceb65332ea1ec659e97deba8cb2bc3c012af"
+  },
+  "adapter_sha256": "c5b5fbc9b651919072c990a038528138a29670085f23de979e827047dc0023d6",
+  "publication": {
+    "original_private_file": "e8-matrix-plan.json",
+    "original_private_sha256": "1bc5f2cd13b8df0a48fed4cfbac5826c24709d8872b17e9237eb98b9e6567645",
+    "original_private_bytes": 11208,
+    "redaction": "Private paths, hostname and allocator UUID sanitized; numeric values, tokens, counters and object identities retained."
+  }
+}

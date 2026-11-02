@@ -1,0 +1,128 @@
+{
+  "status": "completed",
+  "cohort": "r03",
+  "phase": "measure",
+  "plan_sha256": "60f56febd492931ddb69570034210a320f0c8026622f6354e7bac7ac4d45638c",
+  "assignment": {
+    "physical": 0,
+    "chip": 0,
+    "pod_uid": "3f1a3938-0581-4651-a702-32147f140d68",
+    "pod_name": "cdx-resident-native-r03-hzk8h"
+  },
+  "trials": [
+    {
+      "trial_id": "r03-graph-copy",
+      "arm": "graph-copy",
+      "argv": [
+        "/home/gspark/venvs/furiosa-2026.4/bin/python",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_resident_delivery.py",
+        "trial",
+        "--config",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r03-graph-copy/config.json",
+        "--out",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r03-graph-copy/result.json"
+      ],
+      "started_unix_ns": 1793589093273515176,
+      "finished_unix_ns": 1793589112068077045,
+      "returncode": 0,
+      "status": "completed",
+      "validity": "valid",
+      "metrics": {
+        "delivery_s": 0.007047493,
+        "hash_validation_s": 0.001913747,
+        "hash_to_generation_s": 0.211151435,
+        "prompt_to_first_token_s": 0.183043643,
+        "demand_to_first_token_s": 0.403156318,
+        "harness_entry_to_first_token_s": 17.24412892,
+        "excluded_pre_demand_setup_s": 16.840972602
+      },
+      "result_sha256": "49c6689a2d4e1ad3419b1f61a3d26ef5214009efa5f65c8603d3bcf9a4009078"
+    },
+    {
+      "trial_id": "r03-graph-csi",
+      "arm": "graph-csi",
+      "argv": [
+        "/home/gspark/venvs/furiosa-2026.4/bin/python",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_resident_delivery.py",
+        "trial",
+        "--config",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r03-graph-csi/config.json",
+        "--out",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r03-graph-csi/result.json"
+      ],
+      "started_unix_ns": 1793589112069970090,
+      "finished_unix_ns": 1793589131726105094,
+      "returncode": 0,
+      "status": "completed",
+      "validity": "valid",
+      "metrics": {
+        "delivery_s": 0.024316203,
+        "hash_validation_s": 0.001973247,
+        "hash_to_generation_s": 0.207672185,
+        "prompt_to_first_token_s": 0.1821557,
+        "demand_to_first_token_s": 0.416117335,
+        "harness_entry_to_first_token_s": 18.064552681,
+        "excluded_pre_demand_setup_s": 17.648435346
+      },
+      "result_sha256": "95efa588d69d1132a27c5581cd0971c2deb8aa469fbf9992d088904f437d3a61"
+    },
+    {
+      "trial_id": "r03-full-csi-no-rebase",
+      "arm": "full-csi-no-rebase",
+      "argv": [
+        "/home/gspark/venvs/furiosa-2026.4/bin/python",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_resident_delivery.py",
+        "trial",
+        "--config",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r03-full-csi-no-rebase/config.json",
+        "--out",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r03-full-csi-no-rebase/result.json"
+      ],
+      "started_unix_ns": 1793589131731033635,
+      "finished_unix_ns": 1793589251165754769,
+      "returncode": 0,
+      "status": "completed",
+      "validity": "valid",
+      "metrics": {
+        "delivery_s": 57.316848633,
+        "hash_validation_s": 9.214498434,
+        "hash_to_generation_s": 0.208824981,
+        "prompt_to_first_token_s": 0.211746567,
+        "demand_to_first_token_s": 66.951918615,
+        "harness_entry_to_first_token_s": 117.791552368,
+        "excluded_pre_demand_setup_s": 50.839633753
+      },
+      "result_sha256": "43d84578e96ffc884a3e665b4fd76868c5804379d3739041e5fa9a8ce9a9e3a7"
+    },
+    {
+      "trial_id": "r03-full-csi-rebase",
+      "arm": "full-csi-rebase",
+      "argv": [
+        "/home/gspark/venvs/furiosa-2026.4/bin/python",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_resident_delivery.py",
+        "trial",
+        "--config",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r03-full-csi-rebase/config.json",
+        "--out",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r03-full-csi-rebase/result.json"
+      ],
+      "started_unix_ns": 1793589251170171096,
+      "finished_unix_ns": 1793589306825296036,
+      "returncode": 0,
+      "status": "completed",
+      "validity": "valid",
+      "metrics": {
+        "delivery_s": 0.286306528,
+        "hash_validation_s": 9.332287169,
+        "hash_to_generation_s": 0.207089712,
+        "prompt_to_first_token_s": 0.182666341,
+        "demand_to_first_token_s": 10.00834975,
+        "harness_entry_to_first_token_s": 53.992730034,
+        "excluded_pre_demand_setup_s": 43.984380284
+      },
+      "result_sha256": "7e8a01084ebe25feb762fd6bf28674dc351c59402d0cba0208cd970750e8df51"
+    }
+  ],
+  "started_unix_ns": 1793589093272744513,
+  "finished_unix_ns": 1793589306828933623
+}

@@ -1,0 +1,19 @@
+{
+  "tools": [
+    {
+      "path": "/usr/bin/time",
+      "exists": true,
+      "sha256": "7310b9b4c51a8f4d26c1af0da250f03a49ec8a8141033123e79196ad18f6c81b"
+    },
+    {
+      "path": "/usr/bin/strace",
+      "exists": true,
+      "sha256": "38a5c75cb29dd85ddd7780d54f5bf595554d7a1b5c42524b23065f5dc4c4b01d"
+    },
+    {
+      "path": "/usr/bin/rsync",
+      "exists": true,
+      "sha256": "f029cadc3f0b1c879bf8dfb899f434703c13ee53197d27da5d17bf0faf1f1318"
+    }
+  ]
+}

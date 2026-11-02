@@ -1,0 +1,12 @@
+{
+  "assigned-atom": {
+    "exit": 0,
+    "stdout": "[\"/dev/rbln1\"]\n",
+    "stderr": ""
+  },
+  "run": {
+    "exit": 0,
+    "stdout": "2026-10-30 13:34:48,784 ERROR [rebel-compiler] \nRBLNRuntimeError: Failed to retrieve information for the requested NPU device (1). Please use the '$rbln-smi' command to check available devices on your system.\n",
+    "stderr": ""
+  }
+}
