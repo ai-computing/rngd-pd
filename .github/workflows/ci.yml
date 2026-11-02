@@ -31,7 +31,7 @@ jobs:
           done
           if [ -f experiments/verify_b2_timing.py ]; then
             python experiments/verify_b2_timing.py --root experiments/data/b2-timing-20261102 > /tmp/b2-timing-verified.json
-            python -c 'import json; assert json.load(open("experiments/b2-timing-summary-20261102-final-v2.json")) == json.load(open("/tmp/b2-timing-verified.json"))'
+            python -c 'import hashlib,json; old=json.load(open("experiments/b2-timing-summary-20261102-final-v2.json")); new=json.load(open("/tmp/b2-timing-verified.json")); assert new.pop("verifier_sha256") == hashlib.sha256(open("experiments/verify_b2_timing.py","rb").read()).hexdigest(); old.pop("verifier_sha256"); assert old == new'
           fi
           python experiments/verify_resident_delivery.py --cohorts s01 s02
           python experiments/verify_resident_delivery.py --cohorts r02 r03 r04 r05 r06 --summary --output /tmp/resident-summary.json

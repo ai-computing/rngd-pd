@@ -6,7 +6,9 @@ python experiments/verify_b2_timing.py --root experiments/data/b2-timing-2026110
 
 Requires exact-byte package/archive exports, inputs/, configs/, runs/ and
 control/ Job sidecars. Source checks alone canonicalize CRLF to LF, comparing
-the measured baseline/harness with local Git objects and current source files.
+the measured baseline/harness with pinned Git objects. Without those objects,
+the checkout must still contain the exact historical sources. Current runtime
+edits are not a new measurement of the historical baseline.
 Bulk artifact hashes are the preserved off-card manifest, not newly rehashed
 device evidence. Every failed/incomplete main run has n=0 and null statistics;
 no successful subset is filtered into an aggregate. Smoke is always separate.
@@ -164,7 +166,8 @@ def verify_sources(source_manifest, provenance, repository):
                                        capture_output=True, check=False)
             require(completed.returncode == 0, "Git baseline source missing: " + name)
             git_bytes = completed.stdout
-        canonical_hashes[name] = check_source_bytes((repository/name).read_bytes(), expected, git_bytes)
+        actual = git_bytes if git_bytes is not None else (repository/name).read_bytes()
+        canonical_hashes[name] = check_source_bytes(actual, expected, git_bytes)
     for name, expected in provenance["source_files"].items():
         require(source_manifest["source_files"].get(name) == expected, "per-run source hash differs")
     git_bytes = None
@@ -174,7 +177,7 @@ def verify_sources(source_manifest, provenance, repository):
         require(completed.returncode == 0, "Git harness baseline missing")
         git_bytes = completed.stdout
     canonical_hashes["bench/ccgrid_b2.py"] = check_source_bytes(
-        (repository/"bench/ccgrid_b2.py").read_bytes(), HARNESS_SHA, git_bytes)
+        git_bytes if git_bytes is not None else (repository/"bench/ccgrid_b2.py").read_bytes(), HARNESS_SHA, git_bytes)
     return dict(canonical_source_files_verified=True, git_objects_verified=git_available,
                 git_object_verification="verified" if git_available else "unavailable: archive/shallow checkout lacks Git objects",
                 canonical_lf_sha256=canonical_hashes,

@@ -37,3 +37,14 @@ Tradeoff: a caller composes existing operations rather than inventing new stage
 tokens/SDK hooks. It does not implement driver-level atomics, expose allocation
 addresses, or connect CSI automatically. Current result is CPU-tested orchestration;
 new native validation is separate from previously published binding evidence.
+
+Validation: swap suite441 passed/1 Windows Unix-socket skip, independent reviewer
+92 passed/1 skip and no Important/Critical findings. Initial CI had745 passing
+tests and one failure: the historical B2 verifier compared evolving current
+runtime files to a measured old revision. Explicitly refreshed the stale local
+integration tracking ref and merged d5da9d1 without conflicts. A RED/GREEN
+regression now verifies pinned historical Git source bytes; missing objects
+still require matching historical checkout bytes. Raw data/golden summaries
+are unchanged. CI checks the new verifier SHA separately and compares all
+historical summary fields except the old verifier's own SHA. The complete
+recomputed summary matches under that rule;12 verifier tests pass.
