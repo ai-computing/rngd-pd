@@ -16,6 +16,7 @@ from threading import RLock
 from time import perf_counter
 
 from .delta import parse_onggi_switchplan, read_header
+from .binding_transition import transition
 from .variants import Variant
 
 
@@ -408,6 +409,10 @@ class RngdBinding:
                 except BaseException as error:
                     self._unload()
                     raise RuntimeError("rollback restore failed; engine unloaded") from error
+
+    def transition(self, switch_plan, target):
+        """Explicit verified-plan caller: bounded B2 update or declared reload."""
+        return transition(self, switch_plan, target)
 
     def _unload(self, *, strict=False):
         engine = self._engine if self._engine is not None else self._quarantined

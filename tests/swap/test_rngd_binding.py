@@ -14,6 +14,87 @@ from rngd_pd.swap.rngd_binding import RngdBinding
 
 
 BASE, TARGET, THIRD = ("sha256:" + char * 64 for char in "abc")
+
+
+def test_transition_rngd_uses_checked_update_and_retains_rollback(setup):
+    owner, engine, _, target, doc = setup
+    allocation = engine.shared[0]["wk"]
+    before = allocation.clone()
+    result = owner.transition(doc, target)
+    assert result["schema"] == "onggi.transition.v1"
+    assert result["mode"] == "units"
+    assert result["verification"]["ok"] is True
+    assert result["verification"]["manifest"] == TARGET
+    assert result["resident"]["manifest"] == TARGET
+    assert engine.shared[0]["wk"] is allocation and not engine.closed
+    owner.rollback()
+    assert owner.resident()["manifest"] == BASE and torch.equal(allocation, before)
+
+
+def test_transition_rngd_unsupported_header_uses_explicit_reload(setup):
+    owner, engine, base, target, _ = setup
+    # A truthful change to the config is outside the row-update subset.
+    (target / "model.safetensors").write_bytes((base / "model.safetensors").read_bytes())
+    config = json.loads((target / "config.json").read_text())
+    config["new_metadata"] = True
+    (target / "config.json").write_text(json.dumps(config))
+    doc = switch(base, target)
+    fd = next(f for f in doc["files"] if f["path"] == "config.json")
+    fd.update(same=0, new=fd["size"], ranges=[dict(offset=0, length=fd["size"], kind="new")])
+    doc.update(same=sum(f["same"] for f in doc["files"]), new=fd["size"])
+    result = owner.transition(doc, target)
+    assert result["mode"] == "reload" and result["verification"] is None
+    assert engine.closed and owner.resident()["manifest"] == TARGET
+
+
+def test_transition_rngd_failed_admitted_update_propagates_without_reload(setup, monkeypatch):
+    owner, engine, _, target, doc = setup
+    before = engine.shared[0]["wk"].clone()
+    original, calls = owner._write, []
+    def fail_after_copy(unit, rows):
+        calls.append(unit)
+        original(unit, rows)
+        if len(calls) == 1:
+            raise RuntimeError("write interrupted")
+    monkeypatch.setattr(owner, "_write", fail_after_copy)
+    monkeypatch.setattr(owner, "load", lambda *args: pytest.fail("failed apply must not reload"))
+    with pytest.raises(RuntimeError, match="write interrupted"):
+        owner.transition(doc, target)
+    assert len(calls) == 2 and not engine.closed
+    assert owner.resident()["manifest"] == BASE and torch.equal(engine.shared[0]["wk"], before)
+
+
+def test_transition_rngd_rejects_stale_base_even_for_reload_plan(setup):
+    owner, engine, base, target, _ = setup
+    doc = switch(base, target, base_manifest=THIRD)
+    with pytest.raises(ValueError, match="base.*resident"):
+        owner.transition(doc, target)
+    assert not engine.closed and owner.resident()["manifest"] == BASE
+
+
+def test_transition_rngd_rejects_malformed_plan_before_mutation(setup):
+    owner, engine, _, target, doc = setup
+    doc["same"] += 1
+    with pytest.raises(ValueError, match="totals"):
+        owner.transition(doc, target)
+    assert not engine.closed and owner.resident()["manifest"] == BASE
+
+
+@pytest.mark.parametrize("report", [None, {"ok": False}, {"ok": True, "manifest": BASE}])
+def test_transition_rngd_invalid_success_report_closes_owner(setup, monkeypatch, report):
+    owner, engine, _, target, doc = setup
+    monkeypatch.setattr(owner, "apply", lambda *args: report)
+    with pytest.raises(RuntimeError, match="verify.*target"):
+        owner.transition(doc, target)
+    assert engine.closed and owner.resident()["state"] == "empty"
+
+
+def test_transition_rngd_success_report_without_target_residency_closes_owner(setup, monkeypatch):
+    owner, engine, _, target, doc = setup
+    monkeypatch.setattr(owner, "apply", lambda *args: {"ok": True, "manifest": TARGET})
+    with pytest.raises(RuntimeError, match="admit.*target"):
+        owner.transition(doc, target)
+    assert engine.closed and owner.resident()["state"] == "empty"
 K = "model.layers.0.self_attn.k_proj.weight"
 V = "model.layers.0.self_attn.v_proj.weight"
 Q = "model.layers.0.self_attn.q_proj.weight"
