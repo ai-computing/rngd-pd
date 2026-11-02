@@ -1,0 +1,2 @@
+# Native stdout/stderr and CSI logs are byte-exact research evidence.
+!**/*.log
