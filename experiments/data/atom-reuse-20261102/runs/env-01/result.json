@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "npu_requested": 0,
+  "started_utc": 1793610998.3389976,
+  "versions": {
+    "torch": "2.11.0+cpu",
+    "rebel": "0.11.0",
+    "compiler": "0.11.0"
+  },
+  "owner_source": "/home/gspark/workspace/codex_atom_reuse_20261102/source/src/rngd_pd/swap/atom_binding.py",
+  "rebel_source": "/home/gspark/.local/lib/python3.10/site-packages/rebel/__init__.py",
+  "runtime_created": false,
+  "compiled_model_created": false,
+  "finished_utc": 1793611000.4085011
+}

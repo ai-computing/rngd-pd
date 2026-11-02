@@ -1,0 +1,23 @@
+{
+  "apiVersion": "v1",
+  "kind": "Namespace",
+  "metadata": {
+    "creationTimestamp": "2026-11-02T09:13:02Z",
+    "labels": {
+      "experiment": "atom-reuse-20261102",
+      "kubernetes.io/metadata.name": "codex-atom-reuse-20261102",
+      "owner": "codex"
+    },
+    "name": "codex-atom-reuse-20261102",
+    "resourceVersion": "115790270",
+    "uid": "628e8f59-61ea-447b-ad76-6db212c4795e"
+  },
+  "spec": {
+    "finalizers": [
+      "kubernetes"
+    ]
+  },
+  "status": {
+    "phase": "Active"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "pid": 4161546,
+  "start_ticks": "158594737",
+  "argv": [
+    "nice",
+    "-n",
+    "19",
+    "/usr/bin/python3",
+    "/home/gspark/workspace/codex_atom_reuse_20261102/scripts/prepare_inputs.py"
+  ],
+  "started_utc": 1793610972.5015786,
+  "npu_requested": 0
+}

@@ -37,3 +37,5 @@ jobs:
           python experiments/verify_resident_delivery.py --cohorts r02 r03 r04 r05 r06 --summary --output /tmp/resident-summary.json
           python -c 'import json; assert json.load(open("experiments/resident-delivery-summary-20261102.json")) == json.load(open("/tmp/resident-summary.json"))'
           python experiments/verify_resident_native_package.py
+          python experiments/verify_atom_reuse.py > /tmp/atom-reuse-summary.json
+          python -c 'import json; assert json.load(open("experiments/atom-reuse-summary-20261102.json")) == json.load(open("/tmp/atom-reuse-summary.json"))'
