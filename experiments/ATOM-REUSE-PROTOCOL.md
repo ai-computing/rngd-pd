@@ -51,3 +51,8 @@ Implementation/verification:
 - Freeze/push harness source; off-card source/input receipt; smoke then main.
 - Independent local reparse of exact exports; draft PR and green CI before merge.
 - Do not edit prior raw, data/NUMBERS.md, or source measured by other jobs.
+
+Outcome: native smoke and five main pairs completed. See
+[report](REPORT-ATOM-REUSE-20261102.md) and
+[recomputed summary](atom-reuse-summary-20261102.json). Measured source remains
+fec2d370; later commits add verification and evidence only.

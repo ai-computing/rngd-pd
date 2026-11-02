@@ -1,0 +1,571 @@
+{
+  "schema": "ccgrid-atom-reuse-run.v1",
+  "status": "completed",
+  "validity": "valid",
+  "config": {
+    "schema": "ccgrid-atom-reuse-config.v1",
+    "phase": "smoke",
+    "pairs": 1,
+    "run_dir": "/home/gspark/workspace/codex_atom_reuse_20261102/runs/smoke-01",
+    "source_root": "/home/gspark/workspace/codex_atom_reuse_20261102/source",
+    "source_manifest": "/home/gspark/workspace/codex_atom_reuse_20261102/inputs/source-manifest.json",
+    "source_commit": "fec2d370cc35f66dcbbf6897bc1d41fed1b48850",
+    "base": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/base",
+    "target": "/home/gspark/workspace/codex_binding_conformance_20261030/atom-artifacts/target",
+    "checkpoint": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+    "graph_sha256": "02b4eebd765c1acd3412517ea3804fe0ba38ddf2aa020a88db853245f2908ebe",
+    "input_receipt": "/home/gspark/workspace/codex_atom_reuse_20261102/inputs/input-receipt.json",
+    "switchplan": "/home/gspark/workspace/codex_atom_reuse_20261102/inputs/switchplan.json",
+    "expected_versions": {
+      "torch": "2.11.0+cpu",
+      "rebel": "0.11.0",
+      "compiler": "0.11.0"
+    }
+  },
+  "config_sha256": "f3195bf560efd428776bbe2ce1411ee0f63883b6649f3ab60f4839be1c65c504",
+  "harness_sha256": "75383b29581016f2c72ef42092a2fecc1f2b1cd0a5c253ec86bfc7b043c27871",
+  "trials": [
+    {
+      "pair": 0,
+      "arm": "full",
+      "status": "completed",
+      "base": {
+        "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+        "run_attempts": 15,
+        "run_completed": 15,
+        "run_seconds": [
+          0.0723904490005225,
+          0.06711535295471549,
+          0.06732134195044637,
+          0.06742676207795739,
+          0.06749061192385852,
+          0.067260931013152,
+          0.06719700200483203,
+          0.06770326104015112,
+          0.06841837102547288,
+          0.06790206185542047,
+          0.06795996194705367,
+          0.06793003110215068,
+          0.06790860090404749,
+          0.06804273184388876,
+          0.06772951083257794
+        ],
+        "generate_call_ns": 1586274120725881,
+        "generate_return_ns": 1586275160354104,
+        "tokens": [
+          [
+            220,
+            16,
+            13,
+            16,
+            13,
+            16,
+            13,
+            16
+          ]
+        ],
+        "prompt_ttft_s": 0.5604886140208691,
+        "compiled_type": "rebel.compiled_model.RBLNCompiledModel"
+      },
+      "trigger_ns": 1586275160392724,
+      "transition_return_ns": 1586298267533161,
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.07593549112789333,
+        0.06710934382863343,
+        0.06726655480451882,
+        0.06735700485296547,
+        0.06769059388898313,
+        0.06774974381551147,
+        0.06790911499410868,
+        0.06783702410757542,
+        0.06802099500782788,
+        0.06785689503885806,
+        0.06798694399185479,
+        0.06779144494794309,
+        0.0678204339928925,
+        0.06770181516185403,
+        0.06773300399072468
+      ],
+      "generate_call_ns": 1586298267552321,
+      "generate_return_ns": 1586299310351704,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "prompt_ttft_s": 0.5645245448686182,
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "parsed_before": false,
+      "parse_s": 13.526877041906118,
+      "create_runtime_s": 0.3584744029212743,
+      "host_object_retained": false,
+      "sdk_allocation_estimate": 15210643456,
+      "manifest": "sha256:4784f48f923a9dbceb48db7b231f120bdffc784cafb85a9583b945059d0b44c3",
+      "transition_mode": "reload",
+      "compiled_reused": false,
+      "admission_s": 9.164214775897563,
+      "old_runtime_closed": true,
+      "compile_attempts": 0,
+      "parse_calls": 1,
+      "create_calls": 1,
+      "transition_s": 23.107140437,
+      "trigger_to_first_token_s": 23.671684141868617
+    },
+    {
+      "pair": 0,
+      "arm": "reuse",
+      "status": "completed",
+      "base": {
+        "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+        "run_attempts": 15,
+        "run_completed": 15,
+        "run_seconds": [
+          0.06840797699987888,
+          0.06718697608448565,
+          0.06736442702822387,
+          0.06777606694959104,
+          0.06760670593939722,
+          0.06778356689028442,
+          0.06773283611983061,
+          0.06779125588946044,
+          0.06784658692777157,
+          0.0678226260934025,
+          0.06777751608751714,
+          0.06780273700132966,
+          0.06784094590693712,
+          0.0678282268345356,
+          0.06772470683790743
+        ],
+        "generate_call_ns": 1586319696269355,
+        "generate_return_ns": 1586320732154275,
+        "tokens": [
+          [
+            220,
+            16,
+            13,
+            16,
+            13,
+            16,
+            13,
+            16
+          ]
+        ],
+        "prompt_ttft_s": 0.5581431651953608,
+        "compiled_type": "rebel.compiled_model.RBLNCompiledModel"
+      },
+      "trigger_ns": 1586320732284895,
+      "transition_return_ns": 1586330247290157,
+      "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+      "run_attempts": 15,
+      "run_completed": 15,
+      "run_seconds": [
+        0.07336317491717637,
+        0.06715291808359325,
+        0.06733764801174402,
+        0.06759986700490117,
+        0.0679051170591265,
+        0.06785065797157586,
+        0.06783425714820623,
+        0.06788054783828557,
+        0.06778195686638355,
+        0.0678651980124414,
+        0.0678879281040281,
+        0.06794680701568723,
+        0.06783841806463897,
+        0.06796433706767857,
+        0.06773439818061888
+      ],
+      "generate_call_ns": 1586330247313007,
+      "generate_return_ns": 1586331289426682,
+      "tokens": [
+        [
+          220,
+          16,
+          13,
+          16,
+          13,
+          16,
+          13,
+          16
+        ]
+      ],
+      "prompt_ttft_s": 0.5640137128066272,
+      "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+      "parsed_before": true,
+      "parse_s": 4.600733518600464e-07,
+      "create_runtime_s": 0.3516132328659296,
+      "host_object_retained": true,
+      "sdk_allocation_estimate": 15210643456,
+      "manifest": "sha256:4784f48f923a9dbceb48db7b231f120bdffc784cafb85a9583b945059d0b44c3",
+      "transition_mode": "reload",
+      "compiled_reused": true,
+      "admission_s": 9.154355311999097,
+      "old_runtime_closed": true,
+      "compile_attempts": 0,
+      "parse_calls": 0,
+      "create_calls": 1,
+      "transition_s": 9.515005262,
+      "trigger_to_first_token_s": 10.079041824806627
+    }
+  ],
+  "milestones": [
+    {
+      "phase": "source_identity",
+      "utc": 1793611264.6325946
+    },
+    {
+      "phase": "imports",
+      "utc": 1793611264.639894
+    },
+    {
+      "phase": "input_receipt",
+      "utc": 1793611266.8473902
+    },
+    {
+      "phase": "host_tables",
+      "utc": 1793611266.8494172
+    },
+    {
+      "phase": "fresh_target",
+      "utc": 1793611267.1622286
+    },
+    {
+      "phase": "matrix",
+      "utc": 1793611279.254921
+    },
+    {
+      "phase": "completed",
+      "utc": 1793611356.6668355
+    }
+  ],
+  "pod_uid": "55d02068-02a9-464e-bd00-a410b223144c",
+  "started_utc": 1793611264.632593,
+  "npu_requested": 1,
+  "phase": "completed",
+  "source_manifest_sha256": "7697821db0e2035ff38d21d08dc49b24c4eb48750c9f0d78253530caa85ee71f",
+  "source_files": {
+    "bench/ccgrid_atom_reuse.py": "75383b29581016f2c72ef42092a2fecc1f2b1cd0a5c253ec86bfc7b043c27871",
+    "experiments/data/atom-binding-20261030/harness/run_atom_b1.py": "b8c4d5f8b296e75c6bd49eebe8e0a719cda1575309cfba477e11c19908262670",
+    "pyproject.toml": "4c4268c9a8296b84b2392d2301f8151be32af838662a5a80fb10e58a06e0738a",
+    "src/rngd_pd/__init__.py": "c75dc2ea438ba2f931728325e28fdfe882e8b71dd6b4ec68c2ad01d2613319e4",
+    "src/rngd_pd/_tv_patch.py": "50cfd85acc9e9ed678efd3b76ac05ce66d0d709d0dbf238a42b0cb65a12dfdf7",
+    "src/rngd_pd/airm.py": "f842d208627e3d7a77cba36da43fa37effd9040d136131f79f319cfb6033b03d",
+    "src/rngd_pd/connector/__init__.py": "4594e03bd4d3e5626f277440ecc5bfe8c878b224b31d57dd68a683854f52f7c4",
+    "src/rngd_pd/connector/base.py": "c08fe8a1a08710e24801fc2b0998bc1e155dadf894957658b99255e9cd9f3fcd",
+    "src/rngd_pd/connector/rngd_kv.py": "1611ff82ef3971df42685aa7e6d8b415a3b5a0a3a91cd352cf49b5b4fb789757",
+    "src/rngd_pd/connector/tcpkv.py": "b8137487ea843017270f1a1f6c3ab04a13b5bca820e809c84ecf70f6569f82aa",
+    "src/rngd_pd/connector/transport.py": "40cdf6bf635916ec0460d0f44b8a6a77e987c80d09595fe3a6c52f8746d7490f",
+    "src/rngd_pd/connector/ucxkv.py": "d8b1c72fcbe62d14a79a3623a61d3790e58121f03ff07c25be1c8a279c221f69",
+    "src/rngd_pd/connector/worker.py": "f570fa55148db3917092eadc5a01b7e08f98007663a33e585bf7b5bc6e311bcd",
+    "src/rngd_pd/devices.py": "4bb8873dc27eaa15dad903b334b1337303d7df49691c96b547eab1db965ab4af",
+    "src/rngd_pd/engines/__init__.py": "e3ba109f5a41f8d38ed636803dce1e72ca96a842721498b48a6458e1de887854",
+    "src/rngd_pd/engines/artifact_cache.py": "f7946062a6770e8ad0c5e362bcb8554a8831e8e87fbd8e38af00dbf20b40ebb9",
+    "src/rngd_pd/engines/decode_batch.py": "ed04766be268b0ba1a03f6b08d5b12f74252c99022447cd3034113bdaab53070",
+    "src/rngd_pd/engines/decode_resident.py": "7d84159439edcb2e2c7c8b3c5468db936185dcba38532bc312de1dc679251f4a",
+    "src/rngd_pd/engines/fsdk.py": "742feb682c98e1f98df04137c4f8ceb65332ea1ec659e97deba8cb2bc3c012af",
+    "src/rngd_pd/engines/model.py": "e9f89d5bde73015d6f630a14cf498a34cab9c753367d7afe2d0ec93e81fdc547",
+    "src/rngd_pd/engines/model_wired.py": "843062ae87928cb70ee7d5c046c22c0e222b01c3148d649f442685dbd35384a9",
+    "src/rngd_pd/engines/prefill_chunk.py": "1f3eaf7a31da7225c0d18e3b656c9d056437ea99be4b33d891376c749c7c1e9e",
+    "src/rngd_pd/engines/prefill_full.py": "3786daf83209a917a42b58a07a2714ef1ffd5ddc3b3f577421eda057674a2ae4",
+    "src/rngd_pd/engines/tiers.py": "b9ff8a4df0aef7ac452092b78a52705e248cc7be0efc22a02de3037dd4afddaa",
+    "src/rngd_pd/kernels/__init__.py": "7c8e099136e584d383257fb4a2b34b9eef6a42ba846117b4a52f312c0510bb46",
+    "src/rngd_pd/kernels/decode_batch.py": "3dd12946056f787dd4545bf52cfbd8fc4d8bfe68e6bd37beb24f2636c1300b2f",
+    "src/rngd_pd/kernels/decode_resident.py": "49361e31a26e6926ef0c45f86edeb5ecc75f5328d3fa92930981755488c10042",
+    "src/rngd_pd/kernels/dsl_b1.py": "34555fd3f80f7fa6eff5ef508280000ef37de690e03fa95271b7d76c55fee695",
+    "src/rngd_pd/kernels/dsl_batch.py": "9234cf3a0a738d3f8b0e1c44efed1cbbd3954325e5714a85e3c2b9bf1ce995ca",
+    "src/rngd_pd/kernels/prefill_chunk.py": "51cd5cd927efaa3cdaccb5a1e7971dc3b8944f02d0ef7c9c01d000f76a5cdd24",
+    "src/rngd_pd/kernels/prefill_full.py": "4fb91421d5501e6f103fd6f8cf9bd26f481a275ecfd60516f8e9b4d9bf569807",
+    "src/rngd_pd/kernels/prefill_full_chained.py": "89ad6cd2a1b080e5a2ffbdf27d80a49aabbf5b2351a0c7bcbce34684202fe30f",
+    "src/rngd_pd/kv_nixl.py": "35595fb0bc3adeb37422ab26bcfb58267980162cec9ccbc6950fb3c415c81fd9",
+    "src/rngd_pd/native_v4/__init__.py": "2497c0ecf20d5f4778fa5663eececfe943ea7d0e0fd6a7a2930e469f8d70e735",
+    "src/rngd_pd/native_v4/affinity.py": "3633a50efd2191d2fd0fa18f3fd377b1a287701d5ce338d1b5a1b916404516c1",
+    "src/rngd_pd/native_v4/atom.py": "35e5dfaf4b82f3a73de6e981af1456c676e17d0e92d8c2a23d1f3ce06d5b9e89",
+    "src/rngd_pd/native_v4/atom_external.py": "e2934e203b66da23a05e2fa002b71fd3ed0e889887071187383b12668eef2ece",
+    "src/rngd_pd/native_v4/atom_resident.py": "0c9d113138d363f1b24123919ab6a415a7996f6812a28fd1cbbb00d395445c3e",
+    "src/rngd_pd/native_v4/build_resident.py": "dd8ccbcee7c218be1ff893ad0fab226fe69cd4e5d28eda2b329fe1b7c04aacd8",
+    "src/rngd_pd/native_v4/continuous.py": "83a26110872d2ed6e289628cb7a8efe0f9007951b415fab6c656790fd257c269",
+    "src/rngd_pd/native_v4/coordinator.py": "fc40faa221c96262413dd76319ed5df972b709d19a6c243cb8e5827bd9c189cc",
+    "src/rngd_pd/native_v4/dlfloat.py": "9636a1ed210411f7c21448404fa840e31c9ff4b16576a19e8cbb29459563eb09",
+    "src/rngd_pd/native_v4/dlfloat_native.c": "1b6cbd04e69df7816e43e8391d1810d82e57defddba28ccb22d30c12724644f5",
+    "src/rngd_pd/native_v4/host_memory.py": "c3f80a538f0c9137be6f68bbfdde3cbeb3bca725b379d1c5aef0945192b27f1a",
+    "src/rngd_pd/native_v4/kpi.py": "131df1e618b1bb2c4ec1fa1bc3569cc55eb3bbf16bffc958d24335cdc29acb14",
+    "src/rngd_pd/native_v4/kv.py": "078796e4204931b62926e77973972037e5ea8c7c6436ca0ea0e80824ecafa5d4",
+    "src/rngd_pd/native_v4/native_conversion.py": "58307b5af2fa6c1d88ec3993ae1ae6505aab806081e030dd5df0c02e97f762a0",
+    "src/rngd_pd/native_v4/native_worker.py": "419653fce8ef05fecdd41a1d0d209149d18cb3c29afb811f929d957db3759d27",
+    "src/rngd_pd/native_v4/packed_kv.py": "6fdfbdf754c24e4488b87322ec13acdafe7078385ae2f8d2cdf7e836f286010a",
+    "src/rngd_pd/native_v4/power.py": "7011b2b8111adf660d01ec02cc367f0581451c480dc7e3a8dac2d7e9b0031604",
+    "src/rngd_pd/native_v4/replica_lease.py": "80d0910fc66f82e39ebe93ec84845f0bb86cba0e49e4c959d41230f0c06405a1",
+    "src/rngd_pd/native_v4/rngd_payload.py": "ef1e57c5897eff8d63f4f70aec23951911294f567f10f0fbdff2fb989f89ff9f",
+    "src/rngd_pd/native_v4/run.py": "8552b2fc1011e6a6cb89d9122b93bec4e9c38315abf40ba419a53b255fe252c2",
+    "src/rngd_pd/native_v4/scheduling.py": "408f9fc7dc634c6cbd8c90919c8a99704f1702718d10934ed077db7d8fdf5e57",
+    "src/rngd_pd/native_v4/serve.py": "096f5fbc792e1a44a553dc7c0d4219f7541b24e3dbd46fccc79b1e0b8cea2b4e",
+    "src/rngd_pd/native_v4/service_engine.py": "ab187ed529be1def3d413a5bfa761ae16c9f05f7b745418ab8929c6da402ad4d",
+    "src/rngd_pd/native_v4/wire.py": "1d7a7cd3b68814397a3b6e0051811f8a5f1fd6ea1e8f2c8b02f88c7c57173f78",
+    "src/rngd_pd/paths.py": "11c1261fc8e5bd18ce5aca57968ae173d781175485d06d4beabe3f0bf5a3306f",
+    "src/rngd_pd/serving/__init__.py": "ab24adf0d3c570b33871cd8ed89e8d836f35ee3894dcb7a2bb1a7f954e631e71",
+    "src/rngd_pd/serving/cluster.py": "a517625d65f56b6e8068dd4aee6fd4eee5e1c85cdbfc52104fdf3a0de98d6f64",
+    "src/rngd_pd/serving/prepared.py": "9520e66132ab9411d04c83b1ed76e1b45f08ec97e2365805636ecd0613854b14",
+    "src/rngd_pd/serving/proxy.py": "073b63f66927ebc0f764f96c75b66ec2b9ea62e07dafc6b2a1fd6e6501ef3857",
+    "src/rngd_pd/swap/__init__.py": "f2a74d6cd155c265a81369a73ce750b0991979ab43ab08c7c353bbd143814597",
+    "src/rngd_pd/swap/atom.py": "19b2f4256f0f04f68729628a975ed2c46039321b8524a7a459dfb913259d2c23",
+    "src/rngd_pd/swap/atom_binding.py": "c406ad5050ea1b52a7b3ef52927e671c26714588c83a76d4c9d0f6e4faac6499",
+    "src/rngd_pd/swap/atom_bundles.py": "7e5216625f33470dfbddcbd41cb8b154488a7573a5661ca757037cb30c70aabb",
+    "src/rngd_pd/swap/atom_constants.py": "b43fc9257fe6defba63a2642dbf7ab4f3435c3b32dc3da21e55c2684329647cc",
+    "src/rngd_pd/swap/atom_inputs.py": "1bcd895bffaaf4f0c57ca3b13ef34dd997793d9492cc36267886de80c1698995",
+    "src/rngd_pd/swap/bench_atom.py": "326b9ee18839db53be70b19c0bbae4dab2f454d7e31fcc4805777033dc92ad0f",
+    "src/rngd_pd/swap/bench_atom_bundles.py": "05091e57e43fe6121babef2e53ebf23f7838741da7e2b27db220c762ff3d316c",
+    "src/rngd_pd/swap/bench_rngd.py": "a18035bc56bbbeb4bc8e00cdc167005dda5697ddade499e65497f0905096c0a6",
+    "src/rngd_pd/swap/binding_cli.py": "0be3758a7dfbba765675b05f1cb3f8e3864c294b567c16822de25b54a7af3a2c",
+    "src/rngd_pd/swap/binding_transition.py": "520af336859434d3e47555b12aef2f5c40a66f7e47f368a8d0a2370d38340caf",
+    "src/rngd_pd/swap/delta.py": "a91f5011348c408214da4ddeb3d06dbedd2b7c0eed48c909889ce875a1e691ed",
+    "src/rngd_pd/swap/load.py": "a7ea2bee8d3c93fd08beda48b757dcaafcc585d3ad0b39901a2f74ece9f3c7c1",
+    "src/rngd_pd/swap/rngd.py": "c04984c53e109097bef2bd840e730d0b1a56f966c4f9847b8f5fc2385fb5ac9f",
+    "src/rngd_pd/swap/rngd_binding.py": "0842a32b7fa8596d59dc19dcc10150509bfddab76b1d91f56c44f8664cc86b7c",
+    "src/rngd_pd/swap/variants.py": "a1e772221226b042b97ea1b046e067a72709f94886db5610a5b2a9732ce6e744",
+    "src/rngd_pd/vendors/__init__.py": "c6820db86ce65d0935153410d800d51e4ea4835b81377a377bd79aec9f9207e9",
+    "src/rngd_pd/vendors/rbln_decode.py": "447cf791ab3c2c89032b2836837ebe5b6c7f8e7f3f32b172d12ad20c6cbc0405",
+    "src/rngd_pd/vendors/rbln_decode_batch.py": "eee03b4e1f48a0b7dffe315fd5dd693f77d59d1de132d1fcad9412914bbb3656",
+    "src/rngd_pd/vendors/rbln_prefill.py": "fece715c246a1833762c7d0ae68fd4f45d7790d88c0dd7ecb9240598c350ddfd"
+  },
+  "assignment": {
+    "allocated": [
+      "/dev/rbln3"
+    ],
+    "exposed": [
+      "/dev/rbln3"
+    ],
+    "physical_id": 3,
+    "sdk_id": 0
+  },
+  "public_smi": {
+    "argv": [
+      "/host-bin/rbln-smi"
+    ],
+    "stdout": "Mon Nov 2 09:21:06 2026\n+-------------------------------------------------------------------------------------------------+\n|                                Device Information KMD ver: 3.0.0                                |\n+-----+-----------+---------+---------------+------+---------+------+---------------------+-------+\n| NPU |    Name   | Device  |   PCI BUS ID  | Temp |  Power  | Perf |  Memory(used/total) |  Util |\n+=====+===========+=========+===============+======+=========+======+=====================+=======+\n| 0   | RBLN-CA22 | rbln3   |  0000:c4:00.0 |  37C |  17.9W  | P14  |    0.0B / 15.7GiB   |   0.0 |\n+-----+-----------+---------+---------------+------+---------+------+---------------------+-------+\n+-------------------------------------------------------------------------------------------------+\n|                                       Context Information                                       |\n+-----+---------------------+--------------+-----------+----------+------+---------------+--------+\n| NPU | Process             |     PID      |    CTX    | Priority | PTID |      Memalloc | Status |\n+=====+=====================+==============+===========+==========+======+===============+========+\n| N/A | N/A                 |     N/A      |    N/A    |   N/A    | N/A  |           N/A |  N/A   |\n+-----+---------------------+--------------+-----------+----------+------+---------------+--------+\n",
+    "stderr": ""
+  },
+  "versions": {
+    "torch": "2.11.0+cpu",
+    "rebel": "0.11.0",
+    "compiler": "0.11.0"
+  },
+  "helper_sha256": "b8c4d5f8b296e75c6bd49eebe8e0a719cda1575309cfba477e11c19908262670",
+  "public_native_apis": [
+    "RBLNCompiledModel",
+    "create_runtime",
+    "SyncRuntime.run"
+  ],
+  "vendor_internal_apis_used": [],
+  "checkpoint": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+  "compile_attempts": [],
+  "guarded_compile_apis": [
+    "rebel.compile",
+    "rebel.compile_from_onnx",
+    "rebel.compile_from_tf_function",
+    "rebel.compile_from_tf_graph_def",
+    "rebel.compile_from_tflite",
+    "rebel.compile_from_torch",
+    "rebel.compile_from_torch_multiple_inputs",
+    "rebel.compile_from_torchscript",
+    "torch.compile"
+  ],
+  "input_receipt_sha256": "0bc38f3151e38dd365137896a6133d9530ea4afc4b8e975f122d173944c48d63",
+  "switchplan_sha256": "9c350aaec6a3b9f9223cd82e7772c05393baf1874a165c876ead9847182e920a",
+  "host_tables_s": 0.31218365114182234,
+  "prompts": [
+    [
+      1,
+      42,
+      256,
+      1024,
+      7,
+      999,
+      2048,
+      13
+    ]
+  ],
+  "n_new": 8,
+  "fresh_reference": {
+    "native_runtime_type": "rebel.sync_runtime.SyncRuntime",
+    "run_attempts": 15,
+    "run_completed": 15,
+    "run_seconds": [
+      0.07064373814500868,
+      0.06711089890450239,
+      0.0672198401298374,
+      0.06753847002983093,
+      0.06759850005619228,
+      0.06793109909631312,
+      0.06794471899047494,
+      0.06799693894572556,
+      0.06779344915412366,
+      0.06780246901325881,
+      0.06774846999906003,
+      0.06773380911909044,
+      0.06767400912940502,
+      0.06778969918377697,
+      0.06779269012622535
+    ],
+    "generate_call_ns": 1586252896401655,
+    "generate_return_ns": 1586253933166242,
+    "tokens": [
+      [
+        220,
+        16,
+        13,
+        16,
+        13,
+        16,
+        13,
+        16
+      ]
+    ],
+    "prompt_ttft_s": 0.557662044884637,
+    "compiled_type": "rebel.compiled_model.RBLNCompiledModel",
+    "closed_before_matrix": true
+  },
+  "summary": {
+    "full": {
+      "transition_s": {
+        "n": 1,
+        "median": 23.107140437,
+        "q1": 23.107140437,
+        "q3": 23.107140437,
+        "iqr": 0.0,
+        "values": [
+          23.107140437
+        ]
+      },
+      "trigger_to_first_token_s": {
+        "n": 1,
+        "median": 23.671684141868617,
+        "q1": 23.671684141868617,
+        "q3": 23.671684141868617,
+        "iqr": 0.0,
+        "values": [
+          23.671684141868617
+        ]
+      },
+      "admission_s": {
+        "n": 1,
+        "median": 9.164214775897563,
+        "q1": 9.164214775897563,
+        "q3": 9.164214775897563,
+        "iqr": 0.0,
+        "values": [
+          9.164214775897563
+        ]
+      },
+      "parse_s": {
+        "n": 1,
+        "median": 13.526877041906118,
+        "q1": 13.526877041906118,
+        "q3": 13.526877041906118,
+        "iqr": 0.0,
+        "values": [
+          13.526877041906118
+        ]
+      },
+      "create_runtime_s": {
+        "n": 1,
+        "median": 0.3584744029212743,
+        "q1": 0.3584744029212743,
+        "q3": 0.3584744029212743,
+        "iqr": 0.0,
+        "values": [
+          0.3584744029212743
+        ]
+      },
+      "prompt_ttft_s": {
+        "n": 1,
+        "median": 0.5645245448686182,
+        "q1": 0.5645245448686182,
+        "q3": 0.5645245448686182,
+        "iqr": 0.0,
+        "values": [
+          0.5645245448686182
+        ]
+      }
+    },
+    "reuse": {
+      "transition_s": {
+        "n": 1,
+        "median": 9.515005262,
+        "q1": 9.515005262,
+        "q3": 9.515005262,
+        "iqr": 0.0,
+        "values": [
+          9.515005262
+        ]
+      },
+      "trigger_to_first_token_s": {
+        "n": 1,
+        "median": 10.079041824806627,
+        "q1": 10.079041824806627,
+        "q3": 10.079041824806627,
+        "iqr": 0.0,
+        "values": [
+          10.079041824806627
+        ]
+      },
+      "admission_s": {
+        "n": 1,
+        "median": 9.154355311999097,
+        "q1": 9.154355311999097,
+        "q3": 9.154355311999097,
+        "iqr": 0.0,
+        "values": [
+          9.154355311999097
+        ]
+      },
+      "parse_s": {
+        "n": 1,
+        "median": 4.600733518600464e-07,
+        "q1": 4.600733518600464e-07,
+        "q3": 4.600733518600464e-07,
+        "iqr": 0.0,
+        "values": [
+          4.600733518600464e-07
+        ]
+      },
+      "create_runtime_s": {
+        "n": 1,
+        "median": 0.3516132328659296,
+        "q1": 0.3516132328659296,
+        "q3": 0.3516132328659296,
+        "iqr": 0.0,
+        "values": [
+          0.3516132328659296
+        ]
+      },
+      "prompt_ttft_s": {
+        "n": 1,
+        "median": 0.5640137128066272,
+        "q1": 0.5640137128066272,
+        "q3": 0.5640137128066272,
+        "iqr": 0.0,
+        "values": [
+          0.5640137128066272
+        ]
+      }
+    }
+  },
+  "native_counters": {
+    "parse_calls": 4,
+    "create_calls": 5
+  },
+  "native_run_completed": 75,
+  "native_evidence": true,
+  "owners_closed": true,
+  "finished_utc": 1793611356.6676807
+}
