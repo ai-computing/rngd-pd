@@ -227,3 +227,55 @@ def test_cleanup_gate_rejects_residual_owned_mount_or_lease(harness, tmp_path):
     lease.write_text(str(target))
     with pytest.raises(RuntimeError, match="state"):
         harness.verify_cleanup(data, [target], "")
+
+
+@pytest.mark.parametrize('close_fails', [True, False])
+def test_actual_cleanup_keeps_leases_until_owner_close(harness, tmp_path, close_fails):
+    import ast
+    import inspect
+    import types
+    # Execute the real finally block without constructing an SDK/device owner.
+    tree = ast.parse(inspect.getsource(harness.trial))
+    block = next(node for node in ast.walk(tree) if isinstance(node, ast.Try) and node.finalbody)
+    code = compile(ast.fix_missing_locations(ast.Module(body=block.finalbody, type_ignores=[])),
+                   inspect.getsourcefile(harness), 'exec')
+    calls = []
+    data, work = tmp_path / 'state', tmp_path / 'work'
+    work.mkdir()
+    leases = {}
+    for name in ('base', 'target'):
+        lease = data / 'leases' / name / name
+        lease.parent.mkdir(parents=True)
+        lease.write_text('published', encoding='utf-8')
+        leases[name] = lease
+
+    def close():
+        calls.append('close.failed' if close_fails else 'close')
+        if close_fails:
+            raise RuntimeError('sync failed before owner released allocations/checkpoint')
+
+    def rpc(operation, target, volume, ref, label):
+        calls.append(operation + ':' + volume)
+        leases[volume].unlink()
+
+    namespace = dict(vars(harness), engine=types.SimpleNamespace(close=close), events={}, cleanup_errors=[],
+        result={'snapshots': {}}, data=data, work=work, donor=tmp_path / 'donor',
+        base_mount=tmp_path / 'base', target_mount=tmp_path / 'target',
+        target_attempted=True, base_attempted=True, bound=True,
+        cfg={'target_ref': 'target', 'base_ref': 'base'},
+        command=lambda argv, row: calls.append('umount'),
+        verify_cleanup=lambda data, mounts: harness.verify_cleanup(data, mounts, ''),
+        csi=types.SimpleNamespace(process=object(), rpc=rpc, stop=lambda: calls.append('stop')))
+    if close_fails:
+        with pytest.raises(RuntimeError, match='cleanup failed'):
+            exec(code, namespace)
+        assert calls == ['close.failed', 'stop']
+        assert all(p.exists() for p in leases.values())
+        assert namespace['result']['file_release_blocked']
+        assert 'engine_closed' not in namespace['events']
+        assert not namespace['result']['cleanup_passed']
+    else:
+        exec(code, namespace)
+        assert calls == ['close', 'unpublish:target', 'unpublish:base', 'umount', 'stop']
+        assert all(not p.exists() for p in leases.values())
+        assert namespace['result']['cleanup_passed']

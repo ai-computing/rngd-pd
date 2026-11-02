@@ -514,24 +514,28 @@ def trial(cfg, result):
         result["native_gates_passed"] = True
     finally:
         events["close_started"] = e6.stamp()
+        owner_closed = engine is None
         if engine is not None:
             try:
                 engine.close()
+                owner_closed = True
             except Exception:
                 cleanup_errors.append(dict(stage="engine.close", traceback=traceback.format_exc()))
-        events["engine_closed"] = e6.stamp()
+        if owner_closed:
+            events["engine_closed"] = e6.stamp()
+        result["file_release_blocked"] = not owner_closed
         result["snapshots"]["close"] = snapshot(data, [donor, base_mount, target_mount])
-        # All engine allocations are released before any published mount is removed.
+        # Failed sync can leave the owner alive; keep its mounts and leases until process exit.
         for attempted, target, volume, ref in ((target_attempted, target_mount, "target", cfg["target_ref"]),
                 (base_attempted, base_mount, "base", cfg["base_ref"])):
-            if attempted:
+            if owner_closed and attempted:
                 try:
                     if csi.process is None:
                         csi.start("cleanup")
                     csi.rpc("unpublish", target, volume, ref, volume + "-cleanup")
                 except Exception:
                     cleanup_errors.append(dict(stage=volume + "-unpublish", traceback=traceback.format_exc()))
-        if bound:
+        if owner_closed and bound:
             try:
                 command(["umount", str(target_mount)], result.setdefault("local_unmount", {}))
             except Exception:
@@ -540,10 +544,11 @@ def trial(cfg, result):
             csi.stop()
         except Exception:
             cleanup_errors.append(dict(stage="server-stop", traceback=traceback.format_exc()))
-        try:
-            verify_cleanup(data, [base_mount, target_mount])
-        except Exception:
-            cleanup_errors.append(dict(stage="cleanup-state-gate", traceback=traceback.format_exc()))
+        if owner_closed:
+            try:
+                verify_cleanup(data, [base_mount, target_mount])
+            except Exception:
+                cleanup_errors.append(dict(stage="cleanup-state-gate", traceback=traceback.format_exc()))
         result["snapshots"]["cleanup"] = snapshot(data, [donor, base_mount, target_mount])
         events["cleanup_finished"] = e6.stamp()
         result["cleanup_errors"] = cleanup_errors

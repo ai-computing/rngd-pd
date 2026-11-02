@@ -105,3 +105,11 @@ byte/archive corruption, false native counts, false busy-base claims and invalid
 time partitions even with recomputed export hashes. CI reproduces the complete
 n5 summary and verifies context/source/UID evidence. Loaded-service drain/queue
 experiments and CPU same-cache/chunking studies remain separate work.
+
+Pre-merge review found that the reusable harness released CSI volumes even
+when owner synchronization/close failed. The current harness now preserves
+mounts and leases on that branch, records blocked file release, and retains
+partial evidence. A CPU regression executes the actual cleanup block against
+real temporary leases for both successful and failed owner close. Accepted
+native samples all closed successfully; their frozen source pins and exact
+raw bytes remain unchanged. The failure-branch fix was not an NPU rerun.
