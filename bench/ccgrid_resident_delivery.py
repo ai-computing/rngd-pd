@@ -112,7 +112,8 @@ def file_metadata(root):
     if root.is_symlink() or any(p.is_symlink() for p in root.rglob("*")):
         raise RuntimeError("symlink in delivered artifact")
     return {p.relative_to(root).as_posix(): dict(size=(s := p.stat()).st_size,
-        inode=s.st_ino, device=s.st_dev, blocks=getattr(s, "st_blocks", None))
+        inode=s.st_ino, device=s.st_dev, blocks=getattr(s, "st_blocks", None),
+        realpath=str(p.resolve()), nlink=s.st_nlink, mode=s.st_mode)
         for p in sorted(root.rglob("*")) if p.is_file()}
 
 

@@ -104,6 +104,15 @@ def test_inventory_requires_exact_files_and_hashes(harness, config, tmp_path):
         harness.verify_inventory(target, expected)
 
 
+def test_metadata_records_ownership_and_permission_witnesses(harness, config):
+    root = Path(config["target_bundle_source"])
+    row = harness.file_metadata(root)["cache/graphs/graph.runnable"]
+    source = root / "cache/graphs/graph.runnable"
+    assert row["realpath"] == str(source.resolve())
+    assert row["nlink"] == source.stat().st_nlink
+    assert row["mode"] == source.stat().st_mode
+
+
 def test_timing_includes_hash_validation_and_excludes_generation_tail(harness):
     events = {name: {"perf_ns": value * 1_000_000_000} for name, value in
         (("demand", 1), ("delivery_finished", 3), ("hash_finished", 5), ("started", 0))}
