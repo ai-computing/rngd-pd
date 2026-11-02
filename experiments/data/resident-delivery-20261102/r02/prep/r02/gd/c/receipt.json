@@ -1,0 +1,265 @@
+{
+  "status": "completed",
+  "base_ref": "sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444",
+  "materializer": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m",
+  "npu_requested": 0,
+  "started_unix_ns": 1793588556766278259,
+  "disk_free_before": 334069358592,
+  "servers": [
+    {
+      "argv": [
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+        "csi",
+        "--store",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/graph-store",
+        "--node-id",
+        "cdx-exp",
+        "--endpoint",
+        "unix:///home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/csi.sock",
+        "--data-dir",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m",
+        "--cache",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/prep-cache",
+        "--workers",
+        "8",
+        "--pulls",
+        "1",
+        "--gc-every",
+        "0",
+        "--evict-after",
+        "0",
+        "--rebase-idle",
+        "1s"
+      ],
+      "started": {
+        "perf_ns": 1563531641548299,
+        "wall_ns": 1793588556766368039
+      },
+      "log": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/prep-csi.log",
+      "cache_initial_entries": [],
+      "pid": 102,
+      "socket_ready": {
+        "perf_ns": 1563531662275962,
+        "wall_ns": 1793588556787096022
+      },
+      "returncode": 0,
+      "stopped": {
+        "perf_ns": 1563531695151602,
+        "wall_ns": 1793588556819971532
+      },
+      "log_sha256": "2cc4829459fbd86563fe75060b30a76e5dcdaa754cfdd4f8c13a488544adebf4"
+    }
+  ],
+  "rpcs": {
+    "base-publish": {
+      "argv": [
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/csi-call",
+        "--socket",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/csi.sock",
+        "--operation",
+        "publish",
+        "--volume-id",
+        "base",
+        "--target",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/base",
+        "--ref",
+        "sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444",
+        "--timeout",
+        "300s"
+      ],
+      "started": {
+        "perf_ns": 1563531662300632,
+        "wall_ns": 1793588556787120362
+      },
+      "returncode": 0,
+      "stdout": "{\"socket\":\"/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/csi.sock\",\"operation\":\"publish\",\"volume_id\":\"base\",\"target\":\"/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/base\",\"ref\":\"sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444\",\"timeout_ns\":300000000000,\"rpc_method\":\"/csi.v1.Node/NodePublishVolume\",\"request\":{\"volume_id\":\"base\",\"target_path\":\"/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/base\",\"volume_capability\":{\"mount\":{},\"access_mode\":{\"mode\":\"SINGLE_NODE_WRITER\"}},\"readonly\":true,\"volume_context\":{\"csi.storage.k8s.io/ephemeral\":\"true\",\"ref\":\"sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444\"}},\"start_unix_ns\":1793588556791387434,\"end_unix_ns\":1793588556804538170,\"success\":true,\"grpc_code\":\"OK\",\"error\":\"\"}\n",
+      "stderr": "",
+      "finished": {
+        "perf_ns": 1563531681032028,
+        "wall_ns": 1793588556805852548
+      },
+      "report": {
+        "socket": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/csi.sock",
+        "operation": "publish",
+        "volume_id": "base",
+        "target": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/base",
+        "ref": "sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444",
+        "timeout_ns": 300000000000,
+        "rpc_method": "/csi.v1.Node/NodePublishVolume",
+        "request": {
+          "volume_id": "base",
+          "target_path": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/base",
+          "volume_capability": {
+            "mount": {},
+            "access_mode": {
+              "mode": "SINGLE_NODE_WRITER"
+            }
+          },
+          "readonly": true,
+          "volume_context": {
+            "csi.storage.k8s.io/ephemeral": "true",
+            "ref": "sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444"
+          }
+        },
+        "start_unix_ns": 1793588556791387434,
+        "end_unix_ns": 1793588556804538170,
+        "success": true,
+        "grpc_code": "OK",
+        "error": ""
+      }
+    },
+    "base-idle": {
+      "argv": [
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/csi-call",
+        "--socket",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/csi.sock",
+        "--operation",
+        "unpublish",
+        "--volume-id",
+        "base",
+        "--target",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/base",
+        "--ref",
+        "sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444",
+        "--timeout",
+        "300s"
+      ],
+      "started": {
+        "perf_ns": 1563531683123704,
+        "wall_ns": 1793588556807943514
+      },
+      "returncode": 0,
+      "stdout": "{\"socket\":\"/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/csi.sock\",\"operation\":\"unpublish\",\"volume_id\":\"base\",\"target\":\"/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/base\",\"ref\":\"sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444\",\"timeout_ns\":300000000000,\"rpc_method\":\"/csi.v1.Node/NodeUnpublishVolume\",\"request\":{\"volume_id\":\"base\",\"target_path\":\"/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/base\"},\"start_unix_ns\":1793588556812841845,\"end_unix_ns\":1793588556815716340,\"success\":true,\"grpc_code\":\"OK\",\"error\":\"\"}\n",
+      "stderr": "",
+      "finished": {
+        "perf_ns": 1563531691871638,
+        "wall_ns": 1793588556816692418
+      },
+      "report": {
+        "socket": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/csi.sock",
+        "operation": "unpublish",
+        "volume_id": "base",
+        "target": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/base",
+        "ref": "sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444",
+        "timeout_ns": 300000000000,
+        "rpc_method": "/csi.v1.Node/NodeUnpublishVolume",
+        "request": {
+          "volume_id": "base",
+          "target_path": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/base"
+        },
+        "start_unix_ns": 1793588556812841845,
+        "end_unix_ns": 1793588556815716340,
+        "success": true,
+        "grpc_code": "OK",
+        "error": ""
+      }
+    }
+  },
+  "mount": {
+    "mount_id": "3419",
+    "mountinfo": "3419 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/c/base ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64",
+    "options": [
+      "ro",
+      "nosuid",
+      "nodev",
+      "relatime"
+    ]
+  },
+  "inventory": {
+    "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+      "size": 224097,
+      "inode": 25170864,
+      "device": 64512,
+      "blocks": 440,
+      "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444/cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable",
+      "nlink": 1,
+      "mode": 33188,
+      "sha256": "405001f45f4676a134738a2d340dd453f17e9ccc60ba026e05ab285b39261c70"
+    },
+    "cache/graphs/2026.4.0/2.10.0+cpu/42100dcbf68bbc6aa86e92b0.runnable": {
+      "size": 760632,
+      "inode": 25170865,
+      "device": 64512,
+      "blocks": 1488,
+      "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444/cache/graphs/2026.4.0/2.10.0+cpu/42100dcbf68bbc6aa86e92b0.runnable",
+      "nlink": 1,
+      "mode": 33188,
+      "sha256": "5e8aaff08c16606163a52e9d517dc2e1fc0b58aabb03740559af38ca4bba7bb1"
+    },
+    "variant.json": {
+      "size": 919,
+      "inode": 25170866,
+      "device": 64512,
+      "blocks": 8,
+      "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444/variant.json",
+      "nlink": 1,
+      "mode": 33188,
+      "sha256": "cdc74a5ae3eda7e24736b3d0268dc68c54dca92ed277d4217b5906f1cf46d6dc"
+    }
+  },
+  "final_state": {
+    "at": {
+      "perf_ns": 1563531696045381,
+      "wall_ns": 1793588556820865371
+    },
+    "pid": 1,
+    "files": {
+      "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444": {
+        "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+          "size": 224097,
+          "inode": 25170864,
+          "device": 64512,
+          "blocks": 440,
+          "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444/cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable",
+          "nlink": 1,
+          "mode": 33188
+        },
+        "cache/graphs/2026.4.0/2.10.0+cpu/42100dcbf68bbc6aa86e92b0.runnable": {
+          "size": 760632,
+          "inode": 25170865,
+          "device": 64512,
+          "blocks": 1488,
+          "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444/cache/graphs/2026.4.0/2.10.0+cpu/42100dcbf68bbc6aa86e92b0.runnable",
+          "nlink": 1,
+          "mode": 33188
+        },
+        "variant.json": {
+          "size": 919,
+          "inode": 25170866,
+          "device": 64512,
+          "blocks": 8,
+          "realpath": "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444/variant.json",
+          "nlink": 1,
+          "mode": 33188
+        }
+      }
+    },
+    "disk_totals": {
+      "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444": {
+        "logical_file_entry_bytes": 985648,
+        "unique_inode_allocated_bytes": 991232,
+        "scope": "files only; directory/metadata allocation excluded; roots may share inodes"
+      }
+    },
+    "status": "Name:\tpython3.10\nUmask:\t0022\nState:\tR (running)\nTgid:\t1\nNgid:\t0\nPid:\t1\nPPid:\t0\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t1024\nGroups:\t0 \nNStgid:\t1\nNSpid:\t1\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t   27396 kB\nVmSize:\t   27396 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t   18432 kB\nVmRSS:\t   15776 kB\nRssAnon:\t    7328 kB\nRssFile:\t    8448 kB\nRssShmem:\t       0 kB\nVmData:\t   12924 kB\nVmStk:\t     132 kB\nVmExe:\t    2776 kB\nVmLib:\t    5160 kB\nVmPTE:\t      96 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t1\nSigQ:\t0/6190886\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000000000002\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffffff,ffffffff,ffffffff\nCpus_allowed_list:\t0-95\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t64\nnonvoluntary_ctxt_switches:\t44\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+    "smaps_rollup": "5689a0c83000-7fffac370000 ---p 00000000 00:00 0                          [rollup]\nRss:               19856 kB\nPss:               13063 kB\nPss_Dirty:         10512 kB\nPss_Anon:          10512 kB\nPss_File:           2551 kB\nPss_Shmem:             0 kB\nShared_Clean:       8516 kB\nShared_Dirty:          0 kB\nPrivate_Clean:       828 kB\nPrivate_Dirty:     10512 kB\nReferenced:        19856 kB\nAnonymous:         10512 kB\nKSM:                   0 kB\nLazyFree:              0 kB\nAnonHugePages:         0 kB\nShmemPmdMapped:        0 kB\nFilePmdMapped:         0 kB\nShared_Hugetlb:        0 kB\nPrivate_Hugetlb:       0 kB\nSwap:                  0 kB\nSwapPss:               0 kB\nLocked:                0 kB\n",
+    "mountinfo": "8910 3420 0:597 / / rw,relatime - overlay overlay rw,lowerdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10165/fs,upperdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10172/fs,workdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10172/work,uuid=on,nouserxattr\n8912 8910 0:703 / /proc rw,nosuid,nodev,noexec,relatime - proc proc rw\n8913 8910 0:704 / /dev rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755,inode64\n8914 8913 0:705 / /dev/pts rw,nosuid,noexec,relatime - devpts devpts rw,gid=5,mode=620,ptmxmode=666\n8915 8913 0:691 / /dev/mqueue rw,nosuid,nodev,noexec,relatime - mqueue mqueue rw\n8916 8910 0:696 / /sys rw,nosuid,nodev,noexec,relatime - sysfs sysfs rw\n8917 8916 0:30 / /sys/fs/cgroup rw,nosuid,nodev,noexec,relatime - cgroup2 cgroup rw\n8918 8910 252:0 /usr/lib/x86_64-linux-gnu /host-libs ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8919 8910 252:0 /usr/lib /host-usrlib ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8920 8910 252:0 /usr/bin /host-bin ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8922 8910 252:0 /var/lib/kubelet/pods/6d14b0a6-5657-493b-90bb-b739be1c16b3/volumes/kubernetes.io~empty-dir/assigned /run/swap ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8935 8913 0:55 / /dev/shm ro,relatime - tmpfs tmpfs rw,size=16777216k,inode64,noswap\n8936 8910 252:0 /var/lib/kubelet/pods/6d14b0a6-5657-493b-90bb-b739be1c16b3/etc-hosts /etc/hosts rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8937 8913 252:0 /var/lib/kubelet/pods/6d14b0a6-5657-493b-90bb-b739be1c16b3/containers/run/0b8d3327 /dev/termination-log rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8939 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/85a8abac42972a35992f4464d8f3de51d625c9e3ab7f50cf06d7b9ce713b45d7/hostname /etc/hostname rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8953 8910 252:0 /var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes/85a8abac42972a35992f4464d8f3de51d625c9e3ab7f50cf06d7b9ce713b45d7/resolv.conf /etc/resolv.conf rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8966 8910 252:0 /usr/bin/python3.10 /usr/bin/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8967 8910 252:0 /usr/lib/python3.10 /usr/lib/python3.10 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8972 8910 252:0 /usr/lib/python3/dist-packages /usr/lib/python3/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n8973 8910 252:0 /home/gspark/venvs/furiosa-2026.4 /home/gspark/venvs/furiosa-2026.4 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9023 8910 252:0 /home/gspark/workspace/codex_rngd_opt_20261023 /home/gspark/workspace/codex_rngd_opt_20261023 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9024 8910 252:0 /home/gspark/workspace/codex_onggi_integration_20261030 /home/gspark/workspace/codex_onggi_integration_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9062 8910 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030 /home/gspark/workspace/codex_ccgrid_npu_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9063 8910 252:0 /var/lib/kubelet/device-plugins /var/lib/kubelet/device-plugins ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9099 8910 252:0 /home/gspark/workspace/codex_binding_conformance_20261030 /home/gspark/workspace/codex_binding_conformance_20261030 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9101 8910 252:0 /home/gspark/workspace/codex_ccgrid_b2_20261102 /home/gspark/workspace/codex_ccgrid_b2_20261102 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9102 8910 252:0 /home/gspark/workspace/codex_resident_delivery_20261102 /home/gspark/workspace/codex_resident_delivery_20261102 rw,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9103 8910 252:0 /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures /home/gspark/workspace/codex_swap_benchmark_20261023/fixtures ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9104 8910 252:0 /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9105 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/cache /home/gspark/workspace/codex_ccgrid_npu_20261030/cache ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9106 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source /home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9107 9062 252:0 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 /home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2 ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9108 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source /home/gspark/workspace/codex_binding_conformance_20261030/runtime-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n9109 9099 252:0 /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source /home/gspark/workspace/codex_binding_conformance_20261030/conformance-source ro,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3259 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fd/m/artifacts/04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3372 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/fn/m/artifacts/04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n3373 9102 252:0 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444 /home/gspark/workspace/codex_resident_delivery_20261102/prep/r02/gd/m/artifacts/b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444 ro,nosuid,nodev,relatime - ext4 /dev/mapper/ubuntu--vg-lv--0 rw,stripe=64\n",
+    "cgroup": {
+      "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod6d14b0a6_5657_493b_90bb_b739be1c16b3.slice/cri-containerd-e012557abc7d2d7f5a5ffcaaa1a5dfed0078ff6934a927b1e91038b0a584c43c.scope/memory.current": "33767694336\n",
+      "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod6d14b0a6_5657_493b_90bb_b739be1c16b3.slice/cri-containerd-e012557abc7d2d7f5a5ffcaaa1a5dfed0078ff6934a927b1e91038b0a584c43c.scope/memory.peak": "34359504896\n",
+      "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod6d14b0a6_5657_493b_90bb_b739be1c16b3.slice/cri-containerd-e012557abc7d2d7f5a5ffcaaa1a5dfed0078ff6934a927b1e91038b0a584c43c.scope/memory.stat": "anon 10764288\nfile 32731353088\nkernel 1021911040\nkernel_stack 16384\npagetables 98304\nsec_pagetables 0\npercpu 7840\nsock 0\nvmalloc 0\nshmem 0\nzswap 0\nzswapped 0\nfile_mapped 0\nfile_dirty 40960\nfile_writeback 0\nswapcached 0\nanon_thp 0\nfile_thp 0\nshmem_thp 0\ninactive_anon 0\nactive_anon 10764288\ninactive_file 32731291648\nactive_file 0\nunevictable 0\nslab_reclaimable 1020861736\nslab_unreclaimable 862360\nslab 1021724096\nworkingset_refault_anon 0\nworkingset_refault_file 0\nworkingset_activate_anon 0\nworkingset_activate_file 0\nworkingset_restore_anon 0\nworkingset_restore_file 0\nworkingset_nodereclaim 0\npgscan 5082816\npgsteal 5082816\npgscan_kswapd 0\npgscan_direct 5082816\npgscan_khugepaged 0\npgsteal_kswapd 0\npgsteal_direct 5082816\npgsteal_khugepaged 0\npgfault 1753656\npgmajfault 0\npgrefill 1\npgactivate 0\npgdeactivate 0\npglazyfree 0\npglazyfreed 0\nzswpin 0\nzswpout 0\nzswpwb 0\nthp_fault_alloc 0\nthp_collapse_alloc 0\nthp_swpout 0\nthp_swpout_fallback 0\n",
+      "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod6d14b0a6_5657_493b_90bb_b739be1c16b3.slice/cri-containerd-e012557abc7d2d7f5a5ffcaaa1a5dfed0078ff6934a927b1e91038b0a584c43c.scope/memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod6d14b0a6_5657_493b_90bb_b739be1c16b3.slice/cri-containerd-e012557abc7d2d7f5a5ffcaaa1a5dfed0078ff6934a927b1e91038b0a584c43c.scope/memory.max": "34359738368\n"
+    },
+    "cgroup_membership": "0::/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod6d14b0a6_5657_493b_90bb_b739be1c16b3.slice/cri-containerd-e012557abc7d2d7f5a5ffcaaa1a5dfed0078ff6934a927b1e91038b0a584c43c.scope\n",
+    "materializer_state": {},
+    "materializer_used": {
+      "b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444.used": {
+        "mtime_ns": 1793588556815378671,
+        "text": ""
+      }
+    }
+  },
+  "finished_unix_ns": 1793588556823638026,
+  "disk_free_after": 334068031488
+}

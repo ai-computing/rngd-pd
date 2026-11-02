@@ -1,0 +1,373 @@
+{
+  "status": "completed",
+  "npu_requested": 0,
+  "started_unix_ns": 1793585026644552918,
+  "events": [
+    {
+      "label": "push-graph-base",
+      "argv": [
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+        "push",
+        "--store",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/graph-store",
+        "--json",
+        "--ref",
+        "resident/graph-base",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-base"
+      ],
+      "started_unix_ns": 1793585053375688155,
+      "started_perf_ns": 1560028250870015,
+      "returncode": 0,
+      "stdout": "{\n  \"manifest\": \"sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444\",\n  \"ref\": \"resident/graph-base\",\n  \"stats\": {\n    \"files\": 3,\n    \"bytes\": 985648,\n    \"new_bytes\": 985648,\n    \"packs\": 1,\n    \"pack_bytes\": 218689,\n    \"skipped\": null,\n    \"duration_ns\": 27931000,\n    \"files_total\": 3,\n    \"bytes_total\": 985648\n  }\n}\n",
+      "stderr": "\n[1/3] 919 B / 985.6 kB read, 919 B new  0 MB/s \n[2/3] 225.0 kB / 985.6 kB read, 225.0 kB new  16 MB/s \n[3/3] 985.6 kB / 985.6 kB read, 985.6 kB new  41 MB/s \n",
+      "finished_unix_ns": 1793585053416900093,
+      "finished_perf_ns": 1560028292081993
+    },
+    {
+      "label": "push-graph-target",
+      "argv": [
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+        "push",
+        "--store",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/graph-store",
+        "--json",
+        "--ref",
+        "resident/graph-target",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-target"
+      ],
+      "started_unix_ns": 1793585053420220798,
+      "started_perf_ns": 1560028295401518,
+      "returncode": 0,
+      "stdout": "{\n  \"manifest\": \"sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93\",\n  \"ref\": \"resident/graph-target\",\n  \"stats\": {\n    \"files\": 3,\n    \"bytes\": 1003916,\n    \"new_bytes\": 779819,\n    \"packs\": 1,\n    \"pack_bytes\": 197911,\n    \"skipped\": null,\n    \"duration_ns\": 27352970,\n    \"files_total\": 3,\n    \"bytes_total\": 1003916\n  }\n}\n",
+      "stderr": "\n[1/3] 224.1 kB / 1.0 MB read, 0 B new  70 MB/s \n[2/3] 225.0 kB / 1.0 MB read, 919 B new  23 MB/s \n[3/3] 1.0 MB / 1.0 MB read, 779.8 kB new  41 MB/s \n",
+      "finished_unix_ns": 1793585053459989552,
+      "finished_perf_ns": 1560028335171672
+    },
+    {
+      "label": "diff-graph",
+      "argv": [
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+        "diff",
+        "--store",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/graph-store",
+        "--json",
+        "--ranges",
+        "sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444",
+        "sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93"
+      ],
+      "started_unix_ns": 1793585053460916727,
+      "started_perf_ns": 1560028336097337,
+      "returncode": 0,
+      "stdout": "{\n  \"files\": [\n    {\n      \"path\": \"cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable\",\n      \"base\": \"cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable\",\n      \"size\": 224097,\n      \"same\": 224097,\n      \"moved\": 0,\n      \"new\": 0,\n      \"same_blocks\": 224097,\n      \"changed_runs\": 0,\n      \"largest_run\": 0\n    },\n    {\n      \"path\": \"cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable\",\n      \"base\": \"cache/graphs/2026.4.0/2.10.0+cpu/42100dcbf68bbc6aa86e92b0.runnable\",\n      \"size\": 778900,\n      \"same\": 0,\n      \"moved\": 0,\n      \"new\": 778900,\n      \"same_blocks\": 0,\n      \"changed_runs\": 1,\n      \"largest_run\": 778900,\n      \"changed\": [\n        [\n          0,\n          778900\n        ]\n      ]\n    },\n    {\n      \"path\": \"variant.json\",\n      \"base\": \"variant.json\",\n      \"size\": 919,\n      \"same\": 0,\n      \"moved\": 0,\n      \"new\": 919,\n      \"same_blocks\": 0,\n      \"changed_runs\": 1,\n      \"largest_run\": 919,\n      \"changed\": [\n        [\n          0,\n          919\n        ]\n      ]\n    }\n  ],\n  \"size\": 1003916,\n  \"same\": 224097,\n  \"moved\": 0,\n  \"new\": 779819,\n  \"new_stored\": 197911,\n  \"same_blocks\": 224097,\n  \"changed_runs\": 2,\n  \"largest_run\": 778900\n}\n",
+      "stderr": "",
+      "finished_unix_ns": 1793585053467567926,
+      "finished_perf_ns": 1560028342749406
+    }
+  ],
+  "sources": {
+    "full_base": {
+      "root": "/home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2/base-B4-S256-g2",
+      "inventory": {
+        "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+          "size": 224097,
+          "inode": 25036633,
+          "device": 64512,
+          "blocks": 440,
+          "sha256": "405001f45f4676a134738a2d340dd453f17e9ccc60ba026e05ab285b39261c70"
+        },
+        "cache/graphs/2026.4.0/2.10.0+cpu/42100dcbf68bbc6aa86e92b0.runnable": {
+          "size": 760632,
+          "inode": 25036628,
+          "device": 64512,
+          "blocks": 1488,
+          "sha256": "5e8aaff08c16606163a52e9d517dc2e1fc0b58aabb03740559af38ca4bba7bb1"
+        },
+        "checkpoint/config.json": {
+          "size": 855,
+          "inode": 24520436,
+          "device": 64512,
+          "blocks": 8,
+          "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+        },
+        "checkpoint/model-00001-of-00004.safetensors": {
+          "size": 4976698672,
+          "inode": 400366,
+          "device": 64512,
+          "blocks": 9720128,
+          "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668"
+        },
+        "checkpoint/model-00002-of-00004.safetensors": {
+          "size": 4999802720,
+          "inode": 400363,
+          "device": 64512,
+          "blocks": 9765248,
+          "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15"
+        },
+        "checkpoint/model-00003-of-00004.safetensors": {
+          "size": 4915916176,
+          "inode": 400367,
+          "device": 64512,
+          "blocks": 9601408,
+          "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa"
+        },
+        "checkpoint/model-00004-of-00004.safetensors": {
+          "size": 1168138808,
+          "inode": 400365,
+          "device": 64512,
+          "blocks": 2281536,
+          "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b"
+        },
+        "checkpoint/model.safetensors.index.json": {
+          "size": 23950,
+          "inode": 24520435,
+          "device": 64512,
+          "blocks": 48,
+          "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+        },
+        "variant.json": {
+          "size": 919,
+          "inode": 25036634,
+          "device": 64512,
+          "blocks": 8,
+          "sha256": "cdc74a5ae3eda7e24736b3d0268dc68c54dca92ed277d4217b5906f1cf46d6dc"
+        }
+      }
+    },
+    "full_target": {
+      "root": "/home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2/target-B4-S512-g2",
+      "inventory": {
+        "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+          "size": 224097,
+          "inode": 25036645,
+          "device": 64512,
+          "blocks": 440,
+          "sha256": "405001f45f4676a134738a2d340dd453f17e9ccc60ba026e05ab285b39261c70"
+        },
+        "cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable": {
+          "size": 778900,
+          "inode": 25036644,
+          "device": 64512,
+          "blocks": 1528,
+          "sha256": "f06c3bf73e93e964a9a2f575e6a73c0960aea0cae02b63f43b5cce5182f0f756"
+        },
+        "checkpoint/config.json": {
+          "size": 855,
+          "inode": 24520436,
+          "device": 64512,
+          "blocks": 8,
+          "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+        },
+        "checkpoint/model-00001-of-00004.safetensors": {
+          "size": 4976698672,
+          "inode": 400366,
+          "device": 64512,
+          "blocks": 9720128,
+          "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668"
+        },
+        "checkpoint/model-00002-of-00004.safetensors": {
+          "size": 4999802720,
+          "inode": 400363,
+          "device": 64512,
+          "blocks": 9765248,
+          "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15"
+        },
+        "checkpoint/model-00003-of-00004.safetensors": {
+          "size": 4915916176,
+          "inode": 400367,
+          "device": 64512,
+          "blocks": 9601408,
+          "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa"
+        },
+        "checkpoint/model-00004-of-00004.safetensors": {
+          "size": 1168138808,
+          "inode": 400365,
+          "device": 64512,
+          "blocks": 2281536,
+          "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b"
+        },
+        "checkpoint/model.safetensors.index.json": {
+          "size": 23950,
+          "inode": 24520435,
+          "device": 64512,
+          "blocks": 48,
+          "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+        },
+        "variant.json": {
+          "size": 919,
+          "inode": 25036646,
+          "device": 64512,
+          "blocks": 8,
+          "sha256": "951365e6659a39ad9e143202034e2bf986ff5863f9bd0638b211604a82b08fcd"
+        }
+      }
+    },
+    "checkpoint": {
+      "root": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "inventory": {
+        "config.json": {
+          "size": 855,
+          "inode": 24520436,
+          "device": 64512,
+          "blocks": 8,
+          "sha256": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e"
+        },
+        "model-00001-of-00004.safetensors": {
+          "size": 4976698672,
+          "inode": 400366,
+          "device": 64512,
+          "blocks": 9720128,
+          "sha256": "2b1879f356aed350030bb40eb45ad362c89d9891096f79a3ab323d3ba5607668"
+        },
+        "model-00002-of-00004.safetensors": {
+          "size": 4999802720,
+          "inode": 400363,
+          "device": 64512,
+          "blocks": 9765248,
+          "sha256": "09d433f650646834a83c580877bd60c6d1f88f7755305c12576b5c7058f9af15"
+        },
+        "model-00003-of-00004.safetensors": {
+          "size": 4915916176,
+          "inode": 400367,
+          "device": 64512,
+          "blocks": 9601408,
+          "sha256": "fc1cdddd6bfa91128d6e94ee73d0ce62bfcdb7af29e978ddcab30c66ae9ea7fa"
+        },
+        "model-00004-of-00004.safetensors": {
+          "size": 1168138808,
+          "inode": 400365,
+          "device": 64512,
+          "blocks": 2281536,
+          "sha256": "92ecfe1a2414458b4821ac8c13cf8cb70aed66b5eea8dc5ad9eeb4ff309d6d7b"
+        },
+        "model.safetensors.index.json": {
+          "size": 23950,
+          "inode": 24520435,
+          "device": 64512,
+          "blocks": 48,
+          "sha256": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b"
+        }
+      }
+    },
+    "graph_base": {
+      "root": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-base",
+      "inventory": {
+        "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+          "size": 224097,
+          "inode": 23613441,
+          "device": 64512,
+          "blocks": 440,
+          "sha256": "405001f45f4676a134738a2d340dd453f17e9ccc60ba026e05ab285b39261c70"
+        },
+        "cache/graphs/2026.4.0/2.10.0+cpu/42100dcbf68bbc6aa86e92b0.runnable": {
+          "size": 760632,
+          "inode": 23613442,
+          "device": 64512,
+          "blocks": 1488,
+          "sha256": "5e8aaff08c16606163a52e9d517dc2e1fc0b58aabb03740559af38ca4bba7bb1"
+        },
+        "variant.json": {
+          "size": 919,
+          "inode": 23613443,
+          "device": 64512,
+          "blocks": 8,
+          "sha256": "cdc74a5ae3eda7e24736b3d0268dc68c54dca92ed277d4217b5906f1cf46d6dc"
+        }
+      }
+    },
+    "graph_target": {
+      "root": "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-target",
+      "inventory": {
+        "cache/graphs/2026.4.0/2.10.0+cpu/33a051dfeb83c1a051b7599b.runnable": {
+          "size": 224097,
+          "inode": 23866845,
+          "device": 64512,
+          "blocks": 440,
+          "sha256": "405001f45f4676a134738a2d340dd453f17e9ccc60ba026e05ab285b39261c70"
+        },
+        "cache/graphs/2026.4.0/2.10.0+cpu/b780eaf18aaa12c360feb891.runnable": {
+          "size": 778900,
+          "inode": 23866846,
+          "device": 64512,
+          "blocks": 1528,
+          "sha256": "f06c3bf73e93e964a9a2f575e6a73c0960aea0cae02b63f43b5cce5182f0f756"
+        },
+        "variant.json": {
+          "size": 919,
+          "inode": 23866847,
+          "device": 64512,
+          "blocks": 8,
+          "sha256": "951365e6659a39ad9e143202034e2bf986ff5863f9bd0638b211604a82b08fcd"
+        }
+      }
+    }
+  },
+  "graph_pushes": {
+    "base": {
+      "label": "push-graph-base",
+      "argv": [
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+        "push",
+        "--store",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/graph-store",
+        "--json",
+        "--ref",
+        "resident/graph-base",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-base"
+      ],
+      "started_unix_ns": 1793585053375688155,
+      "started_perf_ns": 1560028250870015,
+      "returncode": 0,
+      "stdout": "{\n  \"manifest\": \"sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444\",\n  \"ref\": \"resident/graph-base\",\n  \"stats\": {\n    \"files\": 3,\n    \"bytes\": 985648,\n    \"new_bytes\": 985648,\n    \"packs\": 1,\n    \"pack_bytes\": 218689,\n    \"skipped\": null,\n    \"duration_ns\": 27931000,\n    \"files_total\": 3,\n    \"bytes_total\": 985648\n  }\n}\n",
+      "stderr": "\n[1/3] 919 B / 985.6 kB read, 919 B new  0 MB/s \n[2/3] 225.0 kB / 985.6 kB read, 225.0 kB new  16 MB/s \n[3/3] 985.6 kB / 985.6 kB read, 985.6 kB new  41 MB/s \n",
+      "finished_unix_ns": 1793585053416900093,
+      "finished_perf_ns": 1560028292081993
+    },
+    "target": {
+      "label": "push-graph-target",
+      "argv": [
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+        "push",
+        "--store",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/graph-store",
+        "--json",
+        "--ref",
+        "resident/graph-target",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/artifacts/graph-target"
+      ],
+      "started_unix_ns": 1793585053420220798,
+      "started_perf_ns": 1560028295401518,
+      "returncode": 0,
+      "stdout": "{\n  \"manifest\": \"sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93\",\n  \"ref\": \"resident/graph-target\",\n  \"stats\": {\n    \"files\": 3,\n    \"bytes\": 1003916,\n    \"new_bytes\": 779819,\n    \"packs\": 1,\n    \"pack_bytes\": 197911,\n    \"skipped\": null,\n    \"duration_ns\": 27352970,\n    \"files_total\": 3,\n    \"bytes_total\": 1003916\n  }\n}\n",
+      "stderr": "\n[1/3] 224.1 kB / 1.0 MB read, 0 B new  70 MB/s \n[2/3] 225.0 kB / 1.0 MB read, 919 B new  23 MB/s \n[3/3] 1.0 MB / 1.0 MB read, 779.8 kB new  41 MB/s \n",
+      "finished_unix_ns": 1793585053459989552,
+      "finished_perf_ns": 1560028335171672
+    }
+  },
+  "accelerator_fds_before": [],
+  "graph_refs": {
+    "base": "sha256:b05686a013bfc448d9df35bdc305069f92257a035c97411510b5a6c2897ba444",
+    "target": "sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93"
+  },
+  "full_refs": {
+    "base": "sha256:04b45065cea8408e08043c1cbd13bdc4aa230c9683a9d85ed97f5fb1e5567526",
+    "target": "sha256:66cedc7b2a1389394c7ca5275d171625993c23742d7c7834bcb7e93a2be52e52"
+  },
+  "full_store": "/home/gspark/workspace/codex_ccgrid_npu_20261030/store/e6-posix",
+  "reference": {
+    "path": "/home/gspark/workspace/codex_ccgrid_npu_20261030/inputs/e6-base-to-target-reference.json",
+    "sha256": "a3520e738005f7ea64d27ffce6f95f5785bf3ee29be97f01c9cfabeb9a8d8a04"
+  },
+  "base_cache_dir": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache/graphs",
+  "binary_files": {
+    "onggi": {
+      "bytes": 25453449,
+      "sha256": "e6b8ee52a69c7cf9fe970cc1df08e93eab9c175c061baccb078725e549a15ae5"
+    },
+    "csi-call": {
+      "bytes": 15866047,
+      "sha256": "c982af3a3a1b61af9873c955b3cf6655a3cc292b77ca8fef309761928c62584c"
+    }
+  },
+  "finished_unix_ns": 1793585053501085678,
+  "wall_s": 26.856558141
+}

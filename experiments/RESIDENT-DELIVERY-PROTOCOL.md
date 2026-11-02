@@ -15,8 +15,8 @@ E6 observer/helpers and Onggi's eligibility threshold stay unchanged.
 
 Graph copy measures local colocated copy, not a cloud object fetch. The whole
 no-rebase arm is an Onggi reconstruction control, not a traditional copy arm.
-Graph-only artifacts contain no checkpoint, symlinks or unrelated files. Every
-native engine reads the same external immutable checkpoint. Graph-only rebase
+Graph-only artifacts contain no checkpoint, symlinks or unrelated files. The
+four timing arms read the same external immutable checkpoint. Graph-only rebase
 may refuse a donor because stripping weights can lower same-offset reuse below
 50%; an observed refusal and full reconstruction is valid. Never lower that
 threshold. Whole rebase must prove a claim in smoke or the main matrix stops.
@@ -160,7 +160,7 @@ in the record. The primary endpoint uses the engine's native prompt TTFT added
 to generation start; it excludes the rest of the continuation.
 
 Metrics partition delivery, full hash validation, hash-to-generation and
-prompt-to-first-token, and give their demand-to-first-token total. Allocation
+prompt-to-first-token, and give their demand-to-first-token total. Harness
 entry-to-first-token and excluded pre-demand setup expose local preparation,
 base engine construction/upload, input hashing and warmup. Externally prepared
 donor costs are separately retained in the receipt. OS page cache is shared and
@@ -217,3 +217,39 @@ base files, lease and a native base request after target materialization, then
 perform the same resident target switch and close the owner before unpublishing.
 This is a functional n=1 control, separate from the four-arm n=5 timing matrix.
 The earlier graph-only active control does not establish checkpoint ownership.
+
+## Frozen main and excluded attempts
+
+The s01 functional smoke used an immutable graph cache containing all original
+compiled runnable files; its target variant was absent from the native owner.
+It is not pooled with the main timing samples. Main r02-r06 uses only the full
+base artifact's two-file graph cache for initial load: the target decode
+runnable is absent there. Both graph-only delivery arms provide exactly the
+same target graph bundle, and all four arms then use the same resident native
+switch. Odd cohorts use the table order and even cohorts its reverse. No
+default eligibility threshold is changed. s02 separately verifies actual
+full-checkpoint mount ownership and is a functional n=1 observation.
+
+r01 stopped during CPU setup, before any native allocation: `/usr/bin/time`
+was absent inside its slim container. Its failure is retained. The excluded
+synthetic fixture02 uses existing host time/strace binaries mounted read-only
+at their expected paths and passes actual CLI/syscall checks. Main starts at
+r02 with unchanged native harness829573e and runtime baseline db2dd259. CPU
+preparation, card allocation, native execution, export verification and cleanup
+are separate stages; the next cohort starts only after the prior card and its
+large owned payloads are released. The synthetic fixture is not model data.
+
+Verify byte-exact archives, source fingerprints, native gates, ownership and
+time partitions before reporting any n=5 aggregate:
+
+```sh
+python experiments/verify_resident_delivery.py --cohorts s01 s02
+python experiments/verify_resident_delivery.py --cohorts r02 r03 r04 r05 r06 --summary
+```
+
+The second command requires all five main cohorts; it cannot summarize smoke
+as repetitions or silently discard a failed/missing sample. First token is
+reconstructed from generation-call entry plus returned native prompt TTFT.
+Component medians need not add to the median total. Export checks verify
+recorded model hashes and worker witnesses; model payloads are absent from Git
+and cannot be rehashed by this offline verifier.
