@@ -1,5 +1,6 @@
 """Finite FIFO caller over real generation/update callbacks; no native evidence by itself."""
 from contextlib import contextmanager
+import copy
 import math
 import queue
 import threading
@@ -45,10 +46,11 @@ def mark_first_return(program_class, first_native, marker):
     try:
         yield
     finally:
-        if owned:
-            program_class.__call__ = original
-        else:
-            del program_class.__call__
+        if program_class.__call__ is call:
+            if owned:
+                program_class.__call__ = original
+            else:
+                del program_class.__call__
 
 
 def run_queue(generate, switch, first_native, emit, timeout=300):
@@ -56,18 +58,20 @@ def run_queue(generate, switch, first_native, emit, timeout=300):
 
     generate(id) returns generation_entry_perf_ns, prompt_ttft_s and the actual
     first verified native return marker for request0. emit receives incremental
-    events. A false worker_joined forbids owner close/replacement until process
+    events through a nonblocking memory sink; native callers persist them only
+    after this returns. A false worker_joined forbids owner close/replacement until process
     exit; an outer bounded Job enforces that final fallback.
     """
     tasks, lock = queue.Queue(), threading.RLock()
-    base_finished, abort = threading.Event(), threading.Event()
+    base_finished, abort, emissions_closed = (threading.Event() for _ in range(3))
     initial = time.perf_counter_ns()
     result = dict(schema="ccgrid-loaded-queue-v1", status="running", requests=[],
                   observed_inflight_at_trigger=False, worker_joined=False,
                   arrivals={0: initial}, switch={})
 
     def event(name, **fields):
-        emit(dict(event=name, at_perf_ns=time.perf_counter_ns(), **fields))
+        if not emissions_closed.is_set():
+            emit(dict(event=name, at_perf_ns=time.perf_counter_ns(), **fields))
 
     def worker():
         try:
@@ -82,10 +86,12 @@ def run_queue(generate, switch, first_native, emit, timeout=300):
                     with lock:
                         result["switch"]["started_perf_ns"] = started
                         event("switch_start")
+                    callback_started = time.perf_counter_ns()
                     value = switch()
                     ready = time.perf_counter_ns()
                     with lock:
-                        result["switch"].update(ready_perf_ns=ready, outcome=value)
+                        result["switch"].update(callback_started_perf_ns=callback_started,
+                                                ready_perf_ns=ready, outcome=value)
                         event("switch_ready", outcome=value)
                 else:
                     request = task[1]
@@ -135,7 +141,10 @@ def run_queue(generate, switch, first_native, emit, timeout=300):
     # A live native worker must not be raced by closing/replacing its owner.
     result["worker_joined"] = not thread.is_alive()
     if thread.is_alive():
-        result.setdefault("error", "worker remains active; owner release deferred to process exit")
+        with lock:
+            abort.set()
+            tasks.put(("stop", None))
+            result.setdefault("error", "worker remains active; owner release deferred to process exit")
     if "error" not in result:
         try:
             base, one, two = result["requests"]
@@ -147,8 +156,10 @@ def run_queue(generate, switch, first_native, emit, timeout=300):
             if any(row["arrival_perf_ns"] > switch_row["started_perf_ns"] for row in (one, two)):
                 raise RuntimeError("target requests did not arrive before switch work")
             result["metrics"] = dict(
-                drain_wait_s=(switch_row["started_perf_ns"] - trigger) / 1e9,
-                switch_work_s=(switch_row["ready_perf_ns"] - switch_row["started_perf_ns"]) / 1e9,
+                drain_wait_s=(base["returned_perf_ns"] - trigger) / 1e9,
+                dispatch_s=(switch_row["started_perf_ns"] - base["returned_perf_ns"]) / 1e9,
+                switch_start_recording_s=(switch_row["callback_started_perf_ns"] - switch_row["started_perf_ns"]) / 1e9,
+                switch_work_s=(switch_row["ready_perf_ns"] - switch_row["callback_started_perf_ns"]) / 1e9,
                 trigger_to_target_first_token_s=(one["first_token_perf_ns"] - trigger) / 1e9,
                 queued_requests=[dict(request=row["request"],
                     wait_s=(row["started_perf_ns"] - row["arrival_perf_ns"]) / 1e9,
@@ -160,5 +171,7 @@ def run_queue(generate, switch, first_native, emit, timeout=300):
             result["error"] = traceback.format_exc()
     if "error" in result:
         result["status"] = "failed"
-    event("queue_finished", status=result["status"], worker_joined=result["worker_joined"])
-    return result
+    with lock:
+        event("queue_finished", status=result["status"], worker_joined=result["worker_joined"])
+        emissions_closed.set()
+        return copy.deepcopy(result)

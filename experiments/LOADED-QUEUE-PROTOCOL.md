@@ -23,6 +23,12 @@ start/ready and reconstructed first-token time (generate entry plus returned
 native prompt TTFT). Report drain wait, switch work, trigger-to-target token,
 each queued request's wait/TTFT/completion and host RSS/PSS snapshots. Do not
 infer device peak, HTTP latency, throughput or p99 from this finite case.
+Actual drain ends at request0 return; the subsequent dispatch gap and any
+start-recording delay are separate. Switch callback work starts after the
+start notification. Native events use a nonblocking in-memory sink, then
+durable recording after queue completion; no fsync delays request admission.
+Host snapshots occur before the queue, after queued requests and after close,
+not as estimates of a transient device/host peak.
 
 Correctness: request0 matches independent fresh base; requests1/2 match fresh
 target, which differs from base. No request enters during switch. Current B2
@@ -71,3 +77,23 @@ without httpx; exact-head Linux CI is required. No native sample has run.
 Ruling: keep this a prepared-file finite FIFO case, avoiding an HTTP stack
 that would expand scope; its measured queue behavior cannot imply production
 throughput or p99 latency. Runtime/core and immutable fixtures are unchanged.
+
+Final review/fix ledger: independent pre-measurement review of43f4c0b found
+two Important issues. The timeout regression first reproduced queued work
+resuming and stale observer restoration; the fix aborts successors, suppresses
+late emissions, returns a frozen snapshot and restores a marker only while
+its own wrapper remains installed. Native workers now never own the durable
+journal. A controlled slow-emitter regression first reproduced recorder cost
+as drain/work; actual drain, dispatch, start recording and callback work are
+separate, and native events are buffered until after the queue. Both tests
+observed RED then GREEN; combined boundary suite42passed1skip, including12
+loaded-queue tests. Full suite remains required in exact-head Linux CI.
+
+Final rulings on set-aside review items: native thread/device/parity behavior
+and input/resource/UID facts require the forthcoming off-card and allocated
+smoke gates; no CPU result closes them. HTTP/throughput/p99/cancellation and
+device peaks remain outside this finite experiment; expanding those claims
+would require another workload. The inherited generate-entry plus internal
+TTFT offset remains disclosed, so queue TTFT is a reconstructed native
+endpoint rather than a streaming timestamp. Runtime refactoring and manuscript
+changes are separate work. There were no deferred Minor findings.

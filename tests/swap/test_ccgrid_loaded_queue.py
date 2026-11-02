@@ -1,5 +1,6 @@
 """Synthetic CPU queue checks; these do not provide native timing evidence."""
 import importlib.util
+import json
 from pathlib import Path
 import threading
 import time
@@ -153,3 +154,71 @@ def test_native_acceptance_rejects_wrong_output_counts_or_ownership(damage):
         row["queue"]["worker_joined"] = False
     with pytest.raises(ValueError):
         h.verify_sample(row, prepared)
+
+
+def test_timeout_aborts_followup_and_preserves_snapshot_and_observer():
+    h = load()
+    native, release = threading.Event(), threading.Event()
+    calls, events = [], []
+
+    class Program:
+        def __call__(self):
+            return 7
+
+    original = Program.__call__
+
+    def checked(program):
+        assert original(program) == 7
+        return 7
+
+    Program.__call__ = checked
+
+    def generate(request):
+        calls.append(request)
+        entry, marker = time.perf_counter_ns(), {}
+        with h.mark_first_return(Program, native, marker):
+            assert Program()() == 7
+            assert release.wait(2)
+        return dict(generation_entry_perf_ns=entry, prompt_ttft_s=0,
+                    native_first_perf_ns=marker["perf_ns"])
+
+    before = set(threading.enumerate())
+    result = h.run_queue(generate, lambda: calls.append("switch"), native, events.append, timeout=.02)
+    assert result["status"] == "failed" and not result["worker_joined"]
+    frozen, event_count = json.dumps(result, sort_keys=True), len(events)
+    Program.__call__ = original  # Outer observer unwinds on failed native run.
+    release.set()
+    for thread in set(threading.enumerate()) - before:
+        thread.join(2)
+        assert not thread.is_alive()
+    assert calls == [0], "a failed caller must not later switch or serve queued requests"
+    assert json.dumps(result, sort_keys=True) == frozen
+    assert len(events) == event_count
+    assert Program.__call__ is original
+
+
+def test_recorder_delay_is_not_native_drain_or_callback_work():
+    h = load()
+    native, release = threading.Event(), threading.Event()
+
+    def generate(request):
+        entry = time.perf_counter_ns()
+        if request == 0:
+            native.set()
+            assert release.wait(2)
+        return dict(generation_entry_perf_ns=entry, prompt_ttft_s=0, native_first_perf_ns=entry)
+
+    def slow_recorder(event):
+        if event["event"] == "queued":
+            release.set()
+        if event["event"] in ("request_return", "switch_start"):
+            threading.Event().wait(.03)  # Deliberate CPU-test instrumentation cost.
+
+    result = h.run_queue(generate, lambda: {}, native, slow_recorder, timeout=2)
+    assert result["status"] == "completed", result
+    base, sw = result["requests"][0], result["switch"]
+    actual_drain = (base["returned_perf_ns"] - result["trigger_perf_ns"]) / 1e9
+    assert result["metrics"]["drain_wait_s"] == actual_drain
+    assert result["metrics"]["dispatch_s"] >= .02
+    assert result["metrics"]["switch_work_s"] < .02
+    assert sw["callback_started_perf_ns"] - sw["started_perf_ns"] >= 20_000_000

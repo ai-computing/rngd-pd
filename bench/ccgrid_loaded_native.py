@@ -78,12 +78,17 @@ def trial(owner, prepared, arm, observed, journal):
                 engine._sync()
                 after = b2.identities(engine)
             return dict(update=update, verification=verification, identities_after=after,
-                        diagnostics=b2.numeric_diff(owner._metrics, prior), memory_ready=memory())
+                        diagnostics=b2.numeric_diff(owner._metrics, prior))
 
         safe_to_close = False
-        row["queue"] = run_queue(generate, switch, first_native, journal.write)
+        events = []
+        row["queue"] = run_queue(generate, switch, first_native, events.append)
         safe_to_close = row["queue"]["worker_joined"]
+        row["queue_events"] = events
+        for event in events:
+            journal.write(event)
         b2.require(row["queue"]["status"] == "completed", row["queue"].get("error", "queue failed"))
+        row["memory_after_queued_requests"] = memory()
         row["status"] = "completed"
     except BaseException:
         row.update(status="failed", error=traceback.format_exc())
