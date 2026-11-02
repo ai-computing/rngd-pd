@@ -1,0 +1,29 @@
+{
+  "schema": "onggi.binding-fixtures.v1",
+  "cases": [
+    {
+      "name": "native-identical",
+      "reference_role": "base",
+      "base_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "target_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "switchplan": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/identical.switchplan.json",
+      "expect_mode": "units"
+    },
+    {
+      "name": "native-interior-projection",
+      "reference_role": "sparse",
+      "base_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "target_dir": "/home/gspark/workspace/codex_binding_conformance_20261030/rngd-artifacts/interior",
+      "switchplan": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/interior.switchplan.json",
+      "expect_mode": "units"
+    },
+    {
+      "name": "native-lm",
+      "reference_role": "lm",
+      "base_dir": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures/resident-base",
+      "target_dir": "/home/gspark/workspace/codex_rngd_opt_20261023/fixtures/lm-new",
+      "switchplan": "/home/gspark/workspace/codex_binding_conformance_20261030/inputs/lm.switchplan.json",
+      "expect_mode": "units"
+    }
+  ]
+}

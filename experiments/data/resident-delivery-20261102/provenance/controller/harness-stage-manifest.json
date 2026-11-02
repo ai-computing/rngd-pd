@@ -1,0 +1,14 @@
+{
+  "files": [
+    {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_resident_delivery.py",
+      "bytes": 31390,
+      "sha256": "0f119ec2b061ee4c066c7c86560ebe1a2e3509ea8e54728c98457dfd49560c47"
+    },
+    {
+      "path": "/home/gspark/workspace/codex_resident_delivery_20261102/stage/prepare_inputs.py",
+      "bytes": 3928,
+      "sha256": "26cb6af8eea0bbca9ae863541a865c477133d37c39febd63a3f8f01f8a15c907"
+    }
+  ]
+}

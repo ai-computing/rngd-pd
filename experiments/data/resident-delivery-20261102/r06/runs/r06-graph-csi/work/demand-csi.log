@@ -1,0 +1,8 @@
+2026/11/02 03:39:50.639140 node cache /home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-graph-csi/work/demand-cache: 0 chunks in 0 packs
+2026/11/02 03:39:50.639685 onggi dev CSI node plugin onggi.ai-computing.github.io on unix:///home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-graph-csi/work/csi.sock, node cdx-exp, data /home/gspark/workspace/codex_resident_delivery_20261102/prep/r06/gd/m
+2026/11/02 03:40:07.658585 materializing sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93
+2026/11/02 03:40:07.670276 pull of sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 took over nothing: of 1 idle artifacts the best keeps 224097 of 1003916 B at the same offsets (22.3 %, 50 % needed)
+2026/11/02 03:40:07.670653 materialized sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 in 12ms: {"files":3,"bytes":1003916,"read_bytes":235221,"cache_bytes":0,"peer_bytes":0,"peer_chunks":0,"cached":235221,"reused":0,"base_best":224097,"local_bytes":0,"ranges":4,"duration_ns":11307891}
+2026/11/02 03:40:07.671224 published target ref sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 manifest sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 at /home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-graph-csi/work/target-mount (1 volumes use it)
+2026/11/02 03:40:08.885559 unpublished target manifest sha256:80d5767c037e6f6592bf6052809e653bd3c3ba79e8f6c9dbc6f208a790446c93 from /home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-graph-csi/work/target-mount (0 volumes use it)
+2026/11/02 03:40:08.887377 stopping

@@ -1,0 +1,176 @@
+{
+  "job_uid": "d2108e63-cf2f-4383-8e0d-5ae4a1d47e0a",
+  "name": "cdx-resident-native-r06",
+  "job_absent": true,
+  "pods_absent": true,
+  "observations": [
+    {
+      "name": "cdx-resident-native-r06-g6q6r",
+      "uid": "a139d9fd-5876-4f87-a475-a1fe3ce1fb39",
+      "phase": "Succeeded",
+      "containers": [
+        {
+          "containerID": "containerd://c771c80af25b59a1dee902d8f39a3f5746fc5f16cd755900f183bf5bad029c17",
+          "image": "sha256:cee13550f97b8a595506e8e4ca74263ba44924248779a4ba4f942e197652acff",
+          "imageID": "docker.io/library/ubuntu@sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+          "lastState": {},
+          "name": "run",
+          "ready": false,
+          "restartCount": 0,
+          "started": false,
+          "state": {
+            "terminated": {
+              "containerID": "containerd://c771c80af25b59a1dee902d8f39a3f5746fc5f16cd755900f183bf5bad029c17",
+              "exitCode": 0,
+              "finishedAt": "2026-11-02T03:40:27Z",
+              "reason": "Completed",
+              "startedAt": "2026-11-02T03:36:56Z"
+            }
+          },
+          "volumeMounts": [
+            {
+              "mountPath": "/home/gspark/workspace/codex_swap_benchmark_20261023/fixtures",
+              "name": "source-views",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-libs",
+              "name": "host-libs",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-usrlib",
+              "name": "host-usrlib",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/host-bin",
+              "name": "host-bin",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/lib/python3/dist-packages",
+              "name": "dist",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/local/lib/python3.10/dist-packages",
+              "name": "local-dist",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/venvs/furiosa-2026.4",
+              "name": "rngd-sdk",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/run/swap",
+              "name": "assigned"
+            },
+            {
+              "mountPath": "/dev/shm",
+              "name": "shm"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_rngd_opt_20261023",
+              "name": "prior-opt",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_onggi_integration_20261030",
+              "name": "onggi-build",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030",
+              "name": "work",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/cache",
+              "name": "own-cache",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/runtime-source",
+              "name": "source",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_npu_20261030/artifacts-v2",
+              "name": "published",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/var/lib/kubelet/device-plugins",
+              "name": "device-checkpoint",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_binding_conformance_20261030",
+              "name": "binding-work",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_binding_conformance_20261030/runtime-source",
+              "name": "binding-source",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_binding_conformance_20261030/conformance-source",
+              "name": "binding-kit",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/bin/python3.10",
+              "name": "host-python",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/usr/lib/python3.10",
+              "name": "host-python-stdlib",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_b2_20261102",
+              "name": "new-work",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_ccgrid_b2_20261102/runtime-source",
+              "name": "new-source",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            },
+            {
+              "mountPath": "/home/gspark/workspace/codex_resident_delivery_20261102",
+              "name": "resident-task"
+            }
+          ]
+        }
+      ],
+      "log": "npu0\n[chip] allocated by k8s: [0] -> npu0, using rngd:0\n{\"trial_id\": \"r06-full-csi-rebase\", \"arm\": \"full-csi-rebase\", \"argv\": [\"/home/gspark/venvs/furiosa-2026.4/bin/python\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_resident_delivery.py\", \"trial\", \"--config\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-full-csi-rebase/config.json\", \"--out\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-full-csi-rebase/result.json\"], \"started_unix_ns\": 1793590616461184491, \"finished_unix_ns\": 1793590677977616285, \"returncode\": 0, \"status\": \"completed\", \"validity\": \"valid\", \"metrics\": {\"delivery_s\": 0.267869558, \"hash_validation_s\": 9.002503247, \"hash_to_generation_s\": 0.19685412, \"prompt_to_first_token_s\": 0.176758896, \"demand_to_first_token_s\": 9.643985821, \"harness_entry_to_first_token_s\": 59.981893679, \"excluded_pre_demand_setup_s\": 50.337907858}, \"result_sha256\": \"5770d5e3af4eb2430a18e07d736db87a08ea6f70cd433193bfb8e81610e60202\"}\n{\"trial_id\": \"r06-full-csi-no-rebase\", \"arm\": \"full-csi-no-rebase\", \"argv\": [\"/home/gspark/venvs/furiosa-2026.4/bin/python\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_resident_delivery.py\", \"trial\", \"--config\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-full-csi-no-rebase/config.json\", \"--out\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-full-csi-no-rebase/result.json\"], \"started_unix_ns\": 1793590677980180963, \"finished_unix_ns\": 1793590790578165783, \"returncode\": 0, \"status\": \"completed\", \"validity\": \"valid\", \"metrics\": {\"delivery_s\": 57.411143973, \"hash_validation_s\": 9.456515803, \"hash_to_generation_s\": 0.20030928, \"prompt_to_first_token_s\": 0.213332633, \"demand_to_first_token_s\": 67.281301689, \"harness_entry_to_first_token_s\": 110.985191378, \"excluded_pre_demand_setup_s\": 43.703889689}, \"result_sha256\": \"899423dcb9bcb1b119d8dce0a84904198cdee2e7ea03154717b3a199e14a732e\"}\n{\"trial_id\": \"r06-graph-csi\", \"arm\": \"graph-csi\", \"argv\": [\"/home/gspark/venvs/furiosa-2026.4/bin/python\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_resident_delivery.py\", \"trial\", \"--config\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-graph-csi/config.json\", \"--out\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-graph-csi/result.json\"], \"started_unix_ns\": 1793590790582498230, \"finished_unix_ns\": 1793590809629992301, \"returncode\": 0, \"status\": \"completed\", \"validity\": \"valid\", \"metrics\": {\"delivery_s\": 0.022823785, \"hash_validation_s\": 0.001930585, \"hash_to_generation_s\": 0.200133426, \"prompt_to_first_token_s\": 0.204960271, \"demand_to_first_token_s\": 0.429848067, \"harness_entry_to_first_token_s\": 17.465403097, \"excluded_pre_demand_setup_s\": 17.03555503}, \"result_sha256\": \"5e383b234660d11e574b59ac451f55144006073ca7bee49461c4f2bb0be4924b\"}\n{\"trial_id\": \"r06-graph-copy\", \"arm\": \"graph-copy\", \"argv\": [\"/home/gspark/venvs/furiosa-2026.4/bin/python\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runtime-source/bench/ccgrid_resident_delivery.py\", \"trial\", \"--config\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-graph-copy/config.json\", \"--out\", \"/home/gspark/workspace/codex_resident_delivery_20261102/runs/r06-graph-copy/result.json\"], \"started_unix_ns\": 1793590809634216756, \"finished_unix_ns\": 1793590827055256456, \"returncode\": 0, \"status\": \"completed\", \"validity\": \"valid\", \"metrics\": {\"delivery_s\": 0.005750021, \"hash_validation_s\": 0.001951895, \"hash_to_generation_s\": 0.204681137, \"prompt_to_first_token_s\": 0.182156009, \"demand_to_first_token_s\": 0.394539062, \"harness_entry_to_first_token_s\": 15.872722402, \"excluded_pre_demand_setup_s\": 15.47818334}, \"result_sha256\": \"3d0db70261d5a8b95fe9fa84b2353311832ac5c6b2f721b0ff48ba4fbc435575\"}\n",
+      "log_stderr": ""
+    }
+  ]
+}

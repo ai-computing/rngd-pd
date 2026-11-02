@@ -1,0 +1,16 @@
+{
+  "status": "completed",
+  "cohort": "s02",
+  "phase": "smoke",
+  "npu_requested": 0,
+  "started_unix_ns": 1793586844128629336,
+  "trials": [
+    {
+      "trial_id": "s02-full-csi-active",
+      "arm": "full-csi-active",
+      "config": "/home/gspark/workspace/codex_resident_delivery_20261102/inputs/cohorts/s02/s02-full-csi-active.json",
+      "config_sha256": "0e35ac22bd4e9978db7dd07793a15af2ef4cbb1e8be3da0816a6a15515159644"
+    }
+  ],
+  "finished_unix_ns": 1793586910872781263
+}

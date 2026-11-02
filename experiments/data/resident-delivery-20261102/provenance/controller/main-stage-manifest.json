@@ -1,0 +1,13 @@
+{
+  "prepare_main_sha256": "f641022eb68fe93d777241c34f13974af54d47f78ecf7debb6bef4bee8ea4c73",
+  "cpu_sources": [
+    {
+      "name": "causal.py",
+      "sha256": "1546801671fc19d3871487b2d2d4f0f8e445bae82cbfd25aabf9e87351554f5a"
+    },
+    {
+      "name": "test_causal.py",
+      "sha256": "4cb6a4e95a80b84e3dff76fa632091c3f96e50b8f60f706721eaa1a0b72a0cc7"
+    }
+  ]
+}

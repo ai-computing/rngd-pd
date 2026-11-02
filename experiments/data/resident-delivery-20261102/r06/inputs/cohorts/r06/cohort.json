@@ -1,0 +1,34 @@
+{
+  "status": "completed",
+  "cohort": "r06",
+  "phase": "measure",
+  "npu_requested": 0,
+  "started_unix_ns": 1793590438191315484,
+  "trials": [
+    {
+      "trial_id": "r06-full-csi-rebase",
+      "arm": "full-csi-rebase",
+      "config": "/home/gspark/workspace/codex_resident_delivery_20261102/inputs/cohorts/r06/r06-full-csi-rebase.json",
+      "config_sha256": "0afe0ad9a7e02bfa35aee251a3b7b16165e7bb27c274c84ebdf8e79b89e08c81"
+    },
+    {
+      "trial_id": "r06-full-csi-no-rebase",
+      "arm": "full-csi-no-rebase",
+      "config": "/home/gspark/workspace/codex_resident_delivery_20261102/inputs/cohorts/r06/r06-full-csi-no-rebase.json",
+      "config_sha256": "61dc0cf9fcc094f1f7b5c928fd8551c653da999c7a0b4880fc037eb88bcf3a86"
+    },
+    {
+      "trial_id": "r06-graph-csi",
+      "arm": "graph-csi",
+      "config": "/home/gspark/workspace/codex_resident_delivery_20261102/inputs/cohorts/r06/r06-graph-csi.json",
+      "config_sha256": "47a5edc133c4961a8c8e8cf3cb6e9b9eb88c4b125455e6a668a56c8804dd021d"
+    },
+    {
+      "trial_id": "r06-graph-copy",
+      "arm": "graph-copy",
+      "config": "/home/gspark/workspace/codex_resident_delivery_20261102/inputs/cohorts/r06/r06-graph-copy.json",
+      "config_sha256": "c31e083224e4a1470e2b6e5b163df5831207a987c8b20c10228d77ba464e240b"
+    }
+  ],
+  "finished_unix_ns": 1793590578371813740
+}

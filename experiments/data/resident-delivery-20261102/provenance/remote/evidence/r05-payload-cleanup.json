@@ -1,0 +1,14 @@
+{
+  "cohort": "r05",
+  "export_archive_sha256": "253ac2a9a0614a103fcd87212159f68bcd82d801c2afcf8b1eb90b5ba1587a5e",
+  "removed": [
+    "/home/gspark/workspace/codex_resident_delivery_20261102/prep/r05",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r05-graph-copy/work",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r05-graph-csi/work",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r05-full-csi-no-rebase/work",
+    "/home/gspark/workspace/codex_resident_delivery_20261102/runs/r05-full-csi-rebase/work"
+  ],
+  "free_before": 307273113600,
+  "free_after": 387605327872,
+  "npu_requested": 0
+}

@@ -1,0 +1,1093 @@
+{
+  "cached": {
+    "plain": {
+      "arm": "P",
+      "base_copy_proof": [
+        {
+          "allocated_bytes": 8388608,
+          "bytes": 8388608,
+          "copy_dev": 64512,
+          "copy_ino": 25170124,
+          "independent_inode": true,
+          "nlink": 1,
+          "path": "decode_S256_B2_lm.rbln",
+          "sha256": "9723c9cdf9c78f1c2f809f6b44a75bd06d548fe0834d455508f7fd5f14298342",
+          "source_dev": 64512,
+          "source_ino": 25170060
+        }
+      ],
+      "cli": {
+        "manifest": "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+        "stats": {
+          "base_best": 0,
+          "bytes": 8388608,
+          "cache_bytes": 4202869,
+          "cached": 68256,
+          "duration_ns": 102391243,
+          "files": 1,
+          "local_bytes": 0,
+          "peer_bytes": 0,
+          "peer_chunks": 0,
+          "ranges": 2,
+          "read_bytes": 68256,
+          "reused": 0
+        }
+      },
+      "cli_bytes_scope": "logical target size; never observed file writes",
+      "command": {
+        "argv": [
+          "nice",
+          "-n",
+          "19",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+          "pull",
+          "--store",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store",
+          "--workers",
+          "8",
+          "--json",
+          "--cache",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-plain/cache",
+          "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-plain/output"
+        ],
+        "elapsed_s": 0.125578984,
+        "environment": {
+          "GOMAXPROCS": "32",
+          "GOMEMLIMIT": null,
+          "LC_ALL": "C",
+          "TMPDIR": "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-plain/tmp",
+          "TZ": "UTC"
+        },
+        "executed_argv": [
+          "/usr/bin/time",
+          "-v",
+          "-o",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-plain/deploy.resources",
+          "strace",
+          "-ff",
+          "-qq",
+          "-yy",
+          "-s",
+          "0",
+          "-o",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-plain/deploy.trace",
+          "-e",
+          "trace=read,pread64,readv,preadv,preadv2,write,pwrite64,writev,pwritev,pwritev2,sendfile,copy_file_range,splice,mmap,msync,truncate,ftruncate,fsync,fdatasync,rename,renameat,renameat2,io_uring_setup,ioctl",
+          "nice",
+          "-n",
+          "19",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+          "pull",
+          "--store",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store",
+          "--workers",
+          "8",
+          "--json",
+          "--cache",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-plain/cache",
+          "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-plain/output"
+        ],
+        "exit_code": 0,
+        "gnu_time": "\tCommand being timed: \"strace -ff -qq -yy -s 0 -o /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-plain/deploy.trace -e trace=read,pread64,readv,preadv,preadv2,write,pwrite64,writev,pwritev,pwritev2,sendfile,copy_file_range,splice,mmap,msync,truncate,ftruncate,fsync,fdatasync,rename,renameat,renameat2,io_uring_setup,ioctl nice -n 19 /home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi pull --store /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store --workers 8 --json --cache /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-plain/cache sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2 /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-plain/output\"\n\tUser time (seconds): 0.02\n\tSystem time (seconds): 0.11\n\tPercent of CPU this job got: 108%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.12\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 19968\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 2968\n\tVoluntary context switches: 11124\n\tInvoluntary context switches: 0\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 17408\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+        "monotonic_end_ns": 1563332639800287,
+        "monotonic_start_ns": 1563332514221303,
+        "process_io": null,
+        "process_io_reason": "no validated pre-exit per-process snapshot; unavailable",
+        "resources": {
+          "filesystem_input_blocks": 0,
+          "filesystem_output_blocks": 17408,
+          "max_rss_kib": 19968,
+          "system_s": 0.11,
+          "user_s": 0.02
+        },
+        "status": "succeeded",
+        "traced": true,
+        "utc_start": "2026-11-02T02:59:17.639044+00:00"
+      },
+      "consume_treatment_valid": true,
+      "durable_s": 0.126252552,
+      "free_bytes_before_command": 387642990592,
+      "logical_io": {
+        "base": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "cache": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 4,
+          "ftruncate_calls": 0,
+          "read_bytes": 4247260,
+          "truncate_calls": 0,
+          "write_bytes": 69193
+        },
+        "source_base": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "source_target": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "staging": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 68256,
+          "truncate_calls": 0,
+          "write_bytes": 68256
+        },
+        "store": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 122736,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "target": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 1,
+          "ftruncate_calls": 1,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 8388608
+        }
+      },
+      "output_hash_equal": true,
+      "output_inventory": [
+        {
+          "bytes": 8388608,
+          "path": "decode_S256_B8_lm.rbln",
+          "sha256": "cd5cf1ba8f1fc0afda829d0180d6bb6879cee33cb892346b7b0a64ace494df38"
+        }
+      ],
+      "preparation_inclusive_s": 0.185765907,
+      "preparation_s": 0.035892314,
+      "publication": "not applicable: prepublished source",
+      "retained_artifact_bytes": 21441986,
+      "status": "succeeded",
+      "sync_end_ns": 1563332640473855,
+      "sync_s": 0.000108239,
+      "sync_start_ns": 1563332640365616,
+      "synced_files": 1,
+      "trace_accounting": {
+        "groups": {
+          "base": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 0,
+            "ftruncate_calls": 0,
+            "read_bytes": 0,
+            "truncate_calls": 0,
+            "write_bytes": 0
+          },
+          "cache": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 4,
+            "ftruncate_calls": 0,
+            "read_bytes": 4247260,
+            "truncate_calls": 0,
+            "write_bytes": 69193
+          },
+          "source_base": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 0,
+            "ftruncate_calls": 0,
+            "read_bytes": 0,
+            "truncate_calls": 0,
+            "write_bytes": 0
+          },
+          "source_target": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 0,
+            "ftruncate_calls": 0,
+            "read_bytes": 0,
+            "truncate_calls": 0,
+            "write_bytes": 0
+          },
+          "staging": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 0,
+            "ftruncate_calls": 0,
+            "read_bytes": 68256,
+            "truncate_calls": 0,
+            "write_bytes": 68256
+          },
+          "store": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 0,
+            "ftruncate_calls": 0,
+            "read_bytes": 122736,
+            "truncate_calls": 0,
+            "write_bytes": 0
+          },
+          "target": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 1,
+            "ftruncate_calls": 1,
+            "read_bytes": 0,
+            "truncate_calls": 0,
+            "write_bytes": 8388608
+          }
+        },
+        "scope": "successful syscall return lengths; logical file I/O, not physical disk I/O",
+        "trace_files": [
+          "deploy.trace.75",
+          "deploy.trace.76",
+          "deploy.trace.77",
+          "deploy.trace.78",
+          "deploy.trace.79",
+          "deploy.trace.80",
+          "deploy.trace.81",
+          "deploy.trace.82",
+          "deploy.trace.83"
+        ],
+        "valid": true,
+        "warnings": []
+      },
+      "valid": true,
+      "validated_s": 0.134144176,
+      "validation_end_ns": 1563332648365479,
+      "validation_s": 0.007890904,
+      "validation_start_ns": 1563332640474575,
+      "warm_source_verification_s": 0.015572247
+    },
+    "reuse": {
+      "arm": "R",
+      "base_copy_proof": [
+        {
+          "allocated_bytes": 8388608,
+          "bytes": 8388608,
+          "copy_dev": 64512,
+          "copy_ino": 25170147,
+          "independent_inode": true,
+          "nlink": 1,
+          "path": "decode_S256_B2_lm.rbln",
+          "sha256": "9723c9cdf9c78f1c2f809f6b44a75bd06d548fe0834d455508f7fd5f14298342",
+          "source_dev": 64512,
+          "source_ino": 25170060
+        }
+      ],
+      "cli": {
+        "manifest": "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+        "stats": {
+          "base": "sha256:4c503967b3e23b4a1ee5124a3d1b871b7adf058d4e2cdab21d0374636ba8500b",
+          "base_best": 8320352,
+          "bytes": 8388608,
+          "cache_bytes": 0,
+          "cached": 68256,
+          "duration_ns": 14254220,
+          "files": 1,
+          "local_bytes": 0,
+          "peer_bytes": 0,
+          "peer_chunks": 0,
+          "ranges": 1,
+          "read_bytes": 68256,
+          "reused": 8320352
+        }
+      },
+      "cli_bytes_scope": "logical target size; never observed file writes",
+      "command": {
+        "argv": [
+          "nice",
+          "-n",
+          "19",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+          "pull",
+          "--store",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store",
+          "--workers",
+          "8",
+          "--json",
+          "--cache",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/cache",
+          "--base",
+          "sha256:4c503967b3e23b4a1ee5124a3d1b871b7adf058d4e2cdab21d0374636ba8500b",
+          "--base-dir",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/base",
+          "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/output"
+        ],
+        "elapsed_s": 0.036230724,
+        "environment": {
+          "GOMAXPROCS": "32",
+          "GOMEMLIMIT": null,
+          "LC_ALL": "C",
+          "TMPDIR": "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/tmp",
+          "TZ": "UTC"
+        },
+        "executed_argv": [
+          "/usr/bin/time",
+          "-v",
+          "-o",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/deploy.resources",
+          "strace",
+          "-ff",
+          "-qq",
+          "-yy",
+          "-s",
+          "0",
+          "-o",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/deploy.trace",
+          "-e",
+          "trace=read,pread64,readv,preadv,preadv2,write,pwrite64,writev,pwritev,pwritev2,sendfile,copy_file_range,splice,mmap,msync,truncate,ftruncate,fsync,fdatasync,rename,renameat,renameat2,io_uring_setup,ioctl",
+          "nice",
+          "-n",
+          "19",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+          "pull",
+          "--store",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store",
+          "--workers",
+          "8",
+          "--json",
+          "--cache",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/cache",
+          "--base",
+          "sha256:4c503967b3e23b4a1ee5124a3d1b871b7adf058d4e2cdab21d0374636ba8500b",
+          "--base-dir",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/base",
+          "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+          "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/output"
+        ],
+        "exit_code": 0,
+        "gnu_time": "\tCommand being timed: \"strace -ff -qq -yy -s 0 -o /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/deploy.trace -e trace=read,pread64,readv,preadv,preadv2,write,pwrite64,writev,pwritev,pwritev2,sendfile,copy_file_range,splice,mmap,msync,truncate,ftruncate,fsync,fdatasync,rename,renameat,renameat2,io_uring_setup,ioctl nice -n 19 /home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi pull --store /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store --workers 8 --json --cache /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/cache --base sha256:4c503967b3e23b4a1ee5124a3d1b871b7adf058d4e2cdab21d0374636ba8500b --base-dir /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/base sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2 /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/cached-reuse/output\"\n\tUser time (seconds): 0.01\n\tSystem time (seconds): 0.02\n\tPercent of CPU this job got: 102%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.03\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 16128\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 1738\n\tVoluntary context switches: 3071\n\tInvoluntary context switches: 0\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 552\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+        "monotonic_end_ns": 1563332746126212,
+        "monotonic_start_ns": 1563332709895488,
+        "process_io": null,
+        "process_io_reason": "no validated pre-exit per-process snapshot; unavailable",
+        "resources": {
+          "filesystem_input_blocks": 0,
+          "filesystem_output_blocks": 552,
+          "max_rss_kib": 16128,
+          "system_s": 0.02,
+          "user_s": 0.01
+        },
+        "status": "succeeded",
+        "traced": true,
+        "utc_start": "2026-11-02T02:59:17.834718+00:00"
+      },
+      "consume_treatment_valid": true,
+      "durable_s": 0.036813872,
+      "free_bytes_before_command": 387621408768,
+      "logical_io": {
+        "base": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "cache": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 4,
+          "ftruncate_calls": 0,
+          "read_bytes": 44391,
+          "truncate_calls": 0,
+          "write_bytes": 69194
+        },
+        "source_base": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "source_target": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "staging": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 68256,
+          "truncate_calls": 0,
+          "write_bytes": 68256
+        },
+        "store": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 175757,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "target": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 1,
+          "ftruncate_calls": 2,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 68256
+        }
+      },
+      "output_hash_equal": true,
+      "output_inventory": [
+        {
+          "bytes": 8388608,
+          "path": "decode_S256_B8_lm.rbln",
+          "sha256": "cd5cf1ba8f1fc0afda829d0180d6bb6879cee33cb892346b7b0a64ace494df38"
+        }
+      ],
+      "preparation_inclusive_s": 0.097502633,
+      "preparation_s": 0.036576293,
+      "publication": "not applicable: prepublished source",
+      "retained_artifact_bytes": 12737698,
+      "status": "succeeded",
+      "sync_end_ns": 1563332746709360,
+      "sync_s": 9.6979e-05,
+      "sync_start_ns": 1563332746612381,
+      "synced_files": 1,
+      "trace_accounting": {
+        "groups": {
+          "base": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 0,
+            "ftruncate_calls": 0,
+            "read_bytes": 0,
+            "truncate_calls": 0,
+            "write_bytes": 0
+          },
+          "cache": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 4,
+            "ftruncate_calls": 0,
+            "read_bytes": 44391,
+            "truncate_calls": 0,
+            "write_bytes": 69194
+          },
+          "source_base": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 0,
+            "ftruncate_calls": 0,
+            "read_bytes": 0,
+            "truncate_calls": 0,
+            "write_bytes": 0
+          },
+          "source_target": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 0,
+            "ftruncate_calls": 0,
+            "read_bytes": 0,
+            "truncate_calls": 0,
+            "write_bytes": 0
+          },
+          "staging": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 0,
+            "ftruncate_calls": 0,
+            "read_bytes": 68256,
+            "truncate_calls": 0,
+            "write_bytes": 68256
+          },
+          "store": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 0,
+            "ftruncate_calls": 0,
+            "read_bytes": 175757,
+            "truncate_calls": 0,
+            "write_bytes": 0
+          },
+          "target": {
+            "errors": 0,
+            "fdatasync_calls": 0,
+            "fsync_calls": 1,
+            "ftruncate_calls": 2,
+            "read_bytes": 0,
+            "truncate_calls": 0,
+            "write_bytes": 68256
+          }
+        },
+        "scope": "successful syscall return lengths; logical file I/O, not physical disk I/O",
+        "trace_files": [
+          "deploy.trace.88",
+          "deploy.trace.89",
+          "deploy.trace.90",
+          "deploy.trace.91",
+          "deploy.trace.92",
+          "deploy.trace.93",
+          "deploy.trace.94"
+        ],
+        "valid": true,
+        "warnings": []
+      },
+      "valid": true,
+      "validated_s": 0.044441006,
+      "validation_end_ns": 1563332754336494,
+      "validation_s": 0.007626534,
+      "validation_start_ns": 1563332746709960,
+      "warm_source_verification_s": 0.016317745
+    },
+    "valid": true
+  },
+  "consume_write_bytes": 68256,
+  "plain": {
+    "arm": "P",
+    "base_copy_proof": [
+      {
+        "allocated_bytes": 8388608,
+        "bytes": 8388608,
+        "copy_dev": 64512,
+        "copy_ino": 25170080,
+        "independent_inode": true,
+        "nlink": 1,
+        "path": "decode_S256_B2_lm.rbln",
+        "sha256": "9723c9cdf9c78f1c2f809f6b44a75bd06d548fe0834d455508f7fd5f14298342",
+        "source_dev": 64512,
+        "source_ino": 25170060
+      }
+    ],
+    "cli": {
+      "manifest": "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+      "stats": {
+        "base_best": 0,
+        "bytes": 8388608,
+        "cache_bytes": 0,
+        "cached": 0,
+        "duration_ns": 68838564,
+        "files": 1,
+        "local_bytes": 0,
+        "peer_bytes": 0,
+        "peer_chunks": 0,
+        "ranges": 2,
+        "read_bytes": 4271125,
+        "reused": 0
+      }
+    },
+    "cli_bytes_scope": "logical target size; never observed file writes",
+    "command": {
+      "argv": [
+        "nice",
+        "-n",
+        "19",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+        "pull",
+        "--store",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store",
+        "--workers",
+        "8",
+        "--json",
+        "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/plain/output"
+      ],
+      "elapsed_s": 0.090556188,
+      "environment": {
+        "GOMAXPROCS": "32",
+        "GOMEMLIMIT": null,
+        "LC_ALL": "C",
+        "TMPDIR": "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/plain/tmp",
+        "TZ": "UTC"
+      },
+      "executed_argv": [
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/plain/deploy.resources",
+        "strace",
+        "-ff",
+        "-qq",
+        "-yy",
+        "-s",
+        "0",
+        "-o",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/plain/deploy.trace",
+        "-e",
+        "trace=read,pread64,readv,preadv,preadv2,write,pwrite64,writev,pwritev,pwritev2,sendfile,copy_file_range,splice,mmap,msync,truncate,ftruncate,fsync,fdatasync,rename,renameat,renameat2,io_uring_setup,ioctl",
+        "nice",
+        "-n",
+        "19",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+        "pull",
+        "--store",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store",
+        "--workers",
+        "8",
+        "--json",
+        "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/plain/output"
+      ],
+      "exit_code": 0,
+      "gnu_time": "\tCommand being timed: \"strace -ff -qq -yy -s 0 -o /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/plain/deploy.trace -e trace=read,pread64,readv,preadv,preadv2,write,pwrite64,writev,pwritev,pwritev2,sendfile,copy_file_range,splice,mmap,msync,truncate,ftruncate,fsync,fdatasync,rename,renameat,renameat2,io_uring_setup,ioctl nice -n 19 /home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi pull --store /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store --workers 8 --json sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2 /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/plain/output\"\n\tUser time (seconds): 0.00\n\tSystem time (seconds): 0.09\n\tPercent of CPU this job got: 113%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.08\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 19200\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 2762\n\tVoluntary context switches: 10361\n\tInvoluntary context switches: 0\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 17072\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "monotonic_end_ns": 1563332317851158,
+      "monotonic_start_ns": 1563332227294970,
+      "process_io": null,
+      "process_io_reason": "no validated pre-exit per-process snapshot; unavailable",
+      "resources": {
+        "filesystem_input_blocks": 0,
+        "filesystem_output_blocks": 17072,
+        "max_rss_kib": 19200,
+        "system_s": 0.09,
+        "user_s": 0.0
+      },
+      "status": "succeeded",
+      "traced": true,
+      "utc_start": "2026-11-02T02:59:17.352118+00:00"
+    },
+    "consume_treatment_valid": true,
+    "durable_s": 0.091351876,
+    "free_bytes_before_command": 387685650432,
+    "logical_io": {
+      "base": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 0,
+        "ftruncate_calls": 0,
+        "read_bytes": 0,
+        "truncate_calls": 0,
+        "write_bytes": 0
+      },
+      "source_base": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 0,
+        "ftruncate_calls": 0,
+        "read_bytes": 0,
+        "truncate_calls": 0,
+        "write_bytes": 0
+      },
+      "source_target": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 0,
+        "ftruncate_calls": 0,
+        "read_bytes": 0,
+        "truncate_calls": 0,
+        "write_bytes": 0
+      },
+      "staging": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 0,
+        "ftruncate_calls": 0,
+        "read_bytes": 0,
+        "truncate_calls": 0,
+        "write_bytes": 0
+      },
+      "store": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 0,
+        "ftruncate_calls": 0,
+        "read_bytes": 4325605,
+        "truncate_calls": 0,
+        "write_bytes": 0
+      },
+      "target": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 1,
+        "ftruncate_calls": 1,
+        "read_bytes": 0,
+        "truncate_calls": 0,
+        "write_bytes": 8388608
+      }
+    },
+    "output_hash_equal": true,
+    "output_inventory": [
+      {
+        "bytes": 8388608,
+        "path": "decode_S256_B8_lm.rbln",
+        "sha256": "cd5cf1ba8f1fc0afda829d0180d6bb6879cee33cb892346b7b0a64ace494df38"
+      }
+    ],
+    "preparation_inclusive_s": 0.139611755,
+    "preparation_s": 0.021411904,
+    "publication": "not applicable: prepublished source",
+    "retained_artifact_bytes": 17104539,
+    "status": "succeeded",
+    "sync_end_ns": 1563332318646846,
+    "sync_s": 0.000237619,
+    "sync_start_ns": 1563332318409227,
+    "synced_files": 1,
+    "trace_accounting": {
+      "groups": {
+        "base": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "source_base": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "source_target": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "staging": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "store": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 4325605,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "target": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 1,
+          "ftruncate_calls": 1,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 8388608
+        }
+      },
+      "scope": "successful syscall return lengths; logical file I/O, not physical disk I/O",
+      "trace_files": [
+        "deploy.trace.41",
+        "deploy.trace.42",
+        "deploy.trace.43",
+        "deploy.trace.44",
+        "deploy.trace.45",
+        "deploy.trace.46",
+        "deploy.trace.47",
+        "deploy.trace.48"
+      ],
+      "valid": true,
+      "warnings": []
+    },
+    "valid": true,
+    "validated_s": 0.100661287,
+    "validation_end_ns": 1563332327956257,
+    "validation_s": 0.009308851,
+    "validation_start_ns": 1563332318647406,
+    "warm_source_verification_s": 0.017358104
+  },
+  "plain_write_bytes": 8388608,
+  "reuse": {
+    "arm": "R",
+    "base_copy_proof": [
+      {
+        "allocated_bytes": 8388608,
+        "bytes": 8388608,
+        "copy_dev": 64512,
+        "copy_ino": 25170102,
+        "independent_inode": true,
+        "nlink": 1,
+        "path": "decode_S256_B2_lm.rbln",
+        "sha256": "9723c9cdf9c78f1c2f809f6b44a75bd06d548fe0834d455508f7fd5f14298342",
+        "source_dev": 64512,
+        "source_ino": 25170060
+      }
+    ],
+    "cli": {
+      "manifest": "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+      "stats": {
+        "base": "sha256:4c503967b3e23b4a1ee5124a3d1b871b7adf058d4e2cdab21d0374636ba8500b",
+        "base_best": 8320352,
+        "bytes": 8388608,
+        "cache_bytes": 0,
+        "cached": 0,
+        "duration_ns": 9140481,
+        "files": 1,
+        "local_bytes": 0,
+        "peer_bytes": 0,
+        "peer_chunks": 0,
+        "ranges": 1,
+        "read_bytes": 68256,
+        "reused": 8320352
+      }
+    },
+    "cli_bytes_scope": "logical target size; never observed file writes",
+    "command": {
+      "argv": [
+        "nice",
+        "-n",
+        "19",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+        "pull",
+        "--store",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store",
+        "--workers",
+        "8",
+        "--json",
+        "--base",
+        "sha256:4c503967b3e23b4a1ee5124a3d1b871b7adf058d4e2cdab21d0374636ba8500b",
+        "--base-dir",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/reuse/base",
+        "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/reuse/output"
+      ],
+      "elapsed_s": 0.028624259,
+      "environment": {
+        "GOMAXPROCS": "32",
+        "GOMEMLIMIT": null,
+        "LC_ALL": "C",
+        "TMPDIR": "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/reuse/tmp",
+        "TZ": "UTC"
+      },
+      "executed_argv": [
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/reuse/deploy.resources",
+        "strace",
+        "-ff",
+        "-qq",
+        "-yy",
+        "-s",
+        "0",
+        "-o",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/reuse/deploy.trace",
+        "-e",
+        "trace=read,pread64,readv,preadv,preadv2,write,pwrite64,writev,pwritev,pwritev2,sendfile,copy_file_range,splice,mmap,msync,truncate,ftruncate,fsync,fdatasync,rename,renameat,renameat2,io_uring_setup,ioctl",
+        "nice",
+        "-n",
+        "19",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi",
+        "pull",
+        "--store",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store",
+        "--workers",
+        "8",
+        "--json",
+        "--base",
+        "sha256:4c503967b3e23b4a1ee5124a3d1b871b7adf058d4e2cdab21d0374636ba8500b",
+        "--base-dir",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/reuse/base",
+        "sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2",
+        "/home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/reuse/output"
+      ],
+      "exit_code": 0,
+      "gnu_time": "\tCommand being timed: \"strace -ff -qq -yy -s 0 -o /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/reuse/deploy.trace -e trace=read,pread64,readv,preadv,preadv2,write,pwrite64,writev,pwritev,pwritev2,sendfile,copy_file_range,splice,mmap,msync,truncate,ftruncate,fsync,fdatasync,rename,renameat,renameat2,io_uring_setup,ioctl nice -n 19 /home/gspark/workspace/codex_resident_delivery_20261102/bin/onggi pull --store /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/store --workers 8 --json --base sha256:4c503967b3e23b4a1ee5124a3d1b871b7adf058d4e2cdab21d0374636ba8500b --base-dir /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/reuse/base sha256:604dbf308544842512bfd1373f66b8943071c0a191c079b70e3108e89e5b19d2 /home/gspark/workspace/codex_resident_delivery_20261102/cpu-causal-fixture02/reuse/output\"\n\tUser time (seconds): 0.00\n\tSystem time (seconds): 0.02\n\tPercent of CPU this job got: 111%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.02\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 15360\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 1657\n\tVoluntary context switches: 2542\n\tInvoluntary context switches: 0\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 240\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "monotonic_end_ns": 1563332403008908,
+      "monotonic_start_ns": 1563332374384649,
+      "process_io": null,
+      "process_io_reason": "no validated pre-exit per-process snapshot; unavailable",
+      "resources": {
+        "filesystem_input_blocks": 0,
+        "filesystem_output_blocks": 240,
+        "max_rss_kib": 15360,
+        "system_s": 0.02,
+        "user_s": 0.0
+      },
+      "status": "succeeded",
+      "traced": true,
+      "utc_start": "2026-11-02T02:59:17.499207+00:00"
+    },
+    "consume_treatment_valid": true,
+    "durable_s": 0.029290388,
+    "free_bytes_before_command": 387668484096,
+    "logical_io": {
+      "base": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 0,
+        "ftruncate_calls": 0,
+        "read_bytes": 0,
+        "truncate_calls": 0,
+        "write_bytes": 0
+      },
+      "source_base": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 0,
+        "ftruncate_calls": 0,
+        "read_bytes": 0,
+        "truncate_calls": 0,
+        "write_bytes": 0
+      },
+      "source_target": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 0,
+        "ftruncate_calls": 0,
+        "read_bytes": 0,
+        "truncate_calls": 0,
+        "write_bytes": 0
+      },
+      "staging": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 0,
+        "ftruncate_calls": 0,
+        "read_bytes": 0,
+        "truncate_calls": 0,
+        "write_bytes": 0
+      },
+      "store": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 0,
+        "ftruncate_calls": 0,
+        "read_bytes": 175757,
+        "truncate_calls": 0,
+        "write_bytes": 0
+      },
+      "target": {
+        "errors": 0,
+        "fdatasync_calls": 0,
+        "fsync_calls": 1,
+        "ftruncate_calls": 2,
+        "read_bytes": 0,
+        "truncate_calls": 0,
+        "write_bytes": 68256
+      }
+    },
+    "output_hash_equal": true,
+    "output_inventory": [
+      {
+        "bytes": 8388608,
+        "path": "decode_S256_B8_lm.rbln",
+        "sha256": "cd5cf1ba8f1fc0afda829d0180d6bb6879cee33cb892346b7b0a64ace494df38"
+      }
+    ],
+    "preparation_inclusive_s": 0.075980589,
+    "preparation_s": 0.021581644,
+    "publication": "not applicable: prepublished source",
+    "retained_artifact_bytes": 8413211,
+    "status": "succeeded",
+    "sync_end_ns": 1563332403675037,
+    "sync_s": 0.00021765,
+    "sync_start_ns": 1563332403457387,
+    "synced_files": 1,
+    "trace_accounting": {
+      "groups": {
+        "base": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "source_base": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "source_target": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "staging": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "store": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 0,
+          "ftruncate_calls": 0,
+          "read_bytes": 175757,
+          "truncate_calls": 0,
+          "write_bytes": 0
+        },
+        "target": {
+          "errors": 0,
+          "fdatasync_calls": 0,
+          "fsync_calls": 1,
+          "ftruncate_calls": 2,
+          "read_bytes": 0,
+          "truncate_calls": 0,
+          "write_bytes": 68256
+        }
+      },
+      "scope": "successful syscall return lengths; logical file I/O, not physical disk I/O",
+      "trace_files": [
+        "deploy.trace.53",
+        "deploy.trace.54",
+        "deploy.trace.55",
+        "deploy.trace.56",
+        "deploy.trace.57",
+        "deploy.trace.58",
+        "deploy.trace.59"
+      ],
+      "valid": true,
+      "warnings": []
+    },
+    "valid": true,
+    "validated_s": 0.037949449,
+    "validation_end_ns": 1563332412334098,
+    "validation_s": 0.008658341,
+    "validation_start_ns": 1563332403675757,
+    "warm_source_verification_s": 0.016280066
+  },
+  "valid": true
+}
