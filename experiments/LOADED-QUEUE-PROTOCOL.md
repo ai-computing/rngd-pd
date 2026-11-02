@@ -44,14 +44,14 @@ remain read-only. Remote commands use hub.orca.run_remote exclusively.
 
 Implementation tasks (executed inline):
 
-- [ ] Add `bench/ccgrid_loaded_queue.py`: `run_queue(generate, switch,
+- [x] Add `bench/ccgrid_loaded_queue.py`: `run_queue(generate, switch,
   first_native, emit, timeout=300)` records the actual FIFO experiment and
   rejects absent/late native triggers, worker errors and incomplete joins.
-- [ ] Add CPU tests in `tests/swap/test_ccgrid_loaded_queue.py` for real
+- [x] Add CPU tests in `tests/swap/test_ccgrid_loaded_queue.py` for real
   queue ordering, actual lease-free synthetic file computations, early worker
   failure, late trigger and no transition/request after a failed switch.
   Observe meaningful RED before implementation and GREEN afterward.
-- [ ] Connect the helper to existing `ccgrid_b2` validation/references and E7
+- [x] Connect `bench/ccgrid_loaded_native.py` to existing `ccgrid_b2` validation/references and E7
   native observer; add a first-native-return observer without altering original
   program outputs. Native evidence stays false until all checks pass.
 - [ ] Review/CI, freeze source/config, off-card input validation, smoke then n5,
@@ -62,3 +62,12 @@ Implementation tasks (executed inline):
 Review focus: main/worker data races; actual trigger overlap; observer identity
 and compilation prohibition; thread-local Torch settings; bounded failure and
 owner-close order. CPU synthetic tests cannot establish native performance.
+
+Execution ledger:10 CPU tests observed RED then GREEN for FIFO order, late
+trigger, failed switch, early worker failure, original-call marker, and native
+acceptance (wrong output/counts/identity/join rejected). Combined B2/resident
+boundary tests40passed1skip. Full local Windows collection remains unavailable
+without httpx; exact-head Linux CI is required. No native sample has run.
+Ruling: keep this a prepared-file finite FIFO case, avoiding an HTTP stack
+that would expand scope; its measured queue behavior cannot imply production
+throughput or p99 latency. Runtime/core and immutable fixtures are unchanged.
